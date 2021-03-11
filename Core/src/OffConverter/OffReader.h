@@ -26,24 +26,85 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "OffModel.h"
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_BEGIN
+
+/*! \brief The Off reader class
+*
+* This class is used to read the information from an .off file and pass it to the Off Model
+*/
 class OffReader
 {
 public:
+	//! constructor
 	explicit OffReader();
+
+	//! destructor
 	virtual ~OffReader();
 
+	/**
+	* \brief Does all the reading and calls the other functions
+	*
+	* This is the function to call to read all the information from the .off file
+	*
+	* \param[in] filename The name of the .off file
+	* \return The pointer that points to the Off model
+	*/
 	static std::shared_ptr<OffModel> readFile(const std::string& filename);
 
+	/**
+	* \brief Reads a triangle face from the line stream
+	*
+	* This function is called to read one triangle from a line stream.
+	* It searches the correspondig indices and vertices and saves the result the vertex list meant for rendering.
+	*
+	* \param[in] lineStream The line stream obtained from file reading (getline).
+	* \param[in] indices The list of indices that was already red from the .off file.
+	* \param[in] vertices The list of vertices that was already red from the .off file.
+	* \param[in] offVertices The list of vertices read from the .off file meant for the vertex buffer.
+	*/
 	static void readTriangleFace(std::stringstream& lineStream,
 		std::vector<uint32_t>& indices,
 		std::vector<buw::VertexPosition3Color3Normal3>& vertices,
 		std::vector<buw::Vector3f>& offVertices);
+
+	/**
+	* \brief Reads a quad face from the line stream
+	*
+	* This function is called to read one quadrilateral from a line stream and creates to triangles from it.
+	* It searches the correspondig indices and vertices and saves the result the vertex list meant for rendering.
+	*
+	* \param[in] lineStream The line stream obtained from file reading (getline).
+	* \param[in] indices The list of indices that was already red from the .off file.
+	* \param[in] vertices The list of vertices that was already red from the .off file.
+	* \param[in] offVertices The list of vertices read from the .off file meant for the vertex buffer.
+	*/
 	static void readQuadFace(std::stringstream& lineStream,
 		std::vector<uint32_t>& indices,
 		std::vector<buw::VertexPosition3Color3Normal3>& vertices,
 		std::vector<buw::Vector3f>& offVertices);
+
+	/**
+	* \brief Reads and interprets all the vertices from the .off file
+	*
+	* This function reads through all the lines  in the .off file that specify vertices.
+	* It saves them in a vector that is being returned.
+	*
+	* \param[in] nrOfVertices The number of vertices specified in he .off file.
+	* \param[in] offFile The .off file all the information is red from.
+	* \return The vector with all vertices from the .off file.
+	*/
 	static std::vector<buw::Vector3f> readVertices(const int nrOfVertices,
 		std::ifstream& offFile);
+
+	/**
+	* \brief Calculates the normal of a triangle
+	*
+	* This function calculates the normal based on a triangle given by three vertices.
+	*
+	* \param[in] vertex1 The first vertex of the triangle.
+	* \param[in] vertex2 The second vertex of the triangle.
+	* \param[in] vertex3 The third vertex of the triangle.
+	* \return The calculated normal vector
+	*/
 	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
 		const buw::Vector3f& vertex2,
 		const buw::Vector3f& vertex3);

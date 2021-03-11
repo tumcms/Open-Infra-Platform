@@ -1,5 +1,5 @@
 #
-#    Copyright(c) 2018 Technical University of Munich
+#    Copyright(c) 2021 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -76,7 +76,8 @@ add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		OFF)
 add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
 add_format(IFC4X2			IFC4x2			OFF)
-add_format(IFC4X3_RC1	 	IFC4X3_RC1		ON)
+add_format(IFC4X3_RC1	 	IFC4X3_RC1		OFF)
+add_format(IFC4X3_RC2	 	IFC4X3_RC2		OFF)
 
 # Add options to create early bindings for formats
 foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)

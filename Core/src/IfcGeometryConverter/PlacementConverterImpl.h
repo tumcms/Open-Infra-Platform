@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -30,12 +30,6 @@ namespace OpenInfraPlatform {
             EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::getCurveOfPlacement(
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const;
-			
-			template <>
-			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
-				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
-			) const;
 		#endif
 
             /*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.
@@ -56,47 +50,11 @@ namespace OpenInfraPlatform {
 				if (linearPlacement.expired())
 					throw oip::ReferenceExpiredException(linearPlacement);
 				// check if correct type
-				if (!linearPlacement->PlacementMeasuredAlong.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
+				if (!linearPlacement->PlacementMeasuredAlong.template isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
 					throw oip::InconsistentModellingException(linearPlacement, "Only IfcBoundedCurve can be a base curve for IfcLinearPlacement.");
 				// return the curve
-                return linearPlacement->PlacementMeasuredAlong.as<typename IfcEntityTypesT::IfcBoundedCurve>();
+                return linearPlacement->PlacementMeasuredAlong.template as<typename IfcEntityTypesT::IfcBoundedCurve>();
             };
-
-			/**
-			* @brief Converts the relative placement origin in \c IfcLinearPlacement
-			*
-			* @param alreadyApplied List of already applied transformations. Returns if this one is contained in the list
-			* @param linear_placement The linear placement of which to convert the origin
-			* @return carve::math::Matrix
-			*/
-            template<typename IfcEntityTypesT>
-            double PlacementConverterT<IfcEntityTypesT>::convertRelativePlacement(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-			) const 
-            {                        
-				// check input
-				if (linear_placement.expired())
-					throw oip::ReferenceExpiredException(linear_placement);
-
-				// get the start dist along of the relative placement
-                if(linear_placement->PlacementRelTo)
-				{
-					// check for which type (PlacementRelTo is IfcObjectPlacement)
-					if (linear_placement->PlacementRelTo.get().isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
-					{
-						alreadyApplied.push_back(linear_placement.as<typename IfcEntityTypesT::IfcObjectPlacement>());
-						const auto linearPlacementRelTo = linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>();
-						double ret = linearPlacementRelTo->Distance->DistanceAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
-						alreadyApplied.pop_back();
-						return ret;
-					}
-					else
-						throw oip::InconsistentModellingException(linear_placement, "Relative placement to a " + linear_placement->PlacementRelTo.get()->getErrorLog() + "?!");
-				}
-                else
-                    return 0.;
-            }
 
         }
     }

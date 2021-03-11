@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -22,8 +22,6 @@
 
 #include <namespace.h>
 
-#include <IfcGeometryModelRenderer.h>
-
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
 
@@ -31,34 +29,46 @@
 
 using namespace testing;
 
+
+/*! \brief The visual test class
+*
+* This class is used for implementing basic functionality for creating visual tests with the help of the gtest library.
+* Child classes implement format specific functionality.
+*/
 class VisualTest : public Test
 {
 protected:
-
     buw::ReferenceCounted<buw::IRenderSystem> renderSystem_ = nullptr;
-    buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = nullptr;
 
+	//! constructor
     VisualTest();
 
+	//! destructor
     virtual ~VisualTest();
 
-    virtual void SetUp() override;
-
-    virtual void TearDown() override;
-
 public:
-	virtual buw::Image4b CaptureImage();
+	/*! 
+	 * \brief Captures an image of the rendered object.
+	 */
+	virtual buw::Image4b CaptureImage() = 0;
 
-	virtual std::string TestName() const = 0; // provide the test name as specified in the solution and the folder structure
-	virtual std::string Schema() const = 0; // provide the schema as specified in the solution and the folder structure
-
+	/*!
+	 * \brief Returns the executable path.
+	 */
 	boost::filesystem::path executablePath() const;
 
-	virtual boost::filesystem::path filePath(const std::string& relPath) const;
+	/*!
+	 * \brief Returns the file path.
+	 */
+	virtual boost::filesystem::path filePath(const std::string& relPath) const = 0;
 
+	/*!
+	 * \brief Returns path where the test file and reference images are stored.
+	 */
 	boost::filesystem::path dataPath(const std::string& relPath) const;
 
+	/*!
+	 * \brief Returns path where test specific data is stored.
+	 */
 	boost::filesystem::path testPath(const std::string& relPath) const;
-
-
 };

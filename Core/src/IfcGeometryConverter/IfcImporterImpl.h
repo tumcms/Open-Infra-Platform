@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2018 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
 	TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -40,6 +40,11 @@
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 #include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
 #include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2Entities.h"
 #endif
 
 #include "namespace.h"

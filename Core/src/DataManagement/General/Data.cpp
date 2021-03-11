@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -41,6 +41,12 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\reader/IFC4X3_RC1Reader.h"
 	#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+	#include "EarlyBinding\IFC4X3_RC2\src\reader/IFC4X3_RC2Reader.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2.h"
 #endif
 
 #include "IfcGeometryConverter\GeometryInputData.h"
@@ -176,6 +182,15 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
 
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC2) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC2EntityTypes, OpenInfraPlatform::IFC4X3_RC2::IFC4X3_RC2Reader>(filename);
+			return;
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+			IFCVersionNotCompiled("IFC4X3_RC2");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+		}
+
 		IFCVersionNotCompiled(strSchema);
 		return;
 	}	
@@ -189,14 +204,15 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
-	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
+	if (buw::PointCloud::GetSupportedExtensions().contains(extension)
+		|| extension.toUpper() == "LAS" /*gets handled differently*/) {
 		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
 		addModel(pointCloud);
 		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
-		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << ".";
+		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << "las.";
 	}
 #endif
 
@@ -281,7 +297,7 @@ const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
-	return "2020";
+	return "2021";
 }
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -42,16 +42,6 @@ namespace OpenInfraPlatform {
 					throw oip::InconsistentModellingException(linearPlacement, "Only a IfcBoundedCurve can be used as a reference curve.");
 				// return the curve
                 return linearPlacement->PlacementRelTo.as<emt::IFC4X1EntityTypes::IfcBoundedCurve>();
-            }
-			
-			template <>
-			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
-				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
-			) const
-            {
-				// no relative placement in IFC4x1
-                return 0.;
             }
 		#endif
 
