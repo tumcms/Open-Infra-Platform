@@ -486,6 +486,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 2.  - source : filepath
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
 
 				// 1. filename
 				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
@@ -500,7 +502,38 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
 				addBBox(itemModel, model->getExtent());
-				
+
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
+				auto itemGeoref = new QTreeWidgetItem(itemModel);
+				itemGeoref->setText(0, "GeoRef");
+				try
+				{
+					if(    model->getGeorefMetadata().codeEPSG != ""
+						|| model->getGeorefMetadata().WKT != "" )
+					{
+						// first, get the EPSG code
+						if (model->getGeorefMetadata().codeEPSG != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().codeEPSG));
+						if (model->getGeorefMetadata().WKT != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().WKT));
+						for (auto& el : model->getGeorefMetadata().data)
+						{
+							auto item = new QTreeWidgetItem(itemGeoref);
+							item->setText(0, QString::fromStdString(el.first));
+							item->setText(1, QString::fromStdString(el.second));
+						}
+					}
+					else {
+						itemGeoref->setText(1, "unknown");
+					}
+				}
+				catch (...)
+				{
+					itemGeoref->setText(1, "unknown");
+					// do nothing
+				}
+
 				// expanded per default
 				itemModel->setExpanded(true);
 			}

@@ -183,6 +183,10 @@ namespace OpenInfraPlatform {
 
 			// ---------------------------------------------------------------------------------------------------------------------------------------------------
 
+			void setGeorefMetadata(const oip::GeorefMetadata georefMeta) {
+				georefMetadata_ = georefMeta;
+			}
+
 		private:
 			void computeMainAxis();
 
@@ -210,6 +214,8 @@ namespace OpenInfraPlatform {
 
 			buw::CenterlineComputationDescription centerlineDescription_;
 			static bool areFiltersInitialized_;
+
+			oip::GeorefMetadata georefMetadata_;
 		};
 	}
 }

@@ -75,6 +75,7 @@ public:
 
 			// get the georeferencingmetadata from the file
 			georefConverter->init(expressModel);
+			ifcModel->setGeoref(georefConverter->getGeorefMetadata());
 
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
