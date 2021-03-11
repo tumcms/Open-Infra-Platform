@@ -64,11 +64,9 @@ void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::conver
 	const int order = ceil(static_cast<double>(nControlPoints) / 2.0);
 	const std::vector<double> knotArray = obtainKnotArrayOpenUniform(nControlPoints, order);
 
-	// Get instance of SplineUtilities
-	Core::IfcGeometryConverter::SplineUtilities splineUtilities;
 	// Calculate approximation with B-Splinecurve and its curvature
-	const std::vector<carve::geom::vector<3>> bsplinePoints = splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, nCurvePoints, accuracy);
-	std::vector<std::pair<double, double>> lengthsWithCurvatures = splineUtilities.computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
+	const std::vector<carve::geom::vector<3>> bsplinePoints = IfcGeometryConverter::SplineUtilities::computeBSplineCurveWithKnots(order, knotArray, controlPoints, nCurvePoints, accuracy);
+	std::vector<std::pair<double, double>> lengthsWithCurvatures = IfcGeometryConverter::SplineUtilities::computeCurvatureOfBSplineCurveWithKnots(order, controlPoints, knotArray, nCurvePoints);
 
 	// correction of first and last curvature value
 	lengthsWithCurvatures[0].second = lengthsWithCurvatures[1].second;

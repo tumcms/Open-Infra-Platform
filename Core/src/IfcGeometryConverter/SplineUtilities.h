@@ -57,12 +57,12 @@ namespace OpenInfraPlatform
 				 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 				 */
 				 // B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-				std::vector<carve::geom::vector<3>> computeBSplineCurveWithKnots(
+				static std::vector<carve::geom::vector<3>> computeBSplineCurveWithKnots(
 					const int& order,
 					const std::vector<double>& knotArray,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
 					const uint32_t& numCurvePoints,
-					const double& accuracy) const throw(...)
+					const double& accuracy) throw(...)
 				{
 					// The following parameters corresponds to the parameter t of a curve c(t)
 					double knotStart;
@@ -104,13 +104,13 @@ namespace OpenInfraPlatform
 				 * \return		The array of curve points, which can be rendered in a viewport after correction by \c GeomUtils::appendPointsToCurve.
 				 */
 				 // B-Spline curve definition according to: http://mathworld.wolfram.com/B-Spline.html
-				std::vector<carve::geom::vector<3>> computeRationalBSplineCurveWithKnots(
+				static std::vector<carve::geom::vector<3>> computeRationalBSplineCurveWithKnots(
 					const int& order,
 					const std::vector<double>& knotArray,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
 					const std::vector<double>& weightsData,
 					const uint32_t& numCurvePoints,
-					const double& accuracy) const throw(...)
+					const double& accuracy) throw(...)
 				{
 					// The following parameters corresponds to the parameter t of a curve c(t)
 					double knotStart;
@@ -148,11 +148,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		The B-Spline point at the position t.
 				 */
-				carve::geom::vector<3> computePointOfBSpline(
+				static carve::geom::vector<3> computePointOfBSpline(
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const std::vector<double>& knotArray) const throw(...)
+					const std::vector<double>& knotArray) throw(...)
 				{
 					const size_t numControlPoints = controlPoints.size();
 
@@ -183,12 +183,12 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		The rational-B-Spline point at the position t.
 				 */
-				carve::geom::vector<3> computePointOfRationalBSpline(
+				static carve::geom::vector<3> computePointOfRationalBSpline(
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
 					const std::vector<double>& knotArray,
-					const std::vector<double>& weightsData) const throw(...)
+					const std::vector<double>& weightsData) throw(...)
 				{
 					const size_t numControlPoints = controlPoints.size();
 
@@ -232,11 +232,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		Vector of pairs with curve length and curvature.
 				 */
-				std::vector<std::pair<double, double>> computeCurvatureOfBSplineCurveWithKnots(
+				static std::vector<std::pair<double, double>> computeCurvatureOfBSplineCurveWithKnots(
 					const int& order,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
 					const std::vector<double>& knotArray,
-					const uint32_t& numCurvePoints) const throw(...)
+					const uint32_t& numCurvePoints) throw(...)
 				{
 					const size_t numControlPoints = controlPoints.size();
 					
@@ -306,10 +306,10 @@ namespace OpenInfraPlatform
 				 * \return		Last valid knot value, correspondes to t_end
 				 * \return		Step size of curve parameter t between start and end
 				 */
-				std::tuple<double, double, double> obtainKnotRange(
+				static std::tuple<double, double, double> obtainKnotRange(
 					const uint8_t& order,
 					const std::vector<double>& knotArray,
-					const uint32_t& numCurvePoints) const throw(...)
+					const uint32_t& numCurvePoints) throw(...)
 				{
 					// curve is defined for [t_p;t_m-p], m := number of knots - 1
 					const uint32_t firstIndex = order - 1;
@@ -332,7 +332,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		Length in xy-plane from \c vector.
 				 */
-				double lengthInXyPlane(carve::geom::vector<3> vector) const throw(...)
+				static double lengthInXyPlane(carve::geom::vector<3> vector) throw(...)
 				{
 					return std::sqrt(vector.x*vector.x + vector.y*vector.y);
 				}
@@ -347,7 +347,7 @@ namespace OpenInfraPlatform
 				 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
 				 *			is temporary preset with a default value proportional to the number of knots.
 				 */
-				const double obtainProperties() const throw(...)
+				static const double obtainProperties() throw(...)
 				{
 					// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
 					const double accuracy = 0.0000001;
@@ -368,12 +368,12 @@ namespace OpenInfraPlatform
 				 *
 				 * \return							Vector of evaluated basis functions, vector size is equal to number of control points.
 				 */
-				std::vector<double> computeBSplineBasisFunctions(
+				static std::vector<double> computeBSplineBasisFunctions(
 					const int order, // k: order of basis and polynomial of degree k - 1
 					const double t, // t: arbitrary value on B-Spline curve
 					const uint32_t numControlPoints, // n + 1 control points
 					const std::vector<double>& knotVector // t_i: knot points
-				) const throw(...)
+				) throw(...)
 				{
 					const int degree = order - 1;
 					const uint16_t numBasisFuncs = degree + numControlPoints;
@@ -405,10 +405,10 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		A vector of the basis functions 'order one'
 				 */
-				std::vector<double> obtainBasisFunctionFirstOrder(
+				static std::vector<double> obtainBasisFunctionFirstOrder(
 					const double& t,
 					const uint16_t& numBasisFuncs,
-					const std::vector<double>& knotVector) const throw(...)
+					const std::vector<double>& knotVector) throw(...)
 				{
 					std::vector<double> tempBasisFuncs(numBasisFuncs, 0.0);
 
@@ -435,11 +435,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	  Vector of basis functions of order k
 				 */
-				void obtainBasisFunctionNextOrder(
+				static void obtainBasisFunctionNextOrder(
 					const int& k,
 					const double& t,
 					const std::vector<double>& knotVector,
-					std::vector<double>& tempBasisFuncs) const throw(...)
+					std::vector<double>& tempBasisFuncs) throw(...)
 				{
 					double basisFuncFirst;
 					double basisFuncSecond;
@@ -489,11 +489,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		The vector of first derivative at the position t.
 				 */
-				carve::geom::vector<3> computePointOfDerivativeOne(
+				static carve::geom::vector<3> computePointOfDerivativeOne(
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const std::vector<double>& knotArray)const throw(...)
+					const std::vector<double>& knotArray) throw(...)
 				{
 					// 1) Evaluate basis functions of first derivative at curve point t
 					const std::vector<double> basisFuncs = computeDerivativeOneBasisFunctions(order, t, controlPoints.size(), knotArray);
@@ -528,11 +528,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return							Vector of evaluated first derivative basis functions, vector size is equal to number of control points.
 				 */
-				std::vector<double> computeDerivativeOneBasisFunctions(
+				static std::vector<double> computeDerivativeOneBasisFunctions(
 					const int& order,
 					const double& t,
 					const size_t& numControlPoints,
-					const std::vector<double>& knotArray) const throw(...)
+					const std::vector<double>& knotArray) throw(...)
 				{
 					const uint16_t numBasisFuncs = order - 1 + numControlPoints;
 
@@ -565,8 +565,8 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		A vector of the first derivative basis functions 'order one'
 				 */
-				std::vector<double> obtainBasisFunctionDerivativeFirstOrder(
-					const uint16_t& numBasisFuncs) const throw(...)
+				static std::vector<double> obtainBasisFunctionDerivativeFirstOrder(
+					const uint16_t& numBasisFuncs) throw(...)
 				{
 					return std::vector<double>(numBasisFuncs, 0.0);
 				}
@@ -583,12 +583,12 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	  Vector of first derivative basis functions of order k
 				 */
-				void obtainBasisFunctionDerivativeOneNextOrder(
+				static void obtainBasisFunctionDerivativeOneNextOrder(
 					const int& k,
 					const double& t,
 					const std::vector<double>& knotVector,
 					const std::vector<double>& basisFuncsBSpline,
-					std::vector<double>& basisFuncsDerivativeOne) const throw(...)
+					std::vector<double>& basisFuncsDerivativeOne) throw(...)
 				{
 					double firstSummand;
 					double secondSummand;
@@ -630,11 +630,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return		The vector of second derivative at the position t.
 				 */
-				carve::geom::vector<3> computePointOfDerivativeTwo(
+				static carve::geom::vector<3> computePointOfDerivativeTwo(
 					const int& order,
 					const double& t,
 					const std::vector<carve::geom::vector<3>>& controlPoints,
-					const std::vector<double>& knotArray)const throw(...)
+					const std::vector<double>& knotArray) throw(...)
 				{
 					// 1) Evaluate basis functions of first derivative at curve point t
 					const std::vector<double> basisFuncs = computeDerivativeTwoBasisFunctions(order, t, controlPoints.size(), knotArray);
@@ -669,11 +669,11 @@ namespace OpenInfraPlatform
 				 *
 				 * \return							Vector of evaluated second derivative basis functions, vector size is equal to number of control points.
 				 */
-				std::vector<double> computeDerivativeTwoBasisFunctions(
+				static std::vector<double> computeDerivativeTwoBasisFunctions(
 					const int& order,
 					const double& t,
 					const size_t& numControlPoints,
-					const std::vector<double>& knotArray) const throw(...)
+					const std::vector<double>& knotArray) throw(...)
 				{
 					const uint16_t numBasisFuncs = order - 1 + numControlPoints;
 
@@ -717,12 +717,12 @@ namespace OpenInfraPlatform
 				 *
 				 * \return	  Vector of second derivative basis functions of order k
 				 */
-				void obtainBasisFunctionDerivativeTwoNextOrder(
+				static void obtainBasisFunctionDerivativeTwoNextOrder(
 					const int& k,
 					const double& t,
 					const std::vector<double>& knotVector,
 					const std::vector<double>& basisFuncsDerivativeOne,
-					std::vector<double>& basisFuncsDerivativeTwo) const throw(...)
+					std::vector<double>& basisFuncsDerivativeTwo) throw(...)
 				{
 					if (k == 1)
 					{

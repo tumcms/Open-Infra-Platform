@@ -92,7 +92,7 @@ namespace OpenInfraPlatform
 							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
-								splineUtilities.computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, weightsData, numCurvePoints, accuracy);
+								IfcGeometryConverter::SplineUtilities::computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, weightsData, numCurvePoints, accuracy);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -109,7 +109,7 @@ namespace OpenInfraPlatform
 							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
-								splineUtilities.computeBSplineCurveWithKnots(order, knotArray, controlPoints, numCurvePoints, accuracy);
+								IfcGeometryConverter::SplineUtilities::computeBSplineCurveWithKnots(order, knotArray, controlPoints, numCurvePoints, accuracy);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -318,8 +318,8 @@ namespace OpenInfraPlatform
 								if (i == numCurvePointsU - 1) { tU = knotEndU - accuracy; }
 
 								// 1) Evaluate basis functions at curve point tU and tV
-								splineUtilities.computeBSplineBasisFunctions(orderU, tU, numControlPointsU, knotVectorU, basisFuncsU);
-								splineUtilities.computeBSplineBasisFunctions(orderV, tV, numControlPointsV, knotVectorV, basisFuncsV);
+								IfcGeometryConverter::SplineUtilities::computeBSplineBasisFunctions(orderU, tU, numControlPointsU, knotVectorU, basisFuncsU);
+								IfcGeometryConverter::SplineUtilities::computeBSplineBasisFunctions(orderV, tV, numControlPointsV, knotVectorV, basisFuncsV);
 
 								// 2) Compute exact point on surface
 								carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
@@ -363,8 +363,6 @@ namespace OpenInfraPlatform
 				protected:
 
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
-
-					SplineUtilities splineUtilities;
 
 			}; // end class SplineConverterT
 
