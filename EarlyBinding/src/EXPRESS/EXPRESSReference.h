@@ -152,7 +152,7 @@ public:
 		}
 		else {
 			const std::string err = "Could not find reference with ID=" + std::to_string(refId);
-			throw std::invalid_argument(err);
+			throw std::invalid_argument(err.c_str());
 		}
 		reference.refId = refId;
 		reference.model = model;
