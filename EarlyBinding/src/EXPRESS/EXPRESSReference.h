@@ -151,7 +151,8 @@ public:
 			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 		}
 		else {
-			throw std::invalid_argument("Could not find reference with ID=" + std::to_string(refId));
+			const std::string err = "Could not find reference with ID=" + std::to_string(refId);
+			throw std::invalid_argument(err);
 		}
 		reference.refId = refId;
 		reference.model = model;
