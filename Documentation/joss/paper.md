@@ -57,7 +57,7 @@ The software architecture, features, and functionalities have been changed, adde
 Nowadays, OIP uses the IFC schema and CloudCompare's model as independent internal data models [@Hecht:2019:FBI].
 Major elements from previous developments were already realigned, while some (previously available) functionality is still considered as work-in-progress.
 
-![A PCD model together with an IFC model loaded in OIP.\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
+![A PCD model together with an IFC model loaded in OIP. (PCD model courtesy of Grega Indof, IFC model courtesy of Laurens Oostwegel.)\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
 
 # Statement of Need
 
@@ -97,7 +97,9 @@ The development of the software has been supported through many projects founded
 - buildingSMART International Ltd.;
 - Federal Ministry for Transport and Digital Infrastructure, Germany (Bundesministerium für Verkehr und digitale Infrastruktur);
 - Federal Highway Research Institute, Germany (Bundesanstalt für Straßenwesen);
-- German research Foundation, Germany (Deutsche Forschungsgesellschaft).
+- German research Foundation, Germany (Deutsche Forschungsgesellschaft);
+- Leonhard Obermeyer Center, Germany;
+- Technical University of Munich, Germany.
 
 We gratefully acknowledge their support.
 
