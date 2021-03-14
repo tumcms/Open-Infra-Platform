@@ -2221,7 +2221,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "} // end if line[0] == '#'");
 	writeLine(file, "} // end for read file");
 	writeLine(file, "if (errors.size() != 0)	{");
-	writeLine(file, "std::string all = "";");
+	writeLine(file, "std::string all = \"\";");
 	writeLine(file, "std::for_each(errors.begin(), errors.end(), [&all](const std::string& el) {all += el + \"\\n\"; });");
 	writeLine(file, "all.pop_back();");
 	writeLine(file, "throw std::exception(all.c_str());");
