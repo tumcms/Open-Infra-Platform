@@ -2192,7 +2192,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for shared(model, lines)");
+	writeLine(file, "td::vector<std::string> errors;");
+	writeLine(file, "#pragma omp parallel for shared(model, lines, errors)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
