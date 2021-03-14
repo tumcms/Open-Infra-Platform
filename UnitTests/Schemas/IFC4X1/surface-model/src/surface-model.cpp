@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 #include <fstream>
 
-#include <VisualTest.h>
+#include <IfcVisualTest.h>
 
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
@@ -28,27 +28,27 @@
 
 using namespace testing;
 
-class SurfaceModelTest : public VisualTest {
+class SurfaceModelTest : public IfcVisualTest {
 	protected:
 
 	// Test standard values
 	buw::Image4b _background = buw::Image4b(0, 0);
 
 	virtual void SetUp() override {
-		VisualTest::SetUp();
+                IfcVisualTest::SetUp();
 
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
 		model = importer->collectData(express_model);
 
-		_background = renderer->captureImage();
-		renderer->setModel(model);
+		_background = rendererIfc->captureImage();
+		rendererIfc->setModel(model);
 	}
 
 	virtual void TearDown() override {
 		express_model.reset();
-		VisualTest::TearDown();
+                IfcVisualTest::TearDown();
 	}
 
 	virtual std::string TestName() const { return "surface-model"; }
@@ -94,22 +94,22 @@ TEST_F(SurfaceModelTest, PlaneSurfaceViews)
 	const auto expected_back = buw::loadImage4b(dataPath("surface-model_back.png").string());
 	
 	// Act (Front)
-	renderer->setViewDirection(buw::eViewDirection::Front);
+	rendererIfc->setViewDirection(buw::eViewDirection::Front);
 	buw::Image4b image_front = CaptureImage();
 	// Act (Top)
-	renderer->setViewDirection(buw::eViewDirection::Top);
+	rendererIfc->setViewDirection(buw::eViewDirection::Top);
 	buw::Image4b image_top = CaptureImage();
 	// Act (Bottom)
-	renderer->setViewDirection(buw::eViewDirection::Bottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::Bottom);
 	buw::Image4b image_bottom = CaptureImage();
 	// Act (Left)
-	renderer->setViewDirection(buw::eViewDirection::Left);
+	rendererIfc->setViewDirection(buw::eViewDirection::Left);
 	buw::Image4b image_left = CaptureImage();
 	// Act (Right)
-	renderer->setViewDirection(buw::eViewDirection::Right);
+	rendererIfc->setViewDirection(buw::eViewDirection::Right);
 	buw::Image4b image_right = CaptureImage();
 	// Act (Back)
-	renderer->setViewDirection(buw::eViewDirection::Back);
+	rendererIfc->setViewDirection(buw::eViewDirection::Back);
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
@@ -144,28 +144,28 @@ TEST_F(SurfaceModelTest, VertexViews)
 	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("surface-model_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
-	renderer->setViewDirection(buw::eViewDirection::FrontLeftBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::FrontLeftBottom);
 	buw::Image4b image_front_left_bottom = CaptureImage();
 	// Act (FrontRightBottom)
-	renderer->setViewDirection(buw::eViewDirection::FrontRightBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::FrontRightBottom);
 	buw::Image4b image_front_right_bottom = CaptureImage();
 	// Act (TopLeftFront)
-	renderer->setViewDirection(buw::eViewDirection::TopLeftFront);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftFront);
 	buw::Image4b image_top_left_front = CaptureImage();
 	// Act (TopFrontRight)
-	renderer->setViewDirection(buw::eViewDirection::TopFrontRight);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopFrontRight);
 	buw::Image4b image_top_front_right = CaptureImage();
 	// Act (TopLeftBack)
-	renderer->setViewDirection(buw::eViewDirection::TopLeftBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftBack);
 	buw::Image4b image_top_left_back = CaptureImage();
 	// Act (TopRightBack)
-	renderer->setViewDirection(buw::eViewDirection::TopRightBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::TopRightBack);
 	buw::Image4b image_top_right_back = CaptureImage();
 	// Act (BackLeftBottom)
-	renderer->setViewDirection(buw::eViewDirection::BackLeftBottom);
+	rendererIfc->setViewDirection(buw::eViewDirection::BackLeftBottom);
 	buw::Image4b image_back_left_bottom = CaptureImage();
 	// Act (RightBottomBack)
-	renderer->setViewDirection(buw::eViewDirection::RightBottomBack);
+	rendererIfc->setViewDirection(buw::eViewDirection::RightBottomBack);
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -75,6 +75,7 @@ namespace OpenInfraPlatform
 				std::mutex											geometryMutex_;
 
 				std::string			                filename_;
+				oip::GeorefMetadata					georefMeta_;
 
 			public:
 				void reset();
@@ -99,6 +100,11 @@ namespace OpenInfraPlatform
 				void setFilename(const std::string& filename) {
 					filename_ = filename;
 				}
+
+				void setGeoref(const oip::GeorefMetadata& georefMeta) {
+					georefMeta_ = georefMeta;
+				}
+
 
 			};
 

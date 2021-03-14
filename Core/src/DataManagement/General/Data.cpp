@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -204,14 +204,15 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
-	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
+	if (buw::PointCloud::GetSupportedExtensions().contains(extension)
+		|| extension.toUpper() == "LAS" /*gets handled differently*/) {
 		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
 		addModel(pointCloud);
 		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
-		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << ".";
+		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << "las.";
 	}
 #endif
 
@@ -296,7 +297,7 @@ const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
-	return "2020";
+	return "2021";
 }
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()

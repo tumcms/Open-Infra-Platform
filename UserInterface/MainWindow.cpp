@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -486,6 +486,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 2.  - source : filepath
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
 
 				// 1. filename
 				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
@@ -500,7 +502,38 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
 				addBBox(itemModel, model->getExtent());
-				
+
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
+				auto itemGeoref = new QTreeWidgetItem(itemModel);
+				itemGeoref->setText(0, "GeoRef");
+				try
+				{
+					if(    model->getGeorefMetadata().codeEPSG != ""
+						|| model->getGeorefMetadata().WKT != "" )
+					{
+						// first, get the EPSG code
+						if (model->getGeorefMetadata().codeEPSG != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().codeEPSG));
+						if (model->getGeorefMetadata().WKT != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().WKT));
+						for (auto& el : model->getGeorefMetadata().data)
+						{
+							auto item = new QTreeWidgetItem(itemGeoref);
+							item->setText(0, QString::fromStdString(el.first));
+							item->setText(1, QString::fromStdString(el.second));
+						}
+					}
+					else {
+						itemGeoref->setText(1, "unknown");
+					}
+				}
+				catch (...)
+				{
+					itemGeoref->setText(1, "unknown");
+					// do nothing
+				}
+
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -608,9 +641,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionClearMenu_triggered(
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	QString head, desc;
 
-	head = tr("<h2><b>TUM Open Infra Platform 2020</b><br/></h2>");
+	head = tr("<h2><b>TUM Open Infra Platform 2021</b><br/></h2>");
 
-	const QString copyright(tr("Copyright &copy; 2020"));
+	const QString copyright(tr("Copyright &copy; 2021"));
 
 	desc = QString(
 	         "Version %2<br/>%1<br/>Technische Universit&auml;t M&uuml;nchen<br/>"
@@ -621,7 +654,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	         "color=\"#48B7E7\">https://github.com/tumcms/Open-Infra-Platform</font></a><br/><br/>")
 	         .arg(copyright, updater->installedVersion());
 
-	QMessageBox::about(this, tr("About TUM Open Infra Platform 2020"), head + desc);
+	QMessageBox::about(this, tr("About TUM Open Infra Platform 2021"), head + desc);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING

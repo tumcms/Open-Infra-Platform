@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 
 #include <fstream>
 
-#include <VisualTest.h>
+#include <IfcVisualTest.h>
 
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
@@ -29,14 +29,14 @@
 
 using namespace testing;
 
-class SSHRectangleVarTest : public VisualTest {
+class SSHRectangleVarTest : public IfcVisualTest {
 	protected:
 
 	// Test standard values
 	buw::Image4b _background = buw::Image4b(0, 0);
 
 	virtual void SetUp() override {
-		VisualTest::SetUp();
+                IfcVisualTest::SetUp();
 
 		express_model = OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader::FromFile(filename.string()); 
 
@@ -50,7 +50,7 @@ class SSHRectangleVarTest : public VisualTest {
 
 	virtual void TearDown() override {
 		express_model.reset();
-		VisualTest::TearDown();
+                IfcVisualTest::TearDown();
 	}
 
 	virtual std::string TestName() const { return "SSH-Rectangle_Var"; }

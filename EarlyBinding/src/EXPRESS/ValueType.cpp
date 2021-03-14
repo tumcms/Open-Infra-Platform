@@ -1,6 +1,6 @@
 /*
     This file is part of Expresso, a simple early binding generator for EXPRESS.
-	Copyright (c) 2016 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
     BlueFramework is free software; you can redistribute it and/or modify
