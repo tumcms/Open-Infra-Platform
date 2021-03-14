@@ -461,7 +461,7 @@ namespace OpenInfraPlatform
 						}
 
 						std::vector<double> basisFuncs;
-						basisFuncs.reserve(numControlPoints);
+						basisFuncs.resize(numControlPoints);
 						const uint32_t numBasis = numControlPoints;
 						for (size_t j = 0; j < numBasis; ++j) {
 							basisFuncs[j] = tempBasisFuncs[j];

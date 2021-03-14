@@ -665,6 +665,9 @@ namespace OpenInfraPlatform
 						solidModel.template as<typename IfcEntityTypesT::IfcSweptAreaSolid>();
 					// Get swept area and position (attributes 1-2). 
 					oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> swept_area = swept_area_solid->SweptArea;
+					// swept area
+					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profile_converter = profileCache->getProfileConverter(swept_area);
+					const std::vector<std::vector<carve::geom::vector<2> > >& profile_coords = profile_converter->getCoordinates();
 
 					carve::math::Matrix swept_area_pos(pos);	// check if local coordinate system is specified for extrusion
 					if (swept_area_solid->Position)
@@ -684,24 +687,104 @@ namespace OpenInfraPlatform
 						// TO DO: implement
 					}
 
-					/*
-					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
-					std::shared_ptr<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>(swept_area_solid);
-					if (fixed_ref_swept_area_solid) {
-						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
-						//std::shared_ptr<typename IfcEntityTypesT::IfcCurve> directrix =
-						//	fixed_ref_swept_area_solid->Directrix.lock();	// TO DO: formal proposition: if no StartParam or EndParam, Directrix has to be a bounded or closed curve. 
-						double start_param = fixed_ref_swept_area_solid->StartParam;	// TO DO: optional
-						double end_param = fixed_ref_swept_area_solid->EndParam;		// TO DO: optional
-						//std::shared_ptr<typename IfcEntityTypesT::IfcDirection> fixed_ref =
-						//	fixed_ref_swept_area_solid->FixedReference.lock();
 
-						// TO DO: implement//
+					// (2/4) IfcFixedReferenceSweptAreaSolid SUBTYPE of IfcSweptAreaSolid
+					if (swept_area_solid.template isOfType<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>())
+					{
+						oip::EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixed_ref_swept_area_solid =
+							swept_area_solid.template as<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>();
+
+						// Get directrix, start parameter, end parameter and fixed reference (attributes 3-6).
+						std::vector<carve::geom::vector<3> > segment_start_points;
+						std::vector<carve::geom::vector<3> > basis_curve_points;
+						curveConverter->convertIfcCurve(
+							fixed_ref_swept_area_solid->Directrix, basis_curve_points, segment_start_points);
+
+						double start_param = fixed_ref_swept_area_solid->StartParam.value_or(0.0);	// TO DO: optional
+						double end_param = fixed_ref_swept_area_solid->EndParam.value_or(1.0);		// TO DO: optional
+
+						carve::geom::vector<3> fixedRef = placementConverter->convertIfcDirection(
+							fixed_ref_swept_area_solid->FixedReference);
+
+						std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
+						itemData->closed_polyhedrons.push_back(polyhedron_data);
+
+						// create vertices
+						size_t num_segments = basis_curve_points.size();
+						for (size_t i = 0; i < num_segments; ++i)
+						{
+							size_t
+								prev = (i == 0 ? 0 : i - 1),
+								next = std::min<size_t>(i + 1, num_segments - 1);
+
+							carve::geom::vector<3> tangent = basis_curve_points[next] - basis_curve_points[prev];
+
+							carve::geom::vector<3> local_z = tangent;
+							carve::geom::vector<3> local_y = carve::geom::cross(local_z, fixedRef);
+							carve::geom::vector<3> local_x = carve::geom::cross(local_y, local_z);
+
+							local_x.normalize();
+							local_y.normalize();
+							local_z.normalize();
+
+							carve::math::Matrix profileLocalPos(
+								local_x.x, local_y.x, local_z.x, basis_curve_points[i].x,
+								local_x.y, local_y.y, local_z.y, basis_curve_points[i].y,
+								local_x.z, local_y.z, local_z.z, basis_curve_points[i].z,
+								0., 0., 0., 1.);
+							
+							for (const std::vector<carve::geom::vector<2> >& loop : profile_coords )
+							{
+								for (const carve::geom::vector<2>& point : loop)
+								{
+									polyhedron_data->addVertex(pos * profileLocalPos * carve::geom::VECTOR(point.x, point.y, 0.));
+								}
+							}
+						}
+						
+						// front cap
+						std::vector<int> front_face_loop;
+						int num_polygon_points = 0;
+						for (int j = 0; j < profile_coords.size(); ++j)
+						{
+							const std::vector<carve::geom::vector<2> >& loop = profile_coords[j];
+
+							for (int k = 0; k < loop.size(); ++k)
+							{
+								front_face_loop.push_back(j*loop.size() + k);
+								++num_polygon_points;
+							}
+						}
+						polyhedron_data->addFace(front_face_loop.rbegin(), front_face_loop.rend());
+
+						// end cap
+						std::vector<int> end_face_loop;
+						const int end_face_begin = (num_segments-1) * num_polygon_points;
+						for (int j = 0; j < num_polygon_points; ++j)
+						{
+							end_face_loop.push_back(end_face_begin + j);
+						}
+						polyhedron_data->addFace(end_face_loop.begin(), end_face_loop.end());
+
+						// faces of revolved shape
+						for (int i = 0; i < num_polygon_points - 1; ++i)
+						{
+							int i_offset_next = i + num_polygon_points;
+							for (int j = 0; j < num_segments-1; ++j)
+							{
+								int j_offset = j * num_polygon_points;
+								polyhedron_data->addFace(j_offset + i, j_offset + i + 1, j_offset + 1 + i_offset_next, j_offset + i_offset_next);
+							}
+						}
+
+						for (int j = 0; j < num_segments-1; ++j)
+						{
+							int j_offset = j * num_polygon_points;
+							polyhedron_data->addFace(j_offset + num_polygon_points - 1, j_offset, j_offset + num_polygon_points, j_offset + num_polygon_points + num_polygon_points - 1);
+						}
 
 						return;
 					}
-					*/
 
 					// (3/4) IfcRevolvedAreaSolid SUBTYPE of IfcSweptAreaSolid
 					if (swept_area_solid.template isOfType<typename IfcEntityTypesT::IfcRevolvedAreaSolid>())
