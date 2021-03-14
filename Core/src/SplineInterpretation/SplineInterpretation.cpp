@@ -32,6 +32,10 @@ using OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretationElement
 #include "IfcGeometryConverter/SplineUtilities.h"
 #include "BlueFramework/Core/Diagnostics/log.h"
 
+#define NOMINMAX
+#include <Windows.h>
+
+
 // CONSTRUCTOR
 OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::SplineInterpretation()
 {}
@@ -868,10 +872,35 @@ carve::geom::vector<3> OpenInfraPlatform::Core::SplineInterpretation::SplineInte
 	return carve::geom::VECTOR(cos(direction), sin(direction), 0.0);
 }
 
-void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true)
+void OpenInfraPlatform::Core::SplineInterpretation::SplineInterpretation::printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(false)
 {
 	using std::cout;
 	using std::endl;
+
+	// --- resize the console screen buffer (add more lines) ---
+	// according to http://www.cplusplus.com/forum/windows/121444/#msg661553
+	// get a handle to the current console window
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (h == INVALID_HANDLE_VALUE) {
+		throw std::runtime_error("Unable to get stdout handle.");
+	}
+
+	// get the current buffer information, especially its size
+	CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+	if (!GetConsoleScreenBufferInfo(h, &bufferInfo)) {
+		throw std::runtime_error("Unable to retrieve screen buffer info.");
+	}
+
+	// setup new size; apply it to the console
+	COORD sizeScreenBuffer = { bufferInfo.dwSize.X, elements.size()*8 + 20 }; // width, height
+	//	*8: number of lines per element;   +20: keep a few lines before the print output of elements
+
+	if (!SetConsoleScreenBufferSize(h, sizeScreenBuffer)) {
+		throw std::runtime_error("Unable to resize screen buffer.");
+	}
+
+
+	// --- Create the output ---
 
 	cout << endl;
 

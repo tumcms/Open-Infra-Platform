@@ -6,9 +6,7 @@ However, this unit test is not implemented in a source file until now.
 
 #### How to use this unit test
 
-- Start Open Infra Platform.<br/>
-*NOTE:* You should change the size of the console. Make a right click on it, *properties*, tab *Layout*, 
-region *Screen Buffer Size*, property *Height*. A value of at least 50 (or more) is recommended.
+- Start Open Infra Platform.
 - Choose in the menu *Tools* the option *Convert Stroke to Alignment*.
 - Choose the option *Load*.
 - In the new dialog, navigate into the directory `C:\dev\Open-Infra-Platform\UnitTests\StrokeToAlignment\001 Testsketch ArcClothoidStraight\` 

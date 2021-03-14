@@ -352,7 +352,7 @@ namespace OpenInfraPlatform
 				 *
 				 * \param[in]	elements	Vector of \c SplineInterpretationElement which contains all obtained information about the alignment elements.
 				 */
-				void printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(true);
+				void printElementsInConsoleWindow(const std::vector<SplineInterpretationElement>& elements) const noexcept(false);
 
 
 				/*! \brief Displays the vector of length with curvature in the console window.
