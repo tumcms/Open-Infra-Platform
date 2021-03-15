@@ -92,6 +92,11 @@ public:
 			BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
 			return ifcModel;
 		}
+		catch (const std::invalid_argument& ex)
+		{
+			BLUE_LOG(error) << "Invalid argument exception: " << ex.what();
+			return ifcModel;
+		}
 		catch (...)
 		{
 			BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";

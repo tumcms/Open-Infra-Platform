@@ -104,9 +104,14 @@ public:
 	const std::string getStepParameter() const override;
 	
 	template <class V>
-	bool operator==(const EXPRESSReference<V>& other) const
+	const bool operator==(const EXPRESSReference<V>& other) const
 	{
 		return this->refId == other.getId();
+	}
+	template <class V>
+	const bool operator!=(const EXPRESSReference<V>& other) const
+	{
+		return !operator==<V>(other);
 	}
 
 	T* operator->() { return this->lock().operator->(); }
@@ -146,7 +151,8 @@ public:
 			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 		}
 		else {
-			throw std::invalid_argument("Could not find reference with ID=" + std::to_string(refId));
+			const std::string err = "Could not find reference with ID=" + std::to_string(refId);
+			throw std::invalid_argument(err.c_str());
 		}
 		reference.refId = refId;
 		reference.model = model;

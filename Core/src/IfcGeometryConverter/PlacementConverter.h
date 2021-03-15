@@ -1175,11 +1175,8 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(objectPlacement);
 
 					// Prevent cyclic relative placement
-					// this doesn't work as long as there is no comparisson operator==
-					//if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
-					for (const auto& el : alreadyApplied)
-						if (el->getId() == objectPlacement->getId())
-							throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
+					if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
+						throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
 
 					// Add self to apllied
 					alreadyApplied.push_back(objectPlacement);
