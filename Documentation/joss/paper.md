@@ -48,9 +48,9 @@ Multiple models can be loaded at once and compared between each other (see Figur
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
 
 Additionally, OIP incorporates its own EXPRESS parser,
- that consumes data model specified following @iso1030311 (see Figure \ref{fig:express}).
+ that consumes and evaluates data models (like IFC) specified following the @iso1030311 (see Figure \ref{fig:express}).
 This enables automatic code generation for IFC early-binding library [@Amann:2018:Diss; @Hecht:2019:FBI; @Amann:2018:Programming].
-As such, complete contents of IFC files produced following @iso1030321 can be interpreted and analysed.
+As such, complete contents of IFC files produced following the @iso1030321 can be interpreted and analysed.
 Moreover, type safety is guaranteed at compile time thus reducing the risk for bugs and errors.
 This is achieved by a carefully designed schema-agnostic template library.
 
