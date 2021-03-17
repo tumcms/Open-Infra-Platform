@@ -84,7 +84,7 @@ However, they focus mainly on the stable versions of the IFC standard (like IFC2
  while OIP focuses primarily on the newer developments.
 Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of BlueFramework library.
 
-On the other hand, *ParaView*, *Point Cloud Library* and *CloudCompare* focus on handling PCD [@paraview; @pcl; @cloudcompare].
+On the other hand, *ParaView*, *Point Cloud Library* and *CloudCompare* focus on handling PCD [@paraview; @pcl; @CloudCompare].
 These provide more functionality for PCD analysis than OIP, however cannot handle BIM models.
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
