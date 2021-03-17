@@ -103,8 +103,6 @@ The origins of the software date back to the first projects expanding IFC for in
 There, first implementations of roads' geometric concepts
  and interfacing between multiple standards (like IFC, OKSTRA and LandXML) have been explored (see Figure \ref{fig:road}).
 
-![A perspective view of road geometry on terrain's surface with clearly marked fills.\label{fig:road}](../images/Beta1_5_Windows8_1.png)
-
 Further on, many functionalities were added during the course of these projects:
 
 - support for first experimental IFC schema additions for tunnels [@vilgertshofer:2017:iwcce];
@@ -112,6 +110,8 @@ Further on, many functionalities were added during the course of these projects:
 - support for IFC Programming Language (IFC-PL) [@Amann:2018:Diss];
 - support for linked data approaches [@Beetz:2019:linkeddata];
 - support for IFC4x1, IFC4x2, and IFC4x3 candidate versions of the IFC standard during their development [@Jaud:2020:siBIM].
+
+![A perspective view of road geometry on terrain's surface with clearly marked fills.\label{fig:road}](../images/Beta1_5_Windows8_1.png)
 
 # Acknowledgements
 
