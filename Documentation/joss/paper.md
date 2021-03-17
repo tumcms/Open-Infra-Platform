@@ -71,13 +71,29 @@ Additionally, an interface to other infrastructure data model standards
  like OKSTRA and LandInfra was needed [@Amann:2015:OIP; @Amann:2015:ICCBEI; @okstra; @landinfra].
 OIP fulfils this role by being open source, using CMake as a build system generator to support various platforms,
  and being based on well known libraries (like Qt, Eigen, Carve and Boost).
-
 Additionally, the EXPRESS parser provided proved useful for automatically producing
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
 
+There are similar open source libraries and viewers available out there.
+Note that this is not an exhaustive list -- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
+
+On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus primarily
+ on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @xbim].
+They provide an API to implement against (in various programming languages) together with a viewer. 
+However, they focus mainly on the stable versions of the IFC standard (like IFC2x3 and IFC4),
+ while OIP focuses primarily on the newer developments.
+Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of BlueFramework library.
+
+On the other hand, *ParaView*, *Point Cloud Library* and *CloudCompare* focus on handling PCD [@paraview; @pcl; @cloudcompare].
+These provide more functionality for PCD analysis than OIP, however cannot handle BIM models.
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
-Recently, OIP was selected among many other software solutions as best suitable for the development of a Scan+BIM platform [@Valero:2020:ISARC].
+@Valero:2020:ISARC selected OIP among many other software solutions as best suitable for the development of a Scan+BIM platform.
+
+Recently, Blender received a *BlenderBIM Add-on* and can now support
+ both IFC and PCD models, using IfcOpenShell and ParaView as supporting libraries, respectively [blender].
+The add-on currently supports only IFC4 version, which is a major drawback
+ if one wishes to compare PCD and IFC data of infrastructure objects.
 
 # Research Projects
 
