@@ -70,6 +70,8 @@ OIP fulfils this role by being open source, using CMake as a build system genera
 Additionally, the EXPRESS parser provided proved useful for automatically producing
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
 
+![An overview over the EXPRESS parser's architecture [@Amann:2018:Diss].\label{fig:express}](../images/express_parser.png)
+
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
 Recently, OIP was selected among many other software solutions as best suitable for the development of a Scan+BIM platform [@Valero:2020:ISARC].
