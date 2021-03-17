@@ -64,7 +64,7 @@ Major elements from previous developments were already realigned, while some (pr
 During the development of the IFC standard, a clear need for an independent software
  capable of consuming and producing IFC files according to the newly developed schemas was determined [@Amann:2015:OIP; @Amann:2015:ICCBEI].
 OIP fulfils this role by being open source, using CMake as a build system generator to support various platforms,
- and being based on well known libraries (like Qt, Eigen, and Boost).
+ and being based on well known libraries (like Qt, Eigen, Carve and Boost).
 
 Additionally, the EXPRESS parser provided proved useful for automatically producing
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
