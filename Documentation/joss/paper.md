@@ -75,6 +75,7 @@ Additionally, the EXPRESS parser provided proved useful for automatically produc
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
 
 There are similar open source libraries and viewers available out there.
+For a matter of fact, the geometry handling of IFC content has been taken and improved upon from the versatile *IFC++* library [@ifcplusplus].
 Note that this is not an exhaustive list -- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
 
 On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus primarily
