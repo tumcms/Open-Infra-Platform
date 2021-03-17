@@ -47,9 +47,10 @@ OIP supports reading, visualization, navigating, and handling of:
 Multiple models can be loaded at once and compared between each other (see Figure \ref{fig:ifcpcd}).
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
 
-Additionally, OIP incorporates its own EXPRESS parser, that consumes data model specifications defined following `@iso1030311`.
+Additionally, OIP incorporates its own EXPRESS parser,
+ that consumes data model specified following @iso1030311 (see Figure \ref{fig:express}).
 This enables automatic code generation for IFC early-binding library [@Amann:2018:Diss; @Hecht:2019:FBI; @Amann:2018:Programming].
-As such, complete contents of IFC files produced following `@iso1030321` can be interpreted and analysed.
+As such, complete contents of IFC files produced following @iso1030321 can be interpreted and analysed.
 Moreover, type safety is guaranteed at compile time thus reducing the risk for bugs and errors.
 This is achieved by a carefully designed schema-agnostic template library.
 
@@ -60,6 +61,8 @@ Major elements from previous developments were already realigned, while some (pr
 
 ![A PCD model together with an IFC model loaded in OIP. (PCD model courtesy of Grega Indof, IFC model courtesy of Laurens Oostwegel.)\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
 
+![An overview over the EXPRESS parser's architecture [@Amann:2018:Diss].\label{fig:express}](../images/express_parser.png)
+
 # Statement of Need
 
 During the development of the IFC standard, a clear need for an independent software
@@ -69,8 +72,6 @@ OIP fulfils this role by being open source, using CMake as a build system genera
 
 Additionally, the EXPRESS parser provided proved useful for automatically producing
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
-
-![An overview over the EXPRESS parser's architecture [@Amann:2018:Diss].\label{fig:express}](../images/express_parser.png)
 
 With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or merely comparing PCD and BIM models),
  a tool that supports both PCD and IFC data is a welcomed addition to the research processes.
