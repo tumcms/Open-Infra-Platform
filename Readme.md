@@ -56,3 +56,4 @@ TUM Open Infra Platform uses several software libraries. The corresponding licen
 * raptor2 (http://librdf.org/raptor/) (GPL v2 License) ({root_dir}/Licenses/raptor2.COPYING.txt)
 * libLAS 1.6 (https://liblas.org/) (BSD License) ({root_dir}/Licenses/liblas.LICENSE.txt)
 * Doxygen 1.8.18 (http://doxygen.nl/download.html) (GNU General Public License) ({root_dir}/Licenses/doxygen.license.txt)
+* visit_struct (https://github.com/garbageslam/visit_struct) (Boost Software License) ({root_dir}/Licenses/visit_struct.license.txt)
