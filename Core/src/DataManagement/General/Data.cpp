@@ -245,7 +245,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 
 	if(!completed) {
 		/*If job was cancelled show message box to inform the user and return.*/
-		showError("Import job cancelled. Error message was written to log file.", "Import Error!");
+		const std::string err = OpenInfraPlatform::AsyncJob::getInstance().errors();
+		showError(QString::fromStdString("Import job cancelled. Error(s):\n" + (err.empty() ? "None" : err)), "Import Error!");
 		return;
 	}
 
