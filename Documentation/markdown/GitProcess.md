@@ -43,7 +43,7 @@ Before you can proceed to work with `Git`, there are several steps, which have t
 
 	*HINT:* The link after `git clone` can also be copy-pasted directly from GitHub after forking a repository from:
 
-	![](./fig/OIP_clone_or_download_link.png)
+![](../images/OIP_clone_or_download_link.png)
 
  4. <a name="Remote"></a> To add an additional remote repository, write out in the command line:
 	 > `git remote add tumcms https://github.com/tumcms/Open-Infra-Platform.git `
@@ -63,7 +63,7 @@ Before you can proceed to work with `Git`, there are several steps, which have t
 
 Here you will find description about Git Workflow you need when working with OpenInfraPlatform. 
 
-![](./fig/Git_Workflow.png)
+![](../images/Git_Workflow.png)
 
 ### <a name="Updating"></a> Updating your fork from main repository 
 

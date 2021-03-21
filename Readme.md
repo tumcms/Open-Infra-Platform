@@ -1,12 +1,14 @@
 # TUM Open Infra Platform
 
+[![status](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca/status.svg)](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca)
+
 ## Info
 
 `TUM Open Infra Platform` (OIP in short) is a software for checking and viewing IFC data. 
 It comes with its own `EXPRESS` parser and `C++` classes generator.
 
 
-![Beta1_5_Windows8_1.png](Documentation/Beta1_5_Windows8_1.png)
+![Beta1_5_Windows8_1.png](./Documentation/images/Beta1_5_Windows8_1.png)
 
 ## Documentation
 
@@ -54,3 +56,4 @@ TUM Open Infra Platform uses several software libraries. The corresponding licen
 * raptor2 (http://librdf.org/raptor/) (GPL v2 License) ({root_dir}/Licenses/raptor2.COPYING.txt)
 * libLAS 1.6 (https://liblas.org/) (BSD License) ({root_dir}/Licenses/liblas.LICENSE.txt)
 * Doxygen 1.8.18 (http://doxygen.nl/download.html) (GNU General Public License) ({root_dir}/Licenses/doxygen.license.txt)
+* visit_struct (https://github.com/garbageslam/visit_struct) (Boost Software License) ({root_dir}/Licenses/visit_struct.license.txt)

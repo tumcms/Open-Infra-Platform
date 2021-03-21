@@ -53,7 +53,7 @@ You will need to install:
 		* **Mandatory:** Select *binaries x64 msvc2017*
 		* **Mandatory:** Select *mingw*
 		
-		![](./fig/Qt_Installation_settings.png)
+![](../images/Qt_Installation_settings.png)
 
 *NOTE:* There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
@@ -81,7 +81,7 @@ You will need to install:
     * Click on *skip* to refresh the line.
     * Select binary (*Bin*) package (the left column).
 		
-    ![](./fig/PROJ_Installation_settings.png)
+![](../images/PROJ_Installation_settings.png)
 
     * Finish the installation.
 
@@ -108,7 +108,7 @@ You will need to install:
 	* Select *x64*
 	* Write *host=x64* as optional toolset.
 
-![](./fig/CMake_Installation_settings.png)
+![](../images/CMake_Installation_settings.png)
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, consult [CMake options documentation](./CMakeOptions.md).
 
