@@ -13,7 +13,7 @@ This is always clearly stated as a comment in the source code.
 
 ### Copied source code/ideas
 * IfcPlusPlus (https://github.com/ifcquery/ifcplusplus): Generation of geometry, realizaiton of implementation of Early Bindings for reading/writting STEP files.
-  IfcPlusPlus had the OpenSceneGraph Public License (OSGPL) at that time. Newer version of IfcPlusPlus do now come with
+  IfcPlusPlus had the OpenSceneGraph Public License (OSGPL) at that time. Newer versions of IfcPlusPlus do now come with
   MIT licensce (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt). 
 
 ### Third party dependencies
