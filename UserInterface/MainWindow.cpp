@@ -420,17 +420,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			// x
 			auto itemX = new QTreeWidgetItem(itemVct); 
 			itemX->setText(0, "x"); 
-			itemX->setText(1, QString("%1").arg(vct.x()));
+			itemX->setText(1, QString("%1").arg(vct.x(), 0, 'f'));
 
 			// y
 			auto itemY = new QTreeWidgetItem(itemVct);
 			itemY->setText(0, "y"); 
-			itemY->setText(1, QString("%1").arg(vct.y()));
+			itemY->setText(1, QString("%1").arg(vct.y(), 0, 'f'));
 
 			// z
 			auto itemZ = new QTreeWidgetItem(itemVct);
 			itemZ->setText(0, "z");
-			itemZ->setText(1, QString("%1").arg(vct.z()));
+			itemZ->setText(1, QString("%1").arg(vct.z(), 0, 'f'));
 
 			// expanded per default
 			itemVct->setExpanded(true);

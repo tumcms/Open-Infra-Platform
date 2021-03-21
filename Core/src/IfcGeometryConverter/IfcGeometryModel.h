@@ -59,12 +59,18 @@ namespace OpenInfraPlatform
 				oip::BBox				bb;
 				bool isEmpty() const { return meshDescription.isEmpty() && polylineDescription.isEmpty(); }
 				void reset() { meshDescription.reset(); polylineDescription.reset(); bb.reset(); }
-				void UpdateBBox()
+				void UpdateBBox( const carve::geom::aabb<3>& bbox )
 				{
-					for (const auto& vertex : meshDescription.vertices)
-						bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
-					for (const auto& vertex : polylineDescription.vertices)
-						bb.update(vertex[0], vertex[1], vertex[2]);
+					bb.update(bbox.min());
+					bb.update(bbox.max());
+					//for (const auto& vertex : meshDescription.vertices)
+					//	bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
+					//for (const auto& vertex : polylineDescription.vertices)
+					//	bb.update(vertex[0], vertex[1], vertex[2]);
+				}
+				void UpdateBBox(const carve::geom3d::Vector& pt)
+				{
+					bb.update(pt.x, pt.y, pt.z);
 				}
 			};
 
