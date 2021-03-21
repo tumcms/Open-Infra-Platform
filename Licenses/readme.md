@@ -15,7 +15,7 @@ The corresponding licenses can be found in the Licenses folder distributed with 
 |:---------------------|:-----|:-----------------------|:------------------------------|
 | BlueFramwork a0.0.9 | https://github.com/tumcms/Blue-Framework | GPL v3 License | [license](./BlueFramwork.LICENSE.txt) |
 | boost 1.65.1 | http://www.boost.org/ | Boost Software License | [license](./boost.LICENSE_1_0.txt) |
-| CloudCompare v2.10.3 | http://www.danielgm.net/cc/ | GPL v2 License) on development branch IDP for PCD processing. | [license](./cloudcompare.license.tx)t |
+| CloudCompare v2.10.3 | http://www.danielgm.net/cc/ | GPL v2 License | [license](./cloudcompare.license.txt) |
 | Doxygen 1.8.18 | http://doxygen.nl/download.html | GNU General Public License | [license](./doxygen.license.txt) |
 | Eigen 3.3.7  | http://eigen.tuxfamily.org/ | Mozilla Public License 2 | [license](./Eigen.COPYING.MPL2) |
 | Google Test 1.8.0 | https://github.com/google/googletest | BSD 3-Clause License | [license](./GoogleTest.LICENSE) |
