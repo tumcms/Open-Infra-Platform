@@ -41,12 +41,21 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ## Copyright notes
-TUM Open Infra Platform uses several software libraries. The corresponding licenses can be found in the Licenses folder distributed with this source code:
+
+TUM Open Infra Platform makes use of several software libraries. 
+Besides this, some source code was directly copied from other open-source software libraries or programs.
+This is always clearly stated as a comment in the source code. 
+Additonally, some tools where copied to this repository.
+The corresponding licenses can be found in the Licenses folder distributed with this source code:
+
+### Copied source code/ideas
+* IfcPlusPlus (https://github.com/ifcquery/ifcplusplus) (MIT License) (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt): Generation of geometry, realizaiton of implementation of Early Bindings for reading/writting STEP files
+
+### Third party dependencies
 
 * boost 1.65.1 (http://www.boost.org/) (*Boost Software License*) ({root_dir}/Licenses/boost.LICENSE_1_0.txt)
 * Eigen 3.3.7 (http://eigen.tuxfamily.org/) (*MPL2*) ({root_dir}/Licenses/Eigen.COPYING.MPL2)
 * Google Test 1.8.0 (https://github.com/google/googletest) (*BSD 3-Clause License*) ({root_dir}/Licenses/GoogleTest.LICENSE)
-* IfcPlusPlus (https://github.com/ifcquery/ifcplusplus) (MIT License) (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt)
 * Qt 5.12.1 (https://download.qt.io/archive/qt/) (LGPL version 3) ({root_dir}/Licenses/Qt.LICENSE)
 * BlueFramwork a0.0.2 (https://github.com/tumcms/Blue-Framework) (GPL v3 License) ({root_dir}/Licenses/BlueFramwork.LICENSE.txt)
 * CloudCompare v2.10.3 (http://www.danielgm.net/cc/) (GPL v2 License) on development branch IDP for PCD processing. ({root_dir}/Licenses/cloudcompare.license.txt)
