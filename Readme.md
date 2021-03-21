@@ -25,4 +25,4 @@ Out-of-sync:
 
 ## License
 
-See TUM Open Infra Platform's [license](./LICENSE) and [third party licenses](./Licenses/readme.md).
+See [TUM Open Infra Platform's license](./LICENSE) and [third party licenses](./Licenses/readme.md).
