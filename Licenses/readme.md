@@ -7,7 +7,18 @@ The license can be found [here](../LICENSE).
 
 ## Other libraries
 
-TUM Open Infra Platform uses several software libraries. The table below lists their licenses in alphabetical order.
+TUM Open Infra Platform makes use of several software libraries. 
+Besides this, some source code was directly copied (and modified) from other open-source software libraries or programs.
+This is always clearly stated as a comment in the source code. 
+
+### Copied source code/ideas
+* IfcPlusPlus (https://github.com/ifcquery/ifcplusplus): Generation of geometry, realizaiton of implementation of Early Bindings for reading/writting STEP files.
+  IfcPlusPlus had the OpenSceneGraph Public License (OSGPL) at that time. Newer version of IfcPlusPlus do now come with
+  MIT licensce (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt). 
+
+### Third party dependencies
+
+The table below lists licenses off third-party libraries in alphabetical order.
 
 The corresponding licenses can be found in the Licenses folder distributed with this source code.
 
@@ -19,7 +30,6 @@ The corresponding licenses can be found in the Licenses folder distributed with 
 | Doxygen 1.8.18 | http://doxygen.nl/download.html | GNU General Public License | [license](./doxygen.license.txt) |
 | Eigen 3.3.7  | http://eigen.tuxfamily.org/ | Mozilla Public License 2 | [license](./Eigen.COPYING.MPL2) |
 | Google Test 1.8.0 | https://github.com/google/googletest | BSD 3-Clause License | [license](./GoogleTest.LICENSE) |
-| IfcPlusPlus  | https://github.com/ifcquery/ifcplusplus | MIT License | [license](./IfcPlusPlus.LICENSE.txt) |
 | libLAS 1.6   | https://liblas.org/ | BSD License | [license](./liblas.LICENSE.txt) |
 | qhull        | http://www.qhull.org/ | qhull license | [license](./qhull.COPYING.txt) |
 | Qt 5.12.1    | https://download.qt.io/archive/qt/ | LGPL version 3 | [license](./Qt.LICENSE) |
