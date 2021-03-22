@@ -102,6 +102,16 @@ public:
 				return el.second->transformationMatrix();
 			}
 		}
+
+		// check the parent context if it's a subcontext
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()) 
+		{
+			// call recursively
+			return getContextPlacement(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext.template as<typename IfcEntityTypesT::IfcRepresentationContext>());
+		}
+
 		// otherwise return identity
 		return carve::math::Matrix::IDENT();
 	}
