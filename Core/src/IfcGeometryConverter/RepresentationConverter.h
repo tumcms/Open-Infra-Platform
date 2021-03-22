@@ -122,10 +122,6 @@ namespace OpenInfraPlatform {
 					// END_ENTITY;
 					// **************************************************************************************************************************
 
-					// apply global position (georeferencing)
-					carve::math::Matrix contextPlacement =
-						georeferencingConverter_->getContextPlacement(representation->ContextOfItems);
-
 					// loop over all RepresentationItems
 					for (auto& it_representation_item : representation->Items)
 					{
@@ -136,7 +132,7 @@ namespace OpenInfraPlatform {
 							std::shared_ptr<ItemData> itemData(new ItemData());
 
 							// call the converter
-							convertIfcRepresentationItem(it_representation_item, contextPlacement * objectPlacement, itemData);
+							convertIfcRepresentationItem(it_representation_item, objectPlacement, itemData);
 
 							// only add if no exception was thrown
 							inputData->vec_item_data.push_back(itemData);
