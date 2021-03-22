@@ -12,9 +12,14 @@ Besides this, some source code was directly copied (and modified) from other ope
 This is always clearly stated as a comment in the source code. 
 
 ### Copied source code/ideas
-* IfcPlusPlus (https://github.com/ifcquery/ifcplusplus): Generation of geometry, realizaiton of implementation of Early Bindings for reading/writting STEP files.
-  IfcPlusPlus had the OpenSceneGraph Public License (OSGPL) at that time. Newer versions of IfcPlusPlus do now come with
-  MIT licensce (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt). 
+
+**IfcPlusPlus** (https://github.com/ifcquery/ifcplusplus): 
+
+- generation of geometry (using `carve` library), 
+- realization of implementation of Early Bindings for reading/writing STEP files.
+
+IfcPlusPlus had the OpenSceneGraph Public License (OSGPL) at time of copying. 
+Newer versions of IfcPlusPlus now come with MIT license (https://github.com/ifcquery/ifcplusplus/blob/master/LICENSE.txt). 
 
 ### Third party dependencies
 
