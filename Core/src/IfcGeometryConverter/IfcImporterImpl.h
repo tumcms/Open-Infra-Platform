@@ -97,8 +97,8 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 				BLUE_LOG(trace) << "Processing " << rep->getErrorLog();
 #endif
 				// apply global position (georeferencing given by the context of the representation)
-				carve::math::Matrix contextPlacement =
-					georeferencingConverter_->getContextPlacement(rep->ContextOfItems);
+				const carve::math::Matrix contextPlacement =
+					repConverter->getContextPlacement(rep->ContextOfItems);
 
 				// convert
 				repConverter->convertIfcRepresentation(rep, contextPlacement * productPlacement, productShape);
