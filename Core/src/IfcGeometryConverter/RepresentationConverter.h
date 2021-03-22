@@ -96,6 +96,7 @@ namespace OpenInfraPlatform {
 
 				/*! Get the blobal placement of the context
 				* 
+				* \param[in] context The \c IfcRepresentationContext context to resolve.
 				* \return The placement matrix - all coordinates should be left-multiplied.
 				*/
 				const carve::math::Matrix getContextPlacement(
