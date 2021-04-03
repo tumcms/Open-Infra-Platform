@@ -201,9 +201,8 @@ void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
 		}
 
 		// simplify geometry of all meshsets
-		for (auto& meshset : itemData->meshsets) {
-			repConverter->getSolidConverter()->simplifyMesh(meshset);
-		}
+		itemData->simplifyMeshes();
+
 		// polylines are handled by rendering engine
 	}
 }
