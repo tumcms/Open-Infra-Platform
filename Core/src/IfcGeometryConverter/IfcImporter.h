@@ -63,11 +63,11 @@ public:
 	 * This is the main interpreting function. 
 	 *
 	 * \param[in] model The IFC content.
-	 * \return A pointer to an \c IfcModel. Could be empty, though!
+	 * \return An array of pointers to an \c IfcModel. Could be empty, though!
 	 */
-	std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
+	std::vector<std::shared_ptr<IfcModel>> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 	{
-		auto ifcModel = std::make_shared<IfcModel>();
+		std::vector<std::shared_ptr<IfcModel>> models;
 		try
 		{
 			// set the default units
@@ -75,34 +75,47 @@ public:
 
 			// get the georeferencingmetadata from the file
 			georefConverter->init(expressModel);
-			ifcModel->setGeoref(georefConverter->getGeorefMetadata());
 
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
-				return ifcModel;
+				return models;
 
-			auto converter = ConverterBuwT<IfcEntityTypesT>();
-			if (!converter.createGeometryModel(ifcModel, shapeInputData))
-				return ifcModel;
+			// loop through all georeferencing
+			// produce a separate IfcModel for each
+			for (const auto& georef : georefConverter->getGeorefMetadata())
+			{
+				auto ifcModel = createGeometryModel(georef, shapeInputData);
+				if( !ifcModel->isEmpty() )
+					models.push_back(ifcModel);
+			}
 
-			return ifcModel;
+			// some models do not have georefencing assigned
+			// or if nothing got translated - try with the full data set
+			if (models.empty())
+			{
+				auto ifcModel = createGeometryModel(nullptr, shapeInputData);
+				if (!ifcModel->isEmpty())
+					models.push_back(ifcModel);
+			}
+
+			return models;
 		}
 		catch (const oip::InconsistentModellingException& ex)
 		{
 			BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
-			return ifcModel;
+			return models;
 		}
 		catch (const std::invalid_argument& ex)
 		{
 			BLUE_LOG(error) << "Invalid argument exception: " << ex.what();
-			return ifcModel;
+			return models;
 		}
 		catch (...)
 		{
 			BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
-			return ifcModel;
+			return models;
 		}
-		return ifcModel;
+		return models;
 	}
 
 private:
@@ -133,9 +146,8 @@ private:
 						BLUE_LOG(trace) << "Converting " << product->getErrorLog();
 						#endif
 						// create new shape input data for product
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
-						productShape->ifc_product = product;
-						shapeInputData.push_back( productShape );
+						const auto& productShape = convertIfcProduct(product);
+						std::copy(productShape.begin(), productShape.end(), std::back_inserter(shapeInputData) );
 					}
 				}
 			}
@@ -156,9 +168,9 @@ private:
 	 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
 	 * 
 	 * \param[in] product The product to be interpreted.
-	 * \return A pointer to shape data.
+	 * \return An array of pointers to shape data.
 	 */
-	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> convertIfcProduct(
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> convertIfcProduct(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product) const;
 				
 	/**

@@ -234,6 +234,14 @@ public:
 		std::copy(other->polylines.begin(),                  other->polylines.end(),                  std::back_inserter(this->polylines));
 		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
+
+	bool empty() const { 
+		return closed_polyhedrons.empty()
+			&& open_polyhedrons.empty()
+			&& open_or_closed_polyhedrons.empty()
+			&& polylines.empty();
+	}
+
 };
 
 template<
@@ -241,7 +249,21 @@ template<
 >
 class ShapeInputDataT {
 public:
-	ShapeInputDataT()
+	ShapeInputDataT(
+		oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>	product,
+		oip::EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation> rep,
+		oip::EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext> cont
+	) :
+		ifc_product(product),
+		representation(rep),
+		context(cont)
+	{
+	}
+
+	ShapeInputDataT(
+		oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>	product
+	) :
+		ifc_product(product)
 	{
 	}
 
@@ -249,8 +271,24 @@ public:
 	{
 	}
 
+	//! Is there data present for this product?
+	bool empty() const { 
+		for (const auto& item : vec_item_data)
+			if (item.empty())
+				return true;
+		return false;
+	}
+
+	std::vector<std::shared_ptr<ItemData>> getData() const { return vec_item_data; }
+	void addData(const std::shared_ptr<ItemData>& itemData) { return vec_item_data.push_back(itemData); }
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct> getProduct() const { return ifc_product; }
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation> getRepresentation() const { return representation; }
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext> getContext() const { return context; }
+
+private:
 	oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>			ifc_product;
 	oip::EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>	representation;
+	oip::EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>	context;
 	std::vector<std::shared_ptr<ItemData>>								vec_item_data;
 };
 

@@ -103,7 +103,14 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
 				) const noexcept(false)
 				{
-					return georeferencingConverter_->getContextPlacement(context);
+					if (context.expired())
+						throw oip::ReferenceExpiredException(context);
+
+					if (!context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationContext>())
+						throw oip::UnhandledException(context);
+					
+					return georeferencingConverter_->getContextPlacement(
+						context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationContext>());
 				}
 
 				/*! \brief Converts \c IfcRepresentation to meshes and polylines.
@@ -686,14 +693,26 @@ namespace OpenInfraPlatform {
 								placementAlreadyApplied);
 						}
 
-						auto representation = ifcElement->Representation.get();
+						auto representation = opening->Representation.get();
 						for (auto rep : representation->Representations)
 						{
-							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(new ShapeInputDataT<IfcEntityTypesT>());					
-							opening_representation_data->representation = rep;
+							if (!rep->ContextOfItems.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationContext>())
+								// ignore
+								continue;
+
+							// apply global position (georeferencing given by the context of the representation)
+							const carve::math::Matrix contextPlacement =
+								getContextPlacement(rep->ContextOfItems);
+
+							// the return value
+							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> opening_representation_data(
+								new ShapeInputDataT<IfcEntityTypesT>(
+									opening.as<typename IfcEntityTypesT::IfcProduct>(),
+									rep, rep->ContextOfItems.template as<typename IfcEntityTypesT::IfcGeometricRepresentationContext>()));
 					
 							// TODO: Representation caching, one element could be used for several openings
-							convertIfcRepresentation(rep, opening_placement_matrix,
+							convertIfcRepresentation(rep, 
+								contextPlacement*opening_placement_matrix,
 								opening_representation_data);					
 					
 							vecOpeningData.push_back(opening_representation_data);
@@ -714,8 +733,7 @@ namespace OpenInfraPlatform {
 					const int product_id = ifcElement->getId();
 
 					// now go through all meshsets of the item
-					for(int i_product_meshset = 0; i_product_meshset < itemData->meshsets.size(); ++i_product_meshset) {
-						std::shared_ptr<carve::mesh::MeshSet<3>>& product_meshset = itemData->meshsets[i_product_meshset];
+					for(std::shared_ptr<carve::mesh::MeshSet<3>>& product_meshset : itemData->meshsets) {
 						std::stringstream strs_meshset_err;
 
 						bool product_meshset_valid_for_csg = GeomUtils::checkMeshSet(product_meshset.get(), strs_meshset_err, product_id);
@@ -723,23 +741,16 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 
-						for(int i_opening = 0; i_opening < vecOpeningData.size(); ++i_opening) {
-							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& opening_representation_data = vecOpeningData[i_opening];
+						for(std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& opening_representation_data : vecOpeningData) {
 							int representation_id = -1;
-							if(opening_representation_data->representation) {
-								representation_id = opening_representation_data->representation->getId();
+							if(opening_representation_data->getRepresentation()) {
+								representation_id = opening_representation_data->getRepresentation()->getId();
 							}
 
-							std::vector<std::shared_ptr<ItemData>>& vec_opening_items = opening_representation_data->vec_item_data;
-
-							for(int i_item = 0; i_item < vec_opening_items.size(); ++i_item) {
-								std::shared_ptr<ItemData>& opening_item_data = vec_opening_items[i_item];
+							for(std::shared_ptr<ItemData>& opening_item_data : opening_representation_data->getData()) {
 								opening_item_data->createMeshSetsFromClosedPolyhedrons();
-
-								std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>::iterator it_opening_meshsets = opening_item_data->meshsets.begin();
-
-								for(; it_opening_meshsets != opening_item_data->meshsets.end(); ++it_opening_meshsets) {
-									std::shared_ptr<carve::mesh::MeshSet<3>> opening_meshset = (*it_opening_meshsets);
+								
+								for(std::shared_ptr<carve::mesh::MeshSet<3>> opening_meshset : opening_item_data->meshsets) {
 
 									// try to cut out the opening elements
 									// due to rounding errors carve is not always capable of finding a solution

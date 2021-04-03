@@ -327,13 +327,13 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)
 					{
 						for(const auto& shapeData : tasks) {
-							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product = shapeData->ifc_product;
+							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product = shapeData->getProduct();
 							//					std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create triangles and polylines for entity " << product->classname() << " #" << product->getId() << std::endl;
 
 							std::shared_ptr<GeometryDescription> geometry = std::make_shared<GeometryDescription>();
 							geometry->reset();
 
-							for(const auto& itemData : shapeData->vec_item_data) {
+							for(const auto& itemData : shapeData->getData()) {
 								// data for triangles
 								for(const auto& meshset : itemData->meshsets) {
 									ConverterBuwT<IfcEntityTypesT>::insertMeshSetIntoBuffers(product, meshset.get(),
@@ -352,7 +352,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 								continue;
 
 							// update the BBox
-							for (const auto& itemData : shapeData->vec_item_data) {
+							for (const auto& itemData : shapeData->getData()) {
 								for (const auto& meshset : itemData->meshsets) {
 									geometry->UpdateBBox(meshset->getAABB());
 								}
