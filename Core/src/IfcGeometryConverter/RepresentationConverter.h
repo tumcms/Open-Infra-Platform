@@ -140,14 +140,8 @@ namespace OpenInfraPlatform {
 						// catch UnhandledException
 						try
 						{
-							// the data of the item
-							std::shared_ptr<ItemData> itemData(new ItemData());
-
 							// call the converter
-							convertIfcRepresentationItem(it_representation_item, objectPlacement, itemData);
-
-							// only add if no exception was thrown
-							inputData->vec_item_data.push_back(itemData);
+							convertIfcRepresentationItem(it_representation_item, objectPlacement, inputData);
 						}
 						catch (const oip::UnhandledException& ex)
 						{
@@ -218,12 +212,12 @@ namespace OpenInfraPlatform {
 				 *
 				 * \param[in] reprItem The \c IfcRepresentationItem to be converted.
 				 * \param[in] objectPlacement The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 * \param[out] inputData A pointer to be filled with the relevant data.
 				 */
 				void convertIfcRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationItem>& reprItem,
 					const carve::math::Matrix& objectPlacement,
-					std::shared_ptr<ItemData>& itemData
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
 				) const throw(...)
 				{
 					// *************************************************************************************************************************************************************//
@@ -235,10 +229,17 @@ namespace OpenInfraPlatform {
 					// (1/4) IfcGeometricRepresenationItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationItem>())
 					{
+						// the data of the item
+						std::shared_ptr<ItemData> itemData(new ItemData());
+
 						// convert as IfcGeometricRepresentationItem
 						convertIfcGeometricRepresentationItem(
 							reprItem.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(),
 							objectPlacement, itemData);
+
+						// only add if no exception was thrown and not empty
+						if (!itemData->empty())
+							inputData->addData(itemData);
 						return;
 					}
 
@@ -248,25 +249,39 @@ namespace OpenInfraPlatform {
 						// convert as IfcMappedItem
 						convertIfcMappedItem(
 							reprItem.as<typename IfcEntityTypesT::IfcMappedItem>(),
-							objectPlacement, itemData);
+							objectPlacement, inputData);
 						return;
 					}
 
 					// (3/4) IfcStyledItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcStyledItem>())
 					{
+						// the data of the item
+						std::shared_ptr<ItemData> itemData(new ItemData());
+
 						// convert as IfcStyledItem
 						convertIfcStyledItem(reprItem.as<typename IfcEntityTypesT::IfcStyledItem>(), itemData);
+
+						// only add if no exception was thrown and not empty
+						if (!itemData->empty())
+							inputData->addData(itemData);
 						return;
 					}
 
 					// (4/4) IfcTopologicalRepresentationItem SUBTYPE OF IfcRepresentationItem
 					if (reprItem.isOfType<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>()) 
 					{
+						// the data of the item
+						std::shared_ptr<ItemData> itemData(new ItemData());
+
 						// convert as IfcTopologicalRepresentationItem
 						convertIfcTopologicalRepresentationItem(
 							reprItem.as<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>(),
 							objectPlacement, itemData);
+
+						// only add if no exception was thrown and not empty
+						if (!itemData->empty())
+							inputData->addData(itemData);
 						return;
 					}
 
@@ -407,12 +422,12 @@ namespace OpenInfraPlatform {
 				 *
 				 * \param[in] mapped_item The \c IfcMappedItem to be converted.
 				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 * \param[out] inputData A pointer to be filled with the relevant data.
 				 */
 				void convertIfcMappedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
 					const carve::math::Matrix& objectPlacement,
-					std::shared_ptr<ItemData>& itemData
+					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
 				) const throw(...)
 				{
 					// *********************************************************************************************************************************************************************//
@@ -445,14 +460,7 @@ namespace OpenInfraPlatform {
 					carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
 					// convert the mapped representation
-					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-						= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
 					convertIfcRepresentation(mapped_representation, mapped_pos, inputData);
-
-					// add to the return data
-					std::for_each(inputData->vec_item_data.begin(),
-						inputData->vec_item_data.end(),
-						[&](const std::shared_ptr<ItemData>& data) { itemData->append(data); });
 				}
 
 
