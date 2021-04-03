@@ -54,7 +54,10 @@ public:
 	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
 	std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
 	std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
-	void createMeshSetsFromClosedPolyhedrons();
+	void createMeshSetsFrom(std::vector<std::shared_ptr<carve::input::PolyhedronData>>& polyhedrons);
+	void createMeshSetsFromClosedPolyhedrons() { createMeshSetsFrom(closed_polyhedrons); }
+	void createMeshSetsFromOpenClosedPolyhedrons() { createMeshSetsFrom(open_or_closed_polyhedrons); }
+	void createMeshSetsFromOpenPolyhedrons() { createMeshSetsFrom(open_polyhedrons); }
 	
 	void simplifyMeshes()
 	{

@@ -182,23 +182,10 @@ void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
 		}
 
 		// convert all open polyhedrons to meshsets
-		for (auto& openPoly : itemData->open_polyhedrons) {
-
-			if (openPoly->getVertexCount() < 3) { continue; }
-
-			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
-			itemData->meshsets.push_back(openMeshset);
-		}
+		itemData->createMeshSetsFromOpenPolyhedrons();
 
 		// convert all open or closed polyhedrons to meshsets
-		for (auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
-
-			if (openClosedPoly->getVertexCount() < 3) { continue; }
-
-			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
-				openClosedPoly->createMesh(carve::input::opts()));
-			itemData->meshsets.push_back(openMeshset);
-		}
+		itemData->createMeshSetsFromOpenClosedPolyhedrons();
 
 		// simplify geometry of all meshsets
 		itemData->simplifyMeshes();
