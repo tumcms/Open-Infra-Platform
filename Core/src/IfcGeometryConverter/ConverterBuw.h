@@ -322,43 +322,6 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 						return true;
 					}
 
-					static bool createGeometryModel(buw::ReferenceCounted<IfcModel> ifcGeometryModel,
-						std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
-					{
-						std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: Create geometry model from meshsets for BlueFramework API" << std::endl;
-						//! NOTE (mk): Could be optimized if we omit cache building and just add triangles (with redundant vertices)
-
-						// clear all descriptions
-						ifcGeometryModel->reset();
-
-						// obtain maximum number of threads supported by machine
-						const unsigned int maxNumThreads = std::thread::hardware_concurrency();
-
-						// split up tasks for all threads
-						std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
-						uint32_t counter = 0;
-						for(auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
-							std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
-							tasks[counter % maxNumThreads].push_back(shapeData);
-							counter++;
-						}
-
-						// create threads and start creation job
-						std::vector<std::thread> threads(maxNumThreads);
-						// every thread gets its local triangle/polyline pool
-						for(unsigned int k = 0; k < maxNumThreads; ++k) {
-							threads[k] = std::thread(&ConverterBuwT<IfcEntityTypesT>::createTrianglesJob, tasks[k], k, ifcGeometryModel);
-						}
-
-						// wait for all threads to be finished
-						for(unsigned int l = 0; l < maxNumThreads; ++l) {
-							threads[l].join();
-						}
-
-						std::cout << "Info\t| IfcGeometryConverter.ConverterBuw: IFC model ready to be rendered" << std::endl;
-						return true;
-					}
-
 					// convert mesh and polyline descriptions to triangles/lines for BlueFramework
 					static void createTrianglesJob(const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& tasks,
 						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)

@@ -169,6 +169,46 @@ private:
 	void computeMeshsetsFromPolyhedrons(
 		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
+	std::shared_ptr<IfcModel> createGeometryModel(
+		const std::shared_ptr<oip::GeorefPair<IfcEntityTypesT>>& georef,
+		const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
+	{
+		// clear all descriptions
+		std::shared_ptr<oip::IfcModel> ifcModel = std::make_shared<oip::IfcModel>();
+		if( georef->second )
+			ifcModel->setGeoref(*(georef->second));
+
+		// obtain maximum number of threads supported by machine
+		const unsigned int maxNumThreads = std::thread::hardware_concurrency();
+
+		// split up tasks for all threads
+		std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
+		uint32_t counter = 0;
+		for (auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
+			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
+			// only add if it's the same georef
+			if(georefConverter->isSameContext(georef->first, shapeData->getContext()))
+			{
+				tasks[counter % maxNumThreads].push_back(shapeData);
+				counter++;
+			}
+		}
+
+		// create threads and start creation job
+		std::vector<std::thread> threads(maxNumThreads);
+		// every thread gets its local triangle/polyline pool
+		for (unsigned int k = 0; k < maxNumThreads; ++k) {
+			threads[k] = std::thread(&ConverterBuwT<IfcEntityTypesT>::createTrianglesJob, tasks[k], k, ifcModel);
+		}
+
+		// wait for all threads to be finished
+		for (unsigned int l = 0; l < maxNumThreads; ++l) {
+			threads[l].join();
+		}
+
+		return ifcModel;
+	}
+
 	// the converters
 	std::shared_ptr<GeometrySettings>							geomSettings;
 	std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;
