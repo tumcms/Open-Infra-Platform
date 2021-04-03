@@ -187,12 +187,12 @@ namespace OpenInfraPlatform
 				int																currentJobID_;
 
 			private:
-				// a collection of models that are loaded
+				//! a collection of models that are loaded
 				std::list<std::shared_ptr<oip::IModel>> models_;
 			public:
-				// add a model to the collection
+				//! add a model to the collection
 				void addModel(buw::ReferenceCounted<oip::IModel> model);
-				// get the last model
+				//! get the last loaded model
 				std::shared_ptr<oip::IModel> getLastModel();
 				//! const getter for all models
 				const std::list<std::shared_ptr<oip::IModel>>& getModels() const { return models_; }
