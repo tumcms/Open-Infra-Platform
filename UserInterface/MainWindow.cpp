@@ -488,6 +488,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				//       - min, mid, max : QVector3D
 				// 4.  - GeoRef : georeferencing metadata
 				//       - key - val
+				// 5.  - treeviewer : button (to open)
 
 				// 1. filename
 				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
@@ -532,6 +533,18 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				{
 					itemGeoref->setText(1, "unknown");
 					// do nothing
+				}
+
+				// 5. treeviewer
+				QString filetype = filename.right(3);
+				if (filetype == "ifc")
+				{
+					auto itemIfcTree = new QTreeWidgetItem(itemModel);
+					itemIfcTree->setText(0, "IfcTree");
+
+					QPushButton *openIfcTreeButton = new QPushButton();
+					openIfcTreeButton->setText("Open Ifc Tree Dialog");
+					modelsTreeWidget_->setItemWidget(itemIfcTree, 1, openIfcTreeButton);
 				}
 
 				// expanded per default
