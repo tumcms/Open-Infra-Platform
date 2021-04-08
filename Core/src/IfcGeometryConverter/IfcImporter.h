@@ -75,6 +75,7 @@ public:
 
 			// get the georeferencingmetadata from the file
 			georefConverter->init(expressModel);
+			ifcModel->setGeoref(georefConverter->getGeorefMetadata());
 
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
@@ -89,6 +90,11 @@ public:
 		catch (const oip::InconsistentModellingException& ex)
 		{
 			BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
+			return ifcModel;
+		}
+		catch (const std::invalid_argument& ex)
+		{
+			BLUE_LOG(error) << "Invalid argument exception: " << ex.what();
 			return ifcModel;
 		}
 		catch (...)

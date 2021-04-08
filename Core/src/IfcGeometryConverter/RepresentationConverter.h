@@ -94,6 +94,18 @@ namespace OpenInfraPlatform {
 				{
 				}
 
+				/*! Get the blobal placement of the context
+				* 
+				* \param[in] context The \c IfcRepresentationContext context to resolve.
+				* \return The placement matrix - all coordinates should be left-multiplied.
+				*/
+				const carve::math::Matrix getContextPlacement(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
+				) const noexcept(false)
+				{
+					return georeferencingConverter_->getContextPlacement(context);
+				}
+
 				/*! \brief Converts \c IfcRepresentation to meshes and polylines.
 				*
 				* \param[in] representation The \c IfcRepresentation to be converted.

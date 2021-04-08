@@ -40,7 +40,8 @@ template <
 >
 class GeoreferencingConverterT : public ConverterBaseT<IfcEntityTypesT>
 {
-	typedef std::pair<size_t, std::shared_ptr<oip::GeorefMetadata>> GeorefPair;
+	typedef std::pair<EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>, 
+					  std::shared_ptr<oip::GeorefMetadata>> GeorefPair;
 
 public:
 	//! Constructor
@@ -69,16 +70,50 @@ public:
 		do
 		{
 			// the interpreted data
-			GeorefPair georefMeta = convertGeoref(
+			const GeorefPair georefMeta = convertGeoref(
 				EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>::constructInstance(georef->first, model));
 
 			// add to the parsed map
-			georefMetadata.insert( georefMeta );
+			georefMetadata_.push_back( georefMeta );
 		} 
 		while ((georef = std::find_if(++georef, model->entities.end(), [](auto pair)
 			{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; }
 			)) != model->entities.end());
 
+	}
+
+	oip::GeorefMetadata getGeorefMetadata() const noexcept(false) {
+		if (georefMetadata_.size() < 1)
+			return oip::GeorefMetadata();
+
+		return *(georefMetadata_[0].second);
+	}
+
+
+	carve::math::Matrix getContextPlacement(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
+	) const noexcept(false)
+	{
+		// find the correct pair
+		for (auto& el : georefMetadata_)
+		{
+			if (el.first == context)
+			{
+				return el.second->transformationMatrix();
+			}
+		}
+
+		// check the parent context if it's a subcontext
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()) 
+		{
+			// call recursively
+			return getContextPlacement(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext.template as<typename IfcEntityTypesT::IfcRepresentationContext>());
+		}
+
+		// otherwise return identity
+		return carve::math::Matrix::IDENT();
 	}
 
 private:
@@ -100,7 +135,7 @@ private:
 		// get the CoordinateRereferenceSystem
 		std::shared_ptr<oip::GeorefMetadata> georefMeta = convertCRS(coordOper->TargetCRS);
 		// the used GeometricRepresentationContext->ID
-		size_t geomContextID = 0;
+		EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext> geomContext;
 
 		// get the GeometricContext
 		switch (coordOper->SourceCRS.which())
@@ -111,7 +146,7 @@ private:
 		}
 		case 1: // IfcGeometricRepresentationContext
 		{
-			geomContextID = coordOper->SourceCRS.get<1>()->getId();
+			geomContext = coordOper->SourceCRS.template get<1>();
 			break;
 		}
 		default:
@@ -149,10 +184,13 @@ private:
 			georefMeta->angle = angle;
 
 			if( mapConv->Scale )
-				georefMeta->scale = mapConv->Scale;
+			{
+				georefMeta->scaleX *= mapConv->Scale;
+				georefMeta->scaleY *= mapConv->Scale;
+			}
 		}
 
-		return GeorefPair(geomContextID, georefMeta);
+		return GeorefPair(geomContext, georefMeta);
 	}
 
 	std::shared_ptr<oip::GeorefMetadata> convertCRS(
@@ -190,7 +228,9 @@ private:
 			if (projectedCRS->MapUnit)
 			{
 				double factor = UnitConvert()->convertUnit(projectedCRS->MapUnit);
-				georefMeta->scale = factor;
+				georefMeta->scaleX *= factor;
+				georefMeta->scaleY *= factor;
+				georefMeta->scaleZ *= factor;
 				georefMeta->addDataEntry( "Map Unit Factor to meters", std::to_string(factor) );
 			}
 		}
@@ -199,8 +239,12 @@ private:
 	}
 
 
-	//! georefeferencing metadata (first = ID of GeometricRepresentationContext; second = interpreted GeorefMetadata)
-	std::map<size_t, std::shared_ptr<oip::GeorefMetadata>> georefMetadata;
+	//! georefeferencing metadata (first = pointer to IfcGeometricRepresentationContext; second = interpreted GeorefMetadata)
+	std::vector<GeorefPair
+		//std::pair<
+		//EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>,
+		//std::shared_ptr<oip::GeorefMetadata>>
+	> georefMetadata_;
 
 };
 

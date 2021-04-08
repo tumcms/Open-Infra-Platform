@@ -1,0 +1,36 @@
+Element 1: arc
+   Start Point: x = 353.369; y = 462.918
+   Direction = 0.009 [rad] = 0.536 [deg]
+   Length = 312.473
+   Radius = 400.959      isCCW = true
+   Center: x = 349.619; y = 863.860
+   Angle = 0.779 [rad] = 44.651 [deg]
+
+Element 2: clothoid
+   Start Point: x = 634.065; y = 581.266
+   Direction = 0.789 [rad] = 45.187 [deg]
+   Length = 190.635
+   Clothoid Parameter A = 276.472
+   Radius Start = 400.959      Radius End = -nan(ind)
+   isCCW = true
+
+Element 3: straight
+   Start Point: x = 740.256; y = 731.133
+   Direction = 1.026 [rad] = 58.808 [deg]
+   Length = 454.871
+
+Element 4: clothoid
+   Start Point: x = 975.839; y = 1120.246
+   Direction = 1.026 [rad] = 58.808 [deg]
+   Length = 175.687
+   Clothoid Parameter A = 248.098
+   Radius Start = -nan(ind)      Radius End = 350.354
+   isCCW = false
+
+Element 5: arc
+   Start Point: x = 1079.817; y = 1265.735
+   Direction = 0.776 [rad] = 44.442 [deg]
+   Length = 538.832
+   Radius = 350.354      isCCW = false
+   Center: x = 1325.131; y = 1015.596
+   Angle = 1.538 [rad] = 88.119 [deg]
