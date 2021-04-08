@@ -41,10 +41,6 @@ if(NOT tclap_POPULATED)
 	FetchContent_Populate(tclap)
 endif()
 
-# Create list of possible IFC formats
-#set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2 IFC4X3_ALPHA)
-
-
 
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
