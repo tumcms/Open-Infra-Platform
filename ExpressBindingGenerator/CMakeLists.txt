@@ -52,30 +52,11 @@ macro(add_format format schema active)
 	set(EARLYBINDING_${format} ${format} ${schema})
 	set(SUPPORTED_IFC_FORMATS ${SUPPORTED_IFC_FORMATS} EARLYBINDING_${format})
 	option(EARLYBINDING_WITH_${format} "Build with support for ${format} and generate all required files." ${active})
-	
-	#if(${active})
-	#	set(IFC_FORMATS ${IFC_FORMATS} ${format})
-	#	set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
-	#	
-	#	# Custom target that generates the early binding library files.
-	#	add_custom_target(Commands.GenerateEarlyBinding.${format}
-	#		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	#		COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}
-	#
-	#		COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#	)
-	#
-	#	add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
-	#	set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
-	#endif()
 endmacro()
 
 add_format(IFC2X3 			IFC2X3_TC1 		OFF)
 add_format(IFC4 			IFC4_ADD1 		OFF)
-add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		OFF)
-add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
-add_format(IFC4X2			IFC4x2			OFF)
 add_format(IFC4X3_RC1	 	IFC4X3_RC1		OFF)
 add_format(IFC4X3_RC2	 	IFC4X3_RC2		OFF)
 
@@ -116,7 +97,6 @@ bison_target(Parser
 )
 	
 flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
-#flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/ExpressBindingGenerator/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 add_flex_bison_dependency(Scanner Parser)
 
 include_directories(
