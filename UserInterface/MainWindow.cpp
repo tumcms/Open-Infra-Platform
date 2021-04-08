@@ -537,13 +537,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 				// 5. treeviewer
 				QString filetype = filename.right(3);
-				if (filetype == "ifc")
+				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
 				{
 					auto itemIfcTree = new QTreeWidgetItem(itemModel);
 					itemIfcTree->setText(0, "IfcTree");
 
 					QPushButton *openIfcTreeButton = new QPushButton();
+					QTreeWidget *sdsd = new QTreeWidget();
 					openIfcTreeButton->setText("Open Ifc Tree Dialog");
+					QObject::connect(openIfcTreeButton, SIGNAL(clicked()), this, SLOT(on_actionShow_Ifc_Tree_triggered()));
 					modelsTreeWidget_->setItemWidget(itemIfcTree, 1, openIfcTreeButton);
 				}
 
@@ -1803,6 +1805,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_License_and_Cop
 	}
 
 	licenseAndCopyrightInformationDialog_->show();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Ifc_Tree_triggered() {
+	if (ifcTreeDialog_ == nullptr) {
+		ifcTreeDialog_ = new IfcTreeDialog(this);
+	}
+
+	ifcTreeDialog_->show();
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_Folder_triggered() {
