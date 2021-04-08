@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
 //#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
 //#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
+#include "../Core/src/SplineInterpretation/SplineInterpretation.h"
 
 #include "qsimpleupdater.h"
 
@@ -122,6 +123,7 @@ namespace OpenInfraPlatform
 			//void on_actionCreate_Line_Clothoid_Clothoid_Line_triggered();
 			//void on_actionCreate_Line_Clothoid_triggered();
 			//void on_actionCreateClothoid_triggered();
+			void on_actionStroke_To_Alignment_triggered();
 			//void on_actionCurvature_triggered();
 			//void on_actionShow_IFC_tree_triggered();
 			void on_actionExit_triggered();

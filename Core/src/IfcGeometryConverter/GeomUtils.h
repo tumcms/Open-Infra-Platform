@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -97,8 +97,8 @@ namespace OpenInfraPlatform
 					const std::vector<carve::geom::vector<2> >& points_vec,
 					std::vector<carve::geom::vector<3> >& target_vec);
 
-				static void computeInverse(const carve::math::Matrix& matrix_a,
-					carve::math::Matrix& inv);
+				static carve::math::Matrix computeInverse(
+					const carve::math::Matrix& matrix_a);
 
 				static void closestPointOnLine(const carve::geom::vector<3>& point,
 					const carve::geom::vector<3>& line_origin,

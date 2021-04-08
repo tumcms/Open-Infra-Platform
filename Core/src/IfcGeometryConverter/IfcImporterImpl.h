@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2018 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
 	TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -96,7 +96,12 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing " << rep->getErrorLog();
 #endif
-				repConverter->convertIfcRepresentation(rep, productPlacement, productShape);
+				// apply global position (georeferencing given by the context of the representation)
+				const carve::math::Matrix contextPlacement =
+					repConverter->getContextPlacement(rep->ContextOfItems);
+
+				// convert
+				repConverter->convertIfcRepresentation(rep, contextPlacement * productPlacement, productShape);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed " << rep->getErrorLog();
 #endif

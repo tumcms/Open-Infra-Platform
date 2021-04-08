@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -389,7 +389,15 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 								continue;
 
 							// update the BBox
-							geometry->UpdateBBox();
+							for (const auto& itemData : shapeData->vec_item_data) {
+								for (const auto& meshset : itemData->meshsets) {
+									geometry->UpdateBBox(meshset->getAABB());
+								}
+								for (const auto& polyline : itemData->polylines) {
+									for (const auto& pt : polyline->points)
+										geometry->UpdateBBox(pt);
+								}
+							}
 							// add to the model
 							ifcModel->addGeometry(geometry);
 						}

@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2018 Technical University of Munich
+#    Copyright (c) 2021 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -779,7 +779,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_TEWAK "${PROJECT_VERSION_TWEAK}}")
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenInfraPlatform")
-set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
 set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/Data/banner.bmp")
 set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/UserInterface/Resources/icons/icon.ico")
