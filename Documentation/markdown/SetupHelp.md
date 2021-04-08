@@ -73,7 +73,7 @@ You will need to install:
 *NOTE:* CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
 
   * Select local package directory (e.g. `C:\OSGeo4W64\local`).
-  * Select `https://osgeo4w-oslandia.com/` as a download site.
+  * Select `https://download.osgeo.org/` as a download site.
   * Select components to install:
 		
     * Open *Commandline_Utilities*
