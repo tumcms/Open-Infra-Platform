@@ -118,11 +118,19 @@ source_group(ExpressBindingGenerator\\Meta    						FILES ${ExpressBindingGenera
 source_group(ExpressBindingGenerator\\Parser						FILES ${ExpressBindingGenerator_Parser_Source})	
 source_group(ExpressBindingGenerator\\Parser\\Generated				FILES ${FLEX_Scanner_OUTPUTS} ${BISON_Parser_OUTPUTS})	
 
+# add also schema to the solution
+foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
+	list(GET ${standard} 1 schema)
+	set(ExpressBindingGenerator_Data_Schemas ${ExpressBindingGenerator_Data_Schemas} schemas/${schema}.exp)
+endforeach()
+source_group(Schemas  						FILES ${ExpressBindingGenerator_Data_Schemas})	
+
 add_executable(OpenInfraPlatform.ExpressBindingGenerator
 	${ExpressBindingGenerator_Source}
 	${ExpressBindingGenerator_General_Source}
 	${ExpressBindingGenerator_Generator_Source}
 	${ExpressBindingGenerator_Meta_Source}
+	${ExpressBindingGenerator_Data_Schemas}
 	${ExpressBindingGenerator_Parser_Source}
 	${FLEX_Scanner_OUTPUTS} 
 	${BISON_Parser_OUTPUTS}
