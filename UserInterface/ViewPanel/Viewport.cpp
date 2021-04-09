@@ -805,14 +805,20 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 
 	// change in IFC geometry?
     if( changeFlag & ChangeFlag::IfcGeometry ) {
-		auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(data.getLastModel());
-		if( ifcGeometryModel )
+		// there may have been multiple loaded
+		for( auto& model : data.getModels() )
 		{
-			buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect 
-				= buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
-			ifcGeometryEffect->init();
-			ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel);
-			activeEffects_.push_back(ifcGeometryEffect);
+			auto ifcGeometryModel = std::dynamic_pointer_cast<oip::IfcModel>(model);
+			if (ifcGeometryModel)
+			{
+				buw::ReferenceCounted<oip::IfcGeometryEffect> ifcGeometryEffect
+					= buw::makeReferenceCounted<oip::IfcGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+				ifcGeometryEffect->init();
+				ifcGeometryEffect->setIfcGeometryModel(ifcGeometryModel);
+				activeEffects_.push_back(ifcGeometryEffect);
+			}
+			else
+				break; // stop at the first that is not IFC
 		}
     }
 
@@ -855,6 +861,9 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 	// tell all effects what offset we are currently having
 	for (auto& effect : activeEffects_)
 		effect->setOffset(offset);
+
+	// repaint()
+	repaint();
 }
 
 void Viewport::onClear() {
