@@ -980,19 +980,29 @@ namespace OpenInfraPlatform
 				) const noexcept(false)
 				{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 23875633 (Starting IfcClothoid)
 					//throw oip::UnhandledException(clothoid);
 					//check input 
 					if (clothoid.expired())
 						throw oip::ReferenceExpiredException(clothoid);
 					// **************************************************************************************************************************
+<<<<<<< HEAD
 					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
 					//	ENTITY IfcClothoid
 					//		SUBTYPE OF(IfcSpiral);
+=======
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
+					//	ENTITY IfcClothoid
+					//		SUBTYPE OF(IfcCurve);
+>>>>>>> 23875633 (Starting IfcClothoid)
 					//			Position: IfcAxis2Placement;
 					//			ClothoidConstant: IfcLengthMeasure;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					
+<<<<<<< HEAD
 					// Part 1: Get information from IfcClothoid.
 					//1.1 Clothoid position
 					carve::math::Matrix clothoidPositionMatrix = carve::math::Matrix::IDENT();
@@ -1072,10 +1082,15 @@ namespace OpenInfraPlatform
 =======
 					throw oip::UnhandledException(clothoid);
 
+=======
+>>>>>>> 23875633 (Starting IfcClothoid)
 					// Part 1: Get information from IfcClothoid. 
+
+					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(clothoid->Points);
+
 					// Get IfcClothoid attributes: clothoid position and clothoid constant. 
 					//1.1 Clothoid position
-					carve::geom::vector<3> clothoid_origin = convertIfcAxis2Placement3D(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
+					carve::geom::vector<3> clothoid_origin = convertIfcPointOnCurve(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
 					//1.2 Clothoid Constant use IfcLengthMeasure
 >>>>>>> aeb43baf (Starting implementation for IfcClothoid)
 
