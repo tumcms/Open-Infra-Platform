@@ -878,12 +878,26 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const throw(...)
 				{
-					throw oip::UnhandledException(clothoid);
-
+					//throw oip::UnhandledException(clothoid);
+					//check input 
+					if (clothoid.expired())
+						throw oip::ReferenceExpiredException(clothoid);
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
+					//	ENTITY IfcClothoid
+					//		SUBTYPE OF(IfcCurve);
+					//			Position: IfcAxis2Placement;
+					//			ClothoidConstant: IfcLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					
 					// Part 1: Get information from IfcClothoid. 
+
+					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(clothoid->Points);
+
 					// Get IfcClothoid attributes: clothoid position and clothoid constant. 
 					//1.1 Clothoid position
-					carve::geom::vector<3> clothoid_origin = convertIfcAxis2Placement3D(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
+					carve::geom::vector<3> clothoid_origin = convertIfcPointOnCurve(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
 					//1.2 Clothoid Constant use IfcLengthMeasure
 
 				}
