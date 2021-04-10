@@ -39,7 +39,10 @@ bool OpenInfraPlatform::AsyncJob::updateStatus(float progress, const std::string
 void OpenInfraPlatform::AsyncJob::cancelJob()
 {
 	if (running_)
+	{
 		cancel_ = true;
+		err_ = "Canceled";
+	}
 }
 
 void OpenInfraPlatform::AsyncJob::run()
@@ -48,6 +51,13 @@ void OpenInfraPlatform::AsyncJob::run()
 		running_ = true;
 		job_();
 		running_ = false;
+		Q_EMIT finished();
+	}
+	catch (const std::exception& ex) {
+		/*Catch any occurring exceptions and cancel job.*/
+		running_ = false;
+		cancel_ = true;
+		err_ = ex.what();
 		Q_EMIT finished();
 	}
 	catch(...) {
