@@ -405,10 +405,10 @@ namespace OpenInfraPlatform
 
 				std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
 				itemData->closed_polyhedrons.push_back(body_data);
-				//std::vector<carve::geom::vector<3> > inner_shape_points;  //TO DO: find out if i need inner_shape_points for the CrossSections
+				//std::vector<carve::geom::vector<3> > innerShapePoints;  //TO DO: find out if i need innerShapePoints for the CrossSections
 
 				int num_curve_points = BasisCurvePoints.size();
-				carve::math::Matrix matrix_sweep;
+				carve::math::Matrix matrixSweep;
 
 				// Less than two points is a point
 				if (num_curve_points < 2)
@@ -422,14 +422,12 @@ namespace OpenInfraPlatform
 				for (int i = 0; i < vec_cross_sections.size(); ++i)
 				{
 					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(vec_cross_sections[i]);
-					const std::vector<std::vector<carve::geom::vector<2> > >& profileCoords = profileConverter->getCoordinates();
+					const std::vector<std::vector<carve::geom::vector<2>>>& profileCoords = profileConverter->getCoordinates();
 
 					// Save profile coords in paths
 					std::vector<std::vector<carve::geom::vector<2> > > profileCoords2D;
-					for (int p = 0; p < profileCoords.size(); ++p)
+					for (const auto& profileLoop : profileCoords)
 					{
-						const std::vector<carve::geom::vector<2> >& profileLoop = profileCoords[p];
-								
 						profileCoords2D.push_back(profileLoop);
 					}
 					paths.push_back(profileCoords2D);
@@ -547,7 +545,7 @@ namespace OpenInfraPlatform
 			    while (j < CrossSectionPoints.size()) 
 				{
 
-			      	//if basis_curve_points[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
+			      	//if basisCurvePoints[i]==pointsOnCurve[j] ->save the information of pointsOnCurve
 					if (BasisCurvePoints[i] == CrossSectionPoints[j])
 					{
 						//1. save the information of pointsOnCurve in the new vector
@@ -578,14 +576,14 @@ namespace OpenInfraPlatform
 						++j;
 					}
 
-					//if basis_curve_points[i]!=pointsOnCurve[j] alternate depending on distance
+					//if basisCurvePoints[i]!=pointsOnCurve[j] alternate depending on distance
 					else if (BasisCurvePoints[i] != CrossSectionPoints[j])
 					{
 						// get the distance of the points 
 						double distCrossSectionPositions;
 						double distBasisCurvePoints;
 									
-						//calculate the distance from the point in basis_curve_points to the last element in the joint list
+						//calculate the distance from the point in basisCurvePoints to the last element in the joint list
 						int last = points_for_tessellation.size() - 1;
 
 						distCrossSectionPositions = distance(points_for_tessellation[last], CrossSectionPoints[j]);
@@ -855,7 +853,8 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(sweptAreaSolid);
 			}
 
-			void convertIfcFixedReferenceSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixedRefSweptAreaSolid,
+			void convertIfcFixedReferenceSweptAreaSolid(
+				EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixedRefSweptAreaSolid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
@@ -873,7 +872,8 @@ namespace OpenInfraPlatform
 				// TO DO: implement//*/
 			}
 
-			void convertIfcSurfaceCurveSweptAreaSolid(EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surfaceCurveSweptAreaSolid,
+			void convertIfcSurfaceCurveSweptAreaSolid(
+				EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceCurveSweptAreaSolid> surfaceCurveSweptAreaSolid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea
@@ -899,11 +899,11 @@ namespace OpenInfraPlatform
 				const std::vector<std::vector<carve::geom::vector<2>>>& paths = profileConverter->getCoordinates();
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix_curve = surfaceCurveSweptAreaSolid->Directrix;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrixCurve = surfaceCurveSweptAreaSolid->Directrix;
 
-				std::vector<carve::geom::vector<3> > segment_start_points;
-				std::vector<carve::geom::vector<3> > basis_curve_points;
-				curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
+				std::vector<carve::geom::vector<3> > segmentStartPoints;
+				std::vector<carve::geom::vector<3> > basisCurvePoints;
+				curveConverter->convertIfcCurve(directrixCurve, basisCurvePoints, segmentStartPoints);
 
 				std::shared_ptr<carve::input::PolylineSetData> polyline_data =
 					faceConverter->convertIfcSurface(surfaceCurveSweptAreaSolid->ReferenceSurface, pos);
@@ -948,7 +948,7 @@ namespace OpenInfraPlatform
 				}
 
 				// direction and length of extrusion
-				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * this->UnitConvert()->getLengthInMeterFactor();
+				const double depth = extrudedArea->Depth * this->UnitConvert()->getLengthInMeterFactor();
 				carve::geom::vector<3> extrusionVector = placementConverter->convertIfcDirection(extrudedArea->ExtrudedDirection);
 				
 				// swept area
@@ -962,7 +962,7 @@ namespace OpenInfraPlatform
 
 				if (paths.size() == 0)
 				{
-					throw oip::InconsistentModellingException(extrudedArea, "Paths are empty!");
+					throw oip::InconsistentGeometryException(extrudedArea, "Paths are empty!");
 				}
 
 				// .AREA. vs .CURVE. (is the result closed or open, i.e. full solid vs pipe)
@@ -1039,18 +1039,10 @@ namespace OpenInfraPlatform
 					oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis1Placement> axisPlacement = revolvedArea->Axis;
 
 					if (axisPlacement->Location)
-					{
 						axisLocation = placementConverter->convertIfcPoint(axisPlacement->Location);
-					}
-
+					
 					if (axisPlacement->Axis)
-					{
-						decltype(axisPlacement->Axis)::type axis = axisPlacement->Axis;
-						axisDirection = carve::geom::VECTOR(
-							axis->DirectionRatios[0],
-							axis->DirectionRatios[1],
-							axis->DirectionRatios[2]);
-					}
+						axisDirection = placementConverter->convertIfcDirection(axisPlacement->Axis);
 				}
 
 				// rotation base point is the one with the smallest distance on the rotation axis
@@ -1094,8 +1086,7 @@ namespace OpenInfraPlatform
 				}
 				catch (...)
 				{
-					BLUE_LOG(error) << "carve::triangulate::incorporateHolesIntoPolygon failed ";
-					return;
+					throw oip::InconsistentGeometryException(revolvedArea, "carve::triangulate::incorporateHolesIntoPolygon failed");
 				}
 
 				if (profileCoords.size() == 0)
@@ -1195,11 +1186,11 @@ namespace OpenInfraPlatform
 				// faces of revolved shape
 				for (int i = 0; i < numPolygonPoints - 1; ++i)
 				{
-					int i_offset_next = i + numPolygonPoints;
+					int i_offsetNext = i + numPolygonPoints;
 					for (int j = 0; j < numOfSegments; ++j)
 					{
 						int j_offset = j * numPolygonPoints;
-						polyhedronData->addFace(j_offset + i, j_offset + i + 1, j_offset + 1 + i_offset_next, j_offset + i_offset_next);
+						polyhedronData->addFace(j_offset + i, j_offset + i + 1, j_offset + 1 + i_offsetNext, j_offset + i_offsetNext);
 					}
 				}
 
@@ -1244,15 +1235,13 @@ namespace OpenInfraPlatform
 				// **************************************************************************************************************************
 
 				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrix_curve = sweptDiskSolid->Directrix;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrixCurve = sweptDiskSolid->Directrix;
 
-				double length_in_meter = UnitConvert()->getLengthInMeterFactor();
-				double radius = sweptDiskSolid->Radius * length_in_meter;
+				double radius = sweptDiskSolid->Radius * UnitConvert()->getLengthInMeterFactor();
 
-
-				double radius_inner = sweptDiskSolid->InnerRadius.value_or(0.0);
-				//double startParam = sweptDiskSolid->StartParam.value_or(0.0);
-				//double endParam = sweptDiskSolid->EndParam.value_or(1.0);
+				double radiusInner = sweptDiskSolid->InnerRadius.value_or(0.0);
+				double startParam = sweptDiskSolid->StartParam.value_or(0.0);
+				double endParam = sweptDiskSolid->EndParam.value_or(1.0);
 
 				// TODO: handle inner radius, start param, end param and check for formal propositions!
 
@@ -2078,7 +2067,7 @@ namespace OpenInfraPlatform
 				if (otherOperand)
 				{
 					carve::geom::aabb<3> aabb;
-					otherOperand->createMeshSetsFromclosed_polyhedrons();
+					otherOperand->createMeshSetsFromClosedPolyhedrons();
 					for (int ii = 0; ii < otherOperand->meshsets.size(); ++ii)
 					{
 						std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
@@ -2134,9 +2123,9 @@ namespace OpenInfraPlatform
 
 					// PolygonalBoundary is given in 2D
 					std::vector<carve::geom::vector<2> > polygonal_boundary;
-					std::vector<carve::geom::vector<2> > segment_start_points_2d;
+					std::vector<carve::geom::vector<2> > segmentStartPoints_2d;
 					std::shared_ptr<typename IfcEntityTypesT::IfcCurve> bounded_curve = polygonal_half_space->PolygonalBoundary.lock();
-					curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segment_start_points_2d);
+					curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segmentStartPoints_2d);
 					ProfileConverterT<IfcEntityTypesT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
 					ProfileConverterT<IfcEntityTypesT>::simplifyPath(polygonal_boundary);
 
