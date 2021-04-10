@@ -1044,6 +1044,29 @@ void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
 }
 
 /**********************************************************************************************/
+/*! \brief Applies a position to the point.
+*
+* \param[in] listOfPoint				A list of points to be converted.
+* \param[in] positionMatrix			A position matrix, which should be applied to the points.
+* \param[in] ammountOfPoints			Number of points.
+*
+* \return[out]							List of points with applied position.
+*/
+static void  applyPositionToVertex(
+	const std::vector<carve::geom::vector<3>>& listOfPoints,
+	const carve::math::Matrix & positionMatrix,
+	const int ammountOfPoints,
+	std::vector<carve::geom::vector<3>>& newListOfPoints
+) noexcept(false) {
+	for (int i = 0; i < ammountOfPoints; ++i)
+	{
+		carve::geom::vector<3> vertex = listOfPoints.at(i);
+		vertex = positionMatrix * vertex;
+		newListOfPoints.push_back(vertex);
+	}
+}
+
+/**********************************************************************************************/
 
 
 bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set, 

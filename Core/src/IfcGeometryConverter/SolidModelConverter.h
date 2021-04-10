@@ -1266,77 +1266,77 @@ namespace OpenInfraPlatform
 				} //endif sweptDiskSolid_polygonal
 
 				// TO DO: understand what happens here
-				std::vector<carve::geom::vector<3> > segment_start_points;
-				std::vector<carve::geom::vector<3> > basis_curve_points;
-				curveConverter->convertIfcCurve(directrix_curve, basis_curve_points, segment_start_points);
+				std::vector<carve::geom::vector<3>> segmentStartPoints;
+				std::vector<carve::geom::vector<3>> basisCurvePoints;
+				curveConverter->convertIfcCurve(directrixCurve, basisCurvePoints, segmentStartPoints);
 
-				std::shared_ptr<carve::input::PolyhedronData> pipe_data(new carve::input::PolyhedronData());
-				itemData->closed_polyhedrons.push_back(pipe_data);
-				std::vector<carve::geom::vector<3> > inner_shape_points;
+				std::shared_ptr<carve::input::PolyhedronData> pipeData(new carve::input::PolyhedronData());
+				itemData->closed_polyhedrons.push_back(pipeData);
+				std::vector<carve::geom::vector<3>> outerShapePoints;
+				std::vector<carve::geom::vector<3>> innerShapePoints;
 
-				const int nvc = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-				double delta_angle = GeomSettings()->getAngleLength(radius);
+				const int numberOfVertices = GeomSettings()->getNumberOfVerticesForTessellation(radius);
+				double deltaAngle = GeomSettings()->getAngleLength(radius);
 
-				std::vector<carve::geom::vector<3> > circle_points;
-				std::vector<carve::geom::vector<3> > circle_points_inner;
+				std::vector<carve::geom::vector<3>> circlePoints;
+				std::vector<carve::geom::vector<3>> circlePointsInner;
 				int i; double angle;
 				for (i = 0, angle = 0.;
-					i < nvc;
-					++i, angle += delta_angle)
+					i < numberOfVertices;
+					++i, angle += deltaAngle)
 				{
 					// cross section (circle) is defined in YZ plane
 					double x = sin(angle);
 					double y = cos(angle);
-					circle_points.push_back(carve::geom::VECTOR(0.0, x*radius, y*radius));
-					circle_points_inner.push_back(carve::geom::VECTOR(0.0, x*radius_inner, y*radius_inner));
+					circlePoints.push_back(carve::geom::VECTOR(0.0, x*radius, y*radius));
+					circlePointsInner.push_back(carve::geom::VECTOR(0.0, x*radiusInner, y*radiusInner));
 				}
 
-				int num_base_points = basis_curve_points.size();
-				carve::math::Matrix matrix_sweep;
+				int numBasePoints = basisCurvePoints.size();
+				carve::math::Matrix matrixSweep;
 
 				carve::geom::vector<3> local_z(carve::geom::VECTOR(0, 0, 1));
 
-				if (num_base_points < 2)
+				if (basisCurvePoints.size() < 2)
 				{
-					std::cout << "IfcSweptDiskSolid: num curve points < 2" << std::endl;
-					return;
+					throw oip::InconsistentModellingException("IfcSweptDiskSolid: num curve points < 2");
 				}
 
-				bool bend_found = false;
-				if (num_base_points > 3)
+				bool bendFound = false;
+				if (basisCurvePoints.size() > 3)
 				{
 					// compute local z vector by dot product of the first bend of the reference line
-					carve::geom::vector<3> vertex_back2 = basis_curve_points.at(0);
-					carve::geom::vector<3> vertex_back1 = basis_curve_points.at(1);
-					for (int i = 2; i < num_base_points; ++i)
+					carve::geom::vector<3> vertexBack2 = basisCurvePoints.at(0);
+					carve::geom::vector<3> vertexBack1 = basisCurvePoints.at(1);
+					for (int i = 2; i < basisCurvePoints.size(); ++i)
 					{
-						carve::geom::vector<3> vertex_current = basis_curve_points.at(i);
-						carve::geom::vector<3> section1 = vertex_back1 - vertex_back2;
-						carve::geom::vector<3> section2 = vertex_current - vertex_back1;
+						carve::geom::vector<3> vertexCurrent = basisCurvePoints.at(i);
+						carve::geom::vector<3> section1 = vertexBack1 - vertexBack2;
+						carve::geom::vector<3> section2 = vertexCurrent - vertexBack1;
 						section1.normalize();
 						section2.normalize();
 
-						double dot_product = dot(section1, section2);
-						double dot_product_abs = abs(dot_product);
+						double dotProduct = dot(section1, section2);
+						double dotProduct_abs = abs(dotProduct);
 
 						// if dot == 1 or -1, then points are colinear
-						if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
+						if (dotProduct_abs < (1.0 - 0.0001) || dotProduct_abs >(1.0 + 0.0001))
 						{
 							// bend found, compute cross product
 							carve::geom::vector<3> lateral_vec = cross(section1, section2);
 							local_z = cross(lateral_vec, section1);
 							local_z.normalize();
-							bend_found = true;
+							bendFound = true;
 							break;
 						}
 					}
 				}
 
-				if (!bend_found)
+				if (!bendFound)
 				{
 					// sweeping curve is linear. assume any local z vector
 					local_z = carve::geom::VECTOR(0, 0, 1);
-					double dot_normal_local_z = dot((basis_curve_points.at(1) - basis_curve_points.at(0)), local_z);
+					double dot_normal_local_z = dot((basisCurvePoints.at(1) - basisCurvePoints.at(0)), local_z);
 					if (abs(dot_normal_local_z) < 0.0001)
 					{
 						local_z = carve::geom::VECTOR(0, 1, 0);
@@ -1344,155 +1344,148 @@ namespace OpenInfraPlatform
 					}
 				}
 
-				for (int ii = 0; ii < num_base_points; ++ii)
+				for (int ii = 0; ii < basisCurvePoints.size(); ++ii)
 				{
-					carve::geom::vector<3> vertex_current = basis_curve_points.at(ii);
-					carve::geom::vector<3> vertex_next;
-					carve::geom::vector<3> vertex_before;
+					carve::geom::vector<3> vertexCurrent = basisCurvePoints.at(ii);
+					carve::geom::vector<3> vertexNext;
+					carve::geom::vector<3> vertexBefore;
 					if (ii == 0)
 					{
 						// first point
-						vertex_next = basis_curve_points.at(ii + 1);
-						carve::geom::vector<3> delta_element = vertex_next - vertex_current;
-						vertex_before = vertex_current - (delta_element);
+						vertexNext = basisCurvePoints.at(ii + 1);
+						carve::geom::vector<3> delta_element = vertexNext - vertexCurrent;
+						vertexBefore = vertexCurrent - (delta_element);
 					}
-					else if (ii == num_base_points - 1)
+					else if (ii == basisCurvePoints.size() - 1)
 					{
 						// last point
-						vertex_before = basis_curve_points.at(ii - 1);
-						carve::geom::vector<3> delta_element = vertex_current - vertex_before;
-						vertex_next = vertex_before + (delta_element);
+						vertexBefore = basisCurvePoints.at(ii - 1);
+						carve::geom::vector<3> delta_element = vertexCurrent - vertexBefore;
+						vertexNext = vertexBefore + (delta_element);
 					}
 					else
 					{
 						// inner point
-						vertex_next = basis_curve_points.at(ii + 1);
-						vertex_before = basis_curve_points.at(ii - 1);
+						vertexNext = basisCurvePoints.at(ii + 1);
+						vertexBefore = basisCurvePoints.at(ii - 1);
 					}
 
 					carve::geom::vector<3> bisecting_normal;
-					GeomUtils::bisectingPlane(vertex_before, vertex_current, vertex_next, bisecting_normal);
+					GeomUtils::bisectingPlane(vertexBefore, vertexCurrent, vertexNext, bisecting_normal);
 
-					carve::geom::vector<3> section1 = vertex_current - vertex_before;
-					carve::geom::vector<3> section2 = vertex_next - vertex_current;
+					carve::geom::vector<3> section1 = vertexCurrent - vertexBefore;
+					carve::geom::vector<3> section2 = vertexNext - vertexCurrent;
 					section1.normalize();
 					section2.normalize();
-					double dot_product = dot(section1, section2);
-					double dot_product_abs = abs(dot_product);
-
-					if (dot_product_abs < (1.0 - 0.0001) || dot_product_abs >(1.0 + 0.0001))
+					double dotProduct = dot(section1, section2);
+					double dotProduct_abs = abs(dotProduct);
+					if (!this->GeomSettings()->areEqual(dotProduct_abs, 0.))
 					{
 						// bend found, compute next local z vector
 						carve::geom::vector<3> lateral_vec = cross(section1, section2);
 						local_z = cross(lateral_vec, section1);
 						local_z.normalize();
 					}
-					if (ii == num_base_points - 1)
+
+					if (ii == basisCurvePoints.size() - 1)
 					{
 						bisecting_normal *= -1.0;
 					}
 
-					GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
-					matrix_sweep = pos * matrix_sweep;
-
-					for (int jj = 0; jj < nvc; ++jj)
+					GeomUtils::convertPlane2Matrix(bisecting_normal, vertexCurrent, local_z, matrixSweep);
+					matrixSweep = pos * matrixSweep;
+					GeomUtils::applyPositionToVertex(circlePoints, matrixSweep, numberOfVertices, outerShapePoints);
+					
+					if (radiusInner > 0)
 					{
-						carve::geom::vector<3> vertex = circle_points.at(jj);
-						vertex = matrix_sweep * vertex;
-						pipe_data->addVertex(vertex);
-					}
-
-					if (radius_inner > 0)
-					{
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							carve::geom::vector<3> vertex = circle_points_inner.at(jj);
-							vertex = matrix_sweep * vertex;
-							inner_shape_points.push_back(vertex);
-							//pipe_data->addVertex( vertex );
-						}
+						GeomUtils::applyPositionToVertex(circlePointsInner, matrixSweep, numberOfVertices, innerShapePoints);
 					}
 				}
 
-				// outer shape
-				size_t num_vertices_outer = pipe_data->getVertexCount();
-				for (size_t i = 0; i < num_base_points - 1; ++i)
-				{
-					int i_offset = i * nvc;
-					int i_offset_next = (i + 1)*nvc;
-					for (int jj = 0; jj < nvc; ++jj)
-					{
-						int current_loop_pt = jj + i_offset;
-						int current_loop_pt_next = (jj + 1) % nvc + i_offset;
-
-						int next_loop_pt = jj + i_offset_next;
-						int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
-						pipe_data->addFace(current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next);
-					}
+				// Create faces of outer shape.
+				for (int jj = 0; jj < numberOfVertices; ++jj) {
+					pipeData->addVertex(outerShapePoints.at(jj));
 				}
 
-				if (radius_inner > 0)
+				size_t numVerticesOuter = pipeData->getVertexCount();
+				createFacesOfTheShape(basisCurvePoints.size() - 1, numberOfVertices, pipeData);
+				
+				if (radiusInner > 0)
 				{
-					if (inner_shape_points.size() != num_vertices_outer)
+					if (innerShapePoints.size() != numVerticesOuter)
 					{
-						std::cout << "IfcSweptDiskSolid: inner_shape_points.size() != num_vertices_outer" << std::endl;
+						throw oip::InconsistentModellingException("IfcSweptDiskSolid: innerShapePoints.size() != numVerticesOuter");
 					}
 
 					// add points for inner shape
-					for (size_t i = 0; i < inner_shape_points.size(); ++i)
+					for (size_t i = 0; i < innerShapePoints.size(); ++i)
 					{
-						pipe_data->addVertex(inner_shape_points[i]);
+						pipeData->addVertex(innerShapePoints[i]);
 					}
 
-					// faces of inner shape
-					for (size_t i = 0; i < num_base_points - 1; ++i)
-					{
-						int i_offset = i * nvc + num_vertices_outer;
-						int i_offset_next = (i + 1)*nvc + num_vertices_outer;
-						for (int jj = 0; jj < nvc; ++jj)
-						{
-							int current_loop_pt = jj + i_offset;
-							int current_loop_pt_next = (jj + 1) % nvc + i_offset;
-
-							int next_loop_pt = jj + i_offset_next;
-							int next_loop_pt_next = (jj + 1) % nvc + i_offset_next;
-							//pipe_data->addFace( current_loop_pt, next_loop_pt, next_loop_pt_next, current_loop_pt_next );  
-							pipe_data->addFace(current_loop_pt, current_loop_pt_next, next_loop_pt_next, next_loop_pt);
-						}
-					}
-
+					// Create faces of inner shape.
+					createFacesOfTheShape(basisCurvePoints.size() - 1, numberOfVertices, pipeData, numVerticesOuter);
+					
 					// front cap
-					for (int jj = 0; jj < nvc; ++jj)
+					for (int jj = 0; jj < numberOfVertices; ++jj)
 					{
-						int outer_rim_next = (jj + 1) % nvc;
-						int inner_rim_next = outer_rim_next + num_vertices_outer;
-						pipe_data->addFace(jj, outer_rim_next, num_vertices_outer + jj);
-						pipe_data->addFace(outer_rim_next, inner_rim_next, num_vertices_outer + jj);
+						int outer_rim_next = (jj + 1) % numberOfVertices;
+						int inner_rim_next = outer_rim_next + numVerticesOuter;
+						pipeData->addFace(jj, outer_rim_next, numVerticesOuter + jj);
+						pipeData->addFace(outer_rim_next, inner_rim_next, numVerticesOuter + jj);
 					}
 
 					// back cap
-					int back_offset = (num_base_points - 1)*nvc;
-					for (int jj = 0; jj < nvc; ++jj)
+					int back_offset = (basisCurvePoints.size() - 1)*numberOfVertices;
+					for (int jj = 0; jj < numberOfVertices; ++jj)
 					{
-						int outer_rim_next = (jj + 1) % nvc + back_offset;
-						int inner_rim_next = outer_rim_next + num_vertices_outer;
-						pipe_data->addFace(jj + back_offset, num_vertices_outer + jj + back_offset, outer_rim_next);
-						pipe_data->addFace(outer_rim_next, num_vertices_outer + jj + back_offset, inner_rim_next);
+						int outer_rim_next = (jj + 1) % numberOfVertices + back_offset;
+						int inner_rim_next = outer_rim_next + numVerticesOuter;
+						pipeData->addFace(jj + back_offset, numVerticesOuter + jj + back_offset, outer_rim_next);
+						pipeData->addFace(outer_rim_next, numVerticesOuter + jj + back_offset, inner_rim_next);
 					}
 				}
 				else
 				{
 					// front cap, full pipe, create triangle fan
-					for (int jj = 0; jj < nvc - 2; ++jj)
+					for (int jj = 0; jj < numberOfVertices - 2; ++jj)
 					{
-						pipe_data->addFace(0, jj + 1, jj + 2);
+						pipeData->addFace(0, jj + 1, jj + 2);
 					}
 
 					// back cap
-					int back_offset = (num_base_points - 1)*nvc;
-					for (int jj = 0; jj < nvc - 2; ++jj)
+					int back_offset = (basisCurvePoints.size() - 1)*numberOfVertices;
+					for (int jj = 0; jj < numberOfVertices - 2; ++jj)
 					{
-						pipe_data->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
+						pipeData->addFace(back_offset, back_offset + jj + 2, back_offset + jj + 1);
+					}
+				}
+			}
+
+			/*! \brief creates faces of the shape.
+			 *
+			 * \param[in] numOffsets				Number of offsets.
+			 * \param[in] numberOfVertices			Number of offsets of the inner circle.
+			 * \param[out] pipeData					A pointer to be filled with the relevant data.
+			 * \param[in] numVerticesOuter			Number of offsets of the outer circle. 
+			*/
+			void createFacesOfTheShape(const int numOffsets, const int numberOfVertices,
+				 std::shared_ptr<carve::input::PolyhedronData>& pipeData, const int numVerticesOuter = 0
+			) const noexcept(false)
+			{
+				for (size_t i = 0; i < numOffsets; ++i)
+				{
+					int i_offset = i * numberOfVertices + numVerticesOuter;
+					int i_offsetNext = (i + 1)*numberOfVertices + numVerticesOuter;
+					for (int jj = 0; jj < numberOfVertices; ++jj)
+					{
+						int currentLoopPoint = jj + i_offset;
+						int currentLoopPointNext = (jj + 1) % numberOfVertices + i_offset;
+
+						int nextLoopPoint = jj + i_offsetNext;
+						int nextLoopPointNext = (jj + 1) % numberOfVertices + i_offsetNext;
+						//pipeData->addFace( currentLoopPoint, nextLoopPoint, nextLoopPointNext, currentLoopPointNext );  
+						pipeData->addFace(currentLoopPoint, currentLoopPointNext, nextLoopPointNext, nextLoopPoint);
 					}
 				}
 			}

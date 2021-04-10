@@ -137,6 +137,12 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& local_z,
 					carve::math::Matrix& resulting_matrix);
 
+				static void  applyPositionToVertex(
+					const std::vector<carve::geom::vector<3>>& listOfPoints,
+					const carve::math::Matrix & positionMatrix,
+					const int ammountOfPoints,
+					const std::vector<carve::geom::vector<3>>& newListOfPoints);
+
 				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
 					std::stringstream& err_poly, int entity_id);
 
