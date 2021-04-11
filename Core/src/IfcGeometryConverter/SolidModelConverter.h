@@ -1527,13 +1527,7 @@ namespace OpenInfraPlatform
 
 				const int boolean_result_id = boolResult->getId();
 
-				if (boolResult.template isOfType<typename IfcEntityTypesT::IfcBooleanClippingResult>())
-				{
-					auto booleanClippingResult = boolResult.template as<typename IfcEntityTypesT::IfcBooleanClippingResult>();
-					convertIfcBooleanClippingResult(boolResult.template as<typename IfcEntityTypesT::IfcBooleanClippingResult>(),
-						pos, itemData);
-					return;
-				}
+				//IfcBooleanClippingResult is already supported with IfcBooleanResult
 
 				typename IfcEntityTypesT::IfcBooleanOperator ifcBooleanOperator = boolResult->Operator;
 				typename IfcEntityTypesT::IfcBooleanOperand ifcFirstOperand = boolResult->FirstOperand;
@@ -1622,16 +1616,6 @@ namespace OpenInfraPlatform
 				default:
 					throw oip::UnhandledException(ifcOperand);
 				}
-			}
-
-
-			void convertIfcBooleanClippingResult(
-				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcBooleanClippingResult>& boolClippingResult,
-				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData
-			) const noexcept(false)
-			{
-				throw oip::UnhandledException(boolClippingResult);
 			}
 
 			/*! \brief Converts \c IfcBooleanOperand geometric representation item which may participate in a Boolean operation to form a CSG solid.
