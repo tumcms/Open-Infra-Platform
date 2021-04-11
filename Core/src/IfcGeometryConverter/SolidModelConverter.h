@@ -1696,275 +1696,381 @@ namespace OpenInfraPlatform
 				}
 			}
 
+			/*! \brief converts \c IfcCsgPrimitive3D to meshes.
+			 *
+			 * \param[in] csgPrimitive				The \c IfcCsgPrimitive3D to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifccsgprimitive3d.htm
+			*/
 			void convertIfcCsgPrimitive3D(
-				const std::shared_ptr<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
+				const EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>& csgPrimitive,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
-				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-				double length_factor = UnitConvert()->getLengthInMeterFactor();
+				// **************************************************************************************************************************
+				//	ENTITY IfcCsgPrimitive3D
+				//		ABSTRACT SUPERTYPE OF(ONEOF(
+				//			IfcBlock, 
+				//			IfcRectangularPyramid, 
+				//			IfcRightCircularCone, 
+				//			IfcRightCircularCylinder, 
+				//			IfcSphere))
+				//		SUBTYPE OF(IfcGeometricRepresentationItem);
+				//		Position: IfcAxis2Placement3D;
+				//		DERIVE
+				//			Dim : IfcDimensionCount: = 3;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
 
-				// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere)
-
-				carve::math::Matrix primitive_placement_matrix = csgPrimitive->Position ?
-					pos * placementConverter->convertIfcAxis2Placement3D(csgPrimitive->Position) :
-					pos;
-
-
-				std::shared_ptr<typename IfcEntityTypesT::IfcBlock> block =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcBlock>(csgPrimitive);
-				if (block)
+				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcBlock>())
 				{
-					double x_length = UnitConvert()->getLengthInMeterFactor();
-					double y_length = UnitConvert()->getLengthInMeterFactor();
-					double z_length = UnitConvert()->getLengthInMeterFactor();
-
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->XLength)
-					{
-						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->XLength)*UnitConvert()->getLengthInMeterFactor();
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->YLength)
-					{
-						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->YLength)*UnitConvert()->getLengthInMeterFactor();
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure)block->ZLength)
-					{
-						z_length = (typename IfcEntityTypesT::IfcLengthMeasure)(block->ZLength)*UnitConvert()->getLengthInMeterFactor();
-					}
-
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, y_length, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, 0.0, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, 0.0, z_length));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(0.0, 0.0, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix *carve::geom::VECTOR(x_length, 0.0, 0.0));
-
-					polyhedron_data->addFace(0, 1, 2);
-					polyhedron_data->addFace(2, 3, 0);
-
-					polyhedron_data->addFace(7, 6, 5);
-					polyhedron_data->addFace(5, 4, 7);
-
-					polyhedron_data->addFace(0, 4, 5);
-					polyhedron_data->addFace(5, 1, 0);
-
-					polyhedron_data->addFace(1, 5, 6);
-					polyhedron_data->addFace(6, 2, 1);
-
-					polyhedron_data->addFace(2, 6, 7);
-					polyhedron_data->addFace(7, 3, 2);
-
-					polyhedron_data->addFace(3, 7, 4);
-					polyhedron_data->addFace(4, 0, 3);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					convertIfcBlock(csgPrimitive.template as<typename IfcEntityTypesT::IfcBlock>(),
+						pos, itemData);
 					return;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcRectangularPyramid> rectangular_pyramid =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRectangularPyramid>(csgPrimitive);
-				if (rectangular_pyramid)
+				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcRectangularPyramid>())
 				{
-					double x_length = UnitConvert()->getLengthInMeterFactor();
-					double y_length = UnitConvert()->getLengthInMeterFactor();
-					double height = UnitConvert()->getLengthInMeterFactor();
-
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->XLength)
-					{
-						x_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->XLength)*0.5*UnitConvert()->getLengthInMeterFactor();
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->YLength)
-					{
-						y_length = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->YLength)*0.5*UnitConvert()->getLengthInMeterFactor();
-					}
-					if ((typename IfcEntityTypesT::IfcLengthMeasure) rectangular_pyramid->Height)
-					{
-						height = (typename IfcEntityTypesT::IfcLengthMeasure)(rectangular_pyramid->Height)*0.5*UnitConvert()->getLengthInMeterFactor();
-					}
-
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0, 0, height));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, -y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(-x_length, y_length, 0.0));
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(x_length, y_length, 0.0));
-
-					polyhedron_data->addFace(1, 2, 3);
-					polyhedron_data->addFace(3, 4, 1);
-					polyhedron_data->addFace(0, 2, 1);
-					polyhedron_data->addFace(0, 1, 4);
-					polyhedron_data->addFace(0, 4, 3);
-					polyhedron_data->addFace(0, 3, 2);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					convertIfcRectangularPyramid(csgPrimitive.template as<typename IfcEntityTypesT::IfcRectangularPyramid>(), 
+						pos, itemData);
 					return;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCone> right_circular_cone =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCone>(csgPrimitive);
-				if (right_circular_cone)
+				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcRightCircularCone>())
 				{
-					if (!right_circular_cone->Height)
-					{
-						std::cout << "IfcRightCircularCone: height not given" << std::endl;
-						return;
-					}
-					if (!right_circular_cone->BottomRadius)
-					{
-						std::cout << "IfcRightCircularCone: radius not given" << std::endl;
-						return;
-					}
-
-					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->Height)*UnitConvert()->getLengthInMeterFactor();
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cone->BottomRadius)*UnitConvert()->getLengthInMeterFactor();
-
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
-
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double deltaAngle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
-					{
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-					}
-
-					// outer shape
-					for (int i = 0; i < numVerticesInCircle - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i + 3, i + 2);
-					}
-					polyhedron_data->addFace(0, 2, numVerticesInCircle + 1);
-
-					// bottom circle
-					for (int i = 0; i < numVerticesInCircle - 1; ++i)
-					{
-						polyhedron_data->addFace(1, i + 2, i + 3);
-					}
-					polyhedron_data->addFace(1, numVerticesInCircle + 1, 2);
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					convertIfcRightCircularCone(csgPrimitive.template as<typename IfcEntityTypesT::IfcRightCircularCone>(), 
+						pos, itemData);
 					return;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcRightCircularCylinder> right_circular_cylinder =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcRightCircularCylinder>(csgPrimitive);
-				if (right_circular_cylinder)
+				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcRightCircularCylinder>())
 				{
-					if (!right_circular_cylinder->Height)
-					{
-						std::cout << "IfcRightCircularCylinder: height not given" << std::endl;
-						return;
-					}
-
-					if (!right_circular_cylinder->Radius)
-					{
-						std::cout << "IfcRightCircularCylinder: radius not given" << std::endl;
-						return;
-					}
-
-					//carve::mesh::MeshSet<3> * cylinder_mesh = makeCylinder( slices, rad, height, primitive_placement_matrix);
-					double height = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Height)*UnitConvert()->getLengthInMeterFactor();
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(right_circular_cylinder->Radius)*UnitConvert()->getLengthInMeterFactor();
-
-					int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					double rad = 0;
-
-					double deltaAngle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
-					{
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-					}
-
-					for (int i = 0; i < slices - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i * 2 + 2, i * 2 + 4);		// top cap:		0-2-4	0-4-6		0-6-8
-						polyhedron_data->addFace(1, i * 2 + 3, i * 2 + 5);		// bottom cap:	1-3-5	1-5-7		1-7-9
-						polyhedron_data->addFace(i, i + 1, i + 3, i + 2);		// side
-					}
-					polyhedron_data->addFace(2 * slices - 2, 2 * slices - 1, 1, 0);		// side
-
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					convertIfcRightCircularCylinder(csgPrimitive.template as<typename IfcEntityTypesT::IfcRightCircularCylinder>(), 
+						pos, itemData);
 					return;
 				}
 
-				std::shared_ptr<typename IfcEntityTypesT::IfcSphere> sphere =
-					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcSphere>(csgPrimitive);
-				if (sphere)
+				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcSphere>())
 				{
-					if (!sphere->Radius)
-					{
-						std::cout << "IfcSphere: radius not given" << std::endl;
-						return;
-					}
-
-					double radius = (typename IfcEntityTypesT::IfcLengthMeasure)(sphere->Radius);
-
-					// seen from the top, each ring is:
-					//        \   |   /
-					//         2- 1 -nvc
-					//        / \ | / \
-					//    ---3--- 0 ---7---
-					//       \  / | \ /
-					//         4- 5 -6
-					//        /   |   \
-
-					std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
-					polyhedron_data->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
-
-					const int nvc = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-					const double d_horizontal_angle = GeomSettings()->getAngleLength(radius);
-					const int num_vertical_edges = ceil(0.5 * nvc);
-					double d_vertical_angle = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
-					double vertical_angle = d_vertical_angle;
-
-					for (int vertical = 1; vertical < num_vertical_edges - 1; ++vertical)
-					{
-						// for each vertical angle, add one horizontal circle
-						double vertical_level = cos(vertical_angle)*radius;
-						double radius_at_level = sin(vertical_angle)*radius;
-						double horizontal_angle = 0;
-						for (int i = 0; i < nvc; ++i)
-						{
-							polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(horizontal_angle)*radius_at_level, cos(horizontal_angle)*radius_at_level, vertical_level));
-							horizontal_angle += d_horizontal_angle;
-						}
-						vertical_angle += d_vertical_angle;
-					}
-					polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(0.0, 0.0, -radius)); // bottom
-
-					// uppper triangle fan
-					for (int i = 0; i < nvc - 1; ++i)
-					{
-						polyhedron_data->addFace(0, i + 2, i + 1);
-					}
-					polyhedron_data->addFace(0, 1, nvc);
-
-					for (int vertical = 1; vertical < num_vertical_edges - 2; ++vertical)
-					{
-						int offset_inner = nvc * (vertical - 1) + 1;
-						int offset_outer = nvc * vertical + 1;
-						for (int i = 0; i < nvc - 1; ++i)
-						{
-							polyhedron_data->addFace(offset_inner + i, offset_inner + 1 + i, offset_outer + 1 + i, offset_outer + i);
-						}
-						polyhedron_data->addFace(offset_inner + nvc - 1, offset_inner, offset_outer, offset_outer + nvc - 1);
-
-					}
-
-					// lower triangle fan
-					int last_index = (num_vertical_edges - 2)*nvc + 1;
-					for (int i = 0; i < nvc - 1; ++i)
-					{
-						polyhedron_data->addFace(last_index, last_index - (i + 2), last_index - (i + 1));
-					}
-					polyhedron_data->addFace(last_index, last_index - 1, last_index - nvc);
-					itemData->closed_polyhedrons.push_back(polyhedron_data);
+					convertIfcSphere(csgPrimitive.template as<typename IfcEntityTypesT::IfcSphere>(), 
+						pos, itemData);
 					return;
 				}
 				throw oip::UnhandledException(csgPrimitive);
+			}
+
+			/*! \brief converts \c IfcBlock to meshes.
+			 *
+			 * \param[in] block						The \c IfcBlock to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcblock.htm
+			*/
+			void convertIfcBlock(
+				const EXPRESSReference <typename IfcEntityTypesT::IfcBlock>& block,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcBlock
+				//		SUBTYPE OF(IfcCsgPrimitive3D);
+				//		XLength: IfcPositiveLengthMeasure;
+				//		YLength: IfcPositiveLengthMeasure;
+				//		ZLength: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+
+				carve::math::Matrix primitivePlacementMatrix = block->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(block->Position) :
+					pos;
+
+				double x_length = block->XLength * UnitConvert()->getLengthInMeterFactor();
+				double y_length = block->YLength * UnitConvert()->getLengthInMeterFactor();
+				double z_length = block->ZLength * UnitConvert()->getLengthInMeterFactor();
+
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(x_length, y_length, z_length));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(0.0, y_length, z_length));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(0.0, 0.0, z_length));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(x_length, 0.0, z_length));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(x_length, y_length, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(0.0, y_length, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(0.0, 0.0, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(x_length, 0.0, 0.0));
+
+				polyhedronData->addFace(0, 1, 2);
+				polyhedronData->addFace(2, 3, 0);
+
+				polyhedronData->addFace(7, 6, 5);
+				polyhedronData->addFace(5, 4, 7);
+
+				polyhedronData->addFace(0, 4, 5);
+				polyhedronData->addFace(5, 1, 0);
+
+				polyhedronData->addFace(1, 5, 6);
+				polyhedronData->addFace(6, 2, 1);
+
+				polyhedronData->addFace(2, 6, 7);
+				polyhedronData->addFace(7, 3, 2);
+
+				polyhedronData->addFace(3, 7, 4);
+				polyhedronData->addFace(4, 0, 3);
+
+				itemData->closed_polyhedrons.push_back(polyhedronData);
+			}
+
+			/*! \brief converts \c IfcRectangularPyramid to meshes.
+			 *
+			 * \param[in] rectangularPyramid		The \c IfcRectangularPyramid to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcrectangularpyramid.htm
+			*/
+			void convertIfcRectangularPyramid(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularPyramid>& rectangularPyramid,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcRectangularPyramid
+				//		SUBTYPE OF(IfcCsgPrimitive3D);
+				//		XLength: IfcPositiveLengthMeasure;
+				//		YLength: IfcPositiveLengthMeasure;
+				//		Height: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+
+				carve::math::Matrix primitivePlacementMatrix = rectangularPyramid->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(rectangularPyramid->Position) :
+					pos;
+
+				double x_length = rectangularPyramid->XLength * 0.5 * UnitConvert()->getLengthInMeterFactor();
+				double  y_length = rectangularPyramid->YLength * 0.5 * UnitConvert()->getLengthInMeterFactor();
+				double height = rectangularPyramid->Height * 0.5 * UnitConvert()->getLengthInMeterFactor();
+
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0, 0, height));
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(-x_length, -y_length, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(-x_length, y_length, 0.0));
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(x_length, y_length, 0.0));
+
+				polyhedronData->addFace(1, 2, 3);
+				polyhedronData->addFace(3, 4, 1);
+				polyhedronData->addFace(0, 2, 1);
+				polyhedronData->addFace(0, 1, 4);
+				polyhedronData->addFace(0, 4, 3);
+				polyhedronData->addFace(0, 3, 2);
+
+				itemData->closed_polyhedrons.push_back(polyhedronData);
+			}
+
+			/*! \brief converts \c IfcRightCircularCone to meshes.
+			 *
+			 * \param[in] rightCircularCone		The \c IfcRightCircularCone to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcrightcircularcone.htm
+			*/
+			void convertIfcRightCircularCone(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcRightCircularCone>& rightCircularCone,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcRightCircularCone
+				//		SUBTYPE OF(IfcCsgPrimitive3D);
+				//		Height: IfcPositiveLengthMeasure;
+				//		BottomRadius: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+
+				carve::math::Matrix primitivePlacementMatrix = rightCircularCone->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(rightCircularCone->Position) :
+					pos;
+
+				double height = rightCircularCone->Height * UnitConvert()->getLengthInMeterFactor();
+				double radius = rightCircularCone->BottomRadius * UnitConvert()->getLengthInMeterFactor();
+
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
+
+				int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
+				double deltaAngle = GeomSettings()->getAngleLength(radius);
+				for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
+				{
+					polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
+				}
+
+				// outer shape
+				for (int i = 0; i < numVerticesInCircle - 1; ++i)
+				{
+					polyhedronData->addFace(0, i + 3, i + 2);
+				}
+				polyhedronData->addFace(0, 2, numVerticesInCircle + 1);
+
+				// bottom circle
+				for (int i = 0; i < numVerticesInCircle - 1; ++i)
+				{
+					polyhedronData->addFace(1, i + 2, i + 3);
+				}
+				polyhedronData->addFace(1, numVerticesInCircle + 1, 2);
+
+				itemData->closed_polyhedrons.push_back(polyhedronData);
+			}
+
+			/*! \brief converts \c IfcRightCircularCylinder to meshes.
+			 *
+			 * \param[in] rightCircularCylinder		The \c IfcRightCircularCone to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcrightcircularcylinder.htm
+			*/
+			void convertIfcRightCircularCylinder(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcRightCircularCylinder>& rightCircularCylinder,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcRightCircularCylinder
+				//		SUBTYPE OF(IfcCsgPrimitive3D);
+				//		Height: IfcPositiveLengthMeasure;
+				//		Radius: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+
+				carve::math::Matrix primitivePlacementMatrix = rightCircularCylinder->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(rightCircularCylinder->Position) :
+					pos;
+
+				double height = rightCircularCylinder->Height * UnitConvert()->getLengthInMeterFactor();
+				double radius = rightCircularCylinder->Radius * UnitConvert()->getLengthInMeterFactor();
+
+				double deltaAngle = GeomSettings()->getAngleLength(radius);
+				int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+
+				for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
+				{
+					polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, height));
+					polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
+				}
+
+				for (int i = 0; i < slices - 1; ++i)
+				{
+					polyhedronData->addFace(0, i * 2 + 2, i * 2 + 4);		// top cap:		0-2-4	0-4-6		0-6-8
+					polyhedronData->addFace(1, i * 2 + 3, i * 2 + 5);		// bottom cap:	1-3-5	1-5-7		1-7-9
+					polyhedronData->addFace(i, i + 1, i + 3, i + 2);		// side
+				}
+				polyhedronData->addFace(2 * slices - 2, 2 * slices - 1, 1, 0);		// side
+
+				itemData->closed_polyhedrons.push_back(polyhedronData);
+			}
+
+			/*! \brief converts \c IfcSphere to meshes.
+			 *
+			 * \param[in] sphere		The \c IfcSphere to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcsphere.htm
+			*/
+			void convertIfcSphere(
+				const EXPRESSReference<typename IfcEntityTypesT::IfcSphere>& sphere,
+				const carve::math::Matrix& pos,
+				std::shared_ptr<ItemData> itemData
+			) const noexcept(false)
+			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcSphere
+				//		SUBTYPE OF(IfcCsgPrimitive3D);
+				//		Radius: IfcPositiveLengthMeasure;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
+				carve::math::Matrix primitivePlacementMatrix = sphere->Position ?
+					pos * placementConverter->convertIfcAxis2Placement3D(sphere->Position) :
+					pos;
+
+				double radius = sphere->Radius * UnitConvert()->getLengthInMeterFactor();
+
+				// seen from the top, each ring is:
+				//        \   |   /
+				//         2- 1 -numberOfVertices
+				//        / \ | / \
+			    //    ---3--- 0 ---7---
+				//       \  / | \ /
+				//         4- 5 -6
+				//        /   |   \
+
+
+				polyhedronData->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
+
+				const int numberOfVertices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+				const double horizontalAngleDelta = GeomSettings()->getAngleLength(radius);
+				const int num_vertical_edges = ceil(0.5 * numberOfVertices);
+				double verticalAngleDelta = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
+				double verticalAngle = verticalAngleDelta;
+
+				for (int vertical = 1; vertical < num_vertical_edges - 1; ++vertical)
+				{
+					// for each vertical angle, add one horizontal circle
+					double vertical_level = cos(verticalAngle)*radius;
+					double radius_at_level = sin(verticalAngle)*radius;
+					double horizontal_angle = 0;
+					for (int i = 0; i < numberOfVertices; ++i)
+					{
+						polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(sin(horizontal_angle)*radius_at_level, cos(horizontal_angle)*radius_at_level, vertical_level));
+						horizontal_angle += horizontalAngleDelta;
+					}
+					verticalAngle += verticalAngleDelta;
+				}
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, -radius)); // bottom
+
+				// uppper triangle fan
+				for (int i = 0; i < numberOfVertices - 1; ++i)
+				{
+					polyhedronData->addFace(0, i + 2, i + 1);
+				}
+				polyhedronData->addFace(0, 1, numberOfVertices);
+
+				for (int vertical = 1; vertical < num_vertical_edges - 2; ++vertical)
+				{
+					int offset_inner = numberOfVertices * (vertical - 1) + 1;
+					int offset_outer = numberOfVertices * vertical + 1;
+					for (int i = 0; i < numberOfVertices - 1; ++i)
+					{
+						polyhedronData->addFace(offset_inner + i, offset_inner + 1 + i, offset_outer + 1 + i, offset_outer + i);
+					}
+					polyhedronData->addFace(offset_inner + numberOfVertices - 1, offset_inner, offset_outer, offset_outer + numberOfVertices - 1);
+
+				}
+
+				// lower triangle fan
+				int last_index = (num_vertical_edges - 2)*numberOfVertices + 1;
+				for (int i = 0; i < numberOfVertices - 1; ++i)
+				{
+					polyhedronData->addFace(last_index, last_index - (i + 2), last_index - (i + 1));
+				}
+				polyhedronData->addFace(last_index, last_index - 1, last_index - numberOfVertices);
+				itemData->closed_polyhedrons.push_back(polyhedronData);
 			}
 
 			void convertIfcHalfSpaceSolid(
