@@ -1327,7 +1327,7 @@ namespace OpenInfraPlatform
 					// sweeping curve is linear. assume any local z vector
 					local_z = carve::geom::VECTOR(0, 0, 1);
 					double dot_normal_local_z = dot((basisCurvePoints.at(1) - basisCurvePoints.at(0)), local_z);
-					if (this->GeomSettings()->areEqual(abs(dot_normal_local_z), 0))
+					if (this->GeomSettings()->areEqual(abs(dot_normal_local_z), 0.))
 					{
 						local_z = carve::geom::VECTOR(0, 1, 0);
 						local_z.normalize();
@@ -1603,7 +1603,7 @@ namespace OpenInfraPlatform
 			
 			/*! \brief Returns an ID of the selected geometric representations. 
 				*
-				* \param[in] ifcOperand				A list of the IDs for geometric representations.
+				* \param[in] ifcOperand				A select type which identifies all those types of entities which may participate in a boolean operation to form a CSG solid.
 				* \return							An ID of the selected geometric representations.
 			*/
 			int selectOperand(
@@ -1620,7 +1620,7 @@ namespace OpenInfraPlatform
 				case 3:
 					return ifcOperand.get<3>().lock()->getId();
 				default:
-					return 0;
+					throw oip::UnhandledException(ifcOperand);
 				}
 			}
 
