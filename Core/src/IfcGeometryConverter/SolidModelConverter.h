@@ -1491,6 +1491,14 @@ namespace OpenInfraPlatform
 				//double fillet_radius = sweptDiskSolid_polygonal->FilletRadius;
 			}
 
+			/*! \brief converts \c IfcBooleanResult to meshes.
+			 *
+			 * \param[in] boolResult				The \c IfcBooleanResult to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcbooleanresult.htm
+			*/
 			void convertIfcBooleanResult(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>& boolResult,
 				const carve::math::Matrix& pos,
@@ -1565,52 +1573,18 @@ namespace OpenInfraPlatform
 				for (it_first_operands = firstOperandData->meshsets.begin();
 					it_first_operands != firstOperandData->meshsets.end(); ++it_first_operands)
 				{
-					std::shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = (*it_first_operands);
+					std::shared_ptr<carve::mesh::MeshSet<3>>& first_operand_meshset = (*it_first_operands);
 
 					std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >::iterator it_second_operands;
 					for (it_second_operands = secondOperandData->meshsets.begin();
 						it_second_operands != secondOperandData->meshsets.end(); ++it_second_operands)
 					{
-						std::shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = (*it_second_operands);
+						std::shared_ptr<carve::mesh::MeshSet<3>>& second_operand_meshset = (*it_second_operands);
 
-						int id1 = 0;
-						switch (ifcFirstOperand.which()) {
-						case 0:
-							id1 = ifcFirstOperand.get<0>().lock()->getId();
-							break;
-						case 1:
-							id1 = ifcFirstOperand.get<1>().lock()->getId();
-							break;
-						case 2:
-							id1 = ifcFirstOperand.get<2>().lock()->getId();
-							break;
-						case 3:
-							id1 = ifcFirstOperand.get<3>().lock()->getId();
-							break;
-						default:
-							break;
-						}
-
-						int id2 = 0;
-						switch (ifcSecondOperand.which()) {
-						case 0:
-							id2 = ifcSecondOperand.get<0>().lock()->getId();
-							break;
-						case 1:
-							id2 = ifcSecondOperand.get<1>().lock()->getId();
-							break;
-						case 2:
-							id2 = ifcSecondOperand.get<2>().lock()->getId();
-							break;
-						case 3:
-							id2 = ifcSecondOperand.get<3>().lock()->getId();
-							break;
-						default:
-							break;
-						}
-
-
-						std::shared_ptr<carve::mesh::MeshSet<3> > result;
+						int id1 = selectOperand(ifcFirstOperand);
+						int id2 = selectOperand(ifcSecondOperand);
+						
+						std::shared_ptr<carve::mesh::MeshSet<3>> result;
 						bool csg_op_ok = computeCSG(first_operand_meshset.get(),
 							second_operand_meshset.get(),
 							csgOperation, id1, id2, result);
@@ -1626,6 +1600,30 @@ namespace OpenInfraPlatform
 				std::copy(firstOperandData->meshsets.begin(), firstOperandData->meshsets.end(), std::back_inserter(itemData->meshsets));
 
 			}
+			
+			/*! \brief Returns an ID of the selected geometric representations. 
+				*
+				* \param[in] ifcOperand				A list of the IDs for geometric representations.
+				* \return							An ID of the selected geometric representations.
+			*/
+			int selectOperand(
+				const typename IfcEntityTypesT::IfcBooleanOperand& ifcOperand
+			) const noexcept(false)
+			{
+				switch (ifcOperand.which()) {
+				case 0:
+					return ifcOperand.get<0>().lock()->getId();
+				case 1:
+					return ifcOperand.get<1>().lock()->getId();
+				case 2:
+					return ifcOperand.get<2>().lock()->getId();
+				case 3:
+					return ifcOperand.get<3>().lock()->getId();
+				default:
+					return 0;
+				}
+			}
+
 
 			void convertIfcBooleanClippingResult(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcBooleanClippingResult>& boolClippingResult,
@@ -1636,23 +1634,30 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(boolClippingResult);
 			}
 
+			/*! \brief Converts \c IfcBooleanOperand geometric representation item which may participate in a Boolean operation to form a CSG solid.
+			 *
+			 * \param[in] operand					The \c IfcBooleanOperand to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 * \param[in] otherOperand				A pointer to the other operand. 
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcbooleanoperand.htm
+			 */
 			void convertIfcBooleanOperand(typename IfcEntityTypesT::IfcBooleanOperand& operand,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand
 			) const noexcept(false)
 			{
-				// OPERAND is SELECT of
-				/*
-				class IfcBooleanResult;
-				class IfcCsgPrimitive3D;
-				class IfcHalfSpaceSolid;
-				class IfcSolidModel;
-				class IfcTessellatedFaceSet;
-				*/
-#ifdef _DEBUG
-				BLUE_LOG(trace) << "Converting IfcBooleanOperand. Which: " << operand.which();
-#endif
+				// **************************************************************************************************************************
+				//	TYPE IfcBooleanOperand = SELECT(
+				//		IfcSolidModel,
+				//		IfcHalfSpaceSolid,
+				//		IfcBooleanResult,
+				//		IfcCsgPrimitive3D,
+				//		IfcTessellatedFaceSet);
+				//	END_TYPE;
+				// **************************************************************************************************************************
 
 				switch (operand.which()) {
 				case 0:
