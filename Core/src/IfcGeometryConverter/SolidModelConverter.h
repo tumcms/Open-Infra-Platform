@@ -854,7 +854,7 @@ namespace OpenInfraPlatform
 			}
 
 			void convertIfcFixedReferenceSweptAreaSolid(
-				EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid> fixedRefSweptAreaSolid,
+				const EXPRESSReference<typename IfcEntityTypesT::IfcFixedReferenceSweptAreaSolid>& fixedRefSweptAreaSolid,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
@@ -1248,11 +1248,12 @@ namespace OpenInfraPlatform
 				// IfcSweptDiskSolidPolygonal SUBTYPE of IfcSweptDiskSolid
 				if (sweptDiskSolid.template isOfType<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>())
 				{
+					//TODO: implement and check for formal propositions.
 					convertIfcSweptDiskSolidPolygonal(sweptDiskSolid.template as<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>(),
 						pos, itemData);
-					//TODO: implement and check for formal propositions.
-
-				} //endif sweptDiskSolid_polygonal
+					
+					return;
+				} //endif IfcSweptDiskSolidPolygonal
 
 				// TO DO: understand what happens here
 				std::vector<carve::geom::vector<3>> segmentStartPoints;
@@ -1326,7 +1327,7 @@ namespace OpenInfraPlatform
 					// sweeping curve is linear. assume any local z vector
 					local_z = carve::geom::VECTOR(0, 0, 1);
 					double dot_normal_local_z = dot((basisCurvePoints.at(1) - basisCurvePoints.at(0)), local_z);
-					if (abs(dot_normal_local_z) < 0.0001)
+					if (this->GeomSettings()->areEqual(abs(dot_normal_local_z), 0))
 					{
 						local_z = carve::geom::VECTOR(0, 1, 0);
 						local_z.normalize();

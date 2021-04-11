@@ -1057,13 +1057,14 @@ static void  applyPositionToVertex(
 	const carve::math::Matrix & positionMatrix,
 	const int ammountOfPoints,
 	std::vector<carve::geom::vector<3>>& newListOfPoints
-) noexcept(false) {
-	for (int i = 0; i < ammountOfPoints; ++i)
+) noexcept(false) 
+{
+	newListOfPoints.reserve(listOfPoints.size());
+	for (const auto& vertex : listOfPoints)
 	{
-		carve::geom::vector<3> vertex = listOfPoints.at(i);
-		vertex = positionMatrix * vertex;
-		newListOfPoints.push_back(vertex);
+		newListOfPoints.push_back(positionMatrix * vertex);
 	}
+
 }
 
 /**********************************************************************************************/
