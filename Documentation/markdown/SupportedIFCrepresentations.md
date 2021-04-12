@@ -147,7 +147,7 @@ Meaning of columns:
 | `IfcTextLiteralWithExtent`            | :x:                  | -                          | -                     | -     |
 | `IfcToroidalSurface`                  | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150)|
 | `IfcTransitionCurveSegment2D`         | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
-| `IfcTriangulatedIrregularNetwork`     | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
+| `IfcTriangulatedIrregularNetwork`     | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcTrimmedCurve`                     | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcVector`                           | :heavy_check_mark:   | `PlacementConverter`       | :x:                   | -     |
 | `IfcVertex`                           | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
