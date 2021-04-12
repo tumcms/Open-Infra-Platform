@@ -1614,7 +1614,7 @@ namespace OpenInfraPlatform
 				case 3:
 					return ifcOperand.get<3>().lock()->getId();
 				default:
-					throw oip::UnhandledException(ifcOperand);
+					throw oip::UnhandledException();
 				}
 			}
 
@@ -1775,9 +1775,9 @@ namespace OpenInfraPlatform
 					pos * placementConverter->convertIfcAxis2Placement3D(block->Position) :
 					pos;
 
-				double x_length = block->XLength * UnitConvert()->getLengthInMeterFactor();
-				double y_length = block->YLength * UnitConvert()->getLengthInMeterFactor();
-				double z_length = block->ZLength * UnitConvert()->getLengthInMeterFactor();
+				double x_length = block->XLength * this->UnitConvert()->getLengthInMeterFactor();
+				double y_length = block->YLength * this->UnitConvert()->getLengthInMeterFactor();
+				double z_length = block->ZLength * this->UnitConvert()->getLengthInMeterFactor();
 
 				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(x_length, y_length, z_length));
 				polyhedronData->addVertex(primitivePlacementMatrix *carve::geom::VECTOR(0.0, y_length, z_length));
@@ -1842,7 +1842,7 @@ namespace OpenInfraPlatform
 				double  y_length = rectangularPyramid->YLength * 0.5 * UnitConvert()->getLengthInMeterFactor();
 				double height = rectangularPyramid->Height * 0.5 * UnitConvert()->getLengthInMeterFactor();
 
-				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0, 0, height));
+				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0., 0., height));
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(-x_length, -y_length, 0.0));
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(-x_length, y_length, 0.0));
@@ -1892,8 +1892,8 @@ namespace OpenInfraPlatform
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
 
-				int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-				double deltaAngle = GeomSettings()->getAngleLength(radius);
+				int numVerticesInCircle = this->GeomSettings()->getNumberOfVerticesForTessellation(radius);
+				double deltaAngle = this->GeomSettings()->getAngleLength(radius);
 				for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
 				{
 					polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
@@ -2007,10 +2007,10 @@ namespace OpenInfraPlatform
 
 				polyhedronData->addVertex(pos*carve::geom::VECTOR(0.0, 0.0, radius)); // top
 
-				const int numberOfVertices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-				const double horizontalAngleDelta = GeomSettings()->getAngleLength(radius);
+				const int numberOfVertices = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+				const double horizontalAngleDelta = this->GeomSettings()->getAngleLength(radius);
 				const int num_vertical_edges = ceil(0.5 * numberOfVertices);
-				double verticalAngleDelta = M_PI / double(num_vertical_edges - 1);	// TODO: adapt to model size and complexity
+				double verticalAngleDelta = M_PI / double(num_vertical_edges - 1);	
 				double verticalAngle = verticalAngleDelta;
 
 				for (int vertical = 1; vertical < num_vertical_edges - 1; ++vertical)
