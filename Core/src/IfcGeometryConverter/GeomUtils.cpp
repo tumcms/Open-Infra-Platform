@@ -1052,19 +1052,18 @@ void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
 *
 * \return[out]							List of points with applied position.
 */
-static void  applyPositionToVertex(
+void  GeomUtils::applyPositionToVertex(
 	const std::vector<carve::geom::vector<3>>& listOfPoints,
 	const carve::math::Matrix & positionMatrix,
 	const int ammountOfPoints,
 	std::vector<carve::geom::vector<3>>& newListOfPoints
-) noexcept(false) 
+)
 {
 	newListOfPoints.reserve(listOfPoints.size());
 	for (const auto& vertex : listOfPoints)
 	{
 		newListOfPoints.push_back(positionMatrix * vertex);
 	}
-
 }
 
 /**********************************************************************************************/
