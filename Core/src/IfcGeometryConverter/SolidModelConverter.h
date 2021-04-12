@@ -1614,7 +1614,7 @@ namespace OpenInfraPlatform
 				case 3:
 					return ifcOperand.get<3>().lock()->getId();
 				default:
-					throw oip::UnhandledException();
+					throw oip::UnhandledException("Other types of entiteies are not supported in boolean operations!");
 				}
 			}
 
