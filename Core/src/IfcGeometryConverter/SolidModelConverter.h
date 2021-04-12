@@ -2458,25 +2458,19 @@ namespace OpenInfraPlatform
 					}
 					catch (carve::exception& ce)
 					{
-						isCSGComputationOk = false;
-						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << ce.str();
+						throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (const std::out_of_range& oor)
 					{
-						isCSGComputationOk = false;
-						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << oor.what();
-
+						throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (std::exception& e)
 					{
-						isCSGComputationOk = false;
-						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << e.what();
-
+						throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (...)
 					{
-						isCSGComputationOk = false;
-						std::cerr << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2	<< std::endl;
+						throw oip::InconsistentModelingException("csg operation failed");
 					}
 
 					if (!result)
