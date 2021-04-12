@@ -351,29 +351,29 @@ namespace OpenInfraPlatform
 			}
 			
 			void convertIfcSectionedSolidHorizontal(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectionedSolid_horizontal,
+				const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSolidHorizontal>& sectionedSolidHorizontal,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
-				if (sectionedSolid_horizontal.expired())
-					throw oip::ReferenceExpiredException(sectionedSolid_horizontal);
+				if (sectionedSolidHorizontal.expired())
+					throw oip::ReferenceExpiredException(sectionedSolidHorizontal);
 
 				//Get directrix and cross sections (attributes 1-2).
 				const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& directrix =
-					sectionedSolid_horizontal->Directrix;
-				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vec_cross_sections =
-					sectionedSolid_horizontal->CrossSections;
+					sectionedSolidHorizontal->Directrix;
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>> vecCrossSections =
+					sectionedSolidHorizontal->CrossSections;
 
 				// Get cross section positions and fixed axis vertical (attributes 3-4).
-				const auto& cross_section_positions = sectionedSolid_horizontal->CrossSectionPositions;
+				const auto& crossSectionPositions = sectionedSolidHorizontal->CrossSectionPositions;
 
-				bool fixed_axis_vertical = sectionedSolid_horizontal->FixedAxisVertical;
+				bool fixedAxisVertical = sectionedSolidHorizontal->FixedAxisVertical;
 
 				//check dimensions and correct attributes sizes
-				if (vec_cross_sections.size() != cross_section_positions.size())
+				if (vecCrossSections.size() != crossSectionPositions.size())
 				{
-					throw oip::InconsistentModellingException(sectionedSolid_horizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
+					throw oip::InconsistentModellingException(sectionedSolidHorizontal, "CrossSections and CrossSectionsPositions are not equal in size.");
 				}
 
 				//Give directrix to Curve converter: for each station 1 Point and 1 Direction
@@ -403,29 +403,29 @@ namespace OpenInfraPlatform
 				}
 
 
-				std::shared_ptr<carve::input::PolyhedronData> body_data = std::make_shared<carve::input::PolyhedronData>();
-				itemData->closed_polyhedrons.push_back(body_data);
+				std::shared_ptr<carve::input::PolyhedronData> bodyData = std::make_shared<carve::input::PolyhedronData>();
+				itemData->closed_polyhedrons.push_back(bodyData);
 				//std::vector<carve::geom::vector<3> > innerShapePoints;  //TO DO: find out if i need innerShapePoints for the CrossSections
 
-				int num_curve_points = BasisCurvePoints.size();
+				int numCurvePoints = BasisCurvePoints.size();
 				carve::math::Matrix matrixSweep;
 
 				// Less than two points is a point
-				if (num_curve_points < 2)
+				if (numCurvePoints < 2)
 				{
-					throw oip::InconsistentModellingException(sectionedSolid_horizontal, " num curve points < 2");
+					throw oip::InconsistentModellingException(sectionedSolidHorizontal, "Curve should contain atleast 2 points");
 				}
 
 				////define Vector to fill with the coordinates of the CrossSections
-				std::vector<std::vector<std::vector<carve::geom::vector<2> > > > paths;
+				std::vector<std::vector<std::vector<carve::geom::vector<2>>>> paths;
 
-				for (int i = 0; i < vec_cross_sections.size(); ++i)
+				for (int i = 0; i < vecCrossSections.size(); ++i)
 				{
-					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(vec_cross_sections[i]);
+					std::shared_ptr<ProfileConverterT<IfcEntityTypesT>> profileConverter = profileCache->getProfileConverter(vecCrossSections[i]);
 					const std::vector<std::vector<carve::geom::vector<2>>>& profileCoords = profileConverter->getCoordinates();
 
 					// Save profile coords in paths
-					std::vector<std::vector<carve::geom::vector<2> > > profileCoords2D;
+					std::vector<std::vector<carve::geom::vector<2>>> profileCoords2D;
 					for (const auto& profileLoop : profileCoords)
 					{
 						profileCoords2D.push_back(profileLoop);
@@ -436,21 +436,22 @@ namespace OpenInfraPlatform
 
 				if (paths.size() == 0)
 				{
-					throw oip::InconsistentModellingException(sectionedSolid_horizontal, "Profile converter could not find coordinates");
+					throw oip::InconsistentModellingException(sectionedSolidHorizontal, "Profile converter could not find coordinates");
 				}
 
 				//declare Variables to fill with the information of the Cross Section Positions
 				std::vector<carve::geom::vector<3>> offsetFromCurve;
-				std::vector<carve::math::Matrix> localPlacementMatrix;
 				std::vector<carve::geom::vector<3>> CrossSectionPoints;
 				std::vector<carve::geom::vector<3>> directionsOfCurve;
-				std::vector<carve::math::Matrix> object_placement_matrix;
+
+				std::vector<carve::math::Matrix> localPlacementMatrix;
+				std::vector<carve::math::Matrix> objectPlacementMatrix;
 							
-				for (int pos = 0; pos < cross_section_positions.size(); ++pos)
+				for (int pos = 0; pos < crossSectionPositions.size(); ++pos)
 				{
 								
 					//1. get offset from curve   
-					carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(cross_section_positions[pos]);
+					carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(crossSectionPositions[pos]);
 					offsetFromCurve.push_back(offset);
 
 					//2. calculate the position on and the direction of the base curve
@@ -461,32 +462,36 @@ namespace OpenInfraPlatform
 					std::tie(pointOnCurve, directionOfCurve) = 
 						placementConverter->calculatePositionOnAndDirectionOfBaseCurve(
 							directrix.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-							cross_section_positions[pos], 0.);
+							crossSectionPositions[pos], 0.);
 
 					CrossSectionPoints.push_back(pointOnCurve);
 					directionsOfCurve.push_back(directionOfCurve);
 
 					//TO DO:
 					//3. get information from FixedAxisVertical 
-					if (fixed_axis_vertical == true)
+					if (fixedAxisVertical == true)
 					{
 						directionsOfCurve[pos].z = 0;
 						directionsOfCurve[pos].normalize();
+					}
+					else
+					{
+
 					}
 							
 								
 					//4. calculate the rotations
 					//the direction of the curve's tangent = directionOfCurve
 					//now that localPLacement Matrix is a Vector ----> 1 Matrix for each CrossSectionPosition saved in the Vector localPlacementMatrix
-					carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], fixed_axis_vertical);
+					carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(directionsOfCurve[pos], fixedAxisVertical);
 					localPlacementMatrix.push_back(localm);
 
 					// 4. calculate the position
 					// the position on the curve = pointOnCurve
 					// the offsets = offsetFromCurve
 					carve::geom::vector<3> translate = CrossSectionPoints[pos] + localPlacementMatrix[pos] * offsetFromCurve[pos];
-					carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(directionsOfCurve[pos], fixed_axis_vertical, translate);
-					object_placement_matrix.push_back(object_placement_matrix_pos);
+					carve::math::Matrix objectPlacementMatrix_pos = convertCurveOrientation(directionsOfCurve[pos], fixedAxisVertical, translate);
+					objectPlacementMatrix.push_back(objectPlacementMatrix_pos);
 				}
 							
 				//Declare Variable for the addFace
@@ -533,7 +538,7 @@ namespace OpenInfraPlatform
 					{
 						carve::geom::vector<2>& point = loop[k];
 
-						carve::geom::vector<3> Tpoint = object_placement_matrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); 
+						carve::geom::vector<3> Tpoint = objectPlacementMatrix[0] * (carve::geom::VECTOR(point.x, point.y, 0)); 
 						Tloop.push_back(Tpoint);
 					}
 					TFcompositeprofile.push_back(Tloop);
@@ -563,7 +568,7 @@ namespace OpenInfraPlatform
 							{
 								carve::geom::vector<2>& point = loop[k];
 
-								carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
+								carve::geom::vector<3>  Tpoint = objectPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 								Tloop.push_back(Tpoint);
 							}
 							Tcompositeprofile.push_back(Tloop);
@@ -606,7 +611,7 @@ namespace OpenInfraPlatform
 								{
 									carve::geom::vector<2>& point = loop[k];
 			
-									carve::geom::vector<3>  Tpoint = object_placement_matrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
+									carve::geom::vector<3>  Tpoint = objectPlacementMatrix[j] * (carve::geom::VECTOR(point.x, point.y, 0));
 									Tloop.push_back(Tpoint);
 								}
 								Tcompositeprofile.push_back(Tloop);
@@ -638,13 +643,13 @@ namespace OpenInfraPlatform
 
 							//Calculate Matrices
 							//2. local_placement
-							carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(BasisPointDirection[i], fixed_axis_vertical);
+							carve::math::Matrix localm = placementConverter->calculateCurveOrientationMatrix(BasisPointDirection[i], fixedAxisVertical);
 
 							// 3. calculate the position
 							// the position on the curve = pointOnCurve
 							// the offsets = offsetFromCurve
 							carve::geom::vector<3> translate = BasisCurvePoints[i] + localm * IoffsetFromCurve;
-							carve::math::Matrix object_placement_matrix_pos = convertCurveOrientation(BasisPointDirection[i], fixed_axis_vertical, translate);
+							carve::math::Matrix objectPlacementMatrix_pos = convertCurveOrientation(BasisPointDirection[i], fixedAxisVertical, translate);
 									
 
 							//interpolate profile
@@ -668,7 +673,7 @@ namespace OpenInfraPlatform
 									carve::geom::vector<2> deltapoint = carve::geom::VECTOR(pointAfter.x - pointBefore.x, pointAfter.y - pointBefore.y);
 									carve::geom::vector<2> Tpoint2D = carve::geom::VECTOR(deltapoint.x * factorBefore + pointBefore.x, deltapoint.y * factorBefore + pointBefore.y);
 												
-									carve::geom::vector<3> Tpoint = object_placement_matrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
+									carve::geom::vector<3> Tpoint = objectPlacementMatrix_pos *(carve::geom::VECTOR(Tpoint2D.x, Tpoint2D.y, 0));
 									Tloop.push_back(Tpoint);
 								}
 								Tcompositeprofile.push_back(Tloop);
@@ -694,7 +699,7 @@ namespace OpenInfraPlatform
 						for (int k = 0; k < loop.size(); ++k)
 						{
 							carve::geom::vector<3>& point = loop[k];
-							body_data->addVertex(pos*point);
+							bodyData->addVertex(pos*point);
 						}
 					}
 				}
@@ -704,33 +709,33 @@ namespace OpenInfraPlatform
 
 				//1. Add Faces between Cross Sections to create a body along the Directrix
 				//size of Tloop has to be the same for every Profile
-				size_t num_vertices = body_data->getVertexCount();
+				size_t num_vertices = bodyData->getVertexCount();
 				int PFTS = paths_for_tessellation.size() -1;
 				for (int i = 0; i < PFTS ; ++i)
 				{
 					for (int j = 0; j < ppoints - 1; ++j)
 					{
-						body_data->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
-						body_data->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
+						bodyData->addFace(i*ppoints + j, i*ppoints + j + 1, (i + 1)*ppoints + j);
+						bodyData->addFace(i*ppoints + j + 1, (i + 1)*ppoints + j, (i + 1)*ppoints + j + 1);
 					}
 				}
 						
 						
 				//close the first positions of the body
-				body_data->addFace(0, ppoints - 1, ppoints);
+				bodyData->addFace(0, ppoints - 1, ppoints);
 
 				//close the body
 				int closingBodyVertices = num_vertices / ppoints;
 				for (int ii = 1; ii < closingBodyVertices - 1; ++ii)
 				{
-					body_data->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints - 1);
-					body_data->addFace((ii + 1)*ppoints, ii*ppoints, (ii + 1)*ppoints - 1);
+					bodyData->addFace(ii*ppoints, ii*ppoints - 1, (ii+1)*ppoints - 1);
+					bodyData->addFace((ii + 1)*ppoints, ii*ppoints, (ii + 1)*ppoints - 1);
 				}
 					
 				// close front cap
 				for (int jj = 0; jj < ppoints - 2; ++jj)
 				{
-					body_data->addFace(0, jj + 1, jj + 2);
+					bodyData->addFace(0, jj + 1, jj + 2);
 				}
 
 				// close back cap
@@ -738,10 +743,10 @@ namespace OpenInfraPlatform
 				for (int jj = BackCapVertex; jj < num_vertices ; ++jj)
 				{
 					int last = num_vertices - 1;
-					body_data->addFace(last, jj - 1, jj - 2);
+					bodyData->addFace(last, jj - 1, jj - 2);
 				}
 	
-			}//endif sectionedSolid_horizontal
+			}//endif sectionedSolidHorizontal
 
 			carve::math::Matrix multiplyMatrixWithFactor(const carve::math::Matrix &A, const double &factor)
 			{
@@ -762,12 +767,12 @@ namespace OpenInfraPlatform
 			//TO DO: it has to work for ssh
 			carve::math::Matrix convertCurveOrientation(
 				const carve::geom::vector<3> directionOfCurve,
-				const bool fixed_axis_vertical,
+				const bool fixedAxisVertical,
 				const carve::geom::vector<3> translate = carve::geom::VECTOR(0., 0., 0.)
 			) const noexcept(false)
 			{
 
-				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixed_axis_vertical ? 0.0 : directionOfCurve.z));
+				carve::geom::vector<3> local_z(carve::geom::VECTOR(directionOfCurve.x, directionOfCurve.y, fixedAxisVertical ? 0.0 : directionOfCurve.z));
 
 				// get the perpendicular to the left of the curve in the z-y plane (curve's coordinate system)
 				carve::geom::vector<3> local_y(carve::geom::VECTOR(-local_z.y, local_z.x, 0.0)); // always lies in the z-y plane(Curve (and x-y 2D-Profile)
@@ -2458,19 +2463,27 @@ namespace OpenInfraPlatform
 					}
 					catch (carve::exception& ce)
 					{
-						throw oip::InconsistentModelingException("csg operation failed");
+						isCSGComputationOk = false;
+						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << ce.str();
+						//throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (const std::out_of_range& oor)
 					{
-						throw oip::InconsistentModelingException("csg operation failed");
+						isCSGComputationOk = false;
+						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << oor.what();
+						//throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (std::exception& e)
 					{
-						throw oip::InconsistentModelingException("csg operation failed");
+						isCSGComputationOk = false;
+						BLUE_LOG(error) << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << ", " << e.what();
+						//throw oip::InconsistentModelingException("csg operation failed");
 					}
 					catch (...)
 					{
-						throw oip::InconsistentModelingException("csg operation failed");
+						isCSGComputationOk = false;
+						std::cerr << "csg operation failed, id1 = " << entity1 << ", id2 = " << entity2 << std::endl;
+						//throw oip::InconsistentModelingException("csg operation failed");
 					}
 
 					if (!result)
@@ -2575,18 +2588,18 @@ namespace OpenInfraPlatform
 		//	{
 		//
 		//		std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurve> spine_curve = spine->SpineCurve;
-		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> >& vec_cross_sections_unordered = spine->CrossSections;
-		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> >& vec_cross_section_positions_unordered = spine->CrossSectionPositions;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> >& vecCrossSections_unordered = spine->CrossSections;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> >& vec_crossSectionPositions_unordered = spine->CrossSectionPositions;
 		//
 		//		// copy cross sections
 		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>>::iterator it_cross_sections;
-		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>> vec_cross_sections = vec_cross_sections_unordered;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef>> vecCrossSections = vecCrossSections_unordered;
 		//
 		//		// copy placements
 		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement>>::iterator it_placements;
-		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>> vec_cross_section_positions;
+		//		std::vector<std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement>> vec_crossSectionPositions;
 		//		std::vector<carve::geom::vector<3>> vecCurveAbscissas;
-		//		for (it_placements = vec_cross_section_positions_unordered.begin(); it_placements != vec_cross_section_positions_unordered.end(); ++it_placements)
+		//		for (it_placements = vec_crossSectionPositions_unordered.begin(); it_placements != vec_crossSectionPositions_unordered.end(); ++it_placements)
 		//		{
 		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferencePlacement> reference_placement = (*it_placements);
 		//
@@ -2595,14 +2608,14 @@ namespace OpenInfraPlatform
 		//
 		//			if (reference_curve_placement)
 		//			{
-		//				vec_cross_section_positions.push_back(reference_curve_placement);
+		//				vec_crossSectionPositions.push_back(reference_curve_placement);
 		//			}
 		//		}
 		//
-		//		unsigned int num_cross_sections = vec_cross_sections.size();
-		//		if (vec_cross_section_positions.size() < num_cross_sections)
+		//		unsigned int num_cross_sections = vecCrossSections.size();
+		//		if (vec_crossSectionPositions.size() < num_cross_sections)
 		//		{
-		//			num_cross_sections = vec_cross_section_positions.size();
+		//			num_cross_sections = vec_crossSectionPositions.size();
 		//		}
 		//
 		//		std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
@@ -2613,24 +2626,24 @@ namespace OpenInfraPlatform
 		//
 		//		for (unsigned int i = 0; i < num_cross_sections; ++i)
 		//		{
-		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement = vec_cross_section_positions[i];
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> reference_curve_placement = vec_crossSectionPositions[i];
 		//			double abscissa = reference_curve_placement->CurvilinearAbscissa;
 		//
 		//			for (unsigned int j = i + 1; j < num_cross_sections; ++j)
 		//			{
-		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> other = vec_cross_section_positions[j];
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> other = vec_crossSectionPositions[j];
 		//				double abscissa_other = other->CurvilinearAbscissa;
 		//
 		//				if (abscissa_other < abscissa)
 		//				{
 		//					// reordering necessary
-		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> copy = vec_cross_section_positions[i];
-		//					vec_cross_section_positions[i] = vec_cross_section_positions[j];
-		//					vec_cross_section_positions[j] = copy;
+		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcReferenceCurvePlacement> copy = vec_crossSectionPositions[i];
+		//					vec_crossSectionPositions[i] = vec_crossSectionPositions[j];
+		//					vec_crossSectionPositions[j] = copy;
 		//
-		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> copy_profile = vec_cross_sections[i];
-		//					vec_cross_sections[i] = vec_cross_sections[j];
-		//					vec_cross_sections[j] = copy_profile;
+		//					std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> copy_profile = vecCrossSections[i];
+		//					vecCrossSections[i] = vecCrossSections[j];
+		//					vecCrossSections[j] = copy_profile;
 		//					abscissa = abscissa_other;
 		//				}
 		//			}
@@ -2641,13 +2654,13 @@ namespace OpenInfraPlatform
 		//			for (unsigned int k = 0; k < num_cross_sections; ++k)
 		//			{
 		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef> profileDef
-		//					= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(vec_cross_sections[k]);
+		//					= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(vecCrossSections[k]);
 		//
-		//				const double curveAbcissa = vec_cross_section_positions[k]->CurvilinearAbscissa;
+		//				const double curveAbcissa = vec_crossSectionPositions[k]->CurvilinearAbscissa;
 		//				const carve::geom::vector<3> refDirection =
-		//					carve::geom::VECTOR(vec_cross_section_positions[k]->RefDirection->DirectionRatios[0],
-		//						vec_cross_section_positions[k]->RefDirection->DirectionRatios[1],
-		//						vec_cross_section_positions[k]->RefDirection->DirectionRatios[2]);
+		//					carve::geom::VECTOR(vec_crossSectionPositions[k]->RefDirection->DirectionRatios[0],
+		//						vec_crossSectionPositions[k]->RefDirection->DirectionRatios[1],
+		//						vec_crossSectionPositions[k]->RefDirection->DirectionRatios[2]);
 		//
 		//				const carve::geom::vector<3> curveAbscissa3D = refDirection * curveAbcissa * lengthFactor;
 		//
@@ -2847,7 +2860,7 @@ namespace OpenInfraPlatform
 		//		{
 		//			carve::geom::vector<3> abscissa3D = vecCurveAbscissas[i] * lengthFactor;
 		//
-		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def = vec_cross_sections[i];
+		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def = vecCrossSections[i];
 		//			std::shared_ptr<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids> profile_with_voids
 		//				= std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def);
 		//
@@ -2858,7 +2871,7 @@ namespace OpenInfraPlatform
 		//
 		//				carve::geom::vector<3> abscissaNext3D = vecCurveAbscissas[i + 1] * lengthFactor;
 		//
-		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vecCrossSections[i + 1];
 		//				next_profile_with_voids = std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryProfileDefWithVoids>(profile_def2);
 		//
 		//				ProfileConverterT<emt::IfcBridgeEntityTypes, OpenInfraPlatform::IfcBridge::UnitConverter> profileConverter(geomSettings, unitConverter);
@@ -2876,7 +2889,7 @@ namespace OpenInfraPlatform
 		//
 		//				carve::geom::vector<3> abscissaNext3D = vecCurveAbscissas[i + 1] * lengthFactor;
 		//
-		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vec_cross_sections[i + 1];
+		//				std::shared_ptr<emt::IfcBridgeEntityTypes::IfcProfileDef> profile_def2 = vecCrossSections[i + 1];
 		//				next_profile = std::dynamic_pointer_cast<emt::IfcBridgeEntityTypes::IfcArbitraryClosedProfileDef>(profile_def2);
 		//
 		//				ProfileConverterT<emt::IfcBridgeEntityTypes, OpenInfraPlatform::IfcBridge::UnitConverter> profileConverter(geomSettings, unitConverter);
