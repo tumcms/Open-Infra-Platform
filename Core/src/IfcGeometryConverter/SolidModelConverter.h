@@ -430,7 +430,7 @@ namespace OpenInfraPlatform
 					{
 						profileCoords2D.push_back(profileLoop);
 					}
-					paths.push_back(profile_coords_2d);
+					paths.push_back(profileCoords2D);
 
 				}
 
@@ -1808,15 +1808,14 @@ namespace OpenInfraPlatform
 				}
 				throw oip::UnhandledException(csgPrimitive);
 			}
-
 			/*! \brief converts \c IfcBlock to meshes.
-			 *
-			 * \param[in] block						The \c IfcBlock to be converted.
-			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
-			 * \param[out] itemData					A pointer to be filled with the relevant data.
-			 *
-			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcblock.htm
-			*/
+						 *
+						 * \param[in] block						The \c IfcBlock to be converted.
+						 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+						 * \param[out] itemData					A pointer to be filled with the relevant data.
+						 *
+						 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcblock.htm
+						*/
 			void convertIfcBlock(
 				const EXPRESSReference <typename IfcEntityTypesT::IfcBlock>& block,
 				const carve::math::Matrix& pos,
@@ -1832,12 +1831,7 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
-					int numVerticesInCircle = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-					double d_angle = GeomSettings()->getAngleLength(radius);
-					for (double angle = 0.; angle < 2 * M_PI; angle += d_angle)
-					{
-						polyhedron_data->addVertex(primitive_placement_matrix*carve::geom::VECTOR(sin(angle)*radius, cos(angle)*radius, 0.0));
-					}
+				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 
 				carve::math::Matrix primitivePlacementMatrix = block->Position ?
 					pos * placementConverter->convertIfcAxis2Placement3D(block->Position) :
