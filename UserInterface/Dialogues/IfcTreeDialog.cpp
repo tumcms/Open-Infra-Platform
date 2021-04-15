@@ -16,6 +16,8 @@
 */
 
 #include "IfcTreeDialog.h"
+#include "IfcTreeModel.h"
+#include "ui_IfcTreeDialog.h"
 
 OpenInfraPlatform::UserInterface::IfcTreeDialog::IfcTreeDialog(QWidget *parent /*= nullptr*/) :
 	QDialog(parent, Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
@@ -27,6 +29,12 @@ OpenInfraPlatform::UserInterface::IfcTreeDialog::IfcTreeDialog(QWidget *parent /
 OpenInfraPlatform::UserInterface::IfcTreeDialog::~IfcTreeDialog()
 {
 
+}
+
+void OpenInfraPlatform::UserInterface::IfcTreeDialog::setModel()
+{
+	//ui_->ifcTreeView->setModel(new IfcTreeModel());
+	//((QDialog*)this)->show();
 }
 
 void OpenInfraPlatform::UserInterface::IfcTreeDialog::on_pushButtonClose_clicked()

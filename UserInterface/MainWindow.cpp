@@ -543,7 +543,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 					itemIfcTree->setText(0, "IfcTree");
 
 					QPushButton *openIfcTreeButton = new QPushButton();
-					QTreeWidget *sdsd = new QTreeWidget();
 					openIfcTreeButton->setText("Open Ifc Tree Dialog");
 					QObject::connect(openIfcTreeButton, SIGNAL(clicked()), this, SLOT(on_actionShow_Ifc_Tree_triggered()));
 					modelsTreeWidget_->setItemWidget(itemIfcTree, 1, openIfcTreeButton);
