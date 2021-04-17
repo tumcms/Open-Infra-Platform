@@ -268,6 +268,9 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				if (facetedBrep.expired())
+					throw oip::ReferenceExpiredException(facetedBrep);
+
 				// (1/2) IfcFacetedBrepWithVoids SUBTYPE of IfcFacetedBrep
 				if (facetedBrep.isOfType<typename IfcEntityTypesT::IfcFacetedBrepWithVoids>()) 
 				{
@@ -801,6 +804,9 @@ namespace OpenInfraPlatform
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
+				if (sweptAreaSolid.expired())
+					throw oip::ReferenceExpiredException(sweptAreaSolid);
+
 				// Get swept area and position (attributes 1-2). 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea = sweptAreaSolid->SweptArea;
 
@@ -935,7 +941,8 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
-				const int entity_id = extrudedArea->getId();
+				if (extrudedArea.expired())
+					throw oip::ReferenceExpiredException(extrudedArea);
 
 				if (!extrudedArea->ExtrudedDirection)
 				{
@@ -1240,6 +1247,9 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
+				if (sweptDiskSolid.expired())
+					throw oip::ReferenceExpiredException(sweptDiskSolid);
+
 				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrixCurve = sweptDiskSolid->Directrix;
 
@@ -1530,6 +1540,9 @@ namespace OpenInfraPlatform
 				//					OR(EXISTS(SecondOperand.Closed) AND SecondOperand.Closed);
 				//	END_ENTITY;
 				// **************************************************************************************************************************
+				
+				if (boolResult.expired())
+					throw oip::ReferenceExpiredException(boolResult);
 
 				const int boolean_result_id = boolResult->getId();
 
@@ -1715,6 +1728,9 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
+				if (csgPrimitive.expired())
+					throw oip::ReferenceExpiredException(csgPrimitive);
+
 				if (csgPrimitive.template isOfType<typename IfcEntityTypesT::IfcBlock>())
 				{
 					convertIfcBlock(csgPrimitive.template as<typename IfcEntityTypesT::IfcBlock>(),
@@ -1760,7 +1776,7 @@ namespace OpenInfraPlatform
 						 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcblock.htm
 						*/
 			void convertIfcBlock(
-				const EXPRESSReference <typename IfcEntityTypesT::IfcBlock>& block,
+				const EXPRESSReference<typename IfcEntityTypesT::IfcBlock>& block,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
@@ -1773,6 +1789,9 @@ namespace OpenInfraPlatform
 				//		ZLength: IfcPositiveLengthMeasure;
 				//	END_ENTITY;
 				// **************************************************************************************************************************
+
+				if (block.expired())
+					throw oip::ReferenceExpiredException(block);
 
 				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 
@@ -1837,6 +1856,9 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
+				if (rectangularPyramid.expired())
+					throw oip::ReferenceExpiredException(rectangularPyramid);
+
 				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 
 				carve::math::Matrix primitivePlacementMatrix = rectangularPyramid->Position ?
@@ -1884,6 +1906,9 @@ namespace OpenInfraPlatform
 				//		BottomRadius: IfcPositiveLengthMeasure;
 				//	END_ENTITY;
 				// **************************************************************************************************************************
+
+				if (rightCircularCone.expired())
+					throw oip::ReferenceExpiredException(rightCircularCone);
 
 				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 
@@ -1943,6 +1968,9 @@ namespace OpenInfraPlatform
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 
+				if (rightCircularCylinder.expired())
+					throw oip::ReferenceExpiredException(rightCircularCylinder);
+
 				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 
 				carve::math::Matrix primitivePlacementMatrix = rightCircularCylinder->Position ?
@@ -1992,6 +2020,9 @@ namespace OpenInfraPlatform
 				//		Radius: IfcPositiveLengthMeasure;
 				//	END_ENTITY;
 				// **************************************************************************************************************************
+
+				if (sphere.expired())
+					throw oip::ReferenceExpiredException(sphere);
 
 				std::shared_ptr<carve::input::PolyhedronData> polyhedronData(new carve::input::PolyhedronData());
 				carve::math::Matrix primitivePlacementMatrix = sphere->Position ?
