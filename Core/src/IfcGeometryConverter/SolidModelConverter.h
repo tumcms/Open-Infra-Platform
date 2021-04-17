@@ -956,7 +956,7 @@ namespace OpenInfraPlatform
 
 				// direction and length of extrusion
 				carve::geom::vector<3> extrusionVector = placementConverter->convertIfcDirection(extrudedArea->ExtrudedDirection) 
-					* extrudedArea->Depth * UnitConvert()->getLengthInMeterFactor();
+					* extrudedArea->Depth * this->UnitConvert()->getLengthInMeterFactor();
 
 				// swept area
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea = extrudedArea->SweptArea;
