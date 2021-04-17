@@ -953,26 +953,9 @@ namespace OpenInfraPlatform
 				}
 
 				// direction and length of extrusion
-				const double depth = (typename IfcEntityTypesT::IfcLengthMeasure)(extrudedArea->Depth) * UnitConvert()->getLengthInMeterFactor();
-				carve::geom::vector<3>  extrusionVector = carve::geom::VECTOR(0.0, 0.0, 0.0);
-				auto& vecDirection = extrudedArea->ExtrudedDirection->DirectionRatios;
-				
-				switch (vecDirection.size()) 
-				{
-				case 3:
-				{
-					extrusionVector.z = vecDirection[2] * depth;
-				}
-				case 2:
-				{
-					extrusionVector.x = vecDirection[0] * depth;
-					extrusionVector.y = vecDirection[1] * depth;
-					break;
-				}
-				default:
-					throw oip::InconsistentModellingException(extrudedArea, "Cardinality of the direction ratios can be only 2 or 3");
-				}
-				
+				carve::geom::vector<3> extrusionVector = placementConverter->convertIfcDirection(extrudedArea->ExtrudedDirection) 
+					* extrudedArea->Depth * UnitConvert()->getLengthInMeterFactor();
+
 				// swept area
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef> sweptArea = extrudedArea->SweptArea;
 
@@ -984,7 +967,7 @@ namespace OpenInfraPlatform
 
 				if (paths.size() == 0)
 				{
-					return;
+					throw oip::InconsistentGeometryException(extrudedArea, "Paths are empty!");
 				}
 
 				// .AREA. vs .CURVE. (is the result closed or open, i.e. full solid vs pipe)
