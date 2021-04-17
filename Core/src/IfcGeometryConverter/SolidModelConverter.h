@@ -1206,9 +1206,10 @@ namespace OpenInfraPlatform
 				for (int j = 0; j < numOfSegments; ++j)
 				{
 					int j_offset = j * numPolygonPoints;
-					polyhedronData->addFace(j_offset + numPolygonPoints - 1, 
+					polyhedronData->addFace(j_offset + numPolygonPoints - 1,
 						j_offset, j_offset + numPolygonPoints,
 						j_offset + numPolygonPoints + numPolygonPoints - 1);
+				}
 			}
 
 
