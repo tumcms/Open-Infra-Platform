@@ -473,12 +473,7 @@ namespace OpenInfraPlatform
 					{
 						directionsOfCurve[pos].z = 0;
 						directionsOfCurve[pos].normalize();
-					}
-					else
-					{
-
-					}
-							
+					}		
 								
 					//4. calculate the rotations
 					//the direction of the curve's tangent = directionOfCurve
