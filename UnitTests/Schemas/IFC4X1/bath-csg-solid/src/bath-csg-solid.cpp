@@ -38,10 +38,10 @@ protected:
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-		model = importer->collectData(express_model);
+		auto model = importer->collectData(express_model);
 
 		_background = rendererIfc->captureImage();
-		rendererIfc->setModel(model);
+		rendererIfc->setModel(model[0]);
 	}
 
 	virtual void TearDown() override {
@@ -56,7 +56,6 @@ protected:
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
 };
 
 TEST_F(BathCsgSolid, AllEntitiesAreRead) {
@@ -117,14 +116,14 @@ TEST_F(BathCsgSolid, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("bath-csg-solid_front.png").string(), image_front);
 	buw::storeImage(testPath("bath-csg-solid_top.png").string(), image_top);
 	buw::storeImage(testPath("bath-csg-solid_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("bath-csg-solid_left.png").string(), image_left);
 	buw::storeImage(testPath("bath-csg-solid_right.png").string(), image_right);
 	buw::storeImage(testPath("bath-csg-solid_back.png").string(), image_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -173,7 +172,7 @@ TEST_F(BathCsgSolid, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
+	
 	buw::storeImage(testPath("bath-csg-solid_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("bath-csg-solid_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("bath-csg-solid_top_left_front.png").string(), image_top_left_front);
@@ -182,7 +181,7 @@ TEST_F(BathCsgSolid, VertexViews)
 	buw::storeImage(testPath("bath-csg-solid_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("bath-csg-solid_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("bath-csg-solid_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
+	
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
