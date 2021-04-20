@@ -18,6 +18,8 @@
 #pragma once
 
 #include "ui_IfcTreeDialog.h"
+#include "ViewPanel/View.h"
+
 #include <QDialog>
 #include <iostream>
 
@@ -30,7 +32,7 @@ namespace OpenInfraPlatform
 			Q_OBJECT;
 
 		public:
-			IfcTreeDialog(QWidget *parent = nullptr);
+			IfcTreeDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent = nullptr);
 
 			//! Virtual destructor.
 			virtual ~IfcTreeDialog();
@@ -41,7 +43,8 @@ namespace OpenInfraPlatform
 			void on_pushButtonClose_clicked();
 
 		private:
-			Ui::IfcTreeDialog*	ui_;
+			Ui::IfcTreeDialog* ui_;
+			OpenInfraPlatform::UserInterface::View* view_;
 		}; // end class IfcTree
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform

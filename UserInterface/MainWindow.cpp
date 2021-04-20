@@ -1807,7 +1807,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_License_and_Cop
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Ifc_Tree_triggered() {
 	if (ifcTreeDialog_ == nullptr) {
-		ifcTreeDialog_ = new IfcTreeDialog(this);
+		ifcTreeDialog_ = new IfcTreeDialog(view_, this);
 	}
 
 	ifcTreeDialog_->show();
