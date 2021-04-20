@@ -19,6 +19,7 @@
 #define IFCTREEITEM_H
 
 #include "EXPRESS/EXPRESSReference.h"
+#include <QVariant>
 
 
 namespace OpenInfraPlatform {
@@ -27,7 +28,7 @@ namespace OpenInfraPlatform {
 		class IfcTreeItem
 		{
 		public:
-			explicit IfcTreeItem(std::shared_ptr<IfcTreeItem> parentItem = nullptr);
+			IfcTreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data, std::shared_ptr<IfcTreeItem> parentItem = nullptr);
 			~IfcTreeItem();
 
 			void appendchild(std::shared_ptr<IfcTreeItem> child);
@@ -35,14 +36,14 @@ namespace OpenInfraPlatform {
 			std::shared_ptr<IfcTreeItem> child(int row);
 			int childCount() const;
 			int columnCount() const;
-			QVariant data(int column, int row) const;
+			QVariant data(int row, int column) const;
 			int row() const;
 			std::shared_ptr<IfcTreeItem> parentItem();
-			QString getIfcClassName();
+			QString getIfcClassName() const;
 
 		private:
 			QList<std::shared_ptr<IfcTreeItem>> childItems_;
-			std::vector<QString> data_;
+			std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data_;
 			std::shared_ptr<IfcTreeItem> parentItem_;
 
 			struct getAttributeDescription;
@@ -53,7 +54,7 @@ namespace OpenInfraPlatform {
 
 #endif //IFCTREITEM_H
 
-namespace buw
+namespace oip
 {
 	using OpenInfraPlatform::UserInterface::IfcTreeItem;
 }

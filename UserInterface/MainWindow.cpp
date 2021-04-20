@@ -536,7 +536,6 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				}
 
 				// 5. treeviewer
-				QString filetype = filename.right(3);
 				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
 				{
 					auto itemIfcTree = new QTreeWidgetItem(itemModel);

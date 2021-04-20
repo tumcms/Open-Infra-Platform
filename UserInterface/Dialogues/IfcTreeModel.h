@@ -15,33 +15,43 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef IFCTREEMODEL_H
+#define IFCTREEMODEL_H
 
 #include "IfcTreeItem.h"
 
 #include <QAbstractItemModel>
+#include <QModelIndex>
+#include <QVariant>
 
-namespace OpenInfraPlatform {
-	namespace UserInterface {
 
-		class IfcTreeModel : public QAbstractItemModel {
+namespace OpenInfraPlatform 
+{
+	namespace UserInterface 
+	{
+
+		class IfcTreeModel : public QAbstractItemModel 
+		{
 			Q_OBJECT;
 
 		public:
-			IfcTreeModel();
+			IfcTreeModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> entities, QObject *parent = nullptr);
 			~IfcTreeModel();
 
 		//override from QAbstractItemModel
-			virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
-			virtual QModelIndex parent(const QModelIndex & child) const override;
-			virtual int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-			virtual int columnCount(const QModelIndex & patent = QModelIndex()) const override;
-			virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-			virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+			QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+			QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const override;
+			QModelIndex parent(const QModelIndex &index) const override;
+			int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
 		private:
-			std::vector<std::shared_ptr<IfcTreeItem>> data_;
+			void setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> entities, IfcTreeItem *parent);
+
+			IfcTreeItem *rootItem_;
 		};
 
 	}
 }
+
+#endif //TREEMODEL_H

@@ -35,7 +35,7 @@ namespace OpenInfraPlatform
 			//! Virtual destructor.
 			virtual ~IfcTreeDialog();
 
-			void setModel();
+			void show();
 
 		private Q_SLOTS:
 			void on_pushButtonClose_clicked();
@@ -46,7 +46,7 @@ namespace OpenInfraPlatform
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform
 
-namespace buw
+namespace oip
 {
 	using OpenInfraPlatform::UserInterface::IfcTreeDialog;
 }
