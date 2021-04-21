@@ -19,6 +19,7 @@
 #define IFCTREEMODEL_H
 
 #include "IfcTreeItem.h"
+#include "EXPRESS/EXPRESSEntity.h"
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -35,20 +36,20 @@ namespace OpenInfraPlatform
 			Q_OBJECT;
 
 		public:
-			IfcTreeModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> entities, QObject *parent = nullptr);
+			IfcTreeModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, QObject *parent = nullptr);
 			~IfcTreeModel();
 
 		//override from QAbstractItemModel
-			QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-			QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const override;
-			QModelIndex parent(const QModelIndex &index) const override;
-			int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-			int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+			virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+			virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const override;
+			virtual QModelIndex parent(const QModelIndex &index) const override;
+			virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+			virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
 		private:
-			void setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> entities, IfcTreeItem *parent);
+			void setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, std::shared_ptr<IfcTreeItem> parent);
 
-			IfcTreeItem *rootItem_;
+			std::shared_ptr<IfcTreeItem> rootItem_;
 		};
 
 	}

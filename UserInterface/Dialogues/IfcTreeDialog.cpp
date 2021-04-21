@@ -40,9 +40,9 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 	//for first testing just get last model, later this will be changed to selecting the model need
 	auto model = Core::DataManagement::DocumentManager::getInstance().getData().getLastModel();
 	auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
-	auto entities = ifcModel->getExpressModel();
-	ui_->ifcTreeView->setAnimated(true);
-	//ui_->ifcTreeView->setModel(new IfcTreeModel());
+	auto expressModel = ifcModel->getExpressModel();
+	auto treeModel = new IfcTreeModel(expressModel);
+	ui_->ifcTreeView->setModel(treeModel);
 	((QDialog*)this)->show();
 }
 

@@ -25,7 +25,7 @@
 namespace OpenInfraPlatform {
 	namespace UserInterface {
 
-		class IfcTreeItem
+		class IfcTreeItem : public std::enable_shared_from_this<IfcTreeItem>
 		{
 		public:
 			IfcTreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data, std::shared_ptr<IfcTreeItem> parentItem = nullptr);
@@ -37,7 +37,7 @@ namespace OpenInfraPlatform {
 			int childCount() const;
 			int columnCount() const;
 			QVariant data(int row, int column) const;
-			int row() const;
+			int row();
 			std::shared_ptr<IfcTreeItem> parentItem();
 			QString getIfcClassName() const;
 
@@ -52,7 +52,7 @@ namespace OpenInfraPlatform {
 }
 
 
-#endif //IFCTREITEM_H
+#endif //IFCTREEITEM_H
 
 namespace oip
 {
