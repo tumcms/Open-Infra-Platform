@@ -34,14 +34,15 @@ protected:
 
 	virtual void SetUp() override {
                 IfcVisualTest::SetUp();
-
+		
+		
 		express_model = OpenInfraPlatform::IFC4X1::IFC4X1Reader::FromFile(filename.string());
 
 		importer = buw::makeReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>>();
-		model = importer->collectData(express_model);
+		auto model = importer->collectData(express_model);
 
 		_background = rendererIfc->captureImage();
-		rendererIfc->setModel(model);
+		rendererIfc->setModel(model[0]);
 	}
 
 	virtual void TearDown() override {
@@ -56,7 +57,7 @@ protected:
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X1EntityTypes>> importer = nullptr;
-	buw::ReferenceCounted<oip::IfcModel> model = buw::makeReferenceCounted<oip::IfcModel>();
+	
 };
 
 TEST_F(AirTerminalElement, AllEntitiesAreRead) {
