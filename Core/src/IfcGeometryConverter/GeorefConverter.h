@@ -136,7 +136,10 @@ public:
 	}
 
 
-	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> getGeorefMetadata() const noexcept(false) {
+	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> getGeorefMetadata() noexcept(false) {
+		return georefMetadata_;
+	}
+	const std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>>& getGeorefMetadata() const noexcept(false) {
 		return georefMetadata_;
 	}
 
