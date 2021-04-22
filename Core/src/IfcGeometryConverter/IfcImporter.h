@@ -187,7 +187,7 @@ private:
 	{
 		// clear all descriptions
 		std::shared_ptr<oip::IfcModel> ifcModel = std::make_shared<oip::IfcModel>();
-		if( georef->second )
+		if( georef && georef->second )
 			ifcModel->setGeoref(*(georef->second));
 
 		// obtain maximum number of threads supported by machine
