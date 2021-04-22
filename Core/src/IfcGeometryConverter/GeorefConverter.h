@@ -136,8 +136,55 @@ public:
 	}
 
 
-	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> getGeorefMetadata() const noexcept(false) {
+	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> getGeorefMetadata() noexcept(false) {
 		return georefMetadata_;
+	}
+	const std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>>& getGeorefMetadata() const noexcept(false) {
+		return georefMetadata_;
+	}
+
+	bool hasContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+		{
+			// call recursively
+			return hasContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
+		return std::find_if(getGeorefMetadata().begin(), getGeorefMetadata().end(), 
+			[&context](const auto &el) -> bool { 
+			return el->first == context; 
+		}) != getGeorefMetadata().end();
+	}
+
+	bool hasGeorefContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		// check the parent context if it's a subcontext
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+		{
+			// call recursively
+			return hasGeorefContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
+		// find the correct pair
+		for (auto& el : getGeorefMetadata())
+		{
+			if (el->first == context)
+			{
+				return (el->second ? true : false);
+			}
+		}
+
+		// otherwise 
+		return false;
 	}
 
 	carve::math::Matrix getContextPlacement(

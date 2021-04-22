@@ -1666,19 +1666,19 @@ namespace OpenInfraPlatform
 				case 0:
 				{
 					return convertIfcBooleanResult(
-						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>().lock(), 
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcBooleanResult>>(), 
 						pos, itemData);
 				}
 				case 1:
 				{
 					return convertIfcCsgPrimitive3D(
-						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>().lock(),
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcCsgPrimitive3D>>(),
 						pos, itemData);
 				}
 				case 2:
 				{
 					return convertIfcHalfSpaceSolid(
-						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>().lock(),
+						operand.get<EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>>(),
 						pos, itemData, otherOperand);
 				}
 				case 3:

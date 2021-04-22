@@ -140,7 +140,7 @@ std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcE
 			// add if the conversion was successful
 			if( !itemData->empty() )
 			{
-				productShape->getData().push_back(itemData);
+				productShape->addData(itemData);
 				shapes.push_back(productShape);
 			}
 		}
