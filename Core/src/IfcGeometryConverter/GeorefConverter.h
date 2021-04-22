@@ -147,6 +147,14 @@ public:
 		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
 	) const noexcept(false)
 	{
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+		{
+			// call recursively
+			return hasContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
 		return std::find_if(getGeorefMetadata().begin(), getGeorefMetadata().end(), 
 			[&context](const auto &el) -> bool { 
 			return el->first == context; 
