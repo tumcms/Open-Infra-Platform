@@ -140,6 +140,32 @@ public:
 		return georefMetadata_;
 	}
 
+	bool hasGeorefContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		// check the parent context if it's a subcontext
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+		{
+			// call recursively
+			return hasGeorefContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
+		// find the correct pair
+		for (auto& el : getGeorefMetadata())
+		{
+			if (el->first == context)
+			{
+				return (el->second ? true : false);
+			}
+		}
+
+		// otherwise return identity
+		return false;
+	}
+
 	carve::math::Matrix getContextPlacement(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
 	) const noexcept(false)

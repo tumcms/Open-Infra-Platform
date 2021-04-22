@@ -198,8 +198,9 @@ private:
 		uint32_t counter = 0;
 		for (auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
 			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
-			// only add if it's the same georef
-			if(georefConverter->isSameContext(georef->first, shapeData->getContext()))
+			// only add if it's the same georef (that is, if there; otherwise only add those that do not have georef context)
+			if(    ( georef &&  georefConverter->isSameContext(georef->first, shapeData->getContext()))
+				|| (!georef && !georefConverter->hasGeorefContext(shapeData->getContext())) )
 			{
 				tasks[counter % maxNumThreads].push_back(shapeData);
 				counter++;
