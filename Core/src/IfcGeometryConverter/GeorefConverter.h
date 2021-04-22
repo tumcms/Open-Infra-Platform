@@ -187,6 +187,13 @@ public:
 		return false;
 	}
 
+	carve::math::Matrix getDefaultPlacement() const noexcept(false)
+	{
+		if (getGeorefMetadata().size() == 1 && getGeorefMetadata()[0]->second)
+			return getGeorefMetadata()[0]->second->transformationMatrix();
+		return carve::math::Matrix::IDENT();
+	}
+
 	carve::math::Matrix getContextPlacement(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
 	) const noexcept(false)
@@ -209,8 +216,8 @@ public:
 			}
 		}
 
-		// otherwise return identity
-		return carve::math::Matrix::IDENT();
+		// otherwise return default placement
+		return getDefaultPlacement();
 	}
 
 private:

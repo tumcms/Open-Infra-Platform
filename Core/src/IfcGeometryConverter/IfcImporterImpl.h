@@ -133,10 +133,13 @@ std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcE
 			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
 				= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>(product);
 			std::shared_ptr<ItemData> itemData(new ItemData());
+			// get the default placement
+			const carve::math::Matrix contextPlacement =
+				repConverter->getDefaultPlacement();
 			// interpret the alignment
 			repConverter->convertIfcGeometricRepresentationItem(
 				axis,
-				productPlacement, itemData);
+				contextPlacement * productPlacement, itemData);
 			// add if the conversion was successful
 			if( !itemData->empty() )
 			{
