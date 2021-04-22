@@ -864,7 +864,7 @@ namespace OpenInfraPlatform {
 				* \param[out] segmentStartPoints	The starting points of separate segments.
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcClothoid.
 				*
 				* \note The function is not implemented.
 				* \internal TODO.
@@ -891,14 +891,28 @@ namespace OpenInfraPlatform {
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 					
-					// Part 1: Get information from IfcClothoid. 
-
-					std::vector<carve::geom::vector<3>> points = convertIfcCartesianPointList(clothoid->Points);
-
-					// Get IfcClothoid attributes: clothoid position and clothoid constant. 
+					// Part 1: Get information from IfcClothoid.
 					//1.1 Clothoid position
-					carve::geom::vector<3> clothoid_origin = convertIfcPointOnCurve(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
-					//1.2 Clothoid Constant use IfcLengthMeasure
+					carve::math::Matrix clothoidPositionMatrix = placementConverter->convertIfcAxis2Placement(clothoid->Position);
+					carve::math::Matrix inverseClothoidPositionMatrix = GeomUtils::computeInverse(clothoidPositionMatrix);
+
+					// Get parameter of the clothoid for trimming begin.
+					carve::geom::vector<3> firstPoint = getPointOnCurve<typename IfcEntityTypesT::IfcClothoid>(clothoid, trim1Vec, trimmingPreference);
+
+					// Get parameter of the clothoid for trimming end.
+					carve::geom::vector<3> endPoint = getPointOnCurve<typename IfcEntityTypesT::IfcClothoid>(clothoid, trim2Vec, trimmingPreference);
+
+					//get L, A, R 
+					
+					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
+				 
+				
+					//Fresnel equastion 
+					for (int i = 1; i < 200; i++)
+					{
+
+					};
+
 
 				}
 #endif
@@ -2211,7 +2225,27 @@ namespace OpenInfraPlatform {
 					return placementConverter->convertIfcCartesianPoint(line->Pnt) +
 						placementConverter->convertIfcVector(line->Dir) * parameter;
 				}
+				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
+				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
+				* \noe2								Not impemented yet.
+				*/
+				/*template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clorhoid,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					// Interpret parameter
+					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
 
+					// Get radius
+					double clothoidRadius = clothoid->Radius * this->UnitConvert()->getLengthInMeterFactor();
+					// Get clothoid's position
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(clothoid->Position);
+					// Calculate point + apply position
+					return placement * carve::geom::VECTOR(clothoidRadius * cos(angle), clothoidRadius * sin(angle), 0.);
+				}*/
 			protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
