@@ -139,7 +139,7 @@ std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcE
 			// interpret the alignment
 			repConverter->convertIfcGeometricRepresentationItem(
 				axis,
-				productPlacement, itemData);
+				contextPlacement * productPlacement, itemData);
 			// add if the conversion was successful
 			if( !itemData->empty() )
 			{
