@@ -239,7 +239,8 @@ public:
 		return closed_polyhedrons.empty()
 			&& open_polyhedrons.empty()
 			&& open_or_closed_polyhedrons.empty()
-			&& polylines.empty();
+			&& polylines.empty()
+			&& meshsets.empty();
 	}
 
 };
