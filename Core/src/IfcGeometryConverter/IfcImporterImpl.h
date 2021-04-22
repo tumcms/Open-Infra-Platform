@@ -66,11 +66,11 @@ IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
 template <
 	class IfcEntityTypesT
 >
-std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
+std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcEntityTypesT>::convertIfcProduct(
 	const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product
 ) const
 {
-	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = std::make_shared<ShapeInputDataT<IfcEntityTypesT>>();
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> shapes;
 	try
 	{
 		carve::math::Matrix productPlacement(carve::math::Matrix::IDENT());
@@ -96,30 +96,56 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing " << rep->getErrorLog();
 #endif
+
+				if (!rep->ContextOfItems.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationContext>())
+					// ignore
+					continue;
+
 				// apply global position (georeferencing given by the context of the representation)
 				const carve::math::Matrix contextPlacement =
 					repConverter->getContextPlacement(rep->ContextOfItems);
 
+				// the return value
+				std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape 
+					= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>(product, rep, 
+						rep->ContextOfItems.template as<typename IfcEntityTypesT::IfcGeometricRepresentationContext>());
+
 				// convert
 				repConverter->convertIfcRepresentation(rep, contextPlacement * productPlacement, productShape);
+
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed " << rep->getErrorLog();
 #endif
+				computeMeshsetsFromPolyhedrons(productShape);
+				shapes.push_back(productShape);
 			}
 
-			computeMeshsetsFromPolyhedrons(productShape);
 #ifdef _DEBUG
 			BLUE_LOG(trace) << "Processed " << representation->getErrorLog();
 #endif
 		}
 
 		if (product.template isOfType<typename IfcEntityTypesT::IfcAlignment>()) {
+			auto alignment = product.template as<typename IfcEntityTypesT::IfcAlignment>();
+			auto axis = alignment->
+				Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>();
+			// the return value
+			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape
+				= std::make_shared<ShapeInputDataT<IfcEntityTypesT>>(product);
 			std::shared_ptr<ItemData> itemData(new ItemData());
-			productShape->vec_item_data.push_back(itemData);
+			// get the default placement
+			const carve::math::Matrix contextPlacement =
+				repConverter->getDefaultPlacement();
+			// interpret the alignment
 			repConverter->convertIfcGeometricRepresentationItem(
-				product.template as<typename IfcEntityTypesT::IfcAlignment>()->
-					Axis.as<typename IfcEntityTypesT::IfcGeometricRepresentationItem>(),
-				productPlacement, itemData);
+				axis,
+				contextPlacement * productPlacement, itemData);
+			// add if the conversion was successful
+			if( !itemData->empty() )
+			{
+				productShape->addData(itemData);
+				shapes.push_back(productShape);
+			}
 		}
 	}
 	catch (const oip::UnhandledException& ex)
@@ -149,7 +175,7 @@ std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> IfcImporterT<IfcEntityTypesT>:
 	}
 
 	// return the shape data
-	return productShape;
+	return shapes;
 }
 
 
@@ -164,46 +190,32 @@ void IfcImporterT<IfcEntityTypesT>::computeMeshsetsFromPolyhedrons(
 	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> openingDatas;
 
 	// check if the product is an ifcElement, if so, it may contain opening data
-	if (productShape->ifc_product.template isOfType<typename IfcEntityTypesT::IfcElement>()) {
+	if (productShape->getProduct().template isOfType<typename IfcEntityTypesT::IfcElement>()) {
 		// then collect opening data
-		repConverter->convertOpenings(productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), openingDatas);
+		repConverter->convertOpenings(productShape->getProduct().template as<typename IfcEntityTypesT::IfcElement>(), openingDatas);
 	}
 
 	// go through all shapes and convert them to meshsets
-	for (auto& itemData : productShape->vec_item_data) {
+	for (auto& itemData : productShape->getData()) {
 		// convert closed polyhedrons to meshsets
 		itemData->createMeshSetsFromClosedPolyhedrons();
 
 		// if product is IfcElement, then subtract openings like windows, doors, etc.
 		if (!openingDatas.empty()) {
 			repConverter->subtractOpenings(
-				productShape->ifc_product.template as<typename IfcEntityTypesT::IfcElement>(), 
+				productShape->getProduct().template as<typename IfcEntityTypesT::IfcElement>(),
 				itemData, openingDatas);
 		}
 
 		// convert all open polyhedrons to meshsets
-		for (auto& openPoly : itemData->open_polyhedrons) {
-
-			if (openPoly->getVertexCount() < 3) { continue; }
-
-			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(openPoly->createMesh(carve::input::opts()));
-			itemData->meshsets.push_back(openMeshset);
-		}
+		itemData->createMeshSetsFromOpenPolyhedrons();
 
 		// convert all open or closed polyhedrons to meshsets
-		for (auto& openClosedPoly : itemData->open_or_closed_polyhedrons) {
-
-			if (openClosedPoly->getVertexCount() < 3) { continue; }
-
-			std::shared_ptr<carve::mesh::MeshSet<3>> openMeshset(
-				openClosedPoly->createMesh(carve::input::opts()));
-			itemData->meshsets.push_back(openMeshset);
-		}
+		itemData->createMeshSetsFromOpenClosedPolyhedrons();
 
 		// simplify geometry of all meshsets
-		for (auto& meshset : itemData->meshsets) {
-			repConverter->getSolidConverter()->simplifyMesh(meshset);
-		}
+		itemData->simplifyMeshes();
+
 		// polylines are handled by rendering engine
 	}
 }
