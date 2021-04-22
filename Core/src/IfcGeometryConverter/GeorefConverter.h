@@ -143,6 +143,16 @@ public:
 		return georefMetadata_;
 	}
 
+	bool hasContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		return std::find_if(getGeorefMetadata().begin(), getGeorefMetadata().end(), 
+			[&context](const auto &el) -> bool { 
+			return el->first == context; 
+		}) != getGeorefMetadata().end();
+	}
+
 	bool hasGeorefContext(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
 	) const noexcept(false)
@@ -165,7 +175,7 @@ public:
 			}
 		}
 
-		// otherwise return identity
+		// otherwise 
 		return false;
 	}
 

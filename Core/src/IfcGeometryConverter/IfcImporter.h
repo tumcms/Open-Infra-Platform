@@ -89,14 +89,11 @@ public:
 					models.push_back(ifcModel);
 			}
 
-			// some models do not have georefencing assigned
-			// or if nothing got translated - try with the full data set
-			if (models.empty())
-			{
-				auto ifcModel = createGeometryModel(nullptr, shapeInputData);
-				if (!ifcModel->isEmpty())
-					models.push_back(ifcModel);
-			}
+			// some models do not have georeferencing to a context assigned
+			// add all those elements as a separate IFcModel
+			auto ifcModel = createGeometryModel(nullptr, shapeInputData);
+			if (!ifcModel->isEmpty())
+				models.push_back(ifcModel);
 
 			return models;
 		}
@@ -200,7 +197,7 @@ private:
 			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
 			// only add if it's the same georef (that is, if there; otherwise only add those that do not have georef context)
 			if(    ( georef &&  georefConverter->isSameContext(georef->first, shapeData->getContext()))
-				|| (!georef && !georefConverter->hasGeorefContext(shapeData->getContext())) )
+				|| (!georef && !georefConverter->hasContext(shapeData->getContext())) )
 			{
 				tasks[counter % maxNumThreads].push_back(shapeData);
 				counter++;
