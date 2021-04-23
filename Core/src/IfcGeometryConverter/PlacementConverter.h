@@ -1512,7 +1512,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>& vkt3DtargetDirection
 				) const throw(...)
                 {
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 
                     if(!bDistMeasuredAlongHorizontal)
 						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D: Distance along a 3D curve not supported.");

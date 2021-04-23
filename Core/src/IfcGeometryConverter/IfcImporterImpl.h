@@ -125,6 +125,7 @@ std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcE
 #endif
 		}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 		if (product.template isOfType<typename IfcEntityTypesT::IfcAlignment>()) {
 			auto alignment = product.template as<typename IfcEntityTypesT::IfcAlignment>();
 			auto axis = alignment->
@@ -147,6 +148,7 @@ std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> IfcImporterT<IfcE
 				shapes.push_back(productShape);
 			}
 		}
+#endif
 	}
 	catch (const oip::UnhandledException& ex)
 	{
