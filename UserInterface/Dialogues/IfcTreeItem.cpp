@@ -40,7 +40,8 @@ void OpenInfraPlatform::UserInterface::IfcTreeItem::appendchild(std::shared_ptr<
 std::shared_ptr<OpenInfraPlatform::UserInterface::IfcTreeItem> OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
 {
 	if (row < 0 || row >= childItems_.size())
-		return nullptr;
+		throw oip::UnhandledException("Child index out of range (IfcTreeItem::child)");
+
 	return childItems_.at(row);
 }
 
@@ -98,7 +99,6 @@ QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
 
 struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription 
 {
-
 	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::EarlyBinding::EXPRESSEntity, T>::value, void>::type
 		operator()(T entity)
 	{
@@ -106,7 +106,6 @@ struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription
 			names_.push_back(name);
 			typename_ = typeid(T).name(entity);
 			value_.push_back(value);
-
 		});
 	}
 
@@ -127,5 +126,4 @@ struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription
 	std::vector<const char*> names_;
 	std::vector<const char*> typename_;
 	std::vector <QVariant> value_;
-
 };

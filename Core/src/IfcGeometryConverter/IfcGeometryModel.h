@@ -92,7 +92,7 @@ namespace OpenInfraPlatform
 				void addGeometry(std::shared_ptr<GeometryDescription> geometry);
 				std::vector<std::shared_ptr<GeometryDescription>> const &geometries() const { return geometries_; }
 
-				void addExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel);
+				void setExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel);
 				std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> const getExpressModel() const { return expressModel_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------

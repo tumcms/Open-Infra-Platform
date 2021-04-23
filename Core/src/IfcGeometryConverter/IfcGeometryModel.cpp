@@ -38,7 +38,7 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::addGeometry(std::s
 	geometryMutex_.unlock();
 }
 
-void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::addExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel)
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::setExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel)
 {
 	expressModel_ = expressModel;
 }

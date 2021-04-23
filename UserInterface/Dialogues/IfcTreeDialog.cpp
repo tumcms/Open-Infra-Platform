@@ -19,6 +19,7 @@
 #include "IfcTreeModel.h"
 #include "ui_IfcTreeDialog.h"
 #include "DataManagement/General/Data.h"
+#include "Exception\UnhandledException.h"
 
 OpenInfraPlatform::UserInterface::IfcTreeDialog::IfcTreeDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent /*= nullptr*/) :
 	QDialog(parent, Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
@@ -39,11 +40,19 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 {
 	//for first testing just get last model, later this will be changed to selecting the model need
 	auto model = Core::DataManagement::DocumentManager::getInstance().getData().getLastModel();
-	auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
-	auto expressModel = ifcModel->getExpressModel();
-	auto treeModel = new IfcTreeModel(expressModel);
-	ui_->ifcTreeView->setModel(treeModel);
-	((QDialog*)this)->show();
+	if (std::dynamic_pointer_cast<oip::IfcModel>(model))
+	{
+		auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
+		auto expressModel = ifcModel->getExpressModel();
+		auto treeModel = new IfcTreeModel(expressModel);
+		ui_->ifcTreeView->setModel(treeModel);
+		((QDialog*)this)->show();
+	}
+	else
+	{
+		//only for now till the selected model is properly handled
+		throw  oip::UnhandledException("Last model is not a IFC model");
+	}
 }
 
 

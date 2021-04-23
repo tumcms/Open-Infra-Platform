@@ -15,10 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QTreeWidget" name="ifcTreeWidget">
-      <property name="HeaderLabel">
-        <string>Hierarchy Tree</string>
-      </property>
+    <widget class="QTreeView" name="ifcTreeView">
     </widget>
    </item>
    <item row="1" column="0">
