@@ -97,8 +97,8 @@ namespace OpenInfraPlatform
 					const std::vector<carve::geom::vector<2> >& points_vec,
 					std::vector<carve::geom::vector<3> >& target_vec);
 
-				static void computeInverse(const carve::math::Matrix& matrix_a,
-					carve::math::Matrix& inv);
+				static carve::math::Matrix computeInverse(
+					const carve::math::Matrix& matrix_a);
 
 				static void closestPointOnLine(const carve::geom::vector<3>& point,
 					const carve::geom::vector<3>& line_origin,
@@ -136,6 +136,11 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& plane_position,
 					const carve::geom::vector<3>& local_z,
 					carve::math::Matrix& resulting_matrix);
+
+				static void applyPositionToVertex(const std::vector<carve::geom::vector<3>>& listOfPoints,
+					const carve::math::Matrix & positionMatrix,
+					const int ammountOfPoints,
+					std::vector<carve::geom::vector<3>>& newListOfPoints);
 
 				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
 					std::stringstream& err_poly, int entity_id);

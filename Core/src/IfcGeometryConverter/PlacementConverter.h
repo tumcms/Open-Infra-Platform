@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::geom::vector<3> convertIfcPoint(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// ENTITY IfcPoint
@@ -100,7 +100,10 @@ namespace OpenInfraPlatform {
 					//TODO this is really, really bad programming - this needs to be done more nicely!!
 #endif
 
-					// IfcPointOnCurve & IfcPointOnSurface are not supported
+					// IfcPointOnCurve 
+					if (point.template isOfType<typename IfcEntityTypesT::IfcPointOnCurve>())
+						return convertIfcPointOnCurve(point.template as<typename IfcEntityTypesT::IfcPointOnCurve>());
+					// IfcPointOnSurface are not supported
 					throw oip::UnhandledException(point);
 				}
 
@@ -114,7 +117,7 @@ namespace OpenInfraPlatform {
                  */
 				carve::geom::vector<3> convertIfcCartesianPoint(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                ) const throw(...)
+                ) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcCartesianPoint
@@ -152,6 +155,22 @@ namespace OpenInfraPlatform {
                     // scale the lengths according to the unit conversion & return
 					return point * UnitConvert()->getLengthInMeterFactor();
                 }
+
+				/*! \brief Converts \c IfcPointOnCurve to a 3D vector.
+				 *
+				 * \param[in]	pointOnCurve			\c IfcPointOnCurve entity to be interpreted.
+				 *
+				 * \return								Calculated 3D vector.
+				 */
+				carve::geom::vector<3> convertIfcPointOnCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPointOnCurve>& pointOnCurve
+				) const noexcept(false) {
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
+						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
+
+					CurveConverterT<IfcEntityTypesT> curveConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return curveConv.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 				/*! \brief Converts \c IfcPointByDistanceExpression to a 3D vector.
@@ -346,7 +365,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
 
                     // interpret Location 
-					translate = convertIfcPoint( axis2placement2d->Location );
+					translate = convertIfcPoint( axis2placement2d->Location.template as<typename IfcEntityTypesT::IfcPoint>());
 
                     // interpret RefDirection [OPTIONAL]
                     if(axis2placement2d->RefDirection) {
@@ -1156,11 +1175,8 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(objectPlacement);
 
 					// Prevent cyclic relative placement
-					// this doesn't work as long as there is no comparisson operator==
-					//if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
-					for (const auto& el : alreadyApplied)
-						if (el->getId() == objectPlacement->getId())
-							throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
+					if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
+						throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
 
 					// Add self to apllied
 					alreadyApplied.push_back(objectPlacement);

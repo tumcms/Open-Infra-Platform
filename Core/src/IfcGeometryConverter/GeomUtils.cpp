@@ -433,8 +433,13 @@ void GeomUtils::extrude(
 }
 
 /**********************************************************************************************/
-
-void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math::Matrix& inv ) 
+/*! \brief Computes an inverse of the matrix.
+*
+* \param[in] matrix_a				An initial invertible matrix.
+*
+* \return							Inverted matrix
+*/
+carve::math::Matrix GeomUtils::computeInverse(const carve::math::Matrix& matrix_a)
 {
 	int i, j;	// col, row
 	int s;		// step
@@ -445,6 +450,7 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 	double max;
 	int pivot = 1;
 	double a[4][8];
+	carve::math::Matrix inv;
 
 	a[0][0] = matrix_a._11;
 	a[0][1] = matrix_a._12;
@@ -560,6 +566,8 @@ void GeomUtils::computeInverse( const carve::math::Matrix& matrix_a, carve::math
 	inv._42 = a[3][5];
 	inv._43 = a[3][6];
 	inv._44 = a[3][7];
+
+	return inv;
 }
 
 /**********************************************************************************************/
@@ -1033,6 +1041,29 @@ void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
 	resulting_matrix._42 = plane_position.y;
 	resulting_matrix._43 = plane_position.z;
 	resulting_matrix._44 = 1;
+}
+
+/**********************************************************************************************/
+/*! \brief Applies a position to the point.
+*
+* \param[in] listOfPoint				A list of points to be converted.
+* \param[in] positionMatrix			A position matrix, which should be applied to the points.
+* \param[in] ammountOfPoints			Number of points.
+*
+* \return[out]							List of points with applied position.
+*/
+void  GeomUtils::applyPositionToVertex(
+	const std::vector<carve::geom::vector<3>>& listOfPoints,
+	const carve::math::Matrix & positionMatrix,
+	const int ammountOfPoints,
+	std::vector<carve::geom::vector<3>>& newListOfPoints
+)
+{
+	newListOfPoints.reserve(listOfPoints.size());
+	for (const auto& vertex : listOfPoints)
+	{
+		newListOfPoints.push_back(positionMatrix * vertex);
+	}
 }
 
 /**********************************************************************************************/

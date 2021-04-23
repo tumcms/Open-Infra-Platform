@@ -117,6 +117,10 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 			BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
 			BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
 
+			auto const & srs = header.GetSRS();
+			oip::GeorefMetadata metaTemp;
+			metaTemp.WKT = srs.GetWKT(liblas::SpatialReference::eCompoundOK, true);
+
 			buw::Vector3d minv(0, 0, 0);
 			buw::Vector3d maxv(0, 0, 0);
 
@@ -3357,7 +3361,7 @@ oip::BBox OpenInfraPlatform::PointCloudProcessing::PointCloud::getExtent()
 
 oip::GeorefMetadata OpenInfraPlatform::PointCloudProcessing::PointCloud::getGeorefMetadata() const
 {
-	throw std::exception("Not implemented: PointCloud::getGeorefMetadata()");
+	return georefMetadata_;
 }
 
 void OpenInfraPlatform::PointCloudProcessing::PointCloud::transformAllPoints(
