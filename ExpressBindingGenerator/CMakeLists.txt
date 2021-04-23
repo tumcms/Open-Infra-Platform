@@ -51,7 +51,7 @@ macro(add_format format schema active)
 endmacro()
 
 add_format(IFC2X3 			IFC2X3_TC1 		OFF)
-add_format(IFC4 			IFC4_ADD1 		OFF)
+add_format(IFC4 			IFC4_ADD2_TC1	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		OFF)
 add_format(IFC4X3_RC1	 	IFC4X3_RC1		OFF)
 add_format(IFC4X3_RC3	 	IFC4X3_RC3		OFF)
