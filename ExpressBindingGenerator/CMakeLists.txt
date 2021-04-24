@@ -29,19 +29,6 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 
-#find_path(TCLAP_INCLUDE_DIR REQUIRED)
-FetchContent_Declare(
-	tclap
-	GIT_REPOSITORY https://github.com/mirror/tclap.git
-	GIT_TAG v1.2.2
-)
-  
-FetchContent_GetProperties(tclap)
-if(NOT tclap_POPULATED)
-	FetchContent_Populate(tclap)
-endif()
-
-
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
 	set(${format}_SCHEMA ${schema}.exp)
