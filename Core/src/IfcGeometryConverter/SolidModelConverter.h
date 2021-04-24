@@ -386,7 +386,7 @@ namespace OpenInfraPlatform
 					directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
 #else
 				std::vector<double> stations;
-				throw oip::UnhandledException(sectioned_solid_horizontal);
+				throw oip::UnhandledException(sectionedSolidHorizontal);
 #endif
 				carve::geom::vector<3> targetPoint3D;
 				carve::geom::vector<3> targetDirection3D;
@@ -454,7 +454,11 @@ namespace OpenInfraPlatform
 				{
 								
 					//1. get offset from curve   
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					carve::geom::vector<3> offset = placementConverter->convertIfcDistanceExpressionOffsets(crossSectionPositions[pos]);
+#else
+					carve::geom::vector<3> offset = placementConverter->convertIfcPoint(crossSectionPositions[pos]->Location);
+#endif
 					offsetFromCurve.push_back(offset);
 
 					//2. calculate the position on and the direction of the base curve
@@ -465,7 +469,12 @@ namespace OpenInfraPlatform
 					std::tie(pointOnCurve, directionOfCurve) = 
 						placementConverter->calculatePositionOnAndDirectionOfBaseCurve(
 							directrix.template as<typename IfcEntityTypesT::IfcBoundedCurve>(),
-							crossSectionPositions[pos], 0.);
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+							crossSectionPositions[pos],
+#else
+							crossSectionPositions[pos]->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>(),
+#endif
+							0.);
 
 					CrossSectionPoints.push_back(pointOnCurve);
 					directionsOfCurve.push_back(directionOfCurve);

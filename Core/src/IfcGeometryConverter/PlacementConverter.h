@@ -657,7 +657,11 @@ namespace OpenInfraPlatform {
 
 					return calculatePositionOnAndDirectionOfBaseCurve(
 						getCurveOfPlacement(linear_placement),
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 						linear_placement->Distance,
+#else					// not the best way of solving this (pjanck, 2021.05.24)
+						linear_placement->RelativePlacement->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>(),
+#endif
 						relativeDistAlong);
 				}
 
