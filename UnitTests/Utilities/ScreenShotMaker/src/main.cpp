@@ -102,13 +102,18 @@ int main(int argc, char **argv) {
         const char* filename = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
-		std::cout << "Generating screen shots from " << filename << " to " << outputDirectoryName << std::endl;
-		
+		std::string msg = std::string("Generating screen shots from ");
+		msg += filename;
+		std::cout << msg.c_str() << std::endl;
+		msg = std::string("Saving screen shots to ");
+		msg += outputDirectoryName;
+		std::cout << msg.c_str() << std::endl;
+
         FILE *myfile = fopen(filename, "r");
         // make sure it is valid:
         if (!myfile) {
-			std::cout << "I can't open file " << filename << "!" << std::endl;
-            return -1;
+			std::string err = std::string("I can't open file ") + std::string(filename) + std::string("!");
+			throw std::exception(err.c_str());
         }
 		fclose(myfile);
 
@@ -132,4 +137,6 @@ int main(int argc, char **argv) {
 	// wait for confirm of exit
 	std::cout << "Press any key to exit" << std::endl;
 	getchar();
+
+	return 0;
 }
