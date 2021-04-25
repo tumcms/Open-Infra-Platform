@@ -27,12 +27,12 @@
 
 int main(int argc, char **argv) {
     try {
-        TCLAP::CmdLine cmd("oipExpress", ' ', "0.1");
+        TCLAP::CmdLine cmd("oipScreenShot", ' ', "0.1");
 
 		TCLAP::UnlabeledValueArg<std::string> sourceFiles("i", "IFC file.", true, "./rectified", "string");
         cmd.add(sourceFiles);
 
-		TCLAP::ValueArg<std::string> outputDirectory("o", "outputDir", "The output directory for figures.", false, "", "string");
+		TCLAP::ValueArg<std::string> outputDirectory("o", "outputDir", "The output directory for figures.", true, "", "string");
         cmd.add(outputDirectory);
 
         // Parse the args.
