@@ -26,6 +26,8 @@
 #include <string>
 #include <iostream>
 
+#include <boost/filesystem.hpp>
+
 #include "tclap/CmdLine.h"
 
 #include <buw.Engine.h>
@@ -130,12 +132,15 @@ int main(int argc, char **argv) {
 			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
 #endif
 
+		boost::filesystem::path givenPathToIfcFile(filename);
+		std::string name = givenPathToIfcFile.filename().string();
+
 		renderer->setViewDirection(buw::eViewDirection::Left);
 		buw::Image4b image_left = renderer->captureImage();
-		buw::storeImage(outputDirectoryName + "\\bath-csg-solid_left.png", image_left);
+		buw::storeImage(outputDirectoryName + "\\" + name + "_left.png", image_left);
 
 		std::cout << "Saved image " << std::endl;
-		std::cout << "\\bath-csg-solid_left.png" << std::endl;
+		std::cout << "\\" + name + "_left.png" << std::endl;
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
