@@ -57,6 +57,9 @@ If you wish to debug, you should put the arguments in [Visual Studio]:
 #include <buw.Engine.h>
 #include <buw.ImageProcessing.h>
 
+#include "IfcGeometryConverter\IfcPeekStepReader.h"
+using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
+
 #include <IfcGeometryConverter/ConverterBuw.h>
 #include <IfcGeometryConverter/IfcImporter.h>
 #include <IfcGeometryConverter/IfcImporterImpl.h>
@@ -177,7 +180,29 @@ int main(int argc, char **argv) {
         }
 		fclose(myfile);
 
+		boost::filesystem::path givenPathToFile(filepath);
+		std::string filename = givenPathToFile.stem().string();
+		std::string filetype = givenPathToFile.extension().string();
+		std::transform(filetype.begin(), filetype.end(), filetype.begin(), ::tolower);
 
+		IfcPeekStepReader::IfcSchema ifcSchema;
+		std::string strSchema;
+		if (filetype == ".ifc" || filetype == ".stp")
+		{
+			try
+			{
+				std::tie(strSchema, ifcSchema) = IfcPeekStepReader::parseIfcHeader(filename);
+			}
+			catch (std::exception& ex)
+			{
+				throw;
+			}
+		}
+		else
+		{
+			std::string msg("File type not IFC, but " + filetype);
+			throw std::exception(msg.c_str());
+		}
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
 		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
 			setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filepath);
@@ -191,8 +216,6 @@ int main(int argc, char **argv) {
 			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filepath);
 #endif
 
-		boost::filesystem::path givenPathToIfcFile(filepath);
-		std::string filename = givenPathToIfcFile.stem().string();
 
 		saveAllViews(renderer, outputDirectoryName, filename);
 
