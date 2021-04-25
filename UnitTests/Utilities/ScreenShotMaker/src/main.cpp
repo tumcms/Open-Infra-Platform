@@ -231,7 +231,8 @@ int main(int argc, char **argv) {
 		}
 		else
 		{
-			throw std::exception("IFC version " + strSchema + " not supported");
+			std::string msg("IFC version " + strSchema + " not supported");
+			throw std::exception(msg.c_str());
 		}
 
 		saveAllViews(renderer, outputDirectoryName, filename);
