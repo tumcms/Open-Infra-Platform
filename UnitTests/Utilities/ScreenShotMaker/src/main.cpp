@@ -35,6 +35,55 @@
 #include <IfcGeometryConverter/IfcImporterImpl.h>
 
 #include <IfcGeometryModelRenderer.h>
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+#include "EarlyBinding\IFC4X1\src\IFC4X1Entities.h"
+#include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
+#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+#endif
+
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+#include <EarlyBinding/IFC4X3_RC3/src/reader/IFC4X3_RC3Reader.h>
+#include <EarlyBinding/IFC4X3_RC3/src/IFC4X3_RC3.h>
+#endif
+
+
+template <typename IfcEntityTypesT, class IfcReaderT>
+buw::ReferenceCounted<IfcGeometryModelRenderer> setUpRenderer(
+	const std::string& filename
+)
+{
+	// https://docs.microsoft.com/de-de/windows/console/getconsolewindow
+	HWND handle = GetConsoleWindow();
+
+	buw::renderSystemDescription scd;
+	scd.width = 640;
+	scd.height = 480;
+	scd.windowId = static_cast<void*>(handle);
+	scd.forceWarpDevice = false;
+	scd.enableMSAA = true;
+	scd.renderAPI = BlueFramework::Rasterizer::eRenderAPI::Direct3D11;
+
+	auto renderSystem_ = BlueFramework::Rasterizer::createRenderSystem(scd);
+
+	auto rendererIfc = buw::makeReferenceCounted<IfcGeometryModelRenderer>(renderSystem_);
+
+	auto express_model = IfcReaderT::FromFile(filename);
+
+	auto importer = buw::makeReferenceCounted<oip::IfcImporterT<IfcEntityTypesT>>();
+	auto model = importer->collectData(express_model);
+
+	rendererIfc->setModel(model[0]);
+
+	return rendererIfc;
+}
+
+
+
 int main(int argc, char **argv) {
     try {
         TCLAP::CmdLine cmd("oipScreenShot", ' ', "0.1");
@@ -64,6 +113,15 @@ int main(int argc, char **argv) {
 		fclose(myfile);
 
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+		auto renderer = setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filename);
+#endif
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+		auto renderer = setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
+#endif
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+		auto renderer = setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
+#endif
 
 
 
