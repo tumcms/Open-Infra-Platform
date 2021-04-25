@@ -167,20 +167,18 @@ int main(int argc, char **argv) {
         const char* filepath = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
+		// check input
+		boost::filesystem::path givenPathToFile(filepath);
+		if (!boost::filesystem::exists(givenPathToFile))
+			throw std::exception("Provided IFC file does not exist.");
+		if (!boost::filesystem::exists(outputDirectoryName))
+			throw std::exception("Provided output directory does not exist.");
+
 		std::cout << "Generating screen shots from " << std::endl;
 		std::cout << filepath << std::endl;
 		std::cout << "Saving screen shots to " << std::endl;
 		std::cout << outputDirectoryName << std::endl;
 
-        FILE *myfile = fopen(filepath, "r");
-        // make sure it is valid:
-        if (!myfile) {
-			std::string err = std::string("I can't open file ") + std::string(filepath) + std::string("!");
-			throw std::exception(err.c_str());
-        }
-		fclose(myfile);
-
-		boost::filesystem::path givenPathToFile(filepath);
 		std::string filename = givenPathToFile.stem().string();
 		std::string filetype = givenPathToFile.extension().string();
 		std::transform(filetype.begin(), filetype.end(), filetype.begin(), ::tolower);
