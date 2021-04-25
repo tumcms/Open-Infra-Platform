@@ -23,8 +23,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <string>
+
 #include "tclap/CmdLine.h"
 
+#include <buw.Engine.h>
+#include <buw.ImageProcessing.h>
+
+#include <IfcGeometryConverter/ConverterBuw.h>
+#include <IfcGeometryConverter/IfcImporter.h>
+#include <IfcGeometryConverter/IfcImporterImpl.h>
+
+#include <IfcGeometryModelRenderer.h>
 int main(int argc, char **argv) {
     try {
         TCLAP::CmdLine cmd("oipScreenShot", ' ', "0.1");
