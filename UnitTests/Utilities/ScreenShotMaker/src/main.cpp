@@ -103,12 +103,10 @@ int main(int argc, char **argv) {
         const char* filename = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
-		std::string msg = std::string("Generating screen shots from ");
-		msg += filename;
-		std::cout << msg << std::endl;
-		msg = std::string("Saving screen shots to ");
-		msg += outputDirectoryName;
-		std::cout << msg << std::endl;
+		std::cout << "Generating screen shots from " << std::endl;
+		std::cout << filename << std::endl;
+		std::cout << "Saving screen shots to " << std::endl;
+		std::cout << outputDirectoryName << std::endl;
 
         FILE *myfile = fopen(filename, "r");
         // make sure it is valid:
@@ -136,10 +134,8 @@ int main(int argc, char **argv) {
 		buw::Image4b image_left = renderer->captureImage();
 		buw::storeImage(outputDirectoryName + "\\bath-csg-solid_left.png", image_left);
 
-		msg = std::string("Saved an image to ");
-		msg += outputDirectoryName;
-		msg += std::string("\\bath-csg-solid_left.png");
-		std::cout << msg << std::endl;
+		std::cout << "Saved image " << std::endl;
+		std::cout << "\\bath-csg-solid_left.png" << std::endl;
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
