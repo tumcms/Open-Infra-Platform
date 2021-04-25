@@ -25,18 +25,27 @@ source_group(src FILES ${OpenInfraPlatform_UnitTests_Utilities_ScreenShotMaker_S
 
 add_executable(OpenInfraPlatform.ScreenShotMaker ${OpenInfraPlatform_UnitTests_Utilities_ScreenShotMaker_Source})
 
+get_directory_property(PARENT_DIR DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PARENT_DIRECTORY)
 
 target_include_directories(OpenInfraPlatform.ScreenShotMaker
 	PUBLIC
 		src
         ${tclap_SOURCE_DIR}/include
+    PRIVATE
+        ${PARENT_DIR}
 )
 
 target_link_libraries(OpenInfraPlatform.ScreenShotMaker
     PRIVATE
         OpenInfraPlatform.GeometryModelRenderer
+        OpenInfraPlatform.Rendering
         BlueFramework.Engine
         Boost::filesystem
 )
+
+foreach(format ${IFC_FORMATS})
+    target_link_libraries(OpenInfraPlatform.ScreenShotMaker PRIVATE OpenInfraPlatform.${format})
+endforeach()
+
 
 set_target_properties(OpenInfraPlatform.ScreenShotMaker PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Utilities")
