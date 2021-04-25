@@ -189,14 +189,7 @@ int main(int argc, char **argv) {
 		std::string strSchema;
 		if (filetype == ".ifc" || filetype == ".stp")
 		{
-			try
-			{
-				std::tie(strSchema, ifcSchema) = IfcPeekStepReader::parseIfcHeader(filename);
-			}
-			catch (std::exception& ex)
-			{
-				throw;
-			}
+			std::tie(strSchema, ifcSchema) = IfcPeekStepReader::parseIfcHeader(filepath);
 		}
 		else
 		{
