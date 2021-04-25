@@ -47,6 +47,8 @@ If you wish to debug, you should put the arguments in [Visual Studio]:
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include <utility>
 
 #include <boost/filesystem.hpp>
 
@@ -114,12 +116,33 @@ void saveAllViews(
 	const std::string& filename
 )
 {
-	renderer->setViewDirection(buw::eViewDirection::Left);
-	buw::Image4b image_left = renderer->captureImage();
-	buw::storeImage(outputDirectoryName + "\\" + filename + "_left.png", image_left);
+	std::vector<std::pair< buw::eViewDirection, std::string >> views =
+	{
+		{ buw::eViewDirection::Front, "front"},
+		{ buw::eViewDirection::Top, "top"},
+		{ buw::eViewDirection::Bottom, "bottom"},
+		{ buw::eViewDirection::Left, "left"},
+		{ buw::eViewDirection::Right, "right"},
+		{ buw::eViewDirection::Back, "back"},
+        { buw::eViewDirection::FrontLeftBottom, "front_left_bottom" },
+        { buw::eViewDirection::FrontRightBottom, "front_right_bottom" },
+        { buw::eViewDirection::TopLeftFront, "top_left_front" },
+        { buw::eViewDirection::TopFrontRight, "top_front_right" },
+        { buw::eViewDirection::TopLeftBack, "top_left_back" },
+        { buw::eViewDirection::TopRightBack, "top_right_back" },
+        { buw::eViewDirection::BackLeftBottom, "back_left_bottom" },
+        { buw::eViewDirection::RightBottomBack, "right_bottom_back" }
+	};
 
-	std::cout << "Saved image " << std::endl;
-	std::cout << outputDirectoryName + "\\" + filename + "_left.png" << std::endl;
+	for( const auto& view : views )
+	{
+		renderer->setViewDirection( view.first );
+		buw::Image4b image = renderer->captureImage();
+		buw::storeImage(outputDirectoryName + "\\" + filename + "_" + view.second + ".png", image);
+
+		std::cout << "Saved image " << std::endl;
+		std::cout << outputDirectoryName + "\\" + filename + "_" + view.second + ".png" << std::endl;
+	}
 }
 
 
@@ -176,9 +199,5 @@ int main(int argc, char **argv) {
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
     }
-
-	// wait for confirm of exit
-	std::cout << "Press ENTER to exit" << std::endl;
-	getchar();
 
 }
