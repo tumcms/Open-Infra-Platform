@@ -24,6 +24,7 @@
 #endif
 
 #include <string>
+#include <iostream>
 
 #include "tclap/CmdLine.h"
 
@@ -104,10 +105,10 @@ int main(int argc, char **argv) {
 
 		std::string msg = std::string("Generating screen shots from ");
 		msg += filename;
-		std::cout << msg.c_str() << std::endl;
+		std::cout << msg << std::endl;
 		msg = std::string("Saving screen shots to ");
 		msg += outputDirectoryName;
-		std::cout << msg.c_str() << std::endl;
+		std::cout << msg << std::endl;
 
         FILE *myfile = fopen(filename, "r");
         // make sure it is valid:
@@ -119,13 +120,16 @@ int main(int argc, char **argv) {
 
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-		auto renderer = setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filename);
+		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
+			setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filename);
 #endif
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-		auto renderer = setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
+		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
+			setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
 #endif
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-		auto renderer = setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
+		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
+			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
 #endif
 
 		renderer->setViewDirection(buw::eViewDirection::Left);
@@ -145,5 +149,4 @@ int main(int argc, char **argv) {
 	std::cout << "Press any key to exit" << std::endl;
 	getchar();
 
-	return 0;
 }
