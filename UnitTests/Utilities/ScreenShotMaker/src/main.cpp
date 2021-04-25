@@ -128,7 +128,14 @@ int main(int argc, char **argv) {
 		auto renderer = setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
 #endif
 
+		renderer->setViewDirection(buw::eViewDirection::Left);
+		buw::Image4b image_left = renderer->captureImage();
+		buw::storeImage(outputDirectoryName + "\\bath-csg-solid_left.png", image_left);
 
+		msg = std::string("Saved an image to ");
+		msg += outputDirectoryName;
+		msg += std::string("\\bath-csg-solid_left.png");
+		std::cout << msg << std::endl;
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
