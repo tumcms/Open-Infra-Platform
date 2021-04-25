@@ -198,6 +198,8 @@ int main(int argc, char **argv) {
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
+		std::cout << "Press ENTER to exit" << std::endl;
+		getchar();
     }
 
 }
