@@ -238,8 +238,10 @@ int main(int argc, char **argv) {
 		saveAllViews(renderer, outputDirectoryName, filename);
 
     } catch (std::exception &ex) {
+		std::cout << std::endl;
+		std::cout << "---- EXCEPTION ENCOUNTERED ----" << std::endl;
         std::cout << ex.what() << std::endl;
-		std::cout << "Press ENTER to exit" << std::endl;
+		std::cout << "----  Press ENTER to exit  ----" << std::endl;
 		getchar();
     }
 
