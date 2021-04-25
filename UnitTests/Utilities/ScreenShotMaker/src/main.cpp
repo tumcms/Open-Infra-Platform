@@ -203,19 +203,36 @@ int main(int argc, char **argv) {
 			std::string msg("File type not IFC, but " + filetype);
 			throw std::exception(msg.c_str());
 		}
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
-		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filepath);
-#endif
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
-		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filepath);
-#endif
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filepath);
-#endif
 
+		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer;
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X1) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X1
+			renderer =
+				setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filepath);
+#else // OIP_MODULE_EARLYBINDING_IFC4X1
+			throw std::exception("IFC4X1 not compiled");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X1
+		}
+		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC1) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+			renderer =
+				setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filepath);
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+			throw std::exception("IFC4X3_RC1 not compiled");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+		}
+		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC3) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+			renderer =
+				setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filepath);
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+			throw std::exception("IFC4X3_RC3 not compiled");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+		}
+		else
+		{
+			throw std::exception("IFC version " + strSchema + " not supported");
+		}
 
 		saveAllViews(renderer, outputDirectoryName, filename);
 
