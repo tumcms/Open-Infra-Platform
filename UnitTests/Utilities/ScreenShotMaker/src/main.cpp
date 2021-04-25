@@ -86,6 +86,20 @@ buw::ReferenceCounted<IfcGeometryModelRenderer> setUpRenderer(
 }
 
 
+void saveAllViews(
+	const buw::ReferenceCounted<IfcGeometryModelRenderer>& renderer,
+	const std::string& outputDirectoryName,
+	const std::string& filename
+)
+{
+	renderer->setViewDirection(buw::eViewDirection::Left);
+	buw::Image4b image_left = renderer->captureImage();
+	buw::storeImage(outputDirectoryName + "\\" + filename + "_left.png", image_left);
+
+	std::cout << "Saved image " << std::endl;
+	std::cout << outputDirectoryName + "\\" + filename + "_left.png" << std::endl;
+}
+
 
 int main(int argc, char **argv) {
     try {
@@ -102,18 +116,18 @@ int main(int argc, char **argv) {
 
         // open a file handle to a particular file:
 
-        const char* filename = sourceFiles.getValue().c_str();
+        const char* filepath = sourceFiles.getValue().c_str();
         std::string outputDirectoryName = outputDirectory.getValue();
 
 		std::cout << "Generating screen shots from " << std::endl;
-		std::cout << filename << std::endl;
+		std::cout << filepath << std::endl;
 		std::cout << "Saving screen shots to " << std::endl;
 		std::cout << outputDirectoryName << std::endl;
 
-        FILE *myfile = fopen(filename, "r");
+        FILE *myfile = fopen(filepath, "r");
         // make sure it is valid:
         if (!myfile) {
-			std::string err = std::string("I can't open file ") + std::string(filename) + std::string("!");
+			std::string err = std::string("I can't open file ") + std::string(filepath) + std::string("!");
 			throw std::exception(err.c_str());
         }
 		fclose(myfile);
@@ -121,33 +135,28 @@ int main(int argc, char **argv) {
 
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X1
 		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filename);
+			setUpRenderer<emt::IFC4X1EntityTypes, OpenInfraPlatform::IFC4X1::IFC4X1Reader>(filepath);
 #endif
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filename);
+			setUpRenderer<emt::IFC4X3_RC1EntityTypes, OpenInfraPlatform::IFC4X3_RC1::IFC4X3_RC1Reader>(filepath);
 #endif
 #ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
 		buw::ReferenceCounted<IfcGeometryModelRenderer> renderer = 
-			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
+			setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filepath);
 #endif
 
-		boost::filesystem::path givenPathToIfcFile(filename);
-		std::string name = givenPathToIfcFile.filename().string();
+		boost::filesystem::path givenPathToIfcFile(filepath);
+		std::string filename = givenPathToIfcFile.stem().string();
 
-		renderer->setViewDirection(buw::eViewDirection::Left);
-		buw::Image4b image_left = renderer->captureImage();
-		buw::storeImage(outputDirectoryName + "\\" + name + "_left.png", image_left);
-
-		std::cout << "Saved image " << std::endl;
-		std::cout << "\\" + name + "_left.png" << std::endl;
+		saveAllViews(renderer, outputDirectoryName, filename);
 
     } catch (std::exception &ex) {
         std::cout << ex.what() << std::endl;
     }
 
 	// wait for confirm of exit
-	std::cout << "Press any key to exit" << std::endl;
+	std::cout << "Press ENTER to exit" << std::endl;
 	getchar();
 
 }
