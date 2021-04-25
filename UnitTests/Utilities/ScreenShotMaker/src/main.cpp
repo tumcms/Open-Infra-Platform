@@ -19,6 +19,28 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* INSTRUCTIONS 
+
+Usage:
+
+> OpenInfraPlatform.ScreenShotMaker.exe <pathToIfcFile> -o <pathToOutputDirectory>
+
+with:
+
+- <pathToIfcFile>: the relative or absolute path to the IFC file to be rendered
+- <pathToOutputDirectory>: the relative or absolute path to the directory where screen shots should be saved
+
+*NOTE:* make sure that the correct IFC version is being compiled - select accordingly in CMake.
+
+If you wish to debug, you should put the arguments in [Visual Studio]:
+- OpenInfraPlatform.ScreenShotMaker project -> right mouse button
+- Properties
+- Debuggin
+- Command Arguments
+
+*/
+
+
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
