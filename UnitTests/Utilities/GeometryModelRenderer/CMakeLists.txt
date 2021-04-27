@@ -15,7 +15,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-project(GeometryModelRenderer)
+project(OpenInfraPlatform.GeometryModelRenderer)
 
 set(CMAKE_AUTOMOC OFF)
 
@@ -23,15 +23,15 @@ file(GLOB OpenInfraPlatform_UnitTests_Utilities_GeometryModelRenderer_Source src
 
 source_group(src FILES ${OpenInfraPlatform_UnitTests_Utilities_GeometryModelRenderer_Source})
 
-add_library(GeometryModelRenderer STATIC ${OpenInfraPlatform_UnitTests_Utilities_GeometryModelRenderer_Source})
+add_library(OpenInfraPlatform.GeometryModelRenderer STATIC ${OpenInfraPlatform_UnitTests_Utilities_GeometryModelRenderer_Source})
 
 
-target_include_directories(GeometryModelRenderer
+target_include_directories(OpenInfraPlatform.GeometryModelRenderer
 	PUBLIC
 		src
 )
 
-target_link_libraries(GeometryModelRenderer
+target_link_libraries(OpenInfraPlatform.GeometryModelRenderer
     PRIVATE
         OpenInfraPlatform.Rendering
         BlueFramework.Engine
@@ -41,4 +41,4 @@ target_link_libraries(GeometryModelRenderer
         Boost::filesystem
 )
 
-set_target_properties(GeometryModelRenderer PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Utilities")
+set_target_properties(OpenInfraPlatform.GeometryModelRenderer PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Utilities")

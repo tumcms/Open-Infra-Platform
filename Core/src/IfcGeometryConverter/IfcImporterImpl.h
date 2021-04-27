@@ -55,7 +55,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 template <
 	class IfcEntityTypesT
 >
-IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>()
+IfcImporterT<IfcEntityTypesT>::IfcImporterT<IfcEntityTypesT>::IfcImporterT()
 {
 	geomSettings = std::make_shared<GeometrySettings>();
 	unitConverter = std::make_shared<UnitConverter<IfcEntityTypesT>>();
