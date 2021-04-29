@@ -893,7 +893,12 @@ namespace OpenInfraPlatform {
 					
 					// Part 1: Get information from IfcClothoid.
 					//1.1 Clothoid position
-					carve::math::Matrix clothoidPositionMatrix = placementConverter->convertIfcAxis2Placement(clothoid->Position);
+					carve::math::Matrix clothoidPositionMatrix = carve::matrix::IDENT();
+					if (clothoid->Position)
+					{
+						clothoidPositionMatrix = placementConverter->convertIfcAxis2Placement(clothoid->Position.get());
+					}
+
 					carve::math::Matrix inverseClothoidPositionMatrix = GeomUtils::computeInverse(clothoidPositionMatrix);
 
 					// Get parameter of the clothoid for trimming begin.
@@ -2225,14 +2230,17 @@ namespace OpenInfraPlatform {
 					return placementConverter->convertIfcCartesianPoint(line->Pnt) +
 						placementConverter->convertIfcVector(line->Dir) * parameter;
 				}
+
+
+/*#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
-				* \noe2								Not impemented yet.
-				*/
-				/*template <>
+				* \note								Not impemented yet.
+				*
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clorhoid,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
@@ -2245,7 +2253,10 @@ namespace OpenInfraPlatform {
 					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(clothoid->Position);
 					// Calculate point + apply position
 					return placement * carve::geom::VECTOR(clothoidRadius * cos(angle), clothoidRadius * sin(angle), 0.);
-				}*/
+				}
+#endif*/
+
+
 			protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
