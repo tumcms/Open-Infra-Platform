@@ -63,11 +63,11 @@ public:
 	 * This is the main interpreting function. 
 	 *
 	 * \param[in] model The IFC content.
-	 * \return A pointer to an \c IfcModel. Could be empty, though!
+	 * \return An array of pointers to an \c IfcModel. Could be empty, though!
 	 */
-	std::shared_ptr<IfcModel> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
+	std::vector<std::shared_ptr<IfcModel>> collectData(std::shared_ptr<oip::EXPRESSModel> expressModel)
 	{
-		auto ifcModel = std::make_shared<IfcModel>();
+		std::vector<std::shared_ptr<IfcModel>> models;
 		try
 		{
 			// set the default units
@@ -75,34 +75,44 @@ public:
 
 			// get the georeferencingmetadata from the file
 			georefConverter->init(expressModel);
-			ifcModel->setGeoref(georefConverter->getGeorefMetadata());
 
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
-				return ifcModel;
+				return models;
 
-			auto converter = ConverterBuwT<IfcEntityTypesT>();
-			if (!converter.createGeometryModel(ifcModel, shapeInputData))
-				return ifcModel;
+			// loop through all georeferencing
+			// produce a separate IfcModel for each
+			for (const auto& georef : georefConverter->getGeorefMetadata())
+			{
+				auto ifcModel = createGeometryModel(georef, shapeInputData);
+				if( !ifcModel->isEmpty() )
+					models.push_back(ifcModel);
+			}
 
-			return ifcModel;
+			// some models do not have georeferencing to a context assigned
+			// add all those elements as a separate IFcModel
+			auto ifcModel = createGeometryModel(nullptr, shapeInputData);
+			if (!ifcModel->isEmpty())
+				models.push_back(ifcModel);
+
+			return models;
 		}
 		catch (const oip::InconsistentModellingException& ex)
 		{
 			BLUE_LOG(warning) << "Inconsistent IFC moddelling: " << ex.what();
-			return ifcModel;
+			return models;
 		}
 		catch (const std::invalid_argument& ex)
 		{
 			BLUE_LOG(error) << "Invalid argument exception: " << ex.what();
-			return ifcModel;
+			return models;
 		}
 		catch (...)
 		{
 			BLUE_LOG(warning) << "Something went wrong while collecting data from the IFC file.";
-			return ifcModel;
+			return models;
 		}
-		return ifcModel;
+		return models;
 	}
 
 private:
@@ -133,9 +143,8 @@ private:
 						BLUE_LOG(trace) << "Converting " << product->getErrorLog();
 						#endif
 						// create new shape input data for product
-						std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape = convertIfcProduct(product);
-						productShape->ifc_product = product;
-						shapeInputData.push_back( productShape );
+						const auto& productShape = convertIfcProduct(product);
+						std::copy(productShape.begin(), productShape.end(), std::back_inserter(shapeInputData) );
 					}
 				}
 			}
@@ -156,9 +165,9 @@ private:
 	 * \brief Converts all geometries of an \c IfcProduct to triangles and lines.
 	 * 
 	 * \param[in] product The product to be interpreted.
-	 * \return A pointer to shape data.
+	 * \return An array of pointers to shape data.
 	 */
-	std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> convertIfcProduct(
+	std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>> convertIfcProduct(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product) const;
 				
 	/**
@@ -169,6 +178,47 @@ private:
 	void computeMeshsetsFromPolyhedrons(
 		std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> productShape) const;
 					
+	std::shared_ptr<IfcModel> createGeometryModel(
+		const std::shared_ptr<oip::GeorefPair<IfcEntityTypesT>>& georef,
+		const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& shapeDatas)
+	{
+		// clear all descriptions
+		std::shared_ptr<oip::IfcModel> ifcModel = std::make_shared<oip::IfcModel>();
+		if( georef && georef->second )
+			ifcModel->setGeoref(*(georef->second));
+
+		// obtain maximum number of threads supported by machine
+		const unsigned int maxNumThreads = std::thread::hardware_concurrency();
+
+		// split up tasks for all threads
+		std::vector<std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>> tasks(maxNumThreads);
+		uint32_t counter = 0;
+		for (auto it = shapeDatas.begin(); it != shapeDatas.end(); ++it) {
+			std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>> shapeData = *it;
+			// only add if it's the same georef (that is, if there; otherwise only add those that do not have georef context)
+			if(    ( georef &&  georefConverter->isSameContext(georef->first, shapeData->getContext()))
+				|| (!georef && !georefConverter->hasContext(shapeData->getContext())) )
+			{
+				tasks[counter % maxNumThreads].push_back(shapeData);
+				counter++;
+			}
+		}
+
+		// create threads and start creation job
+		std::vector<std::thread> threads(maxNumThreads);
+		// every thread gets its local triangle/polyline pool
+		for (unsigned int k = 0; k < maxNumThreads; ++k) {
+			threads[k] = std::thread(&ConverterBuwT<IfcEntityTypesT>::createTrianglesJob, tasks[k], k, ifcModel);
+		}
+
+		// wait for all threads to be finished
+		for (unsigned int l = 0; l < maxNumThreads; ++l) {
+			threads[l].join();
+		}
+
+		return ifcModel;
+	}
+
 	// the converters
 	std::shared_ptr<GeometrySettings>							geomSettings;
 	std::shared_ptr<RepresentationConverterT<IfcEntityTypesT>>	repConverter;

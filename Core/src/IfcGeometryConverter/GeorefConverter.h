@@ -30,6 +30,11 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
+template <class IfcEntityTypesT>
+using GeorefPair = std::pair<
+	EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>,
+	std::shared_ptr<oip::GeorefMetadata>> ;
+
 /*! \brief Georeferencing conversion functionality
 
 \param IfcEntityTypesT The IFC version specification.
@@ -40,9 +45,6 @@ template <
 >
 class GeoreferencingConverterT : public ConverterBaseT<IfcEntityTypesT>
 {
-	typedef std::pair<EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>, 
-					  std::shared_ptr<oip::GeorefMetadata>> GeorefPair;
-
 public:
 	//! Constructor
 	GeoreferencingConverterT(
@@ -63,62 +65,164 @@ public:
 		// try and find the georeferencing metadata
 		auto georef = std::find_if(model->entities.begin(), model->entities.end(), [](auto pair)
 			{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; });
-		if (georef == model->entities.end())
-			return; // no georeferencing specified
-
-		// interpret all
-		do
+		if (georef != model->entities.end())
 		{
-			// the interpreted data
-			const GeorefPair georefMeta = convertGeoref(
-				EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>::constructInstance(georef->first, model));
+			// interpret all
+			do
+			{
+				// the interpreted data
+				const auto georefMeta = convertGeoref(
+					EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>::constructInstance(georef->first, model));
 
-			// add to the parsed map
-			georefMetadata_.push_back( georefMeta );
-		} 
-		while ((georef = std::find_if(++georef, model->entities.end(), [](auto pair)
+				// add to the parsed map
+				georefMetadata_.push_back( georefMeta );
+			} 
+			while ((georef = std::find_if(++georef, model->entities.end(), [](auto pair)
 			{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcCoordinateOperation>(pair.second) != nullptr; }
 			)) != model->entities.end());
+		}
 
+		// go also through all context
+		auto context = model->entities.begin();
+
+		// interpret all
+		while ((context = std::find_if(context, model->entities.end(), [](auto pair)
+			{ return std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcGeometricRepresentationContext>(pair.second) != nullptr; }
+			)) != model->entities.end())
+		{
+			auto contextRef = EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>::constructInstance(context->first, model);
+			// add empty to the parsed map - only if not yet present
+			if (std::find_if(georefMetadata_.begin(), georefMetadata_.end(), [&contextRef](auto pair)
+				{ return pair->first == contextRef; }) == georefMetadata_.end())
+			{
+				// handle subcontext
+				if (contextRef.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+				{
+					auto subcontext = contextRef.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>();
+
+					if (std::find_if(georefMetadata_.begin(), georefMetadata_.end(), [&subcontext](auto pair)
+						{ return pair->first == subcontext->ParentContext; }) != georefMetadata_.end())
+					{
+						context++;
+						continue;
+					}
+				}
+				
+				// otherwise it doesn't have georef
+				georefMetadata_.push_back( std::make_shared<GeorefPair<IfcEntityTypesT>>( 
+					contextRef, nullptr ) );
+			}
+
+			context++;
+		} 
 	}
-
-	oip::GeorefMetadata getGeorefMetadata() const noexcept(false) {
-		if (georefMetadata_.size() < 1)
-			return oip::GeorefMetadata();
-
-		return *(georefMetadata_[0].second);
-	}
-
-
-	carve::math::Matrix getContextPlacement(
-		const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>& context
+	
+	bool isSameContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context,
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& contextTest
 	) const noexcept(false)
 	{
-		// find the correct pair
-		for (auto& el : georefMetadata_)
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+			return isSameContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()->ParentContext, 
+				contextTest);
+		else if (contextTest.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+			return isSameContext(
+				context, 
+				contextTest.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()->ParentContext);
+		else
+			return context == contextTest;
+
+	}
+
+
+	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> getGeorefMetadata() noexcept(false) {
+		return georefMetadata_;
+	}
+	const std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>>& getGeorefMetadata() const noexcept(false) {
+		return georefMetadata_;
+	}
+
+	bool hasContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
 		{
-			if (el.first == context)
+			// call recursively
+			return hasContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
+		return std::find_if(getGeorefMetadata().begin(), getGeorefMetadata().end(), 
+			[&context](const auto &el) -> bool { 
+			return el->first == context; 
+		}) != getGeorefMetadata().end();
+	}
+
+	bool hasGeorefContext(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
+		// check the parent context if it's a subcontext
+		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>())
+		{
+			// call recursively
+			return hasGeorefContext(
+				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
+				->ParentContext);
+		}
+
+		// find the correct pair
+		for (auto& el : getGeorefMetadata())
+		{
+			if (el->first == context)
 			{
-				return el.second->transformationMatrix();
+				return (el->second ? true : false);
 			}
 		}
 
+		// otherwise 
+		return false;
+	}
+
+	carve::math::Matrix getDefaultPlacement() const noexcept(false)
+	{
+		if (getGeorefMetadata().size() == 1 && getGeorefMetadata()[0]->second)
+			return getGeorefMetadata()[0]->second->transformationMatrix();
+		return carve::math::Matrix::IDENT();
+	}
+
+	carve::math::Matrix getContextPlacement(
+		const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationContext>& context
+	) const noexcept(false)
+	{
 		// check the parent context if it's a subcontext
 		if (context.template isOfType<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()) 
 		{
 			// call recursively
 			return getContextPlacement(
 				context.template as<typename IfcEntityTypesT::IfcGeometricRepresentationSubContext>()
-				->ParentContext.template as<typename IfcEntityTypesT::IfcRepresentationContext>());
+				->ParentContext);
 		}
 
-		// otherwise return identity
-		return carve::math::Matrix::IDENT();
+		// find the correct pair
+		for (auto& el : getGeorefMetadata())
+		{
+			if (el->first == context)
+			{
+				return (el->second ? el->second->transformationMatrix() : carve::math::Matrix::IDENT());
+			}
+		}
+
+		// otherwise return default placement
+		return getDefaultPlacement();
 	}
 
 private:
 
-	GeorefPair convertGeoref(
+	std::shared_ptr<GeorefPair<IfcEntityTypesT>> convertGeoref(
 		const EXPRESSReference<typename IfcEntityTypesT::IfcCoordinateOperation>& coordOper
 	) const throw(...)
 	{
@@ -190,7 +294,7 @@ private:
 			}
 		}
 
-		return GeorefPair(geomContext, georefMeta);
+		return std::make_shared<GeorefPair<IfcEntityTypesT>>(geomContext, georefMeta);
 	}
 
 	std::shared_ptr<oip::GeorefMetadata> convertCRS(
@@ -239,17 +343,13 @@ private:
 	}
 
 
-	//! georefeferencing metadata (first = pointer to IfcGeometricRepresentationContext; second = interpreted GeorefMetadata)
-	std::vector<GeorefPair
-		//std::pair<
-		//EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationContext>,
-		//std::shared_ptr<oip::GeorefMetadata>>
-	> georefMetadata_;
-
+	//! georefeferencing metadata (first = pointer to IfcGeometricRepresentationContext; second = interpreted GeorefMetadata (may be null))
+	std::vector<std::shared_ptr<GeorefPair<IfcEntityTypesT>>> georefMetadata_;
 };
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
 
 EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(GeoreferencingConverterT)
+EMBED_CORE_IFCGEOMETRYCONVERTER_INTO_OIP_NAMESPACE(GeorefPair)
 
 #endif // defined(OpenInfraPlatform_IfcGeometryConverter_GeorefConverter_5F75E53B_DF06_4645_BDAA_F6585F55B2CF_h)

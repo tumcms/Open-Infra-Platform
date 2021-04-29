@@ -29,55 +29,19 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 
-#find_path(TCLAP_INCLUDE_DIR REQUIRED)
-FetchContent_Declare(
-	tclap
-	GIT_REPOSITORY https://github.com/mirror/tclap.git
-	GIT_TAG v1.2.2
-)
-  
-FetchContent_GetProperties(tclap)
-if(NOT tclap_POPULATED)
-	FetchContent_Populate(tclap)
-endif()
-
-# Create list of possible IFC formats
-#set(SUPPORTED_IFC_FORMATS IFC2X3 IFC4 IFC4X2_BIM4ROAD IFC4X1 IFC4X2_DRAFT_1 IFC4X2 IFC4X3_ALPHA)
-
-
-
 # Macro to add IFC formats and the respective schemas.
 macro(add_format format schema active)
 	set(${format}_SCHEMA ${schema}.exp)
 	set(EARLYBINDING_${format} ${format} ${schema})
 	set(SUPPORTED_IFC_FORMATS ${SUPPORTED_IFC_FORMATS} EARLYBINDING_${format})
 	option(EARLYBINDING_WITH_${format} "Build with support for ${format} and generate all required files." ${active})
-	
-	#if(${active})
-	#	set(IFC_FORMATS ${IFC_FORMATS} ${format})
-	#	set(IFC_SCHEMAS ${IFC_SCHEMAS} ${schema})
-	#	
-	#	# Custom target that generates the early binding library files.
-	#	add_custom_target(Commands.GenerateEarlyBinding.${format}
-	#		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/EarlyBinding
-	#		COMMAND ${CMAKE_COMMAND} -E remove_directory  ${CMAKE_BINARY_DIR}/EarlyBinding/${format}
-	#
-	#		COMMAND OpenInfraPlatform.ExpressBindingGenerator ${CMAKE_CURRENT_SOURCE_DIR}/schemas/${schema}.exp -o ${CMAKE_BINARY_DIR}/EarlyBinding
-	#	)
-	#
-	#	add_dependencies(Commands.GenerateEarlyBinding.${format} OpenInfraPlatform.ExpressBindingGenerator)
-	#	set_target_properties(Commands.GenerateEarlyBinding.${format} PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator/Commands")
-	#endif()
 endmacro()
 
 add_format(IFC2X3 			IFC2X3_TC1 		OFF)
-add_format(IFC4 			IFC4_ADD1 		OFF)
-add_format(IFC4X2_BIM4ROAD 	IFC4x2_BIM4ROAD	OFF)
+add_format(IFC4 			IFC4_ADD2_TC1	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		OFF)
-add_format(IFC4X2_DRAFT_1 	IFC4x2_DRAFT_1	OFF)
-add_format(IFC4X2			IFC4x2			OFF)
 add_format(IFC4X3_RC1	 	IFC4X3_RC1		OFF)
-add_format(IFC4X3_RC2	 	IFC4X3_RC2		OFF)
+add_format(IFC4X3_RC3	 	IFC4X3_RC3		OFF)
 
 # Add options to create early bindings for formats
 foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
@@ -116,7 +80,6 @@ bison_target(Parser
 )
 	
 flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/src/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
-#flex_target(Scanner ${CMAKE_CURRENT_SOURCE_DIR}/ExpressBindingGenerator/Parser/tokens.l  ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 add_flex_bison_dependency(Scanner Parser)
 
 include_directories(
@@ -142,11 +105,19 @@ source_group(ExpressBindingGenerator\\Meta    						FILES ${ExpressBindingGenera
 source_group(ExpressBindingGenerator\\Parser						FILES ${ExpressBindingGenerator_Parser_Source})	
 source_group(ExpressBindingGenerator\\Parser\\Generated				FILES ${FLEX_Scanner_OUTPUTS} ${BISON_Parser_OUTPUTS})	
 
+# add also schema to the solution
+foreach(standard IN LISTS SUPPORTED_IFC_FORMATS)
+	list(GET ${standard} 1 schema)
+	set(ExpressBindingGenerator_Data_Schemas ${ExpressBindingGenerator_Data_Schemas} schemas/${schema}.exp)
+endforeach()
+source_group(Schemas  						FILES ${ExpressBindingGenerator_Data_Schemas})	
+
 add_executable(OpenInfraPlatform.ExpressBindingGenerator
 	${ExpressBindingGenerator_Source}
 	${ExpressBindingGenerator_General_Source}
 	${ExpressBindingGenerator_Generator_Source}
 	${ExpressBindingGenerator_Meta_Source}
+	${ExpressBindingGenerator_Data_Schemas}
 	${ExpressBindingGenerator_Parser_Source}
 	${FLEX_Scanner_OUTPUTS} 
 	${BISON_Parser_OUTPUTS}

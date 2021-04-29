@@ -161,6 +161,18 @@ endif()
 
 
 FetchContent_Declare(
+	tclap
+	GIT_REPOSITORY https://github.com/mirror/tclap.git
+	GIT_TAG v1.2.2
+)
+  
+FetchContent_GetProperties(tclap)
+if(NOT tclap_POPULATED)
+	FetchContent_Populate(tclap)
+endif()
+
+
+FetchContent_Declare(
 	visit_struct
 	GIT_REPOSITORY https://github.com/cbeck88/visit_struct.git
 	GIT_TAG v1.0

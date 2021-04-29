@@ -16,3 +16,4 @@
 #
 
 add_subdirectory(GeometryModelRenderer)
+add_subdirectory(ScreenShotMaker)
