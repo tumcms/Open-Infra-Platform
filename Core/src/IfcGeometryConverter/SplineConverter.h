@@ -147,10 +147,12 @@ namespace OpenInfraPlatform
 					 * \internal	The Code of the function is in the commented out part at the end of the file.
 					 */
 					void convertIfcBSplineSurface(
-						const std::shared_ptr<typename IfcEntityTypesT::IfcBoundedSurface>& splineSurface,
-						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& splineSurface,
+						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
+						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
 					{
+						
 						template<>
 						inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(
 							const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& splineSurfaceWithKnots,
@@ -265,6 +267,7 @@ namespace OpenInfraPlatform
 								}
 							}
 						}
+						
 					}
 
 				private:

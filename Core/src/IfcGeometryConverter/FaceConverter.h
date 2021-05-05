@@ -288,6 +288,12 @@ namespace OpenInfraPlatform {
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
 					}
+
+					// temporary call of SplineConverterT::convertIfcBSplineSurface(..)
+					SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
+					std::shared_ptr<carve::input::PolylineSetData> polylineData;
+					splineConverter.convertIfcBSplineSurface(surface, pos, polylineData);
+
 					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
 					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) 
