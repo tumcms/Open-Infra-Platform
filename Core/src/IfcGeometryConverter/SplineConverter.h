@@ -152,117 +152,109 @@ namespace OpenInfraPlatform
 						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
 					{
-						
-						template<>
-						inline void SplineConverterT<emt::Ifc4EntityTypes, OpenInfraPlatform::Ifc4::UnitConverter>::convertIfcBSplineSurface(
-							const std::shared_ptr<emt::Ifc4EntityTypes::IfcBoundedSurface>& splineSurfaceWithKnots,
-							const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-							std::shared_ptr<carve::input::PolylineSetData>& polylineData)
+						std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots> bsplineSurfaceWithKnots =
+							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
+
+						if (splineSurfaceWithKnots)
 						{
-							std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots> bsplineSurfaceWithKnots =
-								std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
+							// obtain degree of both b-spline curves
+							const int degreeU = bsplineSurfaceWithKnots->m_UDegree;
+							const int orderU = degreeU + 1;
+							const int degreeV = bsplineSurfaceWithKnots->m_VDegree;
+							const int orderV = degreeV + 1;
+							// obtain number of control points
+							const int numControlPointsU = controlPoints.size();
+							const int numControlPointsV = controlPoints[0].size();
+							// obtain number of knots
+							const int numKnotsU = orderU + numControlPointsU;
+							const int numKnotsV = orderV + numControlPointsV;
 
-							if (splineSurfaceWithKnots)
+							// obtain knots for each direction
+							const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->m_UMultiplicities;
+							const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsU = bsplineSurfaceWithKnots->m_UKnots;
+							const std::vector<int>& knotMultsV = bsplineSurfaceWithKnots->m_VMultiplicities;
+							const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsV = bsplineSurfaceWithKnots->m_VKnots;
+
+							std::vector<double> knotsU;
+							std::vector<double> knotsV;
+							knotsU.reserve(numKnotsU);
+							knotsV.reserve(numKnotsV);
+
+							for (int i = 0; i < splineKnotsU.size(); ++i)
 							{
-								// obtain degree of both b-spline curves
-								const int degreeU = bsplineSurfaceWithKnots->m_UDegree;
-								const int orderU = degreeU + 1;
-								const int degreeV = bsplineSurfaceWithKnots->m_VDegree;
-								const int orderV = degreeV + 1;
-								// obtain number of control points
-								const int numControlPointsU = controlPoints.size();
-								const int numControlPointsV = controlPoints[0].size();
-								// obtain number of knots
-								const int numKnotsU = orderU + numControlPointsU;
-								const int numKnotsV = orderV + numControlPointsV;
-
-								// obtain knots for each direction
-								const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->m_UMultiplicities;
-								const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsU = bsplineSurfaceWithKnots->m_UKnots;
-								const std::vector<int>& knotMultsV = bsplineSurfaceWithKnots->m_VMultiplicities;
-								const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsV = bsplineSurfaceWithKnots->m_VKnots;
-
-								std::vector<double> knotsU;
-								std::vector<double> knotsV;
-								knotsU.reserve(numKnotsU);
-								knotsV.reserve(numKnotsV);
-
-								for (int i = 0; i < splineKnotsU.size(); ++i)
+								double knot = splineKnotsU[i]->m_value;
+								const int knotMult = knotMultsU[i];
+								// look at the multiplicity of the current knot
+								for (int j = 0; j < knotMult; ++j)
 								{
-									double knot = splineKnotsU[i]->m_value;
-									const int knotMult = knotMultsU[i];
-									// look at the multiplicity of the current knot
-									for (int j = 0; j < knotMult; ++j)
-									{
-										knotsU.push_back(knot);
-									}
+									knotsU.push_back(knot);
 								}
+							}
 
-								for (int i = 0; i < splineKnotsV.size(); ++i)
+							for (int i = 0; i < splineKnotsV.size(); ++i)
+							{
+								double knot = splineKnotsV[i]->m_value;
+								const int knotMult = knotMultsV[i];
+								// look at the multiplicity of the current knot
+								for (int j = 0; j < knotMult; ++j)
 								{
-									double knot = splineKnotsV[i]->m_value;
-									const int knotMult = knotMultsV[i];
-									// look at the multiplicity of the current knot
-									for (int j = 0; j < knotMult; ++j)
-									{
-										knotsV.push_back(knot);
-									}
+									knotsV.push_back(knot);
 								}
+							}
 
-								std::vector<std::vector<double>> weights;
+							std::vector<std::vector<double>> weights;
 
-								std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
-									std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
+							std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
+								std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
 
-								if (rationalBsplineSurfaceWithKnots)
+							if (rationalBsplineSurfaceWithKnots)
+							{
+								weights = rationalBsplineSurfaceWithKnots->m_WeightsData;
+							}
+
+							// reserve memory for all surface points on b-spline surface
+							//! TEMPORARY default number of curve points
+							const uint8_t numCurvePointsU = splineKnotsU.size() * 10;
+							const uint8_t numCurvePointsV = splineKnotsV.size() * 10;
+							std::vector<carve::geom::vector<3>> curvePoints;
+							curvePoints.reserve(numCurvePointsU * numCurvePointsV);
+
+							computeBSplineSurface(orderU, orderV, numCurvePointsU, numCurvePointsV,
+								numControlPointsU, numControlPointsV,
+								controlPoints, weights, knotsU, knotsV, curvePoints);
+
+							std::unordered_map<std::string, int> vertexMap;
+							vertexMap.reserve(curvePoints.size());
+
+							for (int v = 0; v < numCurvePointsV - 1; ++v)
+							{
+								for (int u = 0; u < numCurvePointsU - 1; ++u)
 								{
-									weights = rationalBsplineSurfaceWithKnots->m_WeightsData;
-								}
+									std::vector<carve::geom::vector<3>> facePoints;
+									facePoints.reserve(4);
 
-								// reserve memory for all surface points on b-spline surface
-								//! TEMPORARY default number of curve points
-								const uint8_t numCurvePointsU = splineKnotsU.size() * 10;
-								const uint8_t numCurvePointsV = splineKnotsV.size() * 10;
-								std::vector<carve::geom::vector<3>> curvePoints;
-								curvePoints.reserve(numCurvePointsU * numCurvePointsV);
+									facePoints.push_back(curvePoints[u + numCurvePointsU * v]); // 00
+									facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * v]); // 10
+									facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * (v + 1)]); // 11
+									facePoints.push_back(curvePoints[u + numCurvePointsU * (v + 1)]); // 01
 
-								computeBSplineSurface(orderU, orderV, numCurvePointsU, numCurvePointsV,
-									numControlPointsU, numControlPointsV,
-									controlPoints, weights, knotsU, knotsV, curvePoints);
+									size_t indices[4];
 
-								std::unordered_map<std::string, int> vertexMap;
-								vertexMap.reserve(curvePoints.size());
+									polylineData->beginPolyline();
 
-								for (int v = 0; v < numCurvePointsV - 1; ++v)
-								{
-									for (int u = 0; u < numCurvePointsU - 1; ++u)
+									for (auto k = 0; k < 4; ++k)
 									{
-										std::vector<carve::geom::vector<3>> facePoints;
-										facePoints.reserve(4);
+										std::stringstream key;
+										key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
 
-										facePoints.push_back(curvePoints[u + numCurvePointsU * v]); // 00
-										facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * v]); // 10
-										facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * (v + 1)]); // 11
-										facePoints.push_back(curvePoints[u + numCurvePointsU * (v + 1)]); // 01
-
-										size_t indices[4];
-
-										polylineData->beginPolyline();
-
-										for (auto k = 0; k < 4; ++k)
+										if (vertexMap.find(key.str()) != vertexMap.end()) { indices[k] = vertexMap[key.str()]; }
+										else
 										{
-											std::stringstream key;
-											key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
-
-											if (vertexMap.find(key.str()) != vertexMap.end()) { indices[k] = vertexMap[key.str()]; }
-											else
-											{
-												indices[k] = polylineData->addVertex(facePoints[k]);
-												vertexMap[key.str()] = indices[k];
-											}
-
-											polylineData->addPolylineIndex(indices[k]);
+											indices[k] = polylineData->addVertex(facePoints[k]);
+											vertexMap[key.str()] = indices[k];
 										}
+
+										polylineData->addPolylineIndex(indices[k]);
 									}
 								}
 							}
