@@ -873,6 +873,7 @@ namespace OpenInfraPlatform
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 =======
@@ -880,6 +881,9 @@ namespace OpenInfraPlatform
 =======
 				// IfcSpiral SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
 >>>>>>> 875f326b (Fixed mistakes in Spiral function)
+=======
+				// IfcSpline SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
+>>>>>>> 92a31da5 (Added IfsSpiral converter)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 >>>>>>> 92a31da5 (Added IfsSpiral converter)
 =======
@@ -959,6 +963,77 @@ namespace OpenInfraPlatform
 
 				// IfcClothoid SUBTYPE of IfcSpiral (exists starting IFC4X3_RC3)
 				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcSpiral to a tesselated curve.
+				* \param[in] spiral					A pointer to data from \c Spiral.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcSpiral.
+				*/
+				void convertIfcSpiral(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSpiral>& spiral,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
+				) const throw(...)
+				{
+					// **************************************************************************************************************************
+					//	 https://
+					//	ENTITY IfcSpiral
+					//		ABSTRACT SUPERTYPE OF(ONEOF
+					//			(IfcBlossCurve,
+					//          IfcClothoid
+					//          IfcCosine
+					//          IfcHelmertCurve
+					//			IfcSine))
+					//		SUBTYPE OF(IfcCurve);
+					//		Position: OPTIONAL IfcAxis2Placement;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					// IfcSpiral SUBTYPE OF IfcBlossCurve
+					if (spiral.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
+					{
+						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcSpiral>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcBlossCurve
+
+					// IfcEllipse SUBTYPE OF IfcClothoid
+					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					{
+						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcClothoid>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcClothoid
+
+					// IfcEllipse SUBTYPE OF IfcCosine
+					else if (spiral.isOfType<typename IfcEntityTypesT::IfcCosine>())
+					{
+						return convertIfcCosine(conic.as<typename IfcEntityTypesT::IfcCosine>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcCosine
+
+					// IfcEllipse SUBTYPE OF IfcHelmertCurve
+					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
+					{
+						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcHelmertCurve
+
+						// IfcEllipse SUBTYPE OF IfcSine
+					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
+					{
+						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcSine>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcSine
+
+					// the rest we do not support
+					throw oip::UnhandledException(spiral);
+				}
+				// IfcClothoid SUBTYPE of IfcSpline (exists starting IFC4X3_RC3)
+				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcClothoid to a tesselated curve.
 				* \param[in] clothoid				A pointer to data from \c IfcClothoid.
 				* \param[out] targetVec				The tessellated line.
@@ -995,8 +1070,12 @@ namespace OpenInfraPlatform
 =======
 					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
 					//	ENTITY IfcClothoid
+<<<<<<< HEAD
 					//		SUBTYPE OF(IfcCurve);
 >>>>>>> 23875633 (Starting IfcClothoid)
+=======
+					//		SUBTYPE OF(IfcSpiral);
+>>>>>>> 92a31da5 (Added IfsSpiral converter)
 					//			Position: IfcAxis2Placement;
 					//			ClothoidConstant: IfcLengthMeasure;
 					//	END_ENTITY;
