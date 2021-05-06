@@ -152,11 +152,12 @@ namespace OpenInfraPlatform
 						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
 						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
 					{
-						std::shared_ptr<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots> bsplineSurfaceWithKnots =
-							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
 
-						if (splineSurfaceWithKnots)
+						if (splineSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 						{
+							const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots =
+								splineSurface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>();
+
 							// obtain degree of both b-spline curves
 							const int degreeU = bsplineSurfaceWithKnots->m_UDegree;
 							const int orderU = degreeU + 1;
