@@ -159,13 +159,28 @@ namespace OpenInfraPlatform
 								splineSurface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>();
 
 							// obtain degree of both b-spline curves
-							const int degreeU = bsplineSurfaceWithKnots->m_UDegree;
+							const int degreeU = bsplineSurfaceWithKnots->UDegree;
 							const int orderU = degreeU + 1;
-							const int degreeV = bsplineSurfaceWithKnots->m_VDegree;
+							const int degreeV = bsplineSurfaceWithKnots->VDegree;
 							const int orderV = degreeV + 1;
 							// obtain number of control points
-							const int numControlPointsU = controlPoints.size();
-							const int numControlPointsV = controlPoints[0].size();
+							//const int numControlPointsU = controlPoints.size();
+							//const int numControlPointsV = controlPoints[0].size();
+
+							auto controlPointList = bsplineSurfaceWithKnots->ControlPointsList;
+							for (auto& itControlPointList : controlPointList)
+							{
+								std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>> vectorControlPointList;
+								std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
+
+								vectorControlPointList.resize(itControlPointList.size());
+								std::transform(itControlPointList.begin(),
+									itControlPointList.end(),
+									vectorControlPointList.begin(),
+									[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
+
+							} 
+							
 							// obtain number of knots
 							const int numKnotsU = orderU + numControlPointsU;
 							const int numKnotsV = orderV + numControlPointsV;
