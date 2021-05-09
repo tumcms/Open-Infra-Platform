@@ -1255,13 +1255,14 @@ namespace OpenInfraPlatform {
 							carve::geom::vector<3> vertex =
 								carve::geom::VECTOR(point[0],
 									point[1],
-									point[2]) * length_factor;
+									point[2]) * UnitConvert()->getLengthInMeterFactor();
 
 							// apply transformation
 							vertex = pos * vertex;
 
 							polygon->addVertex(vertex);
 						}
+
 
 						auto& faces = faceSet->Faces;
 						auto& pnIndices = faceSet->PnIndex; // optional
@@ -1274,8 +1275,27 @@ namespace OpenInfraPlatform {
 								[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
 							polygon->addFace(std::begin(indices), std::end(indices));
 
-							if (face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
-								BLUE_LOG(warning) << "Ignoring voids at " << face->getErrorLog();
+							if (face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>()) {
+								auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
+
+								std::vector<std::pair<size_t, size_t>> indicesWithVoids;
+								std::vector<size_t> secondIndices(faceWithVoids->InnerCoordIndices.size());
+
+								std::transform(std::begin(faceWithVoids->InnerCoordIndices[0]), std::end(faceWithVoids->InnerCoordIndices[0]), std::begin(secondIndices),
+									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
+								for (size_t i = 0; i < faceWithVoids->CoordIndex.size(); ++i)
+								{
+									indicesWithVoids[i].first = indices[i];
+								}
+
+								for (size_t i = 0; i < faceWithVoids->InnerCoordIndices.size(); ++i)
+								{
+									indicesWithVoids[i].second = secondIndices[i];
+								}
+								
+							}
+								
+
 						}
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);

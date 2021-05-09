@@ -150,10 +150,10 @@ void GeomUtils::extrude(
 	//  0-------face_loops[0]--------1
 
 	carve::geom::vector<3> normal_first_loop;
-	std::vector<std::vector<carve::geom2d::P2> >	face_loops;
-	for( std::vector<std::vector<carve::geom::vector<2> > >::const_iterator it_face_loops = face_loops_input.begin(); it_face_loops != face_loops_input.end(); ++it_face_loops )
+	std::vector<std::vector<carve::geom2d::P2>>	face_loops;
+	for( std::vector<std::vector<carve::geom::vector<2>>>::const_iterator it_face_loops = face_loops_input.begin(); it_face_loops != face_loops_input.end(); ++it_face_loops )
 	{
-		const std::vector<carve::geom::vector<2> >& loop = (*it_face_loops);
+		const std::vector<carve::geom::vector<2>>& loop = (*it_face_loops);
 
 		if( loop.size() < 3 )
 		{
@@ -215,49 +215,11 @@ void GeomUtils::extrude(
 	// triangulate
 	std::vector<carve::geom2d::P2> merged_path;
 	std::vector<carve::triangulate::tri_idx> triangulated;
-	std::vector<std::pair<size_t, size_t> > path_all_loops;
+	std::vector<std::pair<size_t, size_t>> path_all_loops;
 	try
 	{
 		path_all_loops = carve::triangulate::incorporateHolesIntoPolygon(face_loops);
-		// figure 2: path wich incorporates holes, described by path_all_loops
-		// (0/0) -> (1/3) -> (1/0) -> (1/1) -> (1/2) -> (1/3) -> (0/0) -> (0/1) -> (0/2) -> (0/3)
-		//  0/3<-----------------------0/2
-		//  |                            ^
-		//  |   1/0-------------->1/1    |
-		//  |   ^                   |    |
-		//  |   |                   v    |
-		//  |   1/3<--------------1/2    |
-		//  v                            |
-		//  0/0------------------------>0/1
-
-		merged_path.reserve(path_all_loops.size());
-		for( size_t i = 0; i < path_all_loops.size(); ++i )
-		{
-			int loop_number = path_all_loops[i].first;
-			int index_in_loop = path_all_loops[i].second;
-			
-			if( loop_number >= face_loops.size() )
-			{
-				err << "extrude: loop_number >= face_loops_projected.size()" << std::endl;
-				continue;
-			}
-			std::vector<carve::geom2d::P2>& loop = face_loops[loop_number];
-			carve::geom2d::P2& point_projected = loop[index_in_loop];
-			merged_path.push_back( point_projected );
-
-		}
-		// figure 3: merged path for triangulation
-		//  9<---------------------------8
-		//  |                            ^
-		//  |   2------------------>3    |
-		//  |   ^                   |    |
-		//  |   |                   v    |
-		//  |   1, 5<---------------4    |
-		//  | /                          |
-		//  0,6------------------------->7
-		carve::triangulate::triangulate(merged_path, triangulated);
-		carve::triangulate::improve(merged_path, triangulated);
-		// triangles: (9,0,1)  (5,6,7)  (4,5,7)  (4,7,8)  (9,1,2)  (8,9,2)  (3,4,8)  (2,3,8)
+		GeomUtils::createVoids(merged_path, triangulated, path_all_loops, face_loops, err);
 	}
 	catch(...)
 	{
@@ -266,8 +228,8 @@ void GeomUtils::extrude(
 	}
 
 	// now insert points to polygon, avoiding points with same coordinates
-	std::map<double, std::map<double, int> > existing_vertices_coords;
-	std::map<double, std::map<double, int> >::iterator vert_it;
+	std::map<double, std::map<double, int>> existing_vertices_coords;
+	std::map<double, std::map<double, int>>::iterator vert_it;
 	std::map<double, int>::iterator it_find_y;
 
 	std::map<int,int> map_merged_idx;
@@ -409,7 +371,8 @@ void GeomUtils::extrude(
 		carve::geom::vector<3> pc( carve::geom::VECTOR( v_c.v[0],	v_c.v[1],	v_c.v[2] ) );
 
 		double A = 0.5*(cross( pa-pb, pa-pc ).length());
-		if( abs(A) < 0.000000001 )
+		//if(GeometrySettings::areEqual(abs(A), 0.))
+		if (abs(A) < 0.000000001)
 		{
 			std::cout << "area < 0.000000001\n" << std::endl;
 		}
@@ -430,6 +393,53 @@ void GeomUtils::extrude(
 			poly_data->addFace( vertex_id_a_top,	vertex_id_c_top,	vertex_id_b_top );	
 		}
 	}
+}
+
+void GeomUtils::createVoids(std::vector<carve::geom2d::P2> merged_path,
+	std::vector<carve::triangulate::tri_idx> triangulated,
+	std::vector<std::pair<size_t, size_t>> path_all_loops,
+	std::vector<std::vector<carve::geom2d::P2>>	face_loops,
+	std::stringstream& err)
+{
+	// figure 2: path wich incorporates holes, described by path_all_loops
+	// (0/0) -> (1/3) -> (1/0) -> (1/1) -> (1/2) -> (1/3) -> (0/0) -> (0/1) -> (0/2) -> (0/3)
+	//  0/3<-----------------------0/2
+	//  |                            ^
+	//  |   1/0-------------->1/1    |
+	//  |   ^                   |    |
+	//  |   |                   v    |
+	//  |   1/3<--------------1/2    |
+	//  v                            |
+	//  0/0------------------------>0/1
+
+	merged_path.reserve(path_all_loops.size());
+	for (size_t i = 0; i < path_all_loops.size(); ++i)
+	{
+		int loop_number = path_all_loops[i].first;
+		int index_in_loop = path_all_loops[i].second;
+
+		if (loop_number >= face_loops.size())
+		{
+			err << "extrude: loop_number >= face_loops_projected.size()" << std::endl;
+			continue;
+		}
+		std::vector<carve::geom2d::P2>& loop = face_loops[loop_number];
+		carve::geom2d::P2& point_projected = loop[index_in_loop];
+		merged_path.push_back(point_projected);
+
+	}
+	// figure 3: merged path for triangulation
+	//  9<---------------------------8
+	//  |                            ^
+	//  |   2------------------>3    |
+	//  |   ^                   |    |
+	//  |   |                   v    |
+	//  |   1, 5<---------------4    |
+	//  | /                          |
+	//  0,6------------------------->7
+	carve::triangulate::triangulate(merged_path, triangulated);
+	carve::triangulate::improve(merged_path, triangulated);
+	// triangles: (9,0,1)  (5,6,7)  (4,5,7)  (4,7,8)  (9,1,2)  (8,9,2)  (3,4,8)  (2,3,8)
 }
 
 /**********************************************************************************************/

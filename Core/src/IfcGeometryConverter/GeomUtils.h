@@ -116,10 +116,16 @@ namespace OpenInfraPlatform
 					const buw::Vector3f& line_origin,
 					const buw::Vector3f& line_direction);
 
-				static void extrude(const std::vector<std::vector<carve::geom::vector<2> > >& paths,
+				static void extrude(const std::vector<std::vector<carve::geom::vector<2>>>& paths,
 					const carve::geom::vector<3> dir,
 					const bool closed,
 					std::shared_ptr<carve::input::PolyhedronData>& poly_data,
+					std::stringstream& err);
+
+				static void createVoids(std::vector<carve::geom2d::P2> merged_path,
+					std::vector<carve::triangulate::tri_idx> triangulated, 
+					std::vector<std::pair<size_t, size_t> > path_all_loops,
+					std::vector<std::vector<carve::geom2d::P2>>	face_loops,
 					std::stringstream& err);
 
 				static void makeLookAt(const carve::geom::vector<3>& eye,
