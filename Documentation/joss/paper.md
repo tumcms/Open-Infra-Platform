@@ -79,7 +79,7 @@ For a matter of fact, the geometry handling of IFC content has been taken and im
 Note that this is not an exhaustive list -- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
 
 On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus primarily
- on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @xbim].
+ on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @Lockley2017].
 They provide an API to implement against (in various programming languages) together with a viewer. 
 However, they focus mainly on the stable versions of the IFC standard (like IFC2x3 and IFC4),
  while OIP focuses primarily on the newer developments.
