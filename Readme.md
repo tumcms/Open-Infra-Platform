@@ -27,7 +27,7 @@ As a consequence, OIP can be used in two ways:
 
 Out-of-sync:
 
-[Installation, Usage & Updating](Documentation/markdown/retired/User.md)
+[Installation, Usage & Updating](Documentation/markdown/User.md)
 
 ## License
 

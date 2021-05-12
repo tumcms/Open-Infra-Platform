@@ -1,5 +1,7 @@
 # User
 
+*NOTE:* This documentation is out-of-sync and applies to the current state of the `master` branch (frozen somewhere in 2018).
+
 ## Installation
 
 The application can be used by building and executing it yourself, for that please refer to the "Building" section. Otherwise there is a binary .msi installer available [here](http://oip.cms.bgu.tum.de/TUM%20Open%20Infra%20Platform.msi) installing the latest stable release. Archived versions as well as a portable installation are available on the [homepage](https://www.cms.bgu.tum.de/de/forschung/projekte/oip). We highly recommend using a portable (.zip) or executable (.msi) installer.
