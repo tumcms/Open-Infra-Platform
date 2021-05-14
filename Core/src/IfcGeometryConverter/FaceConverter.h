@@ -1034,13 +1034,10 @@ namespace OpenInfraPlatform {
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
 					const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
 				{
-					if (points2D.expired()) {
-						throw oip::ReferenceExpiredException(points2D);
-					}
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
 					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
 					const uint32_t numPointsY = points2D.size();
-					loop2D.reserve(numPointsY);
+					loop2D.resize(numPointsY);
 
 					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Stefan
 					{
@@ -1049,9 +1046,21 @@ namespace OpenInfraPlatform {
 
 						for (unsigned int i = 0; i < numPointsX; ++i) 
 						{
+							if (points[i].expired()) {
+								throw oip::ReferenceExpiredException(points[i]);
+							}
+
 							/*const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcLengthMeasure>>& coords =
 								points[i]->m_Coordinates;*/
-							const std::vector<double>& coords = points[i]->Coordinates;
+							std::vector<double> coords;
+							coords.resize((points[i]->Coordinates).size());
+							// transform: convert 'it' (coordinates) to double
+							std::transform(
+								points[i]->Coordinates.begin(),
+								points[i]->Coordinates.end(),
+								coords.begin(),
+								[](auto &it) -> double { return it; });
+
 							if (coords.size() > 2) 
 							{
 								/*double x = coords[0]->m_value * lengthFactor;
@@ -1072,7 +1081,7 @@ namespace OpenInfraPlatform {
 							}
 							else 
 							{
-								throw oip::InconsistentGeometryException(points2D, "ifc_pt->Coordinates.size() != 2");
+								throw oip::InconsistentGeometryException(points[i], "ifc_pt->Coordinates.size() != 2");
 							}
 						}
 					}
