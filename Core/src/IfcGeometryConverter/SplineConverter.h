@@ -167,20 +167,36 @@ namespace OpenInfraPlatform
 							//const int numControlPointsU = controlPoints.size();
 							//const int numControlPointsV = controlPoints[0].size();
 
+							// load array of control points from ifc-entity
 							auto controlPointList = bsplineSurfaceWithKnots->ControlPointsList;
+							// temporary control point container of type std::vector<std::vector<..>> which is needed for converter function
+							std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>> controlPointListVector;
+							controlPointListVector.reserve(controlPointList.size());
+							// loop over u-indeces (=K1) of control points
 							for (auto& itControlPointList : controlPointList)
 							{
-								std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>> vectorControlPointList;
-								std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
-
-								vectorControlPointList.resize(itControlPointList.size());
+								// temporary control point sub-vector of one u-index
+								std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>> controlPointListSubvector;
+								controlPointListSubvector.resize(itControlPointList.size());
+								// std::transform loops over v-indeces (=K2) 
 								std::transform(itControlPointList.begin(),
 									itControlPointList.end(),
-									vectorControlPointList.begin(),
-									[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
+									controlPointListSubvector.begin(),
+									[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it; });
 
-							} 
-							
+								// save temporary sub-vector in temporary vector
+								controlPointListVector.push_back(controlPointListSubvector);
+							}
+
+							// temporary instances to curve and face converter, potential relocation will be considered in further refactoring
+							std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter =
+								std::make_shared<CurveConverterT<IfcEntityTypesT>>(CurveConverterT<IfcEntityTypesT>(GeomSettings(), UnitConvert(), placementConverter));
+							FaceConverterT<IfcEntityTypesT> faceConverter(GeomSettings(), UnitConvert(), placementConverter, curveConverter);
+
+							// obtain control points
+							std::vector<std::vector<carve::geom::vector<3>>> controlPoints = faceConverter.convertIfcCartesianPoint2DVector(controlPointListVector);
+
+							/*
 							// obtain number of knots
 							const int numKnotsU = orderU + numControlPointsU;
 							const int numKnotsV = orderV + numControlPointsV;
@@ -274,6 +290,7 @@ namespace OpenInfraPlatform
 									}
 								}
 							}
+							*/
 						}
 						
 					}
