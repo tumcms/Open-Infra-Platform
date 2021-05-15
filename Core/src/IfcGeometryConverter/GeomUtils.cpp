@@ -391,10 +391,9 @@ std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 {
 	std::vector<std::vector<carve::geom2d::P2>>	face_loops;
 
-	for (std::vector<std::vector<carve::geom::vector<2>>>::const_iterator it_face_loops = face_loops_input.begin(); it_face_loops != face_loops_input.end(); ++it_face_loops)
+	bool first_loop = true;
+	for (const std::vector<carve::geom::vector<2>>& loop : face_loops_input)
 	{
-		const std::vector<carve::geom::vector<2>>& loop = (*it_face_loops);
-
 		if (loop.size() < 3)
 		{
 			throw oip::InconsistentGeometryException("GeomUtils::extrude(): loop.size() < 3");
@@ -404,8 +403,9 @@ std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 		bool reverse_loop = false;
 		std::vector<carve::geom2d::P2> loop_2d(loop);
 		carve::geom::vector<3>  normal_2d = computePolygon2DNormal(loop_2d);
-		if (it_face_loops == face_loops_input.begin())
+		if (first_loop)
 		{
+			first_loop = false;
 			normal_first_loop = normal_2d;
 			if (normal_2d.z < 0)
 			{
