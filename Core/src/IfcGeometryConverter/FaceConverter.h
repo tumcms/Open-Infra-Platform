@@ -1032,7 +1032,9 @@ namespace OpenInfraPlatform {
 				*/
 
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
-					const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
+					const OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
+					OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
+					EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>, 0, -1>, 0, -1>& points2D)  const throw(...)
 				{
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
 					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
