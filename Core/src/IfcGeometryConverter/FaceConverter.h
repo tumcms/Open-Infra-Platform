@@ -1332,6 +1332,21 @@ namespace OpenInfraPlatform {
 									loops.push_back(loop);
 								}
 								
+								std::vector<carve::geom::vector<3>> firstPointloop = loops[0];
+								std::vector<carve::geom::vector<3>> secondPointLoop = loops[1];
+
+								carve::geom::vector<3> firstPoint = firstPointloop[0];
+								carve::geom::vector<3> secondPoint = firstPointloop[1];
+								carve::geom::vector<3> thirdPoint = firstPointloop[2];
+
+								carve::geom::vector<3> firstToSecond = secondPoint - firstPoint;
+								carve::geom::vector<3> firstToThird = thirdPoint - firstPoint;
+
+								carve::geom::vector<3> normalOfPlane = carve::geom::cross(firstToSecond, firstToThird);
+								normalOfPlane.normalized();
+								
+
+								
 
 								// 2. Call geomUtils
 								/*carve::geom::vector<3> normal_first_loop;
@@ -1371,7 +1386,6 @@ namespace OpenInfraPlatform {
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
 						return;
 					}
-
 					throw oip::UnhandledException(tessItem);
 				}
 
