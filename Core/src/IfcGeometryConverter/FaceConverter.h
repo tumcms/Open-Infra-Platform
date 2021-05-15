@@ -1246,13 +1246,12 @@ namespace OpenInfraPlatform {
 					{
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
-
-						double length_factor = UnitConvert()->getLengthInMeterFactor();
-
+						
 						// obtain vertices from coordinates list and add them to the new polygon
 						for (const auto& point : faceSet->Coordinates->CoordList)
 						{
-							carve::geom::vector<3> vertex =
+							
+							carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 								carve::geom::VECTOR(point[0],
 									point[1],
 									point[2]) * UnitConvert()->getLengthInMeterFactor();
@@ -1285,14 +1284,19 @@ namespace OpenInfraPlatform {
 									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
 								for (size_t i = 0; i < faceWithVoids->CoordIndex.size(); ++i)
 								{
-									indicesWithVoids[i].first = indices[i];
+									indicesWithVoids[i].first = 0;
+									indicesWithVoids[i].second = indices[i];
 								}
 
 								for (size_t i = 0; i < faceWithVoids->InnerCoordIndices.size(); ++i)
 								{
-									indicesWithVoids[i].second = secondIndices[i];
+									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].first = 1;
+									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].second = secondIndices[i];
 								}
 								
+								std::vector<carve::geom2d::P2> merged_path;
+								std::vector<carve::triangulate::tri_idx> triangulated;
+								std::vector<std::pair<size_t, size_t>> path_all_loops;
 							}
 								
 

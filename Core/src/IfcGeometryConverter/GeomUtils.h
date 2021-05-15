@@ -119,14 +119,16 @@ namespace OpenInfraPlatform
 				static void extrude(const std::vector<std::vector<carve::geom::vector<2>>>& paths,
 					const carve::geom::vector<3> dir,
 					const bool closed,
-					std::shared_ptr<carve::input::PolyhedronData>& poly_data,
-					std::stringstream& err);
+					std::shared_ptr<carve::input::PolyhedronData>& poly_data);
 
-				static void createVoids(std::vector<carve::geom2d::P2> merged_path,
-					std::vector<carve::triangulate::tri_idx> triangulated, 
-					std::vector<std::pair<size_t, size_t> > path_all_loops,
-					std::vector<std::vector<carve::geom2d::P2>>	face_loops,
-					std::stringstream& err);
+				static void incorporateVoids(const std::vector<std::vector<carve::geom2d::P2>>& paths,
+					std::vector<carve::geom2d::P2>& merged_path,
+					std::vector<carve::triangulate::tri_idx>& triangulated, 
+					std::vector<std::pair<size_t, size_t>>& path_all_loops);
+
+				static std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
+					const std::vector<std::vector<carve::geom::vector<2>>> & face_loops_input, 
+					carve::geom::vector<3>& normal_first_loop);
 
 				static void makeLookAt(const carve::geom::vector<3>& eye,
 					const carve::geom::vector<3>& center,

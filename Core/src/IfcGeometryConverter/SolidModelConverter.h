@@ -997,7 +997,7 @@ namespace OpenInfraPlatform
 
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
 				std::stringstream err;
-				GeomUtils::extrude(paths, extrusionVector, closed, poly_data, err);
+				GeomUtils::extrude(paths, extrusionVector, closed, poly_data);
 
 				// apply object coordinate system
 				std::transform(poly_data->points.begin(), poly_data->points.end(), poly_data->points.begin(), 
