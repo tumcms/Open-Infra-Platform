@@ -1026,67 +1026,25 @@ namespace OpenInfraPlatform {
 
 				}
 
-				/*! \brief Converts \c IfcCartesianPoint to a 2D vector.
-				\param	faceVertices2D to be triangulated using carve
-				\param	faceVertices3D to be added to the triangulation
+				/*! \brief Converts a two-dimensional array of \c IfcCartesianPoint-s to a array of \c carve points.
+				\param	points2D	The two-dimensional array of \c IfcCartesianPoint-s to be converted.
+									In the \c ifc -documentation, it's called i. e. 'a list of lists of control points'.
+				\returns			The two-dimensional array of \c carve points.
 				*/
-
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
 					const OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
 					OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
 					EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>, 0, -1>, 0, -1>& points2D)  const throw(...)
 				{
+					// initialise the target vector, reserve space
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
-					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
-					const uint32_t numPointsY = points2D.size();
-					loop2D.resize(numPointsY);
+					loop2D.reserve(points2D.size());
 
-					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Stefan
-					{
-						const uint32_t numPointsX = points2D[j].size();
-						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
+					// convert each row of points, save in target vector
+					for (auto itPoints2D : points2D)
+						loop2D.push_back(curveConverter->convertIfcCartesianPointVector(itPoints2D));
 
-						for (unsigned int i = 0; i < numPointsX; ++i) 
-						{
-							if (points[i].expired()) {
-								throw oip::ReferenceExpiredException(points[i]);
-							}
-
-							/*const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcLengthMeasure>>& coords =
-								points[i]->m_Coordinates;*/
-							std::vector<double> coords;
-							coords.resize((points[i]->Coordinates).size());
-							// transform: convert 'it' (coordinates) to double
-							std::transform(
-								points[i]->Coordinates.begin(),
-								points[i]->Coordinates.end(),
-								coords.begin(),
-								[](auto &it) -> double { return it; });
-
-							if (coords.size() > 2) 
-							{
-								/*double x = coords[0]->m_value * lengthFactor;
-								double y = coords[1]->m_value * lengthFactor;
-								double z = coords[2]->m_value * lengthFactor;
-								*/
-								double x = coords[0] * lengthFactor;
-								double y = coords[1] * lengthFactor;
-								double z = coords[2] * lengthFactor;
-								loop2D[j].push_back(carve::geom::VECTOR(x, y, z));
-							}
-							else if (coords.size() > 1) 
-							{
-								double x = coords[0] * lengthFactor;
-								double y = coords[1] * lengthFactor;
-
-								loop2D[j].push_back(carve::geom::VECTOR(x, y, 0.0));
-							}
-							else 
-							{
-								throw oip::InconsistentGeometryException(points[i], "ifc_pt->Coordinates.size() != 2");
-							}
-						}
-					}
+					// return the target vector
 					return loop2D;
 				}
 				
