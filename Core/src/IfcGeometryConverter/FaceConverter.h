@@ -1289,7 +1289,7 @@ namespace OpenInfraPlatform {
 									size_t i = 0;
 									for (const auto& point : faceSet->Coordinates->CoordList)
 									{
-										if (i == outerLoop) {
+										if (i == outerLoop-1) {
 											
 											carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 											carve::geom::VECTOR(point[0],
@@ -1314,7 +1314,7 @@ namespace OpenInfraPlatform {
 										double i = 0.;
 										for (const auto& point : faceSet->Coordinates->CoordList)
 										{
-											if (i == innerLoopPoint) {
+											if (i == innerLoopPoint-1) {
 
 												carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 													carve::geom::VECTOR(point[0],

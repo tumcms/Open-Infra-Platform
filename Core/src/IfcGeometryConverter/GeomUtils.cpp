@@ -120,7 +120,7 @@ carve::geom::vector<3> GeomUtils::computePolygon2DNormal(
 /**********************************************************************************************/
 
 void GeomUtils::extrude( 
-					const std::vector<std::vector<carve::geom::vector<2> > >& face_loops_input, 
+					const std::vector<std::vector<carve::geom::vector<2>>>& face_loops_input, 
 					const carve::geom::vector<3> extrusion_vector, 
 					const bool closed,
 					std::shared_ptr<carve::input::PolyhedronData>& poly_data)
@@ -184,7 +184,7 @@ void GeomUtils::extrude(
 #endif
 
 		//  return a pair, with its member pair::first set to an iterator pointing to either the newly inserted element or to the element with an equivalent key in the map
-		vert_it = existing_vertices_coords.insert( std::make_pair(vertex_x, std::map<double,int>() ) ).first;
+		vert_it = existing_vertices_coords.insert( std::make_pair(vertex_x, std::map<double,int>()) ).first;
 		std::map<double, int>& map_y_index = vert_it->second;
 
 		it_find_y = map_y_index.find( vertex_y );
