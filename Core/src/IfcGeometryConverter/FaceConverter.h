@@ -1268,21 +1268,89 @@ namespace OpenInfraPlatform {
 
 						for( auto& face : faces )
 						{
-							// determine vertices' indices
-							std::vector<size_t> indices(face->CoordIndex.size());
-							std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
-								[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
-							polygon->addFace(std::begin(indices), std::end(indices));
-
-							if (face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>()) {
+							if (!face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
+							{
+								// determine vertices' indices
+								std::vector<size_t> indices(face->CoordIndex.size());
+								std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
+									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
+								polygon->addFace(std::begin(indices), std::end(indices));
+							}
+							
+							else {
 								auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
 
+								// 1. Build loops of actual points
+								std::vector<std::vector<carve::geom::vector<3>>> loops;
+								std::vector<carve::geom::vector<3>> outer_loop;
+
+								for (auto outerLoop : faceWithVoids->CoordIndex)
+								{
+									size_t i = 0;
+									for (const auto& point : faceSet->Coordinates->CoordList)
+									{
+										if (i == outerLoop) {
+											
+											carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
+											carve::geom::VECTOR(point[0],
+												point[1],
+												point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+											// apply transformation
+											vertex = pos * vertex;
+											outer_loop.push_back(vertex);
+											break;
+										}
+										i++;
+									}
+								}
+								loops.push_back(outer_loop);
+								
+								for (auto innerLoop : faceWithVoids->InnerCoordIndices)
+								{
+									std::vector<carve::geom::vector<3>> loop;
+									for (auto innerLoopPoint : innerLoop)
+									{
+										double i = 0.;
+										for (const auto& point : faceSet->Coordinates->CoordList)
+										{
+											if (i == innerLoopPoint) {
+
+												carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
+													carve::geom::VECTOR(point[0],
+														point[1],
+														point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+												// apply transformation
+												vertex = pos * vertex;
+												loop.push_back(vertex);
+												break;
+											}
+											i++;
+										}
+									}
+									loops.push_back(loop);
+								}
+								
+
+								// 2. Call geomUtils
+								/*carve::geom::vector<3> normal_first_loop;
+								std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(loops, normal_first_loop);
+
+								std::vector<carve::geom2d::P2> merged_path;
+								std::vector<carve::triangulate::tri_idx> triangulated;
+								std::vector<std::pair<size_t, size_t>> path_all_loops;
+
+								GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);*/
+								// 3. Given the results, find corresponding points in the original array. 
+								
+							
 								std::vector<std::pair<size_t, size_t>> indicesWithVoids;
 								std::vector<size_t> secondIndices(faceWithVoids->InnerCoordIndices.size());
 
-								std::transform(std::begin(faceWithVoids->InnerCoordIndices[0]), std::end(faceWithVoids->InnerCoordIndices[0]), std::begin(secondIndices),
-									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
-								for (size_t i = 0; i < faceWithVoids->CoordIndex.size(); ++i)
+								/*std::transform(std::begin(faceWithVoids->InnerCoordIndices[0]), std::end(faceWithVoids->InnerCoordIndices[0]), std::begin(secondIndices),
+									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });*/
+								/*for (size_t i = 0; i < faceWithVoids->CoordIndex.size(); ++i)
 								{
 									indicesWithVoids[i].first = 0;
 									indicesWithVoids[i].second = indices[i];
@@ -1292,11 +1360,9 @@ namespace OpenInfraPlatform {
 								{
 									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].first = 1;
 									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].second = secondIndices[i];
-								}
+								}*/
 								
-								std::vector<carve::geom2d::P2> merged_path;
-								std::vector<carve::triangulate::tri_idx> triangulated;
-								std::vector<std::pair<size_t, size_t>> path_all_loops;
+								
 							}
 								
 
