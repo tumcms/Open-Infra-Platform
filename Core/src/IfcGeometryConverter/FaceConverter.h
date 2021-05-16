@@ -1332,22 +1332,27 @@ namespace OpenInfraPlatform {
 									loops.push_back(loop);
 								}
 								
-								std::vector<carve::geom::vector<3>> firstPointloop = loops[0];
-								std::vector<carve::geom::vector<3>> secondPointLoop = loops[1];
+								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
+								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
-								carve::geom::vector<3> firstPoint = firstPointloop[0];
-								carve::geom::vector<3> secondPoint = firstPointloop[1];
-								carve::geom::vector<3> thirdPoint = firstPointloop[2];
-
-								carve::geom::vector<3> firstToSecond = secondPoint - firstPoint;
-								carve::geom::vector<3> firstToThird = thirdPoint - firstPoint;
-
-								carve::geom::vector<3> normalOfPlane = carve::geom::cross(firstToSecond, firstToThird);
-								normalOfPlane.normalized();
+								for (int i = 0; i < loops.size(); i++) 
+								{
+									std::vector<carve::geom::vector<3>> loop = loops[i];
+									std::vector<carve::geom::vector<2>> loop2D;
+									for (int j = 0; j < loop.size(); j++)
+									{
+										carve::geom::vector<3> point3D = loop[j];
+										carve::geom::vector<3> distance = carve::geom::VECTOR(
+											point3D.x * normalOfPlane.x,
+											point3D.y * normalOfPlane.y, 
+											point3D.z * normalOfPlane.z);
+										carve::geom::vector<3> point3Dto2D = loop[j] - distance;
+										carve::geom::vector<2> point2D = carve::geom::VECTOR(point3Dto2D.x, point3Dto2D.y);
+										loop2D.push_back(point2D);
+									}
+									loops2D.push_back(loop2D);
+								}
 								
-
-								
-
 								// 2. Call geomUtils
 								/*carve::geom::vector<3> normal_first_loop;
 								std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(loops, normal_first_loop);
