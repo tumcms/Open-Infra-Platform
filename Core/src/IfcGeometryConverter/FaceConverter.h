@@ -1289,7 +1289,7 @@ namespace OpenInfraPlatform {
 									size_t i = 0;
 									for (const auto& point : faceSet->Coordinates->CoordList)
 									{
-										if (i == outerLoop-1) {
+										if (i == outerLoop - 1) {
 											
 											carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 											carve::geom::VECTOR(point[0],
@@ -1314,7 +1314,7 @@ namespace OpenInfraPlatform {
 										double i = 0.;
 										for (const auto& point : faceSet->Coordinates->CoordList)
 										{
-											if (i == innerLoopPoint-1) {
+											if (i == innerLoopPoint- 1) {
 
 												carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 													carve::geom::VECTOR(point[0],
@@ -1333,7 +1333,15 @@ namespace OpenInfraPlatform {
 								}
 								
 								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
+								std::vector<carve::geom::vector<3>> outerLoop = loops[0];
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
+
+								carve::math::Matrix planeMatrix;
+								GeomUtils::convertPlane2Matrix(normalOfPlane, carve::geom::VECTOR(0., 0., 0.),
+									outerLoop[2] - outerLoop[1], planeMatrix);
+
+								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
+
 
 								for (int i = 0; i < loops.size(); i++) 
 								{
@@ -1341,12 +1349,8 @@ namespace OpenInfraPlatform {
 									std::vector<carve::geom::vector<2>> loop2D;
 									for (int j = 0; j < loop.size(); j++)
 									{
-										carve::geom::vector<3> point3D = loop[j];
-										carve::geom::vector<3> distance = carve::geom::VECTOR(
-											point3D.x * normalOfPlane.x,
-											point3D.y * normalOfPlane.y, 
-											point3D.z * normalOfPlane.z);
-										carve::geom::vector<3> point3Dto2D = loop[j] - distance;
+										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * loop[j];
+										
 										carve::geom::vector<2> point2D = carve::geom::VECTOR(point3Dto2D.x, point3Dto2D.y);
 										loop2D.push_back(point2D);
 									}
