@@ -1364,28 +1364,7 @@ namespace OpenInfraPlatform {
 								GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);*/
 								// 3. Given the results, find corresponding points in the original array. 
 								
-							
-								std::vector<std::pair<size_t, size_t>> indicesWithVoids;
-								std::vector<size_t> secondIndices(faceWithVoids->InnerCoordIndices.size());
-
-								/*std::transform(std::begin(faceWithVoids->InnerCoordIndices[0]), std::end(faceWithVoids->InnerCoordIndices[0]), std::begin(secondIndices),
-									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });*/
-								/*for (size_t i = 0; i < faceWithVoids->CoordIndex.size(); ++i)
-								{
-									indicesWithVoids[i].first = 0;
-									indicesWithVoids[i].second = indices[i];
-								}
-
-								for (size_t i = 0; i < faceWithVoids->InnerCoordIndices.size(); ++i)
-								{
-									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].first = 1;
-									indicesWithVoids[i + faceWithVoids->CoordIndex.size()].second = secondIndices[i];
-								}*/
-								
-								
 							}
-								
-
 						}
 
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
