@@ -1026,15 +1026,19 @@ namespace OpenInfraPlatform {
 
 				}
 
+				/*! \brief Typename definition (alias) of \c EXPRESSContainer for a easier use of \c OpenInfraPlatform::EarlyBinding::EXPRESSContainer.
+				\c OpenInfraPlatform::EarlyBinding::EXPRESSContainer is defined in EXPRESSContainer.h.
+				The alias is defined for use in the function parameter of \c convertIfcCartesianPoint2DVector.
+				*/
+				template <typename T> using EXPRESSContainer = OpenInfraPlatform::EarlyBinding::EXPRESSContainer<T, 0, LIST_MAXSIZE>;
+
 				/*! \brief Converts a two-dimensional array of \c IfcCartesianPoint-s to a array of \c carve points.
 				\param	points2D	The two-dimensional array of \c IfcCartesianPoint-s to be converted.
 									In the \c ifc -documentation, it's called i. e. 'a list of lists of control points'.
 				\returns			The two-dimensional array of \c carve points.
 				*/
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
-					const OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
-					OpenInfraPlatform::EarlyBinding::EXPRESSContainer<
-					EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>, 0, -1>, 0, -1>& points2D)  const throw(...)
+					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
 				{
 					// initialise the target vector, reserve space
 					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
