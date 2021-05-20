@@ -997,7 +997,7 @@ namespace OpenInfraPlatform
 					// IfcSpiral SUBTYPE OF IfcBlossCurve
 					if (spiral.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
 					{
-						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcSpiral>(),
+						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcBlossCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcBlossCurve
 
@@ -1018,14 +1018,14 @@ namespace OpenInfraPlatform
 					// IfcEllipse SUBTYPE OF IfcHelmertCurve
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
 					{
-						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
+						return convertIfcHelmertCurve(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcHelmertCurve
 
 						// IfcEllipse SUBTYPE OF IfcSine
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
-						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcSine>(),
+						return convertIfcSine(conic.as<typename IfcEntityTypesT::IfcSine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcSine
 
@@ -1098,7 +1098,11 @@ namespace OpenInfraPlatform
 					// Get parameter of the clothoid for trimming end.
 					carve::geom::vector<3> endPoint = getPointOnCurve<typename IfcEntityTypesT::IfcClothoid>(clothoid, trim2Vec, trimmingPreference);
 
+<<<<<<< HEAD
 					// get L, A
+=======
+					//get L, A, R 
+>>>>>>> ff27b9df (Calculated vector, length, points)
 					// A - Clothoid constant.
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 
@@ -1106,6 +1110,7 @@ namespace OpenInfraPlatform
 					//double L = sqrt(pow(endPoint.x- firstPoint.x)+pow(endPoint.y - firstPoint.y)+ pow(endPoint.z - firstPoint.z));
 					double L = carve::geom::distance(firstPoint, endPoint);
 
+<<<<<<< HEAD
 					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
 					double length = L / A * sqrt(M_PI);
 		
@@ -1172,6 +1177,53 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> clothoid_origin = convertIfcPointOnCurve(placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());;
 					//1.2 Clothoid Constant use IfcLengthMeasure
 >>>>>>> aeb43baf (Starting implementation for IfcClothoid)
+=======
+					// Get number of tesselated segments (note default is 100, write new function!)
+					int numSegments = 100;
+					// Create a tesselated vector
+					std::vector < double > ti(numSegments,0);
+					double pointInterval_ti = (endPoint.x - firstPoint.x) / (numSegments - 1);
+					for (int i = 1; i < ti.size(); ++i)
+					{
+						ti.push_back(ti[i - 1] + pointInterval_ti);
+					}
+					
+					//Calculate clothoid points. Fresnel equastion.
+
+					std::vector<carve::geom::vector<3> > clothoidPoints;
+					clothoidPoints.x[0, 0];
+					clothoidPoints.y[0, 0];
+					clothoidPoints.z[0, 0];
+					
+					for (int i = 1; i < numSegments; ++i) 
+					{
+						clothoidPoints.push_back(carve::geom::vector<3>(
+							carve::geom::VECTOR(
+								clothoidPoint.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
+									clothoidPoint.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
+										0)));
+					}
+
+					// Add intagral constant
+
+					std::vector<carve::geom::vector<3> > newClothoidPoints;
+					for (int i = 1; i < newClothoidPoints.size; ++i)
+					{
+						carve::geom::vector<2>&  point = clothoid_points.at(i);
+						carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
+						point3d = clothoidPositionMatrix * point3d;
+						newClothoidPoints.push_back(point3d);
+
+					}
+					// Convert to newClothoidPoints
+
+					GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
+					segmentStartPoints.push_back(carve::geom::VECTOR(
+						newClothoidPoints.at(0).x,
+						newClothoidPoints.at(0).y,
+						newClothoidPoints.at(0).z));
+					return;
+>>>>>>> ff27b9df (Calculated vector, length, points)
 
 				}
 #endif
