@@ -41,10 +41,12 @@ namespace OpenInfraPlatform
 
 		//override from QAbstractItemModel
 			virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-			virtual QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const override;
+			virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
 			virtual QModelIndex parent(const QModelIndex &index) const override;
 			virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 			virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+			virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+			virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 		private:
 			void setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, std::shared_ptr<IfcTreeItem> parent);
