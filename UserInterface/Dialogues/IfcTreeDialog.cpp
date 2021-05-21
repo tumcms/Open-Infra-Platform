@@ -43,7 +43,8 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 	if (std::dynamic_pointer_cast<oip::IfcModel>(model))
 	{
 		auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
-		auto expressModel = ifcModel->getExpressModel();
+		auto expressModelShared = ifcModel->getExpressModel();
+		OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel = expressModelShared.get();
 		auto treeModel = new IfcTreeModel(expressModel);
 		ui_->ifcTreeView->setModel(treeModel);
 		((QDialog*)this)->show();

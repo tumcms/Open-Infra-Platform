@@ -36,7 +36,7 @@ namespace OpenInfraPlatform
 			Q_OBJECT;
 
 		public:
-			IfcTreeModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, QObject *parent = nullptr);
+			IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent = nullptr);
 			~IfcTreeModel();
 
 		//override from QAbstractItemModel
@@ -49,9 +49,9 @@ namespace OpenInfraPlatform
 			virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 		private:
-			void setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, std::shared_ptr<IfcTreeItem> parent);
+			void setupModelData(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent);
 
-			std::shared_ptr<IfcTreeItem> rootItem_;
+			IfcTreeItem *rootItem_;
 		};
 
 	}

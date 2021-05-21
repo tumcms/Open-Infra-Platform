@@ -23,7 +23,7 @@
 #include "visit_struct\visit_struct.hpp"
 
 
-OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>& data, const std::shared_ptr<IfcTreeItem>& parentItem)
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem)
 {
 	data_ = data;
 	parentItem_ = parentItem;
@@ -41,16 +41,16 @@ OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem()
 
 OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
 {
-	childItems_.clear();
-	//qDeleteAll(childItems_);
+	//childItems_.clear();
+	qDeleteAll(childItems_);
 }
 
-void OpenInfraPlatform::UserInterface::IfcTreeItem::appendchild(std::shared_ptr<IfcTreeItem> child)
+void OpenInfraPlatform::UserInterface::IfcTreeItem::appendchild(IfcTreeItem *child)
 {
 	childItems_.append(child);
 }
 
-std::shared_ptr<OpenInfraPlatform::UserInterface::IfcTreeItem> OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
+OpenInfraPlatform::UserInterface::IfcTreeItem* OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
 {
 	if (row < 0 || row >= childItems_.size())
 		throw oip::UnhandledException("Child index out of range (IfcTreeItem::child)");
@@ -101,16 +101,14 @@ int OpenInfraPlatform::UserInterface::IfcTreeItem::row()
 {
 	if (parentItem_)
 	{	
-		return parentItem_->childItems_.indexOf(shared_from_this());
+		return parentItem_->childItems_.indexOf(const_cast<IfcTreeItem*>(this));
 	}
 	return 0;
 }
 
-std::shared_ptr<OpenInfraPlatform::UserInterface::IfcTreeItem> OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
+OpenInfraPlatform::UserInterface::IfcTreeItem* OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
 {
 	return parentItem_;
-
-	//return std::shared_ptr<IfcTreeItem>(); //could be wrong
 }
 
 QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const

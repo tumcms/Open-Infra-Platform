@@ -26,28 +26,28 @@
 namespace OpenInfraPlatform {
 	namespace UserInterface {
 
-		class IfcTreeItem : public std::enable_shared_from_this<IfcTreeItem>
+		class IfcTreeItem
 		{
 		public:
-			IfcTreeItem(const std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>& data, const std::shared_ptr<IfcTreeItem>& parentItem);
+			IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem);
 			IfcTreeItem();
 			~IfcTreeItem();
 
-			void appendchild(std::shared_ptr<IfcTreeItem> child);
+			void appendchild(IfcTreeItem *child);
 
-			std::shared_ptr<IfcTreeItem> child(int row);
+			IfcTreeItem *child(int row);
 			int childCount() const;
 			int columnCount() const;
 			QVariant data(int column) const;
 			int row();
-			std::shared_ptr<IfcTreeItem> parentItem();
+			IfcTreeItem *parentItem();
 			QString getIfcClassName() const;
 
 		private:
-			QVector<std::shared_ptr<IfcTreeItem>> childItems_;
-			std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data_;
+			QVector<IfcTreeItem*> childItems_;
+			OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data_;
 			std::vector<std::string> itemData_;
-			std::shared_ptr<IfcTreeItem> parentItem_;
+			IfcTreeItem *parentItem_;
 
 			//struct getAttributeDescription;
 		};

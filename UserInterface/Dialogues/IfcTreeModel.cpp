@@ -22,18 +22,18 @@
 #include <memory>
 
 
-OpenInfraPlatform::UserInterface::IfcTreeModel::IfcTreeModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, QObject *parent)
+OpenInfraPlatform::UserInterface::IfcTreeModel::IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent)
 	: QAbstractItemModel(parent)
 {
 	//rootItem_ = std::make_shared<IfcTreeItem>(expressModel->entities.find(1)->second, nullptr); //make ifcProject the root item 
 	//std::string text = "Title";
-	rootItem_ = std::make_shared<IfcTreeItem>();
+	rootItem_ = new IfcTreeItem();
 	setupModelData(expressModel, rootItem_);
 }
 
 OpenInfraPlatform::UserInterface::IfcTreeModel::~IfcTreeModel()
 {
-	
+	delete rootItem_;
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::index(int row, int column, const QModelIndex &parent) const
@@ -41,20 +41,15 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::index(int row, int c
 	if (!hasIndex(row, column, parent))
 		return QModelIndex();
 
-	std::shared_ptr<IfcTreeItem> parentItemShared;
+	IfcTreeItem* parentItem;
 
 	if (!parent.isValid())
-		parentItemShared = rootItem_;
+		parentItem = rootItem_;
 		//return this->createIndex(row, column, nullptr);
 	else
-	{
-		IfcTreeItem *parentItem = static_cast<IfcTreeItem*>(parent.internalPointer());
-		std::shared_ptr<IfcTreeItem> parentTemp(parentItem);
-		parentItemShared = parentTemp;
-	}
+		parentItem = static_cast<IfcTreeItem*>(parent.internalPointer());
 
-	std::shared_ptr<IfcTreeItem> childItemShared = parentItemShared->child(row);
-	IfcTreeItem *childItem = childItemShared.get();
+	IfcTreeItem *childItem = parentItem->child(row);
 	if (childItem)
 		return createIndex(row, column, childItem);
 	return QModelIndex();
@@ -71,12 +66,10 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::parent(const QModelI
 	if (!index.isValid())
 		return QModelIndex();
 
-	IfcTreeItem *childItem = static_cast<IfcTreeItem*>(index.internalPointer());
-	std::shared_ptr<IfcTreeItem> childItemShared(childItem);
-	std::shared_ptr<IfcTreeItem> parentItemShared = childItem->parentItem();
-	IfcTreeItem *parentItem = parentItemShared.get();
+	IfcTreeItem *child = static_cast<IfcTreeItem*>(index.internalPointer());
+	IfcTreeItem *parentItem = child->parentItem();
 
-	if (parentItemShared == rootItem_)
+	if (parentItem == rootItem_)
 		return QModelIndex();
 
 	return createIndex(parentItem->row(), 0, parentItem);
@@ -84,18 +77,13 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::parent(const QModelI
 
 int OpenInfraPlatform::UserInterface::IfcTreeModel::rowCount(const QModelIndex &parent) const
 {
-	//normal pointer is needed for parent.internalPoiter() and shared_ptr is needed to compare with rootitem_
-	std::shared_ptr<IfcTreeItem> parentItemShared;
-	IfcTreeItem *parentItem = parentItemShared.get();
+	IfcTreeItem *parentItem;
 
 	if (parent.column() > 0)
 		return 0;
 
 	if (!parent.isValid())
-	{
-		parentItemShared = rootItem_;
-		parentItem = parentItemShared.get();
-	}
+		parentItem = rootItem_;
 	else
 		parentItem = static_cast<IfcTreeItem*>(parent.internalPointer());
 	
@@ -136,7 +124,7 @@ QVariant OpenInfraPlatform::UserInterface::IfcTreeModel::data(const QModelIndex 
 	return item->data(index.column());
 }
 
-void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel, std::shared_ptr<IfcTreeItem> parent)
+void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent)
 {
 	//auto entities = expressModel->entities;
 
@@ -146,9 +134,9 @@ void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(std::shared_
 	//	parent->appendchild(item);
 	//}
 
-	for (const auto& entity : expressModel->entities)
+	for (auto entity : expressModel->entities)
 	{
-		parent->appendchild(std::make_shared<IfcTreeItem>(entity.second, parent));
+		parent->appendchild(new IfcTreeItem(entity.second.get(), parent));
 	}
 
 	//for (int i = 3; i < 4; i++)
