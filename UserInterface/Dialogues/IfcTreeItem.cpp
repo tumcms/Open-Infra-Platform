@@ -23,13 +23,26 @@
 #include "visit_struct\visit_struct.hpp"
 
 
-OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data, std::shared_ptr<IfcTreeItem> parentItem)
-	:data_(data), parentItem_(parentItem)
-{}
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>& data, const std::shared_ptr<IfcTreeItem>& parentItem)
+{
+	data_ = data;
+	parentItem_ = parentItem;
+	//itemData_.push_back(data_->getStepLine());
+	itemData_.push_back(data_->classname());
+}
+
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem()
+{
+	data_ = nullptr;
+	parentItem_ = nullptr;
+	std::string text = "Title";
+	itemData_.push_back(text);
+}
 
 OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
 {
 	childItems_.clear();
+	//qDeleteAll(childItems_);
 }
 
 void OpenInfraPlatform::UserInterface::IfcTreeItem::appendchild(std::shared_ptr<IfcTreeItem> child)
@@ -47,32 +60,42 @@ std::shared_ptr<OpenInfraPlatform::UserInterface::IfcTreeItem> OpenInfraPlatform
 
 int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
 {
-	return childItems_.count();
+	int nrOfChilds = childItems_.count();
+	return nrOfChilds;
 }
 
 int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
 {
-	return 3;
+	return itemData_.size();
 }
 
-QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int row, int column) const
+QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 {
-	//auto attributes = getAttributeDescription();
-
-	//switch (column)
-	//{
-	//case 0:
-	//	return attributes.names_[row];
-	//	break;
-	//case 1:
-	//	return attributes.value_[row];
-	//	break;
-	//case 2:
-	//	return attributes.typename_[row];
-	//	break;
-	//}
-	return QVariant();
+	if (column < 0 || column >= itemData_.size())
+		return QVariant();
+	return QString::fromStdString(itemData_.at(column));
 }
+
+//QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
+//{
+//	//auto attributes = getAttributeDescription()<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>(*data_);
+//
+//	//switch (column)
+//	//{
+//	//case 0:
+//	//	return attributes.names_[row];
+//	//	break;
+//	//case 1:
+//	//	return attributes.value_[row];
+//	//	break;
+//	//case 2:
+//	//	return attributes.typename_[row];
+//	//	break;
+//	//}
+//	
+//	//return QVariant();
+//	return getIfcClassName();
+//}
 
 int OpenInfraPlatform::UserInterface::IfcTreeItem::row()
 {
@@ -85,10 +108,9 @@ int OpenInfraPlatform::UserInterface::IfcTreeItem::row()
 
 std::shared_ptr<OpenInfraPlatform::UserInterface::IfcTreeItem> OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
 {
-	if (parentItem_)
-		return parentItem_;
+	return parentItem_;
 
-	return std::shared_ptr<IfcTreeItem>();
+	//return std::shared_ptr<IfcTreeItem>(); //could be wrong
 }
 
 QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
@@ -97,33 +119,33 @@ QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
 	return QString::fromStdString(ifcClassName);
 }
 
-struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription 
-{
-	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::EarlyBinding::EXPRESSEntity, T>::value, void>::type
-		operator()(T entity)
-	{
-		visit_struct::for_each(entity, [&](const char* name, const auto &value) {
-			names_.push_back(name);
-			typename_ = typeid(T).name(entity);
-			value_.push_back(value);
-		});
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::EarlyBinding::EXPRESSEntity, T>::value, void>::type
-		operator()(T& entity) const
-	{
-		std::string message = "Invalid function call. " + std::string(typeid(entity).name()) + " isn't a member of EXPRESSEntity.";
-		throw buw::Exception(message);
-	}
-
-	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
-	void operator()(OpenInfraPlatform::EarlyBinding::EXPRESSEntity& entity) const
-	{
-		throw oip::UnhandledException("Invalid function call (IfcTreeItem::getAttributeDescription)");
-	}
-
-	std::vector<const char*> names_;
-	std::vector<const char*> typename_;
-	std::vector <QVariant> value_;
-};
+//struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription 
+//{
+//	template <class T> typename std::enable_if<visit_struct::traits::is_visitable<T>::value && std::is_base_of<OpenInfraPlatform::EarlyBinding::EXPRESSEntity, T>::value, void>::type
+//		operator()(T entity)
+//	{
+//		visit_struct::for_each(entity, [&](const char* name, const auto &value) {
+//			names_.push_back(name);
+//			typename_ = typeid(T).name(entity);
+//			value_.push_back(value);
+//		});
+//	}
+//
+//	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
+//	template <class T> typename std::enable_if<!std::is_base_of<OpenInfraPlatform::EarlyBinding::EXPRESSEntity, T>::value, void>::type
+//		operator()(T& entity) const
+//	{
+//		std::string message = "Invalid function call. " + std::string(typeid(entity).name()) + " isn't a member of EXPRESSEntity.";
+//		throw oip::UnhandledException(message);
+//	}
+//
+//	//This is a dummy function which should never be called but is required by the compiler since it could theoretically be called. Throws exception.
+//	void operator()(OpenInfraPlatform::EarlyBinding::EXPRESSEntity& entity) const
+//	{
+//		throw oip::UnhandledException("Invalid function call (IfcTreeItem::getAttributeDescription)");
+//	}
+//
+//	std::vector<const char*> names_;
+//	std::vector<const char*> typename_;
+//	std::vector <QVariant> value_;
+//};

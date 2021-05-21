@@ -20,6 +20,7 @@
 
 #include "EXPRESS/EXPRESSReference.h"
 #include <QVariant>
+#include <QVector>
 
 
 namespace OpenInfraPlatform {
@@ -28,7 +29,8 @@ namespace OpenInfraPlatform {
 		class IfcTreeItem : public std::enable_shared_from_this<IfcTreeItem>
 		{
 		public:
-			IfcTreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data, std::shared_ptr<IfcTreeItem> parentItem = nullptr);
+			IfcTreeItem(const std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>& data, const std::shared_ptr<IfcTreeItem>& parentItem);
+			IfcTreeItem();
 			~IfcTreeItem();
 
 			void appendchild(std::shared_ptr<IfcTreeItem> child);
@@ -36,17 +38,18 @@ namespace OpenInfraPlatform {
 			std::shared_ptr<IfcTreeItem> child(int row);
 			int childCount() const;
 			int columnCount() const;
-			QVariant data(int row, int column) const;
+			QVariant data(int column) const;
 			int row();
 			std::shared_ptr<IfcTreeItem> parentItem();
 			QString getIfcClassName() const;
 
 		private:
-			QList<std::shared_ptr<IfcTreeItem>> childItems_;
+			QVector<std::shared_ptr<IfcTreeItem>> childItems_;
 			std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSEntity> data_;
+			std::vector<std::string> itemData_;
 			std::shared_ptr<IfcTreeItem> parentItem_;
 
-			struct getAttributeDescription;
+			//struct getAttributeDescription;
 		};
 	}
 }
