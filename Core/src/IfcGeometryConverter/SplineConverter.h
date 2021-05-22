@@ -146,18 +146,12 @@ namespace OpenInfraPlatform
 					 * \note		At the moment, this converter isn't implemented.
 					 * \internal	The Code of the function is in the commented out part at the end of the file.
 					 */
-					void convertIfcBSplineSurface(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& splineSurface,
-						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
-						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
-						std::shared_ptr<carve::input::PolylineSetData>& polylineData) const throw(...)
+					std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots,
+						const carve::math::Matrix& pos // AT THE MOMENT, NO IDEA WHAT THIS IS
+						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints
+						) const throw(...)
 					{
-
-						if (splineSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
-						{
-							const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots =
-								splineSurface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>();
-
 							// obtain degree of both b-spline curves
 							const int degreeU = bsplineSurfaceWithKnots->UDegree;
 							const int orderU = degreeU + 1;
@@ -270,8 +264,11 @@ namespace OpenInfraPlatform
 								}
 							}
 							*/
-						}
+
+							// temporary declaration of return value
+							std::shared_ptr<carve::input::PolylineSetData> polylineData;
 						
+							return polylineData;
 					}
 
 				private:

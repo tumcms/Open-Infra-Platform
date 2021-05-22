@@ -282,17 +282,24 @@ namespace OpenInfraPlatform {
 						\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
 					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
+				std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
 					const carve::math::Matrix& pos) const throw(...) 
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
 					}
 
-					// temporary call of SplineConverterT::convertIfcBSplineSurface(..)
-					SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
-					std::shared_ptr<carve::input::PolylineSetData> polylineData;
-					splineConverter.convertIfcBSplineSurface(surface, pos, polylineData);
+					// (1/1) IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
+					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
+					{
+						// create an instance of SplineConverter
+						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
+						
+						return splineConverter.convertIfcBSplineSurface(
+							surface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>(),
+							pos);
+					}
 
 					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
