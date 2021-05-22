@@ -83,7 +83,7 @@ namespace OpenInfraPlatform
 						// it represents a rational B-Spline / a NURBS.
 						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())
 						{
-							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+							const std::vector<double> knotArray = loadKnotArrayCurve(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 							const std::vector<double> weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
 
 							uint32_t numCurvePoints;
@@ -101,7 +101,7 @@ namespace OpenInfraPlatform
 						// it represents a B-Spline
 						else if (splineCurve.isOfType<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>())
 						{
-							const std::vector<double> knotArray = loadKnotArray(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
+							const std::vector<double> knotArray = loadKnotArrayCurve(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
 							uint32_t numCurvePoints;
 							// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -283,7 +283,7 @@ namespace OpenInfraPlatform
 					 *
 					 * \return		The array / vector of knots.
 					 */
-					std::vector<double> loadKnotArray(
+					std::vector<double> loadKnotArrayCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
 						const int& numKnotsArray) const throw(...)
 					{
@@ -291,23 +291,41 @@ namespace OpenInfraPlatform
 						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
 						{
 							//std::cout << "ERROR: knot multiplicity does not correspond number of knots" << std::endl;
-							throw oip::InconsistentModellingException(bspline, "Function convertIfcBSplineCurve::loadKnotArray: Knot multiplicity does not correspond number of distinct knots; unable to construct a knot array.");
+							throw oip::InconsistentModellingException(bspline, "Function convertIfcBSplineCurve::loadKnotArrayCurve: Knot multiplicity does not correspond number of distinct knots; unable to construct a knot array.");
 						}
 
+						// get knots and knotMultiplicities from IfcBSplineCurveWithKnots,
+						// and return the obtained / constructed knot array
+						return obtainKnotArray(bspline->Knots, bspline->KnotMultiplicities, numKnotsArray);
+					}
+
+					/*! \brief Obtains the knot array based on knots and .
+					 *
+					 * \param[in]	knotsIfc				Vector of type \c IfcParameterValue with distinct knots.
+					 * \param[in]	KnotMultiplicitiesIfc	Vector of type \c IfcInteger with multiplicity per distinct knot.
+					 * \param[in]	numKnotsArray			The total number of knots, which define the basis functions ( = order + total number of control points )
+					 *
+					 * \return		The array / vector of knots.
+					 */
+					std::vector<double> obtainKnotArray(
+						const std::vector<typename IfcEntityTypesT::IfcParameterValue>& knotsIfc,
+						const std::vector<typename IfcEntityTypesT::IfcInteger>& KnotMultiplicitiesIfc,
+						const int& numKnotsArray) const throw(...)
+					{
 						std::vector<double> knots;
-						knots.resize(bspline->Knots.size());
+						knots.resize(knotsIfc.size());
 						std::transform(
-							bspline->Knots.begin(),
-							bspline->Knots.end(),
+							knotsIfc.begin(),
+							knotsIfc.end(),
 							knots.begin(),
 							[](auto &it) { return it; });
 						// convert 'it' (Knots) from IfcParameterValue to double ?
 
 						std::vector<int> knotMults;
-						knotMults.resize(bspline->KnotMultiplicities.size());
+						knotMults.resize(KnotMultiplicitiesIfc.size());
 						std::transform(
-							bspline->KnotMultiplicities.begin(),
-							bspline->KnotMultiplicities.end(),
+							KnotMultiplicitiesIfc.begin(),
+							KnotMultiplicitiesIfc.end(),
 							knotMults.begin(),
 							[](auto &it) -> int { return it; });
 						// convert 'it' (KnotMultiplicities) from IfcInteger to int ?
