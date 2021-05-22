@@ -1297,7 +1297,6 @@ namespace OpenInfraPlatform {
 												point[2]) * UnitConvert()->getLengthInMeterFactor();
 
 											// apply transformation
-											vertex = pos * vertex;
 											outer_loop.push_back(vertex);
 											break;
 										}
@@ -1311,7 +1310,7 @@ namespace OpenInfraPlatform {
 									std::vector<carve::geom::vector<3>> loop;
 									for (auto innerLoopPoint : innerLoop)
 									{
-										double i = 0.;
+										size_t i = 0;
 										for (const auto& point : faceSet->Coordinates->CoordList)
 										{
 											if (i == innerLoopPoint- 1) {
@@ -1322,7 +1321,6 @@ namespace OpenInfraPlatform {
 														point[2]) * UnitConvert()->getLengthInMeterFactor();
 
 												// apply transformation
-												vertex = pos * vertex;
 												loop.push_back(vertex);
 												break;
 											}
@@ -1337,35 +1335,33 @@ namespace OpenInfraPlatform {
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
 								carve::math::Matrix planeMatrix;
-								GeomUtils::convertPlane2Matrix(normalOfPlane, carve::geom::VECTOR(0., 0., 0.),
-									outerLoop[2] - outerLoop[1], planeMatrix);
+								GeomUtils::convertPlane2Matrix(normalOfPlane, outerLoop[0],
+									outerLoop[1] - outerLoop[0], planeMatrix);
 
 								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
 
-
-								for (int i = 0; i < loops.size(); i++) 
+								for (auto loop : loops) 
 								{
-									std::vector<carve::geom::vector<3>> loop = loops[i];
 									std::vector<carve::geom::vector<2>> loop2D;
-									for (int j = 0; j < loop.size(); j++)
+									std::vector<carve::geom::vector<3>> loop3Dto2D;
+									for (auto point : loop)
 									{
-										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * loop[j];
-										
-										carve::geom::vector<2> point2D = carve::geom::VECTOR(point3Dto2D.x, point3Dto2D.y);
-										loop2D.push_back(point2D);
+										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
+										loop3Dto2D.push_back(point3Dto2D);
 									}
+									loop2D = removeEmptyCoordinate(loop3Dto2D);
 									loops2D.push_back(loop2D);
 								}
 								
 								// 2. Call geomUtils
-								/*carve::geom::vector<3> normal_first_loop;
-								std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(loops, normal_first_loop);
+								carve::geom::vector<3> normal_first_loop;
+								std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(loops2D, normal_first_loop);
 
 								std::vector<carve::geom2d::P2> merged_path;
 								std::vector<carve::triangulate::tri_idx> triangulated;
 								std::vector<std::pair<size_t, size_t>> path_all_loops;
 
-								GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);*/
+								GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);
 								// 3. Given the results, find corresponding points in the original array. 
 								
 							}
@@ -1375,6 +1371,61 @@ namespace OpenInfraPlatform {
 						return;
 					}
 					throw oip::UnhandledException(tessItem);
+				}
+
+				std::vector<carve::geom::vector<2>> removeEmptyCoordinate(const std::vector<carve::geom::vector<3>>& listOfVectors3D) const
+				{
+					std::vector<carve::geom::vector<2>> listOfVectors2D;
+					bool notEmptyCoord = false;
+					//Check if x Coordniates are empty.
+					for (auto vector : listOfVectors3D) 
+					{
+						if (!this->GeomSettings()->areEqual(vector.x, 0.))
+							notEmptyCoord = true;
+					}
+					//Remove x Coordinate.
+					if (!notEmptyCoord) {
+						for (auto vector3D : listOfVectors3D)
+						{
+							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.y, vector3D.z);
+							listOfVectors2D.push_back(vector2D);
+						}
+						return listOfVectors2D;
+					}
+					//Check if y Coordniates are empty.
+					notEmptyCoord = false;
+					for (auto vector : listOfVectors3D)
+					{
+						if (!this->GeomSettings()->areEqual(vector.y, 0.))
+							notEmptyCoord = true;
+					}
+					//Remove y Coordinate.
+					if (!notEmptyCoord) {
+						for (auto vector3D : listOfVectors3D)
+						{
+							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.z);
+							listOfVectors2D.push_back(vector2D);
+						}
+						return listOfVectors2D;
+					}
+					//Check if z Coordniates are empty.
+					notEmptyCoord = false;
+					for (auto vector : listOfVectors3D)
+					{
+						if (!this->GeomSettings()->areEqual(vector.z, 0.))
+							notEmptyCoord = true;
+					}
+					//Remove z Coordinate.
+					if (!notEmptyCoord) {
+						for (auto vector3D : listOfVectors3D)
+						{
+							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.y);
+							listOfVectors2D.push_back(vector2D);
+						}
+						return listOfVectors2D;
+					}
+
+					throw oip::UnhandledException();
 				}
 
 				protected:
