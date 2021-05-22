@@ -290,6 +290,9 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(surface);
 					}
 
+					// obtain control points, attribute 3 of IfcBSplineSurface
+					const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = convertIfcCartesianPoint2DVector(surface->ControlPointsList);
+
 					// (1/1) IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 					{
@@ -298,7 +301,7 @@ namespace OpenInfraPlatform {
 						
 						return splineConverter.convertIfcBSplineSurface(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>(),
-							pos);
+							pos, controlPoints);
 					}
 
 					/* TO DO: Finish implementation of convertIfcBSplineSurface

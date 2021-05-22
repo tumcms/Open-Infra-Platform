@@ -148,9 +148,8 @@ namespace OpenInfraPlatform
 					 */
 					std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots,
-						const carve::math::Matrix& pos // AT THE MOMENT, NO IDEA WHAT THIS IS
-						//const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints
-						) const throw(...)
+						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
+						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints) const throw(...)
 					{
 						// obtain degree of both b-spline curves
 						const int degreeU = bsplineSurfaceWithKnots->UDegree;
@@ -160,14 +159,6 @@ namespace OpenInfraPlatform
 						// obtain number of control points
 						//const int numControlPointsU = controlPoints.size();
 						//const int numControlPointsV = controlPoints[0].size();
-
-						// temporary instances to curve and face converter, potential relocation will be considered in further refactoring
-						std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter =
-							std::make_shared<CurveConverterT<IfcEntityTypesT>>(CurveConverterT<IfcEntityTypesT>(GeomSettings(), UnitConvert(), placementConverter));
-						FaceConverterT<IfcEntityTypesT> faceConverter(GeomSettings(), UnitConvert(), placementConverter, curveConverter);
-
-						// obtain control points
-						const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = faceConverter.convertIfcCartesianPoint2DVector(bsplineSurfaceWithKnots->ControlPointsList);
 
 						/*
 						// obtain number of knots
