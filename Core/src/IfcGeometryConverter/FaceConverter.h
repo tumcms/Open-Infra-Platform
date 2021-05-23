@@ -1285,7 +1285,9 @@ namespace OpenInfraPlatform {
 								std::vector<carve::geom::vector<3>> outerLoop;
 								std::vector<std::vector<size_t>> indexLoops;
 								std::vector<size_t> outerIndexLoop;
-
+								//std::vector<std::vector<std::pair<carve::geom::vector<2>, size_t>>> loops2DwithIndex;
+								//std::vector<std::pair<carve::geom::vector<2>, size_t>> loops2DwithOuterIndex;
+								//int i = 0;
 								for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
 								{
 									const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
@@ -1293,10 +1295,13 @@ namespace OpenInfraPlatform {
 										point[1],
 										point[2]) * UnitConvert()->getLengthInMeterFactor();
 
+									//loops2DwithOuterIndex[i].second = outerLoopPointIndex;
 									outerIndexLoop.push_back(outerLoopPointIndex);
 									// apply transformation
 									outerLoop.push_back(vertex);
+									//i++;
 								}
+								indexLoops.push_back(outerIndexLoop);
 								loops.push_back(outerLoop);
 								
 								for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
@@ -1319,6 +1324,7 @@ namespace OpenInfraPlatform {
 								}
 								
 								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
+								
 								outerLoop = loops[0];
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
@@ -1346,12 +1352,42 @@ namespace OpenInfraPlatform {
 								std::vector<std::vector<carve::geom2d::P2>>	faceLoops = GeomUtils::correctWinding(loops2D, normalFirstLoop);
 
 								std::vector<carve::geom2d::P2> mergedPath;
-								std::vector<carve::triangulate::tri_idx> triangulated;
+								std::vector<carve::triangulate::tri_idx> triangulatedList;
 								std::vector<std::pair<size_t, size_t>> pathAllLoops;
 
-								GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulated, pathAllLoops);
+								GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulatedList, pathAllLoops);
+
 								// 3. Given the results, find corresponding points in the original array. 
-								
+								std::vector<size_t> indexedPath;
+								for (const auto& path : mergedPath)
+								{
+									int i = 0;
+									for (const auto& loop2D : loops2D)
+									{
+										std::vector<size_t> indexLoop = indexLoops[i];
+										int j = 0;
+										for (const auto& point2D : loop2D)
+										{
+											size_t index = indexLoop[j];
+											carve::geom2d::P2 pointInPath(point2D);
+											if (path == pointInPath) 
+											{
+												indexedPath.push_back(index);
+											}
+											j++;
+										}
+										i++;
+									}
+								}
+
+								for (const auto& triangulated : triangulatedList)
+								{
+									int a = triangulated.a;
+									int b = triangulated.b;
+									int c = triangulated.c;
+
+									polygon->addFace(indexedPath[a], indexedPath[b], indexedPath[c]);
+								}
 
 
 							}
