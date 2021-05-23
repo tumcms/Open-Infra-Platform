@@ -1328,9 +1328,8 @@ namespace OpenInfraPlatform {
 								outerLoop = loops[0];
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
-								carve::math::Matrix planeMatrix;
-								GeomUtils::convertPlane2Matrix(normalOfPlane, outerLoop[0],
-									outerLoop[1] - outerLoop[0], planeMatrix); //return carve::math::Matrix 
+								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(normalOfPlane, outerLoop[0],
+									outerLoop[1] - outerLoop[0]); 
 
 								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
 

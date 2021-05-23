@@ -1027,10 +1027,11 @@ bool GeomUtils::bisectingPlane(const carve::geom::vector<3>& v1,
 
 /**********************************************************************************************/
 
-void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal, 
-									const carve::geom::vector<3>& plane_position, 
-		const carve::geom::vector<3>& local_z, carve::math::Matrix& resulting_matrix )
+carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
+		const carve::geom::vector<3>& plane_position, 
+		const carve::geom::vector<3>& local_z)
 {
+	carve::math::Matrix resulting_matrix;
 	carve::geom::vector<3> local_x( plane_normal );
 	local_x.normalize();
 	carve::geom::vector<3> local_z_new( local_z );
@@ -1056,6 +1057,7 @@ void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
 	resulting_matrix._42 = plane_position.y;
 	resulting_matrix._43 = plane_position.z;
 	resulting_matrix._44 = 1;
+	return resulting_matrix;
 }
 
 /**********************************************************************************************/

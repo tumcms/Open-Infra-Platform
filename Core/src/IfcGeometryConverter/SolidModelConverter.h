@@ -1407,7 +1407,7 @@ namespace OpenInfraPlatform
 						bisecting_normal *= -1.0;
 					}
 
-					GeomUtils::convertPlane2Matrix(bisecting_normal, vertexCurrent, local_z, matrixSweep);
+					matrixSweep = GeomUtils::convertPlane2Matrix(bisecting_normal, vertexCurrent, local_z);
 					matrixSweep = pos * matrixSweep;
 					GeomUtils::applyPositionToVertex(circlePoints, matrixSweep, numberOfVertices, outerShapePoints);
 					
