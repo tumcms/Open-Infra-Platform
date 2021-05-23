@@ -146,7 +146,7 @@ namespace OpenInfraPlatform
 					 * \note		At the moment, this converter isn't implemented.
 					 * \internal	The Code of the function is in the commented out part at the end of the file.
 					 */
-					std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(
+					std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurfaceWithKnots(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots,
 						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints) const throw(...)

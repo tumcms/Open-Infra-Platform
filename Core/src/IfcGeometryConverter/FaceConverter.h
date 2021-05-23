@@ -299,7 +299,7 @@ namespace OpenInfraPlatform {
 						// create an instance of SplineConverter
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
 						
-						return splineConverter.convertIfcBSplineSurface(
+						return splineConverter.convertIfcBSplineSurfaceWithKnots(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>(),
 							pos, controlPoints);
 					}
