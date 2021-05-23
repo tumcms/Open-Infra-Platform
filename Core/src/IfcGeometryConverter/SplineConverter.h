@@ -84,7 +84,7 @@ namespace OpenInfraPlatform
 						if (splineCurve.isOfType<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())
 						{
 							const std::vector<double> knotArray = loadKnotArrayCurve(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
-							const std::vector<double> weightsData = loadWeightsData(splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>());
+							const std::vector<double> weightsData = loadWeightsData((splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())->WeightsData);
 
 							uint32_t numCurvePoints;
 							// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
@@ -354,21 +354,22 @@ namespace OpenInfraPlatform
 						return knotArray;
 					}
 
-					/*! \brief Loads the knot weights from an \c IfcRationalBSplineCurveWithKnots.
+					/*! \brief Loads the weights of the control points from a vector of IfcReal (i.e. from an \c IfcRationalBSplineCurveWithKnots ).
 					 *
-					 * \param[in]	rationalBSplineCurve	The \c IfcRationalBSplineCurveWithKnots entity from where the weights have to be loaded.
+					 * \param[in]	weightsIfc	The vector from which the weights have to be loaded.
 					 *
-					 * \return		The vector of weights per knot.
+					 * \return		The vector of weights per control point.
 					 */
 					std::vector<double> loadWeightsData(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>& rationalBSplineCurve) const throw(...)
+						const std::vector<typename IfcEntityTypesT::IfcReal>& weightsIfc) const throw(...)
 					{
+						// prepare target vector
 						std::vector<double> weightsData;
+						weightsData.resize(weightsIfc.size());
 
-						weightsData.resize(rationalBSplineCurve->WeightsData.size());
 						std::transform(
-							rationalBSplineCurve->WeightsData.begin(),
-							rationalBSplineCurve->WeightsData.end(),
+							weightsIfc.begin(),
+							weightsIfc.end(),
 							weightsData.begin(),
 							[](auto &it) -> double { return it; });
 						// convert 'it' (WeightsData) from IfcReal to double ?
