@@ -151,7 +151,7 @@ namespace OpenInfraPlatform
 						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints) const throw(...)
 					{
-						// obtain degree of both b-spline curves
+						// obtain degree of both b-spline curves, attributes 1 and 2 of IfcBSplineSurface
 						const int degreeU = bsplineSurfaceWithKnots->UDegree;
 						const int orderU = degreeU + 1;
 						const int degreeV = bsplineSurfaceWithKnots->VDegree;
@@ -159,12 +159,20 @@ namespace OpenInfraPlatform
 						// obtain number of control points
 						//const int numControlPointsU = controlPoints.size();
 						//const int numControlPointsV = controlPoints[0].size();
-
-						/*
+						
 						// obtain number of knots
-						const int numKnotsU = orderU + numControlPointsU;
-						const int numKnotsV = orderV + numControlPointsV;
+						//const int numKnotsU = orderU + numControlPointsU;
+						//const int numKnotsV = orderV + numControlPointsV;
 
+						// obtain knots for each direction, 
+						// attributes 8 & 10 and 9 & 11 of IfcBSplineSurfaceWithKnots will be combined to do that
+						std::vector<double> knotsU;
+						std::vector<double> knotsV;
+						std::tie(knotsU, knotsV) = loadKnotArraySurface(
+							bsplineSurfaceWithKnots,
+							orderU + controlPoints.size(), // number of knots in u direction
+							orderV + controlPoints[0].size()); // number of knots in v direction
+						/*
 						// obtain knots for each direction
 						const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->m_UMultiplicities;
 						const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsU = bsplineSurfaceWithKnots->m_UKnots;
@@ -197,7 +205,7 @@ namespace OpenInfraPlatform
 								knotsV.push_back(knot);
 							}
 						}
-
+						/*
 						std::vector<std::vector<double>> weights;
 
 						std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
@@ -299,7 +307,38 @@ namespace OpenInfraPlatform
 						return obtainKnotArray(bspline->Knots, bspline->KnotMultiplicities, numKnotsArray);
 					}
 
-					/*! \brief Obtains the knot array based on knots and .
+					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
+						*
+						* \param[in]	bspline				The \c IfcBSplineCurveWithKnots entity from where the knots have to be loaded.
+						* \param[in]	numKnotsArrayU		The total number of knots in direction u, which define the basis functions ( = orderU + total number of control points U )
+						* \param[in]	numKnotsArrayV		The total number of knots in direction v, which define the basis functions ( = orderV + total number of control points V )
+						*
+						* \return		The arrays / vectors of knots, in the order { knotsU, knotsV }.
+						*/
+					std::tuple<std::vector<double>, std::vector<double>> loadKnotArraySurface(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurface,
+						const int numKnotsArrayU,
+						const int numKnotsArrayV) const throw(...)
+					{
+						// check whether data in ifc matches the definition in documentation, direction u
+						if (bsplineSurface->UMultiplicities.size() != bsplineSurface->UKnots.size())
+						{
+							throw oip::InconsistentModellingException(bsplineSurface, "Function SplineConverter::loadKnotArraySurface: Knot multiplicity U does not correspond number of distinct knots U; unable to construct a knot array.");
+						}
+
+						// check whether data in ifc matches the definition in documentation, direction v
+						if (bsplineSurface->VMultiplicities.size() != bsplineSurface->VKnots.size())
+						{
+							throw oip::InconsistentModellingException(bsplineSurface, "Function SplineConverter::loadKnotArraySurface: Knot multiplicity V does not correspond number of distinct knots U; unable to construct a knot array.");
+						}
+
+						// get knots and knotMultiplicities from IfcBSplineCurveWithKnots,
+						// and return the tuple of obtained / constructed knot arrays in order { knotsU, knotsV }
+						return { obtainKnotArray(bsplineSurface->UKnots, bsplineSurface->UMultiplicities, numKnotsArrayU), // knots U
+							obtainKnotArray(bsplineSurface->VKnots, bsplineSurface->VMultiplicities, numKnotsArrayV) }; // knots V
+					}
+
+					/*! \brief Obtains the knot array based on knots and knot multiplicity.
 					 *
 					 * \param[in]	knotsIfc				Vector of type \c IfcParameterValue with distinct knots.
 					 * \param[in]	KnotMultiplicitiesIfc	Vector of type \c IfcInteger with multiplicity per distinct knot.
