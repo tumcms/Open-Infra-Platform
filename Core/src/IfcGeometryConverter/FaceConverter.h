@@ -1282,69 +1282,57 @@ namespace OpenInfraPlatform {
 
 								// 1. Build loops of actual points
 								std::vector<std::vector<carve::geom::vector<3>>> loops;
-								std::vector<carve::geom::vector<3>> outer_loop;
+								std::vector<carve::geom::vector<3>> outerLoop;
+								std::vector<std::vector<size_t>> indexLoops;
+								std::vector<size_t> outerIndexLoop;
 
-								for (auto outerLoop : faceWithVoids->CoordIndex)
+								for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
 								{
-									size_t i = 0;
-									for (const auto& point : faceSet->Coordinates->CoordList)
+									const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+									carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
+										point[1],
+										point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+									outerIndexLoop.push_back(outerLoopPointIndex);
+									// apply transformation
+									outerLoop.push_back(vertex);
+								}
+								loops.push_back(outerLoop);
+								
+								for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
+								{
+									std::vector<carve::geom::vector<3>> loop;
+									std::vector<size_t> IndexLoop;
+									for (const auto& outerLoopPointIndex : innerLoop)
 									{
-										if (i == outerLoop - 1) {
-											
-											carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
-											carve::geom::VECTOR(point[0],
+										const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+										carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
 												point[1],
 												point[2]) * UnitConvert()->getLengthInMeterFactor();
 
-											// apply transformation
-											outer_loop.push_back(vertex);
-											break;
-										}
-										i++;
+										IndexLoop.push_back(outerLoopPointIndex);
+										// apply transformation
+										loop.push_back(vertex);
 									}
-								}
-								loops.push_back(outer_loop);
-								
-								for (auto innerLoop : faceWithVoids->InnerCoordIndices)
-								{
-									std::vector<carve::geom::vector<3>> loop;
-									for (auto innerLoopPoint : innerLoop)
-									{
-										size_t i = 0;
-										for (const auto& point : faceSet->Coordinates->CoordList)
-										{
-											if (i == innerLoopPoint- 1) {
-
-												carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
-													carve::geom::VECTOR(point[0],
-														point[1],
-														point[2]) * UnitConvert()->getLengthInMeterFactor();
-
-												// apply transformation
-												loop.push_back(vertex);
-												break;
-											}
-											i++;
-										}
-									}
+									indexLoops.push_back(IndexLoop);
 									loops.push_back(loop);
 								}
 								
 								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
-								std::vector<carve::geom::vector<3>> outerLoop = loops[0];
+								outerLoop = loops[0];
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
 								carve::math::Matrix planeMatrix;
 								GeomUtils::convertPlane2Matrix(normalOfPlane, outerLoop[0],
-									outerLoop[1] - outerLoop[0], planeMatrix);
+									outerLoop[1] - outerLoop[0], planeMatrix); //return carve::math::Matrix 
 
 								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
 
-								for (auto loop : loops) 
+								for (const auto& loop : loops) 
 								{
 									std::vector<carve::geom::vector<2>> loop2D;
 									std::vector<carve::geom::vector<3>> loop3Dto2D;
-									for (auto point : loop)
+									for (const auto& point : loop)
 									{
 										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
 										loop3Dto2D.push_back(point3Dto2D);
@@ -1354,16 +1342,18 @@ namespace OpenInfraPlatform {
 								}
 								
 								// 2. Call geomUtils
-								carve::geom::vector<3> normal_first_loop;
-								std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(loops2D, normal_first_loop);
+								carve::geom::vector<3> normalFirstLoop;
+								std::vector<std::vector<carve::geom2d::P2>>	faceLoops = GeomUtils::correctWinding(loops2D, normalFirstLoop);
 
-								std::vector<carve::geom2d::P2> merged_path;
+								std::vector<carve::geom2d::P2> mergedPath;
 								std::vector<carve::triangulate::tri_idx> triangulated;
-								std::vector<std::pair<size_t, size_t>> path_all_loops;
+								std::vector<std::pair<size_t, size_t>> pathAllLoops;
 
-								GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);
+								GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulated, pathAllLoops);
 								// 3. Given the results, find corresponding points in the original array. 
 								
+
+
 							}
 						}
 
