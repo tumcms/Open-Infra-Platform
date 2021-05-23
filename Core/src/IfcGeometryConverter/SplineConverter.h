@@ -170,12 +170,12 @@ namespace OpenInfraPlatform
 						// (2/2) reverse order - IfcRationalBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurfaceWithKnots
 						if (bsplineSurfaceWithKnots.isOfType<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>())
 						{
-							const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
+							const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots> rationalBSplineSurfaceWithKnots =
 								bsplineSurfaceWithKnots.as<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>();
-							/*
-							std::vector<std::vector<double>> weights;
-							weights = rationalBsplineSurfaceWithKnots->m_WeightsData;
-							*/
+							
+							// load the weights of the control points
+							const std::vector<std::vector<double>> weights = loadWeightsDataSurface(rationalBSplineSurfaceWithKnots);
+							
 						}
 						else // (1/2) reverse order - IfcBSplineSurfaceWithKnots
 						{
@@ -352,6 +352,29 @@ namespace OpenInfraPlatform
 						}
 
 						return knotArray;
+					}
+
+					/*! \brief	Loads the weights of the control points from a surface (\c IfcRationalBSplineSurfaceWithKnots ).
+					 *
+					 * \param[in]	surface	The ifc-instance of type \c IfcRationalBSplineSurfaceWithKnots from where the weights should be loaded.
+					 *
+					 * \return	The array (vector of vectors) with the weights per control point.
+					 */
+					std::vector<std::vector<double>> loadWeightsDataSurface(
+						const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>& surface) const throw(...)
+					{
+						// prepare target array
+						std::vector<std::vector<double>> weights;
+						weights.resize(surface->WeightsData.size());
+
+						std::transform(
+							surface->WeightsData.begin(),
+							surface->WeightsData.end(),
+							weights.begin(),
+							// for each row of wights 'it' call the function loadWeightsData; result vector is stored in the target array
+							[this](auto &it) -> std::vector<double> {return loadWeightsData(it); });
+
+						return weights;
 					}
 
 					/*! \brief Loads the weights of the control points from a vector of IfcReal (i.e. from an \c IfcRationalBSplineCurveWithKnots ).
