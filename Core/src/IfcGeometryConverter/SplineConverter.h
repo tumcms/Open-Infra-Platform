@@ -156,13 +156,6 @@ namespace OpenInfraPlatform
 						const int orderU = degreeU + 1;
 						const int degreeV = bsplineSurfaceWithKnots->VDegree;
 						const int orderV = degreeV + 1;
-						// obtain number of control points
-						//const int numControlPointsU = controlPoints.size();
-						//const int numControlPointsV = controlPoints[0].size();
-						
-						// obtain number of knots
-						//const int numKnotsU = orderU + numControlPointsU;
-						//const int numKnotsV = orderV + numControlPointsV;
 
 						// obtain knots for each direction, 
 						// attributes 8 & 10 and 9 & 11 of IfcBSplineSurfaceWithKnots will be combined to do that
@@ -172,39 +165,6 @@ namespace OpenInfraPlatform
 							bsplineSurfaceWithKnots,
 							orderU + controlPoints.size(), // number of knots in u direction
 							orderV + controlPoints[0].size()); // number of knots in v direction
-						/*
-						// obtain knots for each direction
-						const std::vector<int>& knotMultsU = bsplineSurfaceWithKnots->m_UMultiplicities;
-						const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsU = bsplineSurfaceWithKnots->m_UKnots;
-						const std::vector<int>& knotMultsV = bsplineSurfaceWithKnots->m_VMultiplicities;
-						const std::vector<std::shared_ptr<emt::Ifc4EntityTypes::IfcParameterValue>>& splineKnotsV = bsplineSurfaceWithKnots->m_VKnots;
-
-						std::vector<double> knotsU;
-						std::vector<double> knotsV;
-						knotsU.reserve(numKnotsU);
-						knotsV.reserve(numKnotsV);
-
-						for (int i = 0; i < splineKnotsU.size(); ++i)
-						{
-							double knot = splineKnotsU[i]->m_value;
-							const int knotMult = knotMultsU[i];
-							// look at the multiplicity of the current knot
-							for (int j = 0; j < knotMult; ++j)
-							{
-								knotsU.push_back(knot);
-							}
-						}
-
-						for (int i = 0; i < splineKnotsV.size(); ++i)
-						{
-							double knot = splineKnotsV[i]->m_value;
-							const int knotMult = knotMultsV[i];
-							// look at the multiplicity of the current knot
-							for (int j = 0; j < knotMult; ++j)
-							{
-								knotsV.push_back(knot);
-							}
-						}
 						/*
 						std::vector<std::vector<double>> weights;
 
