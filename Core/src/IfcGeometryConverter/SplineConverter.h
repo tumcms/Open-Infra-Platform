@@ -165,17 +165,23 @@ namespace OpenInfraPlatform
 							bsplineSurfaceWithKnots,
 							orderU + controlPoints.size(), // number of knots in u direction
 							orderV + controlPoints[0].size()); // number of knots in v direction
-						/*
-						std::vector<std::vector<double>> weights;
 
-						std::shared_ptr<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
-							std::dynamic_pointer_cast<emt::Ifc4EntityTypes::IfcRationalBSplineSurfaceWithKnots>(splineSurfaceWithKnots);
-
-						if (rationalBsplineSurfaceWithKnots)
+						// distinction between IfcBSplineSurfaceWithKnots and IfcRationalBSplineSurfaceWithKnots
+						// (2/2) reverse order - IfcRationalBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurfaceWithKnots
+						if (bsplineSurfaceWithKnots.isOfType<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>())
 						{
+							const EXPRESSReference<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots> rationalBsplineSurfaceWithKnots =
+								bsplineSurfaceWithKnots.as<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>();
+							/*
+							std::vector<std::vector<double>> weights;
 							weights = rationalBsplineSurfaceWithKnots->m_WeightsData;
+							*/
 						}
-
+						else // (1/2) reverse order - IfcBSplineSurfaceWithKnots
+						{
+							
+						}
+						/*
 						// reserve memory for all surface points on b-spline surface
 						//! TEMPORARY default number of curve points
 						const uint8_t numCurvePointsU = splineKnotsU.size() * 10;
