@@ -299,10 +299,87 @@ namespace OpenInfraPlatform {
 						// create an instance of SplineConverter
 						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
 						
-						return splineConverter.convertIfcBSplineSurfaceWithKnots(
+						// call of SplineConverter;
+						// curvePoints are actually the surface points without a connecting line
+						std::vector<std::vector<carve::geom::vector<3>>> curvePoints = splineConverter.convertIfcBSplineSurfaceWithKnots(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>(),
 							pos, controlPoints);
-					}
+
+						// get number of curve / surface points
+						const size_t numCurvePointsU = curvePoints.size();
+						const size_t numCurvePointsV = curvePoints[0].size();
+
+
+						// CONVERTION FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
+
+						// declaration of return value
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();;
+
+						// declaration of a list, for each curve point (=face point) its x, y, z coordinate will be stored as string with an id
+						std::unordered_map<std::string, int> vertexMap;
+						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
+
+						// loop over all curve points
+						for (int v = 0; v < numCurvePointsV - 1; ++v)
+						{
+							for (int u = 0; u < numCurvePointsU - 1; ++u)
+							{
+								// vector for the 4 corners of one surface-rectangle
+								std::vector<carve::geom::vector<3>> facePoints;
+								facePoints.reserve(4);
+
+								// get the 4 corners of one surface-rectangle
+								facePoints.push_back(curvePoints[u][v]);		 // 00 = A
+								facePoints.push_back(curvePoints[u + 1][v]);	 // 10 = B
+								facePoints.push_back(curvePoints[u + 1][v + 1]); // 11 = C
+								facePoints.push_back(curvePoints[u][v + 1]);	 // 01 = D
+
+								// storage for the 4 point ids of the surface rectangle
+								size_t indices[4];
+
+								// construct a poly line in polylineData:
+								// D<---C    v
+								//      ^    ^
+								//      |    |
+								// A--->B    0-->u
+								//
+								// there is no closing line from D to 
+
+								// start a new poly line
+								polylineData->beginPolyline();
+
+								// loop over the 4 conter points
+								for (auto k = 0; k < 4; ++k)
+								{
+									// construct a string of x, y, z coordinates for the current face point
+									std::stringstream key;
+									key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
+
+									// search, whether current point is in internal list of points,
+									// vertexMay.find(..) returns past-the-end-iterator, if point does not exist
+									if (vertexMap.find(key.str()) != vertexMap.end())
+									{
+										// point exist;
+										// search for the current point-string 'key' in vertexMap, this returns its id which is stored in indices[k]
+										indices[k] = vertexMap[key.str()];
+									}
+									else
+									{
+										// point doesn't exist;
+										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
+										indices[k] = polylineData->addVertex(facePoints[k]);
+										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
+										vertexMap[key.str()] = indices[k];
+									}
+
+									// add obtaind index to poly line
+									polylineData->addPolylineIndex(indices[k]);
+								}
+							}
+						}
+
+						return polylineData;
+					} // end if IfcBSplineSurfaceWithKnots
 
 					// TO DO: 
 					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED

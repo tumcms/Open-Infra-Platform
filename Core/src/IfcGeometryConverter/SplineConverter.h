@@ -131,7 +131,7 @@ namespace OpenInfraPlatform
 						}
 					}
 
-					/*! \brief Converts \c IfcBSplineSurface subtypes to ploylineSetData.
+					/*! \brief Converts \c IfcBSplineSurface subtypes to an array of surface-points.
 					 *
 					 * This convert function can handle
 					 * \c IfcBSplineSurfaceWithKnots and
@@ -141,12 +141,9 @@ namespace OpenInfraPlatform
 					 * \param[in]	pos							The relative location of the origin of the representation's coordinate system within the geometric context.
 					 * \param[in]	controlPoints				A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
 					 *
-					 * \return	polylineData ploylineSetData (?)
-					 *
-					 * \note		At the moment, this converter isn't implemented.
-					 * \internal	The Code of the function is in the commented out part at the end of the file.
+					 * \return		Array (vector of vectors) of surface-points.
 					 */
-					std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurfaceWithKnots(
+					std::vector<std::vector<carve::geom::vector<3>>> convertIfcBSplineSurfaceWithKnots(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots,
 						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints) const throw(...)
@@ -199,73 +196,7 @@ namespace OpenInfraPlatform
 							for (carve::geom::vector<3>& point : curvePointsRow)
 								point = pos * point;
 						
-						// declaration of return value
-						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();;
-						
-						// declaration of a list, for each curve point (=face point) its x, y, z coordinate will be stored as string with an id
-						std::unordered_map<std::string, int> vertexMap;
-						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
-
-						// loop over all curve points
-						for (int v = 0; v < numCurvePointsV - 1; ++v)
-						{
-							for (int u = 0; u < numCurvePointsU - 1; ++u)
-							{
-								// vector for the 4 corners of one surface-rectangle
-								std::vector<carve::geom::vector<3>> facePoints;
-								facePoints.reserve(4);
-
-								// get the 4 corners of one surface-rectangle
-								facePoints.push_back(curvePoints[u][v]); // 00 = A
-								facePoints.push_back(curvePoints[u + 1][v]); // 10 = B
-								facePoints.push_back(curvePoints[u + 1][v + 1]); // 11 = C
-								facePoints.push_back(curvePoints[u][v + 1]); // 01 = D
-
-								// storage for the 4 point ids of the surface rectangle
-								size_t indices[4];
-
-								// construct a poly line in polylineData:
-								// D<---C    v
-								//      ^    ^
-								//      |    |
-								// A--->B    0-->u
-								//
-								// there is no closing line from D to 
-
-								// start a new poly line
-								polylineData->beginPolyline();
-
-								// loop over the 4 conter points
-								for (auto k = 0; k < 4; ++k)
-								{
-									// construct a string of x, y, z coordinates for the current face point
-									std::stringstream key;
-									key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
-
-									// search, whether current point is in internal list of points,
-									// vertexMay.find(..) returns past-the-end-iterator, if point does not exist
-									if (vertexMap.find(key.str()) != vertexMap.end()) 
-									{ 
-										// point exist;
-										// search for the current point-string 'key' in vertexMap, this returns its id which is stored in indices[k]
-										indices[k] = vertexMap[key.str()]; 
-									}
-									else
-									{
-										// point doesn't exist;
-										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
-										indices[k] = polylineData->addVertex(facePoints[k]);
-										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
-										vertexMap[key.str()] = indices[k];
-									}
-
-									// add obtaind index to poly line
-									polylineData->addPolylineIndex(indices[k]);
-								}
-							}
-						}
-
-						return polylineData;
+						return curvePoints;
 					}
 
 				private:
