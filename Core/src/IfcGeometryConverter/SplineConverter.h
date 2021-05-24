@@ -169,6 +169,9 @@ namespace OpenInfraPlatform
 						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
 						const double accuracy = obtainAccuracy();
 
+						// declare target vector of curve points
+						std::vector<std::vector<carve::geom::vector<3>>> curvePoints;
+
 						// distinction between IfcBSplineSurfaceWithKnots and IfcRationalBSplineSurfaceWithKnots
 						// (2/2) reverse order - IfcRationalBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurfaceWithKnots
 						if (bsplineSurfaceWithKnots.isOfType<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>())
@@ -182,19 +185,10 @@ namespace OpenInfraPlatform
 						}
 						else // (1/2) reverse order - IfcBSplineSurfaceWithKnots
 						{
-							
+							curvePoints = IfcGeometryConverter::SplineUtilities::computeBSplineSurfaceWithKnots(
+								orderU, orderV, knotsU, knotsV, controlPoints, numCurvePointsU, numCurvePointsV, accuracy);
 						}
-						
-						// reserve memory for all surface points on b-spline surface
-						std::vector<std::vector<carve::geom::vector<3>>> curvePoints;
-						curvePoints.resize(numCurvePointsU);
-						for(std::vector<carve::geom::vector<3>>& it: curvePoints )
-							it.resize(numCurvePointsV);
 						/*
-						computeBSplineSurface(orderU, orderV, numCurvePointsU, numCurvePointsV,
-							numControlPointsU, numControlPointsV,
-							controlPoints, weights, knotsU, knotsV, curvePoints);
-
 						std::unordered_map<std::string, int> vertexMap;
 						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
 
