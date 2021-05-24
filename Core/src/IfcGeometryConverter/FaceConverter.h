@@ -304,40 +304,14 @@ namespace OpenInfraPlatform {
 							pos, controlPoints);
 					}
 
-					/* TO DO: Finish implementation of convertIfcBSplineSurface
+					// TO DO: 
+					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
+					//typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
 
-					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) 
-					{
-
-					}
-					else 
-					{
-						// Get attributes 1-4.
-						int uDegree = surface->UDegree;
-						int vDegree = surface->VDegree;
-
-						auto controlPointList = surface->ControlPointsList;
-						for (auto& itControlPointList : controlPointList) {
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>()> vectorControlPointList;
-							std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
-
-							vectorControlPointList.resize(itControlPointList.size());
-							std::transform(itControlPointList.begin(),
-								itControlPointList.end(),
-								vectorControlPointList.begin(),
-								[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
-
-						}
-
-						// TO DO: Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
-						typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
-
-						// Get attributes 5-7. For information only.
-						typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
-						typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
-						typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
-					}
-					*/
+					// Get attributes 5-7. For information only.
+					//typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
+					//typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
+					//typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
 
 					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
