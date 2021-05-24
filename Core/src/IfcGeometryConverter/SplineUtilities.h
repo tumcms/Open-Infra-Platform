@@ -50,7 +50,6 @@ namespace OpenInfraPlatform
 				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
 				 * \param[in]	controlPoints		The vector of the B-Spline control points.
-				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
 				 * \param[in]	numCurvePoints		The number of curve points where the curve c(t) has to be evaluated.
 				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
 				 *
@@ -96,8 +95,7 @@ namespace OpenInfraPlatform
 				 * \param[in]	order				Order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	knotArray			The array / vector of knots, the function \c loadKnotArray gives this vector.
 				 * \param[in]	controlPoints		The vector of the B-Spline control points.
-				 * \param[in]	numControlPoints	The total number of B-Spline control points ( =n+1 )
-				 * \param[in]	weightsData			The vector with the wight values per knot, the function \c loadWeightsData gives this vector.
+				 * \param[in]	weightsData			The vector with the weight values per control point, the function \c loadWeightsData gives this vector.
 				 * \param[in]	numCurvePoints		The number of curve points where the curve c(t) has to be evaluated.
 				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
 				 *
