@@ -86,10 +86,9 @@ namespace OpenInfraPlatform
 							const std::vector<double> knotArray = loadKnotArrayCurve(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 							const std::vector<double> weightsData = loadWeightsData((splineCurve.as<typename IfcEntityTypesT::IfcRationalBSplineCurveWithKnots>())->WeightsData);
 
-							uint32_t numCurvePoints;
+							const uint32_t numCurvePoints = obtainNumCurvePoints(knotArray.size());
 							// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
-							double accuracy;
-							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+							const double accuracy = obtainAccuracy();
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
 								IfcGeometryConverter::SplineUtilities::computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, weightsData, numCurvePoints, accuracy);
@@ -103,10 +102,9 @@ namespace OpenInfraPlatform
 						{
 							const std::vector<double> knotArray = loadKnotArrayCurve(splineCurve.as<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>(), numKnotsArray);
 
-							uint32_t numCurvePoints;
+							const uint32_t numCurvePoints = obtainNumCurvePoints(knotArray.size());
 							// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
-							double accuracy;
-							std::tie(numCurvePoints, accuracy) = obtainProperties(knotArray.size());
+							const double accuracy = obtainAccuracy();
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
 								IfcGeometryConverter::SplineUtilities::computeBSplineCurveWithKnots(order, knotArray, controlPoints, numCurvePoints, accuracy);
@@ -166,6 +164,11 @@ namespace OpenInfraPlatform
 							orderU + controlPoints.size(), // number of knots in u direction
 							orderV + controlPoints[0].size()); // number of knots in v direction
 
+						const uint32_t numCurvePointsU = obtainNumCurvePoints(knotsU.size());
+						const uint32_t numCurvePointsV = obtainNumCurvePoints(knotsV.size());
+						// at the end, subtract current knot value with accuracy to avoid zero-vectors (since last knot value is excluded by definition)
+						const double accuracy = obtainAccuracy();
+
 						// distinction between IfcBSplineSurfaceWithKnots and IfcRationalBSplineSurfaceWithKnots
 						// (2/2) reverse order - IfcRationalBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurfaceWithKnots
 						if (bsplineSurfaceWithKnots.isOfType<typename IfcEntityTypesT::IfcRationalBSplineSurfaceWithKnots>())
@@ -183,12 +186,9 @@ namespace OpenInfraPlatform
 						}
 						/*
 						// reserve memory for all surface points on b-spline surface
-						//! TEMPORARY default number of curve points
-						const uint8_t numCurvePointsU = splineKnotsU.size() * 10;
-						const uint8_t numCurvePointsV = splineKnotsV.size() * 10;
 						std::vector<carve::geom::vector<3>> curvePoints;
 						curvePoints.reserve(numCurvePointsU * numCurvePointsV);
-
+						
 						computeBSplineSurface(orderU, orderV, numCurvePointsU, numCurvePointsV,
 							numControlPointsU, numControlPointsV,
 							controlPoints, weights, knotsU, knotsV, curvePoints);
@@ -400,26 +400,30 @@ namespace OpenInfraPlatform
 						return weightsData;
 					}
 					
-					/*! \brief Loads general properties, which are used in the calculation.
+					/*! \brief Gives the accuracy, which are used in the calculation.
 					 *
+					 * \return		Accuracy which is technically needed in the calculation.
+					 */
+					double obtainAccuracy() const throw(...)
+					{
+						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
+						//const double accuracy = 0.0000001;
+						return GeomSettings()->getPrecision();
+					}
+
+					/*! \brief Gives the number of curve points.
+					 * 
 					 * \param[in]	numKnotsArray	The total number of knots, which define the basis functions ( = order + total number of control points )
 					 *
 					 * \return		Number of curve points
-					 * \return		Accuracy which is technically needed in the calculation.
 					 *
 					 * \note	The number of curve points \c numCurvePoints, where the curve c(t) has to be evaluated,
 					 *			is temporary preset with a default value proportional to the number of knots.
 					 */
-					std::tuple<const uint32_t, const double> obtainProperties(const int& numKnotsArray) const throw(...)
+					uint32_t obtainNumCurvePoints(const int numKnotsArray) const throw(...)
 					{
 						// ! TEMPORARY default number of curve points
-						const uint32_t numCurvePoints = numKnotsArray * 10;
-
-						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
-						//const double accuracy = 0.0000001;
-						double accuracy = GeomSettings()->getPrecision();
-
-						return { numCurvePoints, accuracy };
+						return numKnotsArray * 10;
 					}
 
 					// B-Spline surface definition according to: 
