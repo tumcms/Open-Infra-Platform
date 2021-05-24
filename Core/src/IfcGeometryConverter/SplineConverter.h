@@ -182,6 +182,8 @@ namespace OpenInfraPlatform
 							// load the weights of the control points
 							const std::vector<std::vector<double>> weights = loadWeightsDataSurface(rationalBSplineSurfaceWithKnots);
 							
+							curvePoints = IfcGeometryConverter::SplineUtilities::computeRationalBSplineSurfaceWithKnots(
+								orderU, orderV, knotsU, knotsV, controlPoints, weights, numCurvePointsU, numCurvePointsV, accuracy);
 						}
 						else // (1/2) reverse order - IfcBSplineSurfaceWithKnots
 						{

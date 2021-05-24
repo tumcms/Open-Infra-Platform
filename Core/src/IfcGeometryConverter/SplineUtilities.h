@@ -209,6 +209,81 @@ namespace OpenInfraPlatform
 					return curvePoints;
 				}
 				
+				/*! \brief Computes the surface points of the B-Spline surface.
+				 *
+				 * All information has to be loaded from an \c IfcBSplineSurfaceWithKnots entity before calling this function.
+				 *
+				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	knotArrayU			The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
+				 * \param[in]	knotArrayV			The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
+				 * \param[in]	controlPoints		The field of the B-Spline surface control points.
+				 * \param[in]	weights				The array with the weight values per control point, the function \c loadWeightsData gives this vector.
+				 * \param[in]	numCurvePointsU		The number of curve points in direction u where the surface s(u,v) has to be evaluated.
+				 * \param[in]	numCurvePointsV		The number of curve points in direction v where the surface s(u,v) has to be evaluated.
+				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
+				 *
+				 * \return		The vector of vectors of surface points, which can be rendered in a viewport after some additional transformation.
+				 */
+				static std::vector<std::vector<carve::geom::vector<3>>> computeRationalBSplineSurfaceWithKnots(
+					const int orderU,
+					const int orderV,
+					const std::vector<double>& knotsU,
+					const std::vector<double>& knotsV,
+					const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
+					const std::vector<std::vector<double>>& weights,
+					const uint32_t numCurvePointsU,
+					const uint32_t numCurvePointsV,
+					const double accuracy)  throw(...)
+				{
+					// The following parameters corresponds to the parameter u of a surface s(u,v)
+					double knotUStart;
+					double knotUEnd;
+					double stepU;
+					std::tie(knotUStart, knotUEnd, stepU) = obtainKnotRange(orderU, knotsU, numCurvePointsU);
+					// The following parameters corresponds to the parameter v of a surface s(u,v)
+					double knotVStart;
+					double knotVEnd;
+					double stepV;
+					std::tie(knotVStart, knotVEnd, stepV) = obtainKnotRange(orderV, knotsV, numCurvePointsV);
+
+					// target vector of vectors (field of points)
+					std::vector<std::vector<carve::geom::vector<3>>> curvePoints;
+					curvePoints.resize(numCurvePointsU);
+					for (std::vector<carve::geom::vector<3>>& it : curvePoints)
+						it.resize(numCurvePointsV);
+
+					// u: representatives of the parameter vectors, start with first valid knots
+					double u = knotUStart;
+
+					// the for-loop iterates over all values u of the parameter vector
+					for (size_t j = 0; j < numCurvePointsU; ++j) 
+					{
+						// v: representatives of the parameter vectors, start with first valid knots
+						double v = knotVStart;
+
+						// if at last curve point, use u slightly left of last knot value (because of definition in base functions)
+						if (j == numCurvePointsU - 1) { u = knotUEnd - accuracy; }
+
+						// the for-loop iterates over all values v of the parameter vector
+						for (size_t i = 0; i < numCurvePointsV; ++i)
+						{
+							// if at last curve point, use v slightly left of last knot value (because of definition in base functions)
+							if (i == numCurvePointsV - 1) { v = knotVEnd - accuracy; }
+
+							curvePoints[j][i] = computePointOfRationalBSplineSurface(orderU, orderV, u, v, controlPoints, weights, knotsU, knotsV);
+
+							// go to next representative u of the parameter vector (= increase its value)
+							v += stepV;
+						}
+
+						// go to next representative u of the parameter vector (= increase its value)
+						u += stepU;
+					}
+
+					return curvePoints;
+				}
+
 				/*! \brief Computes the B-Spline point at the location t.
 				 *
 				 * This function is for B-Splines from an IfcBSplineCurveWithKnots-entity.
@@ -330,6 +405,63 @@ namespace OpenInfraPlatform
 							point += basisFuncsU[j] * basisFuncsV[i] * controlPoints[j][i];
 						}
 					}
+
+					return point;
+				}
+
+				/*! \brief Computes the rational-B-Spline-Surface point at the location (u,v).
+				 *
+				 * This function is for rational-B-Spline-Surfaces from an IfcRationalBSplineSurfaceWithKnots-entity.
+				 *
+				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
+				 * \param[in]	u					The parameter value u of the surface s(u,v).
+				 * \param[in]	v					The parameter value v of the surface s(u,v).
+				 * \param[in]	controlPoints		The array of the B-Spline control points.
+				 * \param[in]	weights				The array with the weight values per control point, the function \c loadWeightsData gives this vector.
+				 * \param[in]	knotsU				The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
+				 * \param[in]	knotsV				The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
+				 *
+				 * \return		The B-Spline surface point at the position t.
+				 */
+				static carve::geom::vector<3> computePointOfRationalBSplineSurface(
+					const int orderU,
+					const int orderV,
+					const double u,
+					const double v,
+					const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints,
+					const std::vector<std::vector<double>>& weights,
+					const std::vector<double>& knotsU,
+					const std::vector<double>& knotsV) throw(...)
+				{
+					const size_t numControlPointsU = controlPoints.size();
+					const size_t numControlPointsV = controlPoints[0].size();
+
+					// 1) Evaluate basis functions at surface point u,v
+					std::vector<double> basisFuncsU = computeBSplineBasisFunctions(orderU, u, numControlPointsU, knotsU);
+					std::vector<double> basisFuncsV = computeBSplineBasisFunctions(orderV, v, numControlPointsV, knotsV);
+
+					// 2) Compute exact point
+					// prepare target variable
+					carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+
+					// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
+					double weightSum = 0.0;
+
+					// loop over control points in u-direction
+					for (int j = 0; j < numControlPointsU; ++j)
+					{
+						// loop over control points in v-direction
+						for (int i = 0; i < numControlPointsV; ++i)
+						{
+							// 3a) apply formula for rational B-spline surfaces
+							const double weightProduct = weights[j][i] * basisFuncsU[j] * basisFuncsV[i];
+							point += weightProduct * controlPoints[j][i];
+							weightSum += weightProduct;
+						}
+					}
+
+					point /= weightSum;
 
 					return point;
 				}
