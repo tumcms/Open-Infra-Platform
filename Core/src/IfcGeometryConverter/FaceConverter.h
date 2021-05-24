@@ -293,6 +293,15 @@ namespace OpenInfraPlatform {
 					// obtain control points, attribute 3 of IfcBSplineSurface
 					const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = convertIfcCartesianPoint2DVector(surface->ControlPointsList);
 
+					// Get attribute 4 SurfaceForm. For information only.
+					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
+					//typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
+
+					// Get attributes 5-7. For information only.
+					//typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
+					//typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
+					//typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
+
 					// (1/1) IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 					{
@@ -380,15 +389,6 @@ namespace OpenInfraPlatform {
 
 						return polylineData;
 					} // end if IfcBSplineSurfaceWithKnots
-
-					// TO DO: 
-					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
-					//typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
-
-					// Get attributes 5-7. For information only.
-					//typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
-					//typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
-					//typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
 
 					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
