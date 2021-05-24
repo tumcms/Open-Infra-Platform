@@ -198,7 +198,10 @@ namespace OpenInfraPlatform
 						for (std::vector<carve::geom::vector<3>>& curvePointsRow : curvePoints)
 							for (carve::geom::vector<3>& point : curvePointsRow)
 								point = pos * point;
-						/*
+						
+						// declaration of return value
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();;
+						
 						std::unordered_map<std::string, int> vertexMap;
 						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
 
@@ -234,11 +237,7 @@ namespace OpenInfraPlatform
 								}
 							}
 						}
-						*/
 
-						// temporary declaration of return value
-						std::shared_ptr<carve::input::PolylineSetData> polylineData;
-						
 						return polylineData;
 					}
 
