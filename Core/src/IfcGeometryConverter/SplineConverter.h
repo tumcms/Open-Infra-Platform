@@ -137,9 +137,11 @@ namespace OpenInfraPlatform
 					 * \c IfcBSplineSurfaceWithKnots and
 					 * \c IfcRationalBSplineSurfaceWithKnots.
 					 *
-					 * \param[in]	splineSurface		\c IfcBSplineSurface entity to be converted.
-					 * \param[in]	controlPoints		A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
-					 * \param[out]	polylineData		ploylineSetData (?)
+					 * \param[in]	bsplineSurfaceWithKnots		\c IfcBSplineSurface entity to be converted.
+					 * \param[in]	pos							The relative location of the origin of the representation's coordinate system within the geometric context.
+					 * \param[in]	controlPoints				A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
+					 *
+					 * \return	polylineData ploylineSetData (?)
 					 *
 					 * \note		At the moment, this converter isn't implemented.
 					 * \internal	The Code of the function is in the commented out part at the end of the file.
