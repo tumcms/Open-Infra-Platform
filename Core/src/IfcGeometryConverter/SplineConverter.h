@@ -184,17 +184,19 @@ namespace OpenInfraPlatform
 						{
 							
 						}
-						/*
-						// reserve memory for all surface points on b-spline surface
-						std::vector<carve::geom::vector<3>> curvePoints;
-						curvePoints.reserve(numCurvePointsU * numCurvePointsV);
 						
+						// reserve memory for all surface points on b-spline surface
+						std::vector<std::vector<carve::geom::vector<3>>> curvePoints;
+						curvePoints.resize(numCurvePointsU);
+						for(std::vector<carve::geom::vector<3>>& it: curvePoints )
+							it.resize(numCurvePointsV);
+						/*
 						computeBSplineSurface(orderU, orderV, numCurvePointsU, numCurvePointsV,
 							numControlPointsU, numControlPointsV,
 							controlPoints, weights, knotsU, knotsV, curvePoints);
 
 						std::unordered_map<std::string, int> vertexMap;
-						vertexMap.reserve(curvePoints.size());
+						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
 
 						for (int v = 0; v < numCurvePointsV - 1; ++v)
 						{
@@ -203,10 +205,10 @@ namespace OpenInfraPlatform
 								std::vector<carve::geom::vector<3>> facePoints;
 								facePoints.reserve(4);
 
-								facePoints.push_back(curvePoints[u + numCurvePointsU * v]); // 00
-								facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * v]); // 10
-								facePoints.push_back(curvePoints[u + 1 + numCurvePointsU * (v + 1)]); // 11
-								facePoints.push_back(curvePoints[u + numCurvePointsU * (v + 1)]); // 01
+								facePoints.push_back(curvePoints[u][v]); // 00
+								facePoints.push_back(curvePoints[u + 1][v]); // 10
+								facePoints.push_back(curvePoints[u + 1][v + 1]); // 11
+								facePoints.push_back(curvePoints[u][v + 1]); // 01
 
 								size_t indices[4];
 
