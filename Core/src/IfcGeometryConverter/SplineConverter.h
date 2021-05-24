@@ -190,6 +190,12 @@ namespace OpenInfraPlatform
 							curvePoints = IfcGeometryConverter::SplineUtilities::computeBSplineSurfaceWithKnots(
 								orderU, orderV, knotsU, knotsV, controlPoints, numCurvePointsU, numCurvePointsV, accuracy);
 						}
+
+						// apply pos to the curve points
+						// pos: The relative location of the origin of the representation's coordinate system within the geometric context.
+						for (std::vector<carve::geom::vector<3>>& curvePointsRow : curvePoints)
+							for (carve::geom::vector<3>& point : curvePointsRow)
+								point = pos * point;
 						/*
 						std::unordered_map<std::string, int> vertexMap;
 						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
