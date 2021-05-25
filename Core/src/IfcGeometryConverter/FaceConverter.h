@@ -1282,12 +1282,8 @@ namespace OpenInfraPlatform {
 
 								// 1. Build loops of actual points
 								std::vector<std::vector<carve::geom::vector<3>>> loops;
-								std::vector<carve::geom::vector<3>> outerLoop;
 								std::vector<std::vector<size_t>> indexLoops;
-								std::vector<size_t> outerIndexLoop;
-								//std::vector<std::vector<std::pair<carve::geom::vector<2>, size_t>>> loops2DwithIndex;
-								//std::vector<std::pair<carve::geom::vector<2>, size_t>> loops2DwithOuterIndex;
-								//int i = 0;
+
 								for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
 								{
 									const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
@@ -1295,14 +1291,9 @@ namespace OpenInfraPlatform {
 										point[1],
 										point[2]) * UnitConvert()->getLengthInMeterFactor();
 
-									//loops2DwithOuterIndex[i].second = outerLoopPointIndex;
-									outerIndexLoop.push_back(outerLoopPointIndex);
-									// apply transformation
-									outerLoop.push_back(vertex);
-									//i++;
+									indexLoops[0].push_back(outerLoopPointIndex);
+									loops[0].push_back(vertex);
 								}
-								indexLoops.push_back(outerIndexLoop);
-								loops.push_back(outerLoop);
 								
 								for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
 								{
@@ -1316,7 +1307,6 @@ namespace OpenInfraPlatform {
 												point[2]) * UnitConvert()->getLengthInMeterFactor();
 
 										IndexLoop.push_back(outerLoopPointIndex);
-										// apply transformation
 										loop.push_back(vertex);
 									}
 									indexLoops.push_back(IndexLoop);
@@ -1324,12 +1314,10 @@ namespace OpenInfraPlatform {
 								}
 								
 								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
-								
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
-
-								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(normalOfPlane, loops[0][0],
-									loops[0][1] - loops[0][0]);
-
+								
+								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(
+									normalOfPlane, loops[0][0],loops[0][1] - loops[0][0]);
 								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
 
 								for (const auto& loop : loops) 
@@ -1378,8 +1366,6 @@ namespace OpenInfraPlatform {
 										indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] -1
 									);
 								}
-
-
 							}
 						}
 
