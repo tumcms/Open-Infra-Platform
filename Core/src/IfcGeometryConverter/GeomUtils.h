@@ -140,9 +140,9 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& v3,
 					carve::geom::vector<3>& normal);
 
-				static carve::math::Matrix convertPlane2Matrix(const carve::geom::vector<3>& plane_normal,
-					const carve::geom::vector<3>& plane_position,
-					const carve::geom::vector<3>& local_z);
+				static carve::math::Matrix convertPlane2Matrix(const carve::geom::vector<3>& planeNormal,
+					const carve::geom::vector<3>& planePosition,
+					const carve::geom::vector<3>& localZ);
 
 				static void applyPositionToVertex(const std::vector<carve::geom::vector<3>>& listOfPoints,
 					const carve::math::Matrix & positionMatrix,
