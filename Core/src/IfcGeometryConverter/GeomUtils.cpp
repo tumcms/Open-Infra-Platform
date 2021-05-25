@@ -1026,36 +1026,42 @@ bool GeomUtils::bisectingPlane(const carve::geom::vector<3>& v1,
 }
 
 /**********************************************************************************************/
-
-carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal,
-		const carve::geom::vector<3>& plane_position, 
-		const carve::geom::vector<3>& local_z)
+/*! \brief Calculates a matrix of the plane.
+* \param[in] planeNormal			A normal vector of the plane. 
+* \param[in] planePosition			Global coordinates of the point positioned on the plane. 
+* \param[in] localZ					A direction vector on the plane. 
+*
+* \return							Returns calculated matrix of the plane.
+*/
+carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& planeNormal,
+		const carve::geom::vector<3>& planePosition, 
+		const carve::geom::vector<3>& localZ)
 {
 	carve::math::Matrix resulting_matrix;
-	carve::geom::vector<3> local_x( plane_normal );
-	local_x.normalize();
-	carve::geom::vector<3> local_z_new( local_z );
+	carve::geom::vector<3> localX( planeNormal );
+	localX.normalize();
+	carve::geom::vector<3> localZnew( localZ );
 
-	carve::geom::vector<3> local_y = cross( local_x, local_z_new );
-	local_z_new = cross( local_y, local_x );
-	local_z_new.normalize();
-	local_y.normalize();
+	carve::geom::vector<3> localY = cross( localX, localZnew );
+	localZnew = cross( localY, localX );
+	localZnew.normalize();
+	localY.normalize();
 
-	resulting_matrix._11 = local_x.x;
-	resulting_matrix._12 = local_x.y;
-	resulting_matrix._13 = local_x.z,
+	resulting_matrix._11 = localX.x;
+	resulting_matrix._12 = localX.y;
+	resulting_matrix._13 = localX.z,
 	resulting_matrix._14 = 0;
-	resulting_matrix._21 = local_y.x;
-	resulting_matrix._22 = local_y.y;
-	resulting_matrix._23 =	local_y.z;
-	resulting_matrix._24 =	0;
-	resulting_matrix._31 = local_z_new.x;
-	resulting_matrix._32 = local_z_new.y;
-	resulting_matrix._33 = local_z_new.z;
+	resulting_matrix._21 = localY.x;
+	resulting_matrix._22 = localY.y;
+	resulting_matrix._23 = localY.z;
+	resulting_matrix._24 = 0;
+	resulting_matrix._31 = localZnew.x;
+	resulting_matrix._32 = localZnew.y;
+	resulting_matrix._33 = localZnew.z;
 	resulting_matrix._34 = 0;
-	resulting_matrix._41 = plane_position.x;
-	resulting_matrix._42 = plane_position.y;
-	resulting_matrix._43 = plane_position.z;
+	resulting_matrix._41 = planePosition.x;
+	resulting_matrix._42 = planePosition.y;
+	resulting_matrix._43 = planePosition.z;
 	resulting_matrix._44 = 1;
 	return resulting_matrix;
 }
