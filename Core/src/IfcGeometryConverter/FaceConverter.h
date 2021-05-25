@@ -1276,7 +1276,7 @@ namespace OpenInfraPlatform {
 									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
 								polygon->addFace(std::begin(indices), std::end(indices));
 							}
-							
+							 
 							else {
 								auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
 
@@ -1325,11 +1325,10 @@ namespace OpenInfraPlatform {
 								
 								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
 								
-								outerLoop = loops[0];
 								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
 
-								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(normalOfPlane, outerLoop[0],
-									outerLoop[1] - outerLoop[0]); 
+								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(normalOfPlane, loops[0][0],
+									loops[0][1] - loops[0][0]);
 
 								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
 
@@ -1356,36 +1355,28 @@ namespace OpenInfraPlatform {
 
 								GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulatedList, pathAllLoops);
 
-								// 3. Given the results, find corresponding points in the original array. 
-								std::vector<size_t> indexedPath;
-								for (const auto& path : mergedPath)
-								{
-									int i = 0;
-									for (const auto& loop2D : loops2D)
-									{
-										std::vector<size_t> indexLoop = indexLoops[i];
-										int j = 0;
-										for (const auto& point2D : loop2D)
-										{
-											size_t index = indexLoop[j];
-											carve::geom2d::P2 pointInPath(point2D);
-											if (path == pointInPath) 
-											{
-												indexedPath.push_back(index);
-											}
-											j++;
-										}
-										i++;
-									}
-								}
+								// mergedPath
+								//  9<---------------------------8
+								//  |                            ^
+								//  |   2------------------>3    |
+								//  |   ^                   |    |
+								//  |   |                   v    |
+								//  |   1, 5<---------------4    |
+								//  v /                          |
+								//  0, 6, 10-------------------->7
+								// triangulated list
+								// ( (6,5,7), (7,5,4), (7,4,8), ..., (9,1,0) )
+								// pathAllLoops
+								// ( (0,0), (1,0), (1,1), (1,2), (1,3), (1,0), (0,0), (0,1), (0,2), (0,3), (0,0) )
 
-								for (const auto& triangulated : triangulatedList)
+								// 3. Given the results, find corresponding indices of points in the original array. 
+								for (const auto& triang : triangulatedList )
 								{
-									int a = triangulated.a;
-									int b = triangulated.b;
-									int c = triangulated.c;
-
-									polygon->addFace(indexedPath[a], indexedPath[b], indexedPath[c]);
+									polygon->addFace(
+										indexLoops[pathAllLoops[triang.a].first][pathAllLoops[triang.a].second] -1,
+										indexLoops[pathAllLoops[triang.b].first][pathAllLoops[triang.b].second] -1,
+										indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] -1
+									);
 								}
 
 

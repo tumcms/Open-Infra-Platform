@@ -431,7 +431,7 @@ std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 		}
 
 		// close loop, insert first point at end if not already there
-//		while( loop_2d.size() > 2 )
+		/*while( loop_2d.size() > 2 )
 		{
 			carve::geom::vector<2> first = loop_2d.front();
 			carve::geom::vector<2>& last = loop_2d.back();
@@ -440,7 +440,7 @@ std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 			{
 				loop_2d.push_back(first);
 			}
-		}
+		}*/
 
 		face_loops.push_back(loop_2d);
 	}
