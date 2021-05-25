@@ -307,7 +307,7 @@ namespace OpenInfraPlatform
 					std::vector<double> basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 
 					// 2) Compute exact point
-					carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
 
 					for (int j = 0; j < numControlPoints; ++j)
 					{
@@ -343,7 +343,7 @@ namespace OpenInfraPlatform
 					std::vector<double> basisFuncs = computeBSplineBasisFunctions(order, t, numControlPoints, knotArray);
 
 					// 2) Compute exact point
-					carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
 
 					// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
 					double weightSum = 0.0;
@@ -393,7 +393,7 @@ namespace OpenInfraPlatform
 
 					// 2) Compute exact point
 					// prepare target variable
-					carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
 
 					// loop over control points in u-direction
 					for (int j = 0; j < numControlPointsU; ++j)
@@ -443,7 +443,7 @@ namespace OpenInfraPlatform
 
 					// 2) Compute exact point
 					// prepare target variable
-					carve::geom::vector<3> point = carve::geom::VECTOR(0, 0, 0);
+					carve::geom::vector<3> point = carve::geom::VECTOR(0., 0., 0.);
 
 					// 2i) If B-spline surface is rational, weights and their sum have to considered, as well
 					double weightSum = 0.0;
