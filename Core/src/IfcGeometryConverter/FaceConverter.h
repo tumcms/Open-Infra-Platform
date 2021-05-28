@@ -1282,7 +1282,9 @@ namespace OpenInfraPlatform {
 
 								// 1. Build loops of actual points
 								std::vector<std::vector<carve::geom::vector<3>>> loops;
+								std::vector<carve::geom::vector<3>> outerLoop;
 								std::vector<std::vector<size_t>> indexLoops;
+								std::vector<size_t> outerIndexLoop;
 
 								for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
 								{
@@ -1291,10 +1293,12 @@ namespace OpenInfraPlatform {
 										point[1],
 										point[2]) * UnitConvert()->getLengthInMeterFactor();
 
-									indexLoops[0].push_back(outerLoopPointIndex);
-									loops[0].push_back(vertex);
+									outerLoop.push_back(vertex);
+									outerIndexLoop.push_back(outerLoopPointIndex);
 								}
-								
+								indexLoops.push_back(outerIndexLoop);
+								loops.push_back(outerLoop);
+
 								for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
 								{
 									std::vector<carve::geom::vector<3>> loop;
