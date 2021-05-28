@@ -1128,8 +1128,14 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-
-				/*! \internal Still to refactor */
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcTessellatedItem to a triangulated vector.
+				*
+				* \param[in] tessItem					A pointer to data from \c IfcTessellatedItem.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
 				void convertIfcTessellatedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
@@ -1152,6 +1158,14 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(tessItem);
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcTriangulatedFaceSet to a triangulated vector.
+				*
+				* \param[in] faceSet					A pointer to data from \c IfcTriangulatedFaceSet.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
 				void convertIfcTriangulatedFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcTriangulatedFaceSet>& faceSet,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData) const noexcept(false)
@@ -1256,6 +1270,14 @@ namespace OpenInfraPlatform {
 					itemData->open_or_closed_polyhedrons.push_back(polygon);
 				}
 				
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPolygonalFaceSet to a triangulated vector.
+				*
+				* \param[in] faceSet					A pointer to data from \c IfcPolygonalFaceSet.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
 				void convertIfcPolygonalFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet, 
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData) const noexcept(false)
@@ -1301,6 +1323,14 @@ namespace OpenInfraPlatform {
 					itemData->open_or_closed_polyhedrons.push_back(polygon);
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcIndexedPolygonalFaceWithVoids to a triangulated vector.
+				*
+				* \param[in] faceWithVoids				A pointer to data from \c IfcIndexedPolygonalFaceWithVoids.
+				* \param[in] faceSet					A pointer to data from \c IfcPolygonalFaceSet.
+				*
+				* \param[out] polygon					A pointer to be filled with the relevant data.
+				*/
 				void convertIfcIndexedPolygonalFaceWithVoids(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>& faceWithVoids,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet,
