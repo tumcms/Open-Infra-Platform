@@ -149,6 +149,9 @@ namespace OpenInfraPlatform
 					const int ammountOfPoints,
 					std::vector<carve::geom::vector<3>>& newListOfPoints);
 
+				static std::vector<carve::geom::vector<2>> removeEmptyCoordinate
+				(const std::vector<carve::geom::vector<3>>& listOfVectors3D);
+
 				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
 					std::stringstream& err_poly, int entity_id);
 

@@ -1333,7 +1333,7 @@ namespace OpenInfraPlatform {
 										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
 										loop3Dto2D.push_back(point3Dto2D);
 									}
-									loop2D = removeEmptyCoordinate(loop3Dto2D);
+									loop2D = GeomUtils::removeEmptyCoordinate(loop3Dto2D);
 									loops2D.push_back(loop2D);
 								}
 								
@@ -1379,60 +1379,7 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(tessItem);
 				}
 
-				std::vector<carve::geom::vector<2>> removeEmptyCoordinate(const std::vector<carve::geom::vector<3>>& listOfVectors3D) const
-				{
-					std::vector<carve::geom::vector<2>> listOfVectors2D;
-					bool notEmptyCoord = false;
-					//Check if x Coordniates are empty.
-					for (auto vector : listOfVectors3D) 
-					{
-						if (!this->GeomSettings()->areEqual(vector.x, 0.))
-							notEmptyCoord = true;
-					}
-					//Remove x Coordinate.
-					if (!notEmptyCoord) {
-						for (auto vector3D : listOfVectors3D)
-						{
-							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.y, vector3D.z);
-							listOfVectors2D.push_back(vector2D);
-						}
-						return listOfVectors2D;
-					}
-					//Check if y Coordniates are empty.
-					notEmptyCoord = false;
-					for (auto vector : listOfVectors3D)
-					{
-						if (!this->GeomSettings()->areEqual(vector.y, 0.))
-							notEmptyCoord = true;
-					}
-					//Remove y Coordinate.
-					if (!notEmptyCoord) {
-						for (auto vector3D : listOfVectors3D)
-						{
-							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.z);
-							listOfVectors2D.push_back(vector2D);
-						}
-						return listOfVectors2D;
-					}
-					//Check if z Coordniates are empty.
-					notEmptyCoord = false;
-					for (auto vector : listOfVectors3D)
-					{
-						if (!this->GeomSettings()->areEqual(vector.z, 0.))
-							notEmptyCoord = true;
-					}
-					//Remove z Coordinate.
-					if (!notEmptyCoord) {
-						for (auto vector3D : listOfVectors3D)
-						{
-							carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.y);
-							listOfVectors2D.push_back(vector2D);
-						}
-						return listOfVectors2D;
-					}
-
-					throw oip::UnhandledException();
-				}
+				
 
 				protected:
 

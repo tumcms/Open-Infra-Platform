@@ -1090,6 +1090,73 @@ void  GeomUtils::applyPositionToVertex(
 }
 
 /**********************************************************************************************/
+/*! \brief Applies a position to the point.
+*
+* \param[in] listOfPoint				A list of points to be converted.
+* \param[in] positionMatrix			A position matrix, which should be applied to the points.
+* \param[in] ammountOfPoints			Number of points.
+*
+* \return[out]							List of points with applied position.
+*/
+std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::vector<carve::geom::vector<3>>& listOfVectors3D) 
+{
+	std::vector<carve::geom::vector<2>> listOfVectors2D;
+	bool notEmptyCoord = false;
+	//Check if x Coordniates are empty.
+	for (auto vector : listOfVectors3D)
+	{
+		if (! vector.x == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.x, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove x Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.y, vector3D.z);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+	//Check if y Coordniates are empty.
+	notEmptyCoord = false;
+	for (auto vector : listOfVectors3D)
+	{
+		if (!vector.y == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.y, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove y Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.z);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+	//Check if z Coordniates are empty.
+	notEmptyCoord = false;
+	for (auto vector : listOfVectors3D)
+	{
+		if (!vector.z == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.z, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove z Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.y);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+
+	throw oip::UnhandledException();
+}
+
+/**********************************************************************************************/
 
 
 bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set, 
