@@ -1138,159 +1138,169 @@ namespace OpenInfraPlatform {
 				{
 					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
-						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-						auto& faceSet = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>();
-
-						double length_factor = UnitConvert()->getLengthInMeterFactor();
-
-						// obtain vertices from coordinates list and add them to the new polygon
-						for (const auto& point : faceSet->Coordinates->CoordList)
-						{
-							carve::geom::vector<3> vertex =
-								carve::geom::VECTOR(point[0],
-									point[1],
-									point[2]) * length_factor;
-
-							// apply transformation
-							vertex = pos * vertex;
-
-							polygon->addVertex(vertex);
-						}
-
-						auto& coordinatesIndices = faceSet->CoordIndex;
-						auto& pnIndices = faceSet->PnIndex; // optional
-
-						std::vector<int> flags;
-						if (tessItem.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
-						{
-							auto tin = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
-							flags.resize(tin->Flags.size());
-							std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
-						}
-
-						// read coordinates index list and create faces
-						int i = 0;
-						for (auto& indices : coordinatesIndices)
-						{
-							if (indices.size() < 3)
-							{
-								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
-							}
-
-							// determine vertices' indices
-							size_t i0, i1, i2;
-
-							if (pnIndices)
-							{
-								i0 = pnIndices.get()[indices[0] - 1] - 1;
-								i1 = pnIndices.get()[indices[1] - 1] - 1;
-								i2 = pnIndices.get()[indices[2] - 1] - 1;
-							}
-							else
-							{
-								i0 = indices[0] - 1;
-								i1 = indices[1] - 1;
-								i2 = indices[2] - 1;
-							}
-
-							// account for flags, if there
-							if (!flags.empty())
-							{
-								// skip void triangles
-								if (flags[i++] < 0)
-									continue;
-								// add break line
-								else
-								{
-									if (flags[i - 1] & 1) // first flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i0));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i1));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-									if (flags[i - 1] & 2) // second flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i1));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i2));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-									if (flags[i - 1] & 4) // third flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i0));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i2));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-								}
-							}
-
-							polygon->addFace(i0, i1, i2);
-						}
-
-						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						convertIfcTriangulatedFaceSet(tessItem.template as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>(), 
+							pos, itemData);
 						return;
 					}
 
 					if (tessItem.template isOfType<typename IfcEntityTypesT::IfcPolygonalFaceSet>())
 					{
-						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
-
-						// obtain vertices from coordinates list and add them to the new polygon
-						for (const auto& point : faceSet->Coordinates->CoordList)
-						{
-
-							carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
-								carve::geom::VECTOR(point[0],
-									point[1],
-									point[2]) * UnitConvert()->getLengthInMeterFactor();
-
-							// apply transformation
-							vertex = pos * vertex;
-
-							polygon->addVertex(vertex);
-						}
-
-
-						auto& faces = faceSet->Faces;
-						auto& pnIndices = faceSet->PnIndex; // optional
-
-						for (auto& face : faces)
-						{
-							if (!face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
-							{
-								// determine vertices' indices
-								std::vector<size_t> indices(face->CoordIndex.size());
-								std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
-									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
-								polygon->addFace(std::begin(indices), std::end(indices));
-							}
-
-							else {
-								convertIfcIndexedPolygonalFaceWithVoids(
-									face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>(), faceSet, polygon);
-								//auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
-
-
-							}
-						}
-						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						convertIfcPolygonalFaceSet(tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>(), 
+							pos, itemData);
 						return;
 					}
 					throw oip::UnhandledException(tessItem);
 				}
+
+				void convertIfcTriangulatedFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcTriangulatedFaceSet>& faceSet,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
+				{
+					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					
+					// obtain vertices from coordinates list and add them to the new polygon
+					for (const auto& point : faceSet->Coordinates->CoordList)
+					{
+						carve::geom::vector<3> vertex =
+							carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+						// apply transformation
+						vertex = pos * vertex;
+
+						polygon->addVertex(vertex);
+					}
+
+					auto& coordinatesIndices = faceSet->CoordIndex;
+					auto& pnIndices = faceSet->PnIndex; // optional
+
+					std::vector<int> flags;
+					if (faceSet.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
+					{
+						auto tin = faceSet.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
+						flags.resize(tin->Flags.size());
+						std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
+					}
+
+					// read coordinates index list and create faces
+					int i = 0;
+					for (auto& indices : coordinatesIndices)
+					{
+						if (indices.size() < 3)
+						{
+							throw oip::InconsistentModellingException(faceSet, "invalid size of coordIndex attribute.");
+						}
+
+						// determine vertices' indices
+						size_t i0, i1, i2;
+
+						if (pnIndices)
+						{
+							i0 = pnIndices.get()[indices[0] - 1] - 1;
+							i1 = pnIndices.get()[indices[1] - 1] - 1;
+							i2 = pnIndices.get()[indices[2] - 1] - 1;
+						}
+						else
+						{
+							i0 = indices[0] - 1;
+							i1 = indices[1] - 1;
+							i2 = indices[2] - 1;
+						}
+
+						// account for flags, if there
+						if (!flags.empty())
+						{
+							// skip void triangles
+							if (flags[i++] < 0)
+								continue;
+							// add break line
+							else
+							{
+								if (flags[i - 1] & 1) // first flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i0));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i1));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+								if (flags[i - 1] & 2) // second flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i1));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i2));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+								if (flags[i - 1] & 4) // third flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i0));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i2));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+							}
+						}
+
+						polygon->addFace(i0, i1, i2);
+					}
+
+					itemData->open_or_closed_polyhedrons.push_back(polygon);
+				}
 				
+				void convertIfcPolygonalFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet, 
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
+				{
+					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					//auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
+
+					// obtain vertices from coordinates list and add them to the new polygon
+					for (const auto& point : faceSet->Coordinates->CoordList)
+					{
+
+						carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
+							carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+						// apply transformation
+						vertex = pos * vertex;
+
+						polygon->addVertex(vertex);
+					}
+
+
+					auto& faces = faceSet->Faces;
+					auto& pnIndices = faceSet->PnIndex; // optional
+
+					for (auto& face : faces)
+					{
+						if (!face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
+						{
+							// determine vertices' indices
+							std::vector<size_t> indices(face->CoordIndex.size());
+							std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
+								[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
+							polygon->addFace(std::begin(indices), std::end(indices));
+						}
+
+						else {
+							convertIfcIndexedPolygonalFaceWithVoids(
+								face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>(), faceSet, polygon);
+						}
+					}
+					itemData->open_or_closed_polyhedrons.push_back(polygon);
+				}
+
 				void convertIfcIndexedPolygonalFaceWithVoids(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>& faceWithVoids,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet,
