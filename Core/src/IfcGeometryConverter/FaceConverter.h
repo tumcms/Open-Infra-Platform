@@ -1284,12 +1284,11 @@ namespace OpenInfraPlatform {
 
 
 							}
-
-							itemData->open_or_closed_polyhedrons.push_back(polygon);
-							return;
 						}
-						throw oip::UnhandledException(tessItem);
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						return;
 					}
+					throw oip::UnhandledException(tessItem);
 				}
 				
 				void convertIfcIndexedPolygonalFaceWithVoids(
