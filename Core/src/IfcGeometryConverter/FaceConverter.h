@@ -1134,7 +1134,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-					) const throw(...) 
+				) const throw(...)
 				{
 					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
@@ -1159,7 +1159,7 @@ namespace OpenInfraPlatform {
 
 						auto& coordinatesIndices = faceSet->CoordIndex;
 						auto& pnIndices = faceSet->PnIndex; // optional
-						
+
 						std::vector<int> flags;
 						if (tessItem.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
 						{
@@ -1176,7 +1176,7 @@ namespace OpenInfraPlatform {
 							{
 								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
 							}
-							
+
 							// determine vertices' indices
 							size_t i0, i1, i2;
 
@@ -1202,7 +1202,7 @@ namespace OpenInfraPlatform {
 								// add break line
 								else
 								{
-									if (flags[i-1] & 1) // first flag set
+									if (flags[i - 1] & 1) // first flag set
 									{
 										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 										polylineData->beginPolyline();
@@ -1212,7 +1212,7 @@ namespace OpenInfraPlatform {
 										polylineData->addPolylineIndex(1);
 										itemData->polylines.push_back(polylineData);
 									}
-									if (flags[i-1] & 2) // second flag set
+									if (flags[i - 1] & 2) // second flag set
 									{
 										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 										polylineData->beginPolyline();
@@ -1222,7 +1222,7 @@ namespace OpenInfraPlatform {
 										polylineData->addPolylineIndex(1);
 										itemData->polylines.push_back(polylineData);
 									}
-									if (flags[i-1] & 4) // third flag set
+									if (flags[i - 1] & 4) // third flag set
 									{
 										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 										polylineData->beginPolyline();
@@ -1246,11 +1246,11 @@ namespace OpenInfraPlatform {
 					{
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
-						
+
 						// obtain vertices from coordinates list and add them to the new polygon
 						for (const auto& point : faceSet->Coordinates->CoordList)
 						{
-							
+
 							carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 								carve::geom::VECTOR(point[0],
 									point[1],
@@ -1266,7 +1266,7 @@ namespace OpenInfraPlatform {
 						auto& faces = faceSet->Faces;
 						auto& pnIndices = faceSet->PnIndex; // optional
 
-						for( auto& face : faces )
+						for (auto& face : faces)
 						{
 							if (!face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
 							{
@@ -1276,110 +1276,118 @@ namespace OpenInfraPlatform {
 									[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
 								polygon->addFace(std::begin(indices), std::end(indices));
 							}
-							 
+
 							else {
-								auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
+								convertIfcIndexedPolygonalFaceWithVoids(
+									face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>(), faceSet, polygon);
+								//auto faceWithVoids = face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>();
 
-								// 1. Build loops of actual points
-								std::vector<std::vector<carve::geom::vector<3>>> loops;
-								std::vector<carve::geom::vector<3>> outerLoop;
-								std::vector<std::vector<size_t>> indexLoops;
-								std::vector<size_t> outerIndexLoop;
 
-								for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
-								{
-									const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
-									carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
-										point[1],
-										point[2]) * UnitConvert()->getLengthInMeterFactor();
-
-									outerLoop.push_back(vertex);
-									outerIndexLoop.push_back(outerLoopPointIndex);
-								}
-								indexLoops.push_back(outerIndexLoop);
-								loops.push_back(outerLoop);
-
-								for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
-								{
-									std::vector<carve::geom::vector<3>> loop;
-									std::vector<size_t> IndexLoop;
-									for (const auto& outerLoopPointIndex : innerLoop)
-									{
-										const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
-										carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
-												point[1],
-												point[2]) * UnitConvert()->getLengthInMeterFactor();
-
-										IndexLoop.push_back(outerLoopPointIndex);
-										loop.push_back(vertex);
-									}
-									indexLoops.push_back(IndexLoop);
-									loops.push_back(loop);
-								}
-								
-								std::vector<std::vector<carve::geom::vector<2>>> loops2D;
-								carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
-								
-								carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(
-									normalOfPlane, loops[0][0],loops[0][1] - loops[0][0]);
-								carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
-
-								for (const auto& loop : loops) 
-								{
-									std::vector<carve::geom::vector<2>> loop2D;
-									std::vector<carve::geom::vector<3>> loop3Dto2D;
-									for (const auto& point : loop)
-									{
-										carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
-										loop3Dto2D.push_back(point3Dto2D);
-									}
-									loop2D = GeomUtils::removeEmptyCoordinate(loop3Dto2D);
-									loops2D.push_back(loop2D);
-								}
-								
-								// 2. Call geomUtils
-								carve::geom::vector<3> normalFirstLoop;
-								std::vector<std::vector<carve::geom2d::P2>>	faceLoops = GeomUtils::correctWinding(loops2D, normalFirstLoop);
-
-								std::vector<carve::geom2d::P2> mergedPath;
-								std::vector<carve::triangulate::tri_idx> triangulatedList;
-								std::vector<std::pair<size_t, size_t>> pathAllLoops;
-
-								GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulatedList, pathAllLoops);
-
-								// mergedPath
-								//  9<---------------------------8
-								//  |                            ^
-								//  |   2------------------>3    |
-								//  |   ^                   |    |
-								//  |   |                   v    |
-								//  |   1, 5<---------------4    |
-								//  v /                          |
-								//  0, 6, 10-------------------->7
-								// triangulated list
-								// ( (6,5,7), (7,5,4), (7,4,8), ..., (9,1,0) )
-								// pathAllLoops
-								// ( (0,0), (1,0), (1,1), (1,2), (1,3), (1,0), (0,0), (0,1), (0,2), (0,3), (0,0) )
-
-								// 3. Given the results, find corresponding indices of points in the original array. 
-								for (const auto& triang : triangulatedList )
-								{
-									polygon->addFace(
-										indexLoops[pathAllLoops[triang.a].first][pathAllLoops[triang.a].second] -1,
-										indexLoops[pathAllLoops[triang.b].first][pathAllLoops[triang.b].second] -1,
-										indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] -1
-									);
-								}
 							}
+
+							itemData->open_or_closed_polyhedrons.push_back(polygon);
+							return;
 						}
-
-						itemData->open_or_closed_polyhedrons.push_back(polygon);
-						return;
+						throw oip::UnhandledException(tessItem);
 					}
-					throw oip::UnhandledException(tessItem);
 				}
-
 				
+				void convertIfcIndexedPolygonalFaceWithVoids(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>& faceWithVoids,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet,
+					std::shared_ptr<carve::input::PolyhedronData> polygon) const noexcept(false)
+				{
+					// 1. Build loops of actual points
+					std::vector<std::vector<carve::geom::vector<3>>> loops;
+					std::vector<carve::geom::vector<3>> outerLoop;
+					std::vector<std::vector<size_t>> indexLoops;
+					std::vector<size_t> outerIndexLoop;
+
+					for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
+					{
+						const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+						carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
+							point[1],
+							point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+						outerLoop.push_back(vertex);
+						outerIndexLoop.push_back(outerLoopPointIndex);
+					}
+					indexLoops.push_back(outerIndexLoop);
+					loops.push_back(outerLoop);
+
+					for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
+					{
+						std::vector<carve::geom::vector<3>> loop;
+						std::vector<size_t> IndexLoop;
+						for (const auto& outerLoopPointIndex : innerLoop)
+						{
+							const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+							carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+							IndexLoop.push_back(outerLoopPointIndex);
+							loop.push_back(vertex);
+						}
+						indexLoops.push_back(IndexLoop);
+						loops.push_back(loop);
+					}
+
+					std::vector<std::vector<carve::geom::vector<2>>> loops2D;
+					carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
+
+					carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(
+						normalOfPlane, loops[0][0], loops[0][1] - loops[0][0]);
+					carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
+
+					for (const auto& loop : loops)
+					{
+						std::vector<carve::geom::vector<2>> loop2D;
+						std::vector<carve::geom::vector<3>> loop3Dto2D;
+						for (const auto& point : loop)
+						{
+							carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
+							loop3Dto2D.push_back(point3Dto2D);
+						}
+						loop2D = GeomUtils::removeEmptyCoordinate(loop3Dto2D);
+						loops2D.push_back(loop2D);
+					}
+
+					// 2. Call geomUtils
+					carve::geom::vector<3> normalFirstLoop;
+					std::vector<std::vector<carve::geom2d::P2>>	faceLoops = GeomUtils::correctWinding(loops2D, normalFirstLoop);
+
+					std::vector<carve::geom2d::P2> mergedPath;
+					std::vector<carve::triangulate::tri_idx> triangulatedList;
+					std::vector<std::pair<size_t, size_t>> pathAllLoops;
+
+					GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulatedList, pathAllLoops);
+
+					// mergedPath
+					//  9<---------------------------8
+					//  |                            ^
+					//  |   2------------------>3    |
+					//  |   ^                   |    |
+					//  |   |                   v    |
+					//  |   1, 5<---------------4    |
+					//  v /                          |
+					//  0, 6, 10-------------------->7
+					// triangulated list
+					// ( (6,5,7), (7,5,4), (7,4,8), ..., (9,1,0) )
+					// pathAllLoops
+					// ( (0,0), (1,0), (1,1), (1,2), (1,3), (1,0), (0,0), (0,1), (0,2), (0,3), (0,0) )
+
+					// 3. Given the results, find corresponding indices of points in the original array. 
+					for (const auto& triang : triangulatedList)
+					{
+						polygon->addFace(
+							indexLoops[pathAllLoops[triang.a].first][pathAllLoops[triang.a].second] - 1,
+							indexLoops[pathAllLoops[triang.b].first][pathAllLoops[triang.b].second] - 1,
+							indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] - 1
+						);
+					}
+				}
 
 				protected:
 
