@@ -51,7 +51,11 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::index(int row, int c
 
 	IfcTreeItem *childItem = parentItem->child(row);
 	if (childItem)
-		return createIndex(row, column, childItem);
+	{
+		auto n = createIndex(row, column, childItem);
+		return n;
+	}
+		//return createIndex(row, column, childItem);
 	return QModelIndex();
 }
 
@@ -70,7 +74,7 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::parent(const QModelI
 	IfcTreeItem *parentItem = child->parentItem();
 
 	if (parentItem == rootItem_)
-		return QModelIndex();
+		return QModelIndex(); 
 
 	return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -95,7 +99,8 @@ int OpenInfraPlatform::UserInterface::IfcTreeModel::columnCount(const QModelInde
 {
 	if (parent.isValid())
 		return static_cast<IfcTreeItem*>(parent.internalPointer())->columnCount();
-	return rootItem_->columnCount();
+	int nrOfColumns = rootItem_->columnCount();
+	return nrOfColumns;
 }
 
 //int OpenInfraPlatform::UserInterface::IfcTreeModel::columnCount(const QModelIndex &parent) const

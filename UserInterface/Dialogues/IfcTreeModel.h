@@ -36,17 +36,17 @@ namespace OpenInfraPlatform
 			Q_OBJECT;
 
 		public:
-			IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent = nullptr);
+			explicit IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent = nullptr);
 			~IfcTreeModel();
 
 		//override from QAbstractItemModel
-			virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-			virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-			virtual QModelIndex parent(const QModelIndex &index) const override;
-			virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-			virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-			virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-			virtual Qt::ItemFlags flags(const QModelIndex &index) const override;
+			QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+			QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+			QModelIndex parent(const QModelIndex &index) const override;
+			int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+			QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+			Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 		private:
 			void setupModelData(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent);

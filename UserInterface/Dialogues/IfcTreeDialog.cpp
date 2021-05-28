@@ -20,11 +20,11 @@
 #include "ui_IfcTreeDialog.h"
 #include "DataManagement/General/Data.h"
 #include "Exception\UnhandledException.h"
+#include <QFileSystemModel>
 
-OpenInfraPlatform::UserInterface::IfcTreeDialog::IfcTreeDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent /*= nullptr*/) :
+OpenInfraPlatform::UserInterface::IfcTreeDialog::IfcTreeDialog(QWidget *parent /*= nullptr*/) :
 	QDialog(parent, Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
-	ui_(new Ui::IfcTreeDialog),
-	view_(view)
+	ui_(new Ui::IfcTreeDialog)
 {
 	ui_->setupUi(this);
 	//ui_->ifcTreeWidget->setAnimated(true);
@@ -47,6 +47,7 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 		OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel = expressModelShared.get();
 		auto treeModel = new IfcTreeModel(expressModel);
 		ui_->ifcTreeView->setModel(treeModel);
+		//ui_->ifcTreeView->show();
 		((QDialog*)this)->show();
 	}
 	else
@@ -54,6 +55,11 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 		//only for now till the selected model is properly handled
 		throw  oip::UnhandledException("Last model is not a IFC model");
 	}
+	//QFileSystemModel *model = new QFileSystemModel;
+	//model->setRootPath(QDir::currentPath());
+	//ui_->ifcTreeView->setModel(model);
+	//ui_->ifcTreeView->setRootIndex(model->index(QDir::currentPath()));
+	//((QDialog*)this)->show();
 }
 
 

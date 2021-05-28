@@ -66,14 +66,16 @@ int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
 
 int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
 {
-	return itemData_.size();
+	int nrOfColumns = itemData_.size(); //size right here?
+	return nrOfColumns;
 }
 
 QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 {
 	if (column < 0 || column >= itemData_.size())
 		return QVariant();
-	return QString::fromStdString(itemData_.at(column));
+	//QString text = QString::fromStdString(itemData_.at(column));
+	return QString("text");
 }
 
 //QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
@@ -97,7 +99,7 @@ QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 //	return getIfcClassName();
 //}
 
-int OpenInfraPlatform::UserInterface::IfcTreeItem::row()
+int OpenInfraPlatform::UserInterface::IfcTreeItem::row() const
 {
 	if (parentItem_)
 	{	

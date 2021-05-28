@@ -32,7 +32,7 @@ namespace OpenInfraPlatform
 			Q_OBJECT;
 
 		public:
-			IfcTreeDialog(OpenInfraPlatform::UserInterface::View* view, QWidget *parent = nullptr);
+			IfcTreeDialog(QWidget *parent = nullptr);
 
 			//! Virtual destructor.
 			virtual ~IfcTreeDialog();

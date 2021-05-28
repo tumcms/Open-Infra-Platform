@@ -29,8 +29,8 @@ namespace OpenInfraPlatform {
 		class IfcTreeItem
 		{
 		public:
-			IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem);
-			IfcTreeItem();
+			explicit IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem);
+			explicit IfcTreeItem();
 			~IfcTreeItem();
 
 			void appendchild(IfcTreeItem *child);
@@ -39,7 +39,7 @@ namespace OpenInfraPlatform {
 			int childCount() const;
 			int columnCount() const;
 			QVariant data(int column) const;
-			int row();
+			int row() const;
 			IfcTreeItem *parentItem();
 			QString getIfcClassName() const;
 
