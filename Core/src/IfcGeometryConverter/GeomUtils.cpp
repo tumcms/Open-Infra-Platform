@@ -120,11 +120,10 @@ carve::geom::vector<3> GeomUtils::computePolygon2DNormal(
 /**********************************************************************************************/
 
 void GeomUtils::extrude( 
-					const std::vector<std::vector<carve::geom::vector<2> > >& face_loops_input, 
+					const std::vector<std::vector<carve::geom::vector<2>>>& face_loops_input, 
 					const carve::geom::vector<3> extrusion_vector, 
 					const bool closed,
-					std::shared_ptr<carve::input::PolyhedronData>& poly_data, 
-					std::stringstream& err )
+					std::shared_ptr<carve::input::PolyhedronData>& poly_data)
 {
 	if( face_loops_input.size() == 0 )
 	{
@@ -150,60 +149,8 @@ void GeomUtils::extrude(
 	//  0-------face_loops[0]--------1
 
 	carve::geom::vector<3> normal_first_loop;
-	std::vector<std::vector<carve::geom2d::P2> >	face_loops;
-	for( std::vector<std::vector<carve::geom::vector<2> > >::const_iterator it_face_loops = face_loops_input.begin(); it_face_loops != face_loops_input.end(); ++it_face_loops )
-	{
-		const std::vector<carve::geom::vector<2> >& loop = (*it_face_loops);
-
-		if( loop.size() < 3 )
-		{
-			throw oip::InconsistentGeometryException("GeomUtils::extrude(): loop.size() < 3");
-		}
-
-		// check winding order
-		bool reverse_loop = false;
-		std::vector<carve::geom2d::P2> loop_2d( loop );
-		carve::geom::vector<3>  normal_2d = computePolygon2DNormal( loop_2d );
-		if( it_face_loops == face_loops_input.begin() )
-		{
-			normal_first_loop = normal_2d;
-			if( normal_2d.z < 0 )
-			{
-				reverse_loop = true;
-				normal_first_loop = -normal_first_loop;
-			}
-		}
-		else
-		{
-			if( normal_2d.z > 0 )
-			{
-				reverse_loop = true;
-			}
-		}
-		if( reverse_loop )
-		{
-			std::reverse( loop_2d.begin(), loop_2d.end() );
-		}
-				
-		if( loop_2d.size() < 3 )
-		{
-			throw oip::InconsistentGeometryException("GeomUtils::extrude(): loop_2d.size() < 3");
-		}
-		
-		// close loop, insert first point at end if not already there
-//		while( loop_2d.size() > 2 )
-		{
-			carve::geom::vector<2> first = loop_2d.front();
-			carve::geom::vector<2>& last = loop_2d.back();
-
-			if( abs(first.x-last.x) > 0.00001 || abs(first.y-last.y) > 0.00001 )
-			{
-				loop_2d.push_back( first );
-			}
-		}
-
-		face_loops.push_back(loop_2d);
-	}
+	std::vector<std::vector<carve::geom2d::P2>>	face_loops = GeomUtils::correctWinding(face_loops_input, normal_first_loop);
+	
 
 	bool flip_faces = false;
 	double extrusion_dot_normal = dot( extrusion_vector, normal_first_loop );
@@ -215,59 +162,12 @@ void GeomUtils::extrude(
 	// triangulate
 	std::vector<carve::geom2d::P2> merged_path;
 	std::vector<carve::triangulate::tri_idx> triangulated;
-	std::vector<std::pair<size_t, size_t> > path_all_loops;
-	try
-	{
-		path_all_loops = carve::triangulate::incorporateHolesIntoPolygon(face_loops);
-		// figure 2: path wich incorporates holes, described by path_all_loops
-		// (0/0) -> (1/3) -> (1/0) -> (1/1) -> (1/2) -> (1/3) -> (0/0) -> (0/1) -> (0/2) -> (0/3)
-		//  0/3<-----------------------0/2
-		//  |                            ^
-		//  |   1/0-------------->1/1    |
-		//  |   ^                   |    |
-		//  |   |                   v    |
-		//  |   1/3<--------------1/2    |
-		//  v                            |
-		//  0/0------------------------>0/1
-
-		merged_path.reserve(path_all_loops.size());
-		for( size_t i = 0; i < path_all_loops.size(); ++i )
-		{
-			int loop_number = path_all_loops[i].first;
-			int index_in_loop = path_all_loops[i].second;
-			
-			if( loop_number >= face_loops.size() )
-			{
-				err << "extrude: loop_number >= face_loops_projected.size()" << std::endl;
-				continue;
-			}
-			std::vector<carve::geom2d::P2>& loop = face_loops[loop_number];
-			carve::geom2d::P2& point_projected = loop[index_in_loop];
-			merged_path.push_back( point_projected );
-
-		}
-		// figure 3: merged path for triangulation
-		//  9<---------------------------8
-		//  |                            ^
-		//  |   2------------------>3    |
-		//  |   ^                   |    |
-		//  |   |                   v    |
-		//  |   1, 5<---------------4    |
-		//  | /                          |
-		//  0,6------------------------->7
-		carve::triangulate::triangulate(merged_path, triangulated);
-		carve::triangulate::improve(merged_path, triangulated);
-		// triangles: (9,0,1)  (5,6,7)  (4,5,7)  (4,7,8)  (9,1,2)  (8,9,2)  (3,4,8)  (2,3,8)
-	}
-	catch(...)
-	{
-		err << "carve::triangulate::incorporateHolesIntoPolygon failed " << std::endl;
-		return;
-	}
-
+	std::vector<std::pair<size_t, size_t>> path_all_loops;
+	GeomUtils::incorporateVoids(face_loops, merged_path, triangulated, path_all_loops);
+	
 	// now insert points to polygon, avoiding points with same coordinates
-	std::map<double, std::map<double, int> > existing_vertices_coords;
-	std::map<double, std::map<double, int> >::iterator vert_it;
+	std::map<double, std::map<double, int>> existing_vertices_coords;
+	std::map<double, std::map<double, int>>::iterator vert_it;
 	std::map<double, int>::iterator it_find_y;
 
 	std::map<int,int> map_merged_idx;
@@ -284,7 +184,7 @@ void GeomUtils::extrude(
 #endif
 
 		//  return a pair, with its member pair::first set to an iterator pointing to either the newly inserted element or to the element with an equivalent key in the map
-		vert_it = existing_vertices_coords.insert( std::make_pair(vertex_x, std::map<double,int>() ) ).first;
+		vert_it = existing_vertices_coords.insert( std::make_pair(vertex_x, std::map<double,int>()) ).first;
 		std::map<double, int>& map_y_index = vert_it->second;
 
 		it_find_y = map_y_index.find( vertex_y );
@@ -409,7 +309,8 @@ void GeomUtils::extrude(
 		carve::geom::vector<3> pc( carve::geom::VECTOR( v_c.v[0],	v_c.v[1],	v_c.v[2] ) );
 
 		double A = 0.5*(cross( pa-pb, pa-pc ).length());
-		if( abs(A) < 0.000000001 )
+		//if(GeometrySettings::areEqual(abs(A), 0.))
+		if (abs(A) < 0.000000001)
 		{
 			std::cout << "area < 0.000000001\n" << std::endl;
 		}
@@ -430,6 +331,120 @@ void GeomUtils::extrude(
 			poly_data->addFace( vertex_id_a_top,	vertex_id_c_top,	vertex_id_b_top );	
 		}
 	}
+}
+
+void GeomUtils::incorporateVoids(const std::vector<std::vector<carve::geom2d::P2>>& face_loops_input,
+	std::vector<carve::geom2d::P2>& merged_path,
+	std::vector<carve::triangulate::tri_idx>& triangulated, 
+	std::vector<std::pair<size_t, size_t>>& path_all_loops)
+{
+	try
+	{
+		path_all_loops = carve::triangulate::incorporateHolesIntoPolygon(face_loops_input);
+		// figure 2: path wich incorporates holes, described by path_all_loops
+		// (0/0) -> (1/3) -> (1/0) -> (1/1) -> (1/2) -> (1/3) -> (0/0) -> (0/1) -> (0/2) -> (0/3)
+		//  0/3<-----------------------0/2
+		//  |                            ^
+		//  |   1/0-------------->1/1    |
+		//  |   ^                   |    |
+		//  |   |                   v    |
+		//  |   1/3<--------------1/2    |
+		//  v                            |
+		//  0/0------------------------>0/1
+
+		merged_path.reserve(path_all_loops.size());
+		for (size_t i = 0; i < path_all_loops.size(); ++i)
+		{
+			int loop_number = path_all_loops[i].first;
+			int index_in_loop = path_all_loops[i].second;
+
+			if (loop_number >= face_loops_input.size())
+			{
+				throw oip::InconsistentModellingException("extrude: loop_number >= face_loops_projected.size()");
+			}
+			const std::vector<carve::geom2d::P2>& loop = face_loops_input.at(loop_number);
+			const carve::geom2d::P2& point_projected = loop[index_in_loop];
+			merged_path.push_back(point_projected);
+
+		}
+		// figure 3: merged path for triangulation
+		//  9<---------------------------8
+		//  |                            ^
+		//  |   2------------------>3    |
+		//  |   ^                   |    |
+		//  |   |                   v    |
+		//  |   1, 5<---------------4    |
+		//  | /                          |
+		//  0,6------------------------->7
+		carve::triangulate::triangulate(merged_path, triangulated);
+		carve::triangulate::improve(merged_path, triangulated);
+		// triangles: (9,0,1)  (5,6,7)  (4,5,7)  (4,7,8)  (9,1,2)  (8,9,2)  (3,4,8)  (2,3,8)
+	}
+	catch (...)
+	{
+		throw oip::InconsistentGeometryException("Error in function GeomUtils::incorporateVoids");
+	}
+}
+
+std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
+	const std::vector<std::vector<carve::geom::vector<2>>> & face_loops_input, carve::geom::vector<3>& normal_first_loop)
+{
+	std::vector<std::vector<carve::geom2d::P2>>	face_loops;
+
+	bool first_loop = true;
+	for (const std::vector<carve::geom::vector<2>>& loop : face_loops_input)
+	{
+		if (loop.size() < 3)
+		{
+			throw oip::InconsistentGeometryException("GeomUtils::extrude(): loop.size() < 3");
+		}
+
+		// check winding order
+		bool reverse_loop = false;
+		std::vector<carve::geom2d::P2> loop_2d(loop);
+		carve::geom::vector<3>  normal_2d = computePolygon2DNormal(loop_2d);
+		if (first_loop)
+		{
+			first_loop = false;
+			normal_first_loop = normal_2d;
+			if (normal_2d.z < 0)
+			{
+				reverse_loop = true;
+				normal_first_loop = -normal_first_loop;
+			}
+		}
+		else
+		{
+			if (normal_2d.z > 0)
+			{
+				reverse_loop = true;
+			}
+		}
+		if (reverse_loop)
+		{
+			std::reverse(loop_2d.begin(), loop_2d.end());
+		}
+
+		if (loop_2d.size() < 3)
+		{
+			throw oip::InconsistentGeometryException("GeomUtils::extrude(): loop_2d.size() < 3");
+		}
+
+		// close loop, insert first point at end if not already there
+		/*while( loop_2d.size() > 2 )
+		{
+			carve::geom::vector<2> first = loop_2d.front();
+			carve::geom::vector<2>& last = loop_2d.back();
+
+			if (abs(first.x - last.x) > 0.00001 || abs(first.y - last.y) > 0.00001)
+			{
+				loop_2d.push_back(first);
+			}
+		}*/
+
+		face_loops.push_back(loop_2d);
+	}
+	return face_loops;
 }
 
 /**********************************************************************************************/
@@ -1011,36 +1026,44 @@ bool GeomUtils::bisectingPlane(const carve::geom::vector<3>& v1,
 }
 
 /**********************************************************************************************/
-
-void GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& plane_normal, 
-									const carve::geom::vector<3>& plane_position, 
-		const carve::geom::vector<3>& local_z, carve::math::Matrix& resulting_matrix )
+/*! \brief Calculates a matrix of the plane.
+* \param[in] planeNormal			A normal vector of the plane. 
+* \param[in] planePosition			Global coordinates of the point positioned on the plane. 
+* \param[in] localZ					A direction vector on the plane. 
+*
+* \return							Returns calculated matrix of the plane.
+*/
+carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& planeNormal,
+		const carve::geom::vector<3>& planePosition, 
+		const carve::geom::vector<3>& localZ)
 {
-	carve::geom::vector<3> local_x( plane_normal );
-	local_x.normalize();
-	carve::geom::vector<3> local_z_new( local_z );
+	carve::math::Matrix resulting_matrix;
+	carve::geom::vector<3> localX( planeNormal );
+	localX.normalize();
+	carve::geom::vector<3> localZnew( localZ );
 
-	carve::geom::vector<3> local_y = cross( local_x, local_z_new );
-	local_z_new = cross( local_y, local_x );
-	local_z_new.normalize();
-	local_y.normalize();
+	carve::geom::vector<3> localY = cross( localX, localZnew );
+	localZnew = cross( localY, localX );
+	localZnew.normalize();
+	localY.normalize();
 
-	resulting_matrix._11 = local_x.x;
-	resulting_matrix._12 = local_x.y;
-	resulting_matrix._13 = local_x.z,
+	resulting_matrix._11 = localX.x;
+	resulting_matrix._12 = localX.y;
+	resulting_matrix._13 = localX.z,
 	resulting_matrix._14 = 0;
-	resulting_matrix._21 = local_y.x;
-	resulting_matrix._22 = local_y.y;
-	resulting_matrix._23 =	local_y.z;
-	resulting_matrix._24 =	0;
-	resulting_matrix._31 = local_z_new.x;
-	resulting_matrix._32 = local_z_new.y;
-	resulting_matrix._33 = local_z_new.z;
+	resulting_matrix._21 = localY.x;
+	resulting_matrix._22 = localY.y;
+	resulting_matrix._23 = localY.z;
+	resulting_matrix._24 = 0;
+	resulting_matrix._31 = localZnew.x;
+	resulting_matrix._32 = localZnew.y;
+	resulting_matrix._33 = localZnew.z;
 	resulting_matrix._34 = 0;
-	resulting_matrix._41 = plane_position.x;
-	resulting_matrix._42 = plane_position.y;
-	resulting_matrix._43 = plane_position.z;
+	resulting_matrix._41 = planePosition.x;
+	resulting_matrix._42 = planePosition.y;
+	resulting_matrix._43 = planePosition.z;
 	resulting_matrix._44 = 1;
+	return resulting_matrix;
 }
 
 /**********************************************************************************************/
@@ -1064,6 +1087,73 @@ void  GeomUtils::applyPositionToVertex(
 	{
 		newListOfPoints.push_back(positionMatrix * vertex);
 	}
+}
+
+/**********************************************************************************************/
+/*! \brief Applies a position to the point.
+*
+* \param[in] listOfPoint				A list of points to be converted.
+* \param[in] positionMatrix			A position matrix, which should be applied to the points.
+* \param[in] ammountOfPoints			Number of points.
+*
+* \return[out]							List of points with applied position.
+*/
+std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::vector<carve::geom::vector<3>>& listOfVectors3D) 
+{
+	std::vector<carve::geom::vector<2>> listOfVectors2D;
+	bool notEmptyCoord = false;
+	//Check if x Coordniates are empty.
+	for (auto vector : listOfVectors3D)
+	{
+		if (! vector.x == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.x, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove x Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.y, vector3D.z);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+	//Check if y Coordniates are empty.
+	notEmptyCoord = false;
+	for (auto vector : listOfVectors3D)
+	{
+		if (!vector.y == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.y, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove y Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.z);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+	//Check if z Coordniates are empty.
+	notEmptyCoord = false;
+	for (auto vector : listOfVectors3D)
+	{
+		if (!vector.z == 0.)
+		//if (!this->GeomSettings()->areEqual(vector.z, 0.))
+			notEmptyCoord = true;
+	}
+	//Remove z Coordinate.
+	if (!notEmptyCoord) {
+		for (auto vector3D : listOfVectors3D)
+		{
+			carve::geom::vector<2> vector2D = carve::geom::VECTOR(vector3D.x, vector3D.y);
+			listOfVectors2D.push_back(vector2D);
+		}
+		return listOfVectors2D;
+	}
+
+	throw oip::UnhandledException();
 }
 
 /**********************************************************************************************/

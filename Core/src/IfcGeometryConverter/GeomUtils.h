@@ -116,11 +116,19 @@ namespace OpenInfraPlatform
 					const buw::Vector3f& line_origin,
 					const buw::Vector3f& line_direction);
 
-				static void extrude(const std::vector<std::vector<carve::geom::vector<2> > >& paths,
+				static void extrude(const std::vector<std::vector<carve::geom::vector<2>>>& paths,
 					const carve::geom::vector<3> dir,
 					const bool closed,
-					std::shared_ptr<carve::input::PolyhedronData>& poly_data,
-					std::stringstream& err);
+					std::shared_ptr<carve::input::PolyhedronData>& poly_data);
+
+				static void incorporateVoids(const std::vector<std::vector<carve::geom2d::P2>>& paths,
+					std::vector<carve::geom2d::P2>& merged_path,
+					std::vector<carve::triangulate::tri_idx>& triangulated, 
+					std::vector<std::pair<size_t, size_t>>& path_all_loops);
+
+				static std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
+					const std::vector<std::vector<carve::geom::vector<2>>> & face_loops_input, 
+					carve::geom::vector<3>& normal_first_loop);
 
 				static void makeLookAt(const carve::geom::vector<3>& eye,
 					const carve::geom::vector<3>& center,
@@ -132,15 +140,17 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<3>& v3,
 					carve::geom::vector<3>& normal);
 
-				static void convertPlane2Matrix(const carve::geom::vector<3>& plane_normal,
-					const carve::geom::vector<3>& plane_position,
-					const carve::geom::vector<3>& local_z,
-					carve::math::Matrix& resulting_matrix);
+				static carve::math::Matrix convertPlane2Matrix(const carve::geom::vector<3>& planeNormal,
+					const carve::geom::vector<3>& planePosition,
+					const carve::geom::vector<3>& localZ);
 
 				static void applyPositionToVertex(const std::vector<carve::geom::vector<3>>& listOfPoints,
 					const carve::math::Matrix & positionMatrix,
 					const int ammountOfPoints,
 					std::vector<carve::geom::vector<3>>& newListOfPoints);
+
+				static std::vector<carve::geom::vector<2>> removeEmptyCoordinate
+				(const std::vector<carve::geom::vector<3>>& listOfVectors3D);
 
 				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
 					std::stringstream& err_poly, int entity_id);

@@ -340,7 +340,7 @@ namespace OpenInfraPlatform {
 							local_z.x = 0;
 							local_z.y = 0;
 							local_z.z = -1;
-							GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
+							matrix_sweep = GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z);
 
 							left_points.push_back(matrix_sweep * point_left);
 							right_points.push_back(matrix_sweep * point_right);
