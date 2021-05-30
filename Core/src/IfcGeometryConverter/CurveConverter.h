@@ -874,6 +874,7 @@ namespace OpenInfraPlatform
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 =======
@@ -884,6 +885,9 @@ namespace OpenInfraPlatform
 =======
 				// IfcSpline SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
 >>>>>>> 92a31da5 (Added IfsSpiral converter)
+=======
+				// IfcSpiral SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
+>>>>>>> 875f326b (Fixed mistakes in Spiral function)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 >>>>>>> 92a31da5 (Added IfsSpiral converter)
 =======
@@ -994,35 +998,35 @@ namespace OpenInfraPlatform
 					//		Position: OPTIONAL IfcAxis2Placement;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// IfcSpiral SUBTYPE OF IfcBlossCurve
+					// IfcBlossCurve SUBTYPE OF IfcSpiral
 					if (spiral.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
 					{
 						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcBlossCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcBlossCurve
 
-					// IfcEllipse SUBTYPE OF IfcClothoid
+					// IfcClothoid SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcClothoid>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcClothoid
 
-					// IfcEllipse SUBTYPE OF IfcCosine
+					// IfcCosine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcCosine>())
 					{
 						return convertIfcCosine(conic.as<typename IfcEntityTypesT::IfcCosine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcCosine
 
-					// IfcEllipse SUBTYPE OF IfcHelmertCurve
+					// IfcHelmertCurve SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
 					{
 						return convertIfcHelmertCurve(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcHelmertCurve
 
-						// IfcEllipse SUBTYPE OF IfcSine
+					// IfcSine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
 						return convertIfcSine(conic.as<typename IfcEntityTypesT::IfcSine>(),
@@ -1032,7 +1036,7 @@ namespace OpenInfraPlatform
 					// the rest we do not support
 					throw oip::UnhandledException(spiral);
 				}
-				// IfcClothoid SUBTYPE of IfcSpline (exists starting IFC4X3_RC3)
+				// IfcClothoid SUBTYPE of IfcSpiral (exists starting IFC4X3_RC3)
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcClothoid to a tesselated curve.
 				* \param[in] clothoid				A pointer to data from \c IfcClothoid.
@@ -1111,6 +1115,7 @@ namespace OpenInfraPlatform
 					double L = carve::geom::distance(firstPoint, endPoint);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
 					double length = L / A * sqrt(M_PI);
 		
@@ -1179,6 +1184,9 @@ namespace OpenInfraPlatform
 >>>>>>> aeb43baf (Starting implementation for IfcClothoid)
 =======
 					// Get number of tesselated segments (note default is 100, write new function!)
+=======
+					/*// Get number of tesselated segments (note default is 100, write new function!)
+>>>>>>> 875f326b (Fixed mistakes in Spiral function)
 					int numSegments = 100;
 					// Create a tesselated vector
 					std::vector < double > ti(numSegments,0);
@@ -1190,20 +1198,19 @@ namespace OpenInfraPlatform
 					
 					//Calculate clothoid points. Fresnel equastion.
 
-					std::vector<carve::geom::vector<3> > clothoidPoints;
-					clothoidPoints.x[0, 0];
-					clothoidPoints.y[0, 0];
-					clothoidPoints.z[0, 0];
+					std::vector<carve::geom::vector<3>> clothoidPoints;
+					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
 					
 					for (int i = 1; i < numSegments; ++i) 
 					{
+						getPointonCurve();
 						clothoidPoints.push_back(carve::geom::vector<3>(
 							carve::geom::VECTOR(
-								clothoidPoint.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
-									clothoidPoint.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
+								clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
+									clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
 										0)));
 					}
-
+					*/
 					// Add intagral constant
 
 					std::vector<carve::geom::vector<3> > newClothoidPoints;
@@ -1215,6 +1222,7 @@ namespace OpenInfraPlatform
 						newClothoidPoints.push_back(point3d);
 
 					}
+
 					// Convert to newClothoidPoints
 
 					GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
@@ -1222,8 +1230,11 @@ namespace OpenInfraPlatform
 						newClothoidPoints.at(0).x,
 						newClothoidPoints.at(0).y,
 						newClothoidPoints.at(0).z));
+<<<<<<< HEAD
 					return;
 >>>>>>> ff27b9df (Calculated vector, length, points)
+=======
+>>>>>>> 875f326b (Fixed mistakes in Spiral function)
 
 				}
 #endif
@@ -2682,7 +2693,11 @@ namespace OpenInfraPlatform
 				}
 
 
+<<<<<<< HEAD
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+=======
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
+>>>>>>> 875f326b (Fixed mistakes in Spiral function)
 
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
@@ -2696,6 +2711,7 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
 					// Interpret parameter
+<<<<<<< HEAD
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
@@ -2718,6 +2734,15 @@ namespace OpenInfraPlatform
 						                       clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
 								               0);
 				*/
+=======
+					
+					
+				/*
+					return carve::geom::VECTOR(clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti, 
+						                       clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
+								               0)));
+					*/
+>>>>>>> 875f326b (Fixed mistakes in Spiral function)
 					
 				}
 #endif
