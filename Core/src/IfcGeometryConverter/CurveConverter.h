@@ -855,7 +855,7 @@ namespace OpenInfraPlatform {
 					GeomUtils::appendPointsToCurve(basisCurvePoints, targetVec);
 				}
 
-				// IfcSpline SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
+				// IfcSpiral SUBTYPE of IfcCurve (exists starting IFC4X3_RC3)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcSpiral to a tesselated curve.
@@ -889,35 +889,35 @@ namespace OpenInfraPlatform {
 					//		Position: OPTIONAL IfcAxis2Placement;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// IfcSpiral SUBTYPE OF IfcBlossCurve
+					// IfcBlossCurve SUBTYPE OF IfcSpiral
 					if (spiral.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
 					{
 						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcBlossCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcBlossCurve
 
-					// IfcEllipse SUBTYPE OF IfcClothoid
+					// IfcClothoid SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcClothoid>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcClothoid
 
-					// IfcEllipse SUBTYPE OF IfcCosine
+					// IfcCosine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcCosine>())
 					{
 						return convertIfcCosine(conic.as<typename IfcEntityTypesT::IfcCosine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcCosine
 
-					// IfcEllipse SUBTYPE OF IfcHelmertCurve
+					// IfcHelmertCurve SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
 					{
 						return convertIfcHelmertCurve(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcHelmertCurve
 
-						// IfcEllipse SUBTYPE OF IfcSine
+					// IfcSine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
 						return convertIfcSine(conic.as<typename IfcEntityTypesT::IfcSine>(),
@@ -927,7 +927,7 @@ namespace OpenInfraPlatform {
 					// the rest we do not support
 					throw oip::UnhandledException(spiral);
 				}
-				// IfcClothoid SUBTYPE of IfcSpline (exists starting IFC4X3_RC3)
+				// IfcClothoid SUBTYPE of IfcSpiral (exists starting IFC4X3_RC3)
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcClothoid to a tesselated curve.
 				* \param[in] clothoid				A pointer to data from \c IfcClothoid.
@@ -986,7 +986,7 @@ namespace OpenInfraPlatform {
 					//double L = sqrt(pow(endPoint.x- firstPoint.x)+pow(endPoint.y - firstPoint.y)+ pow(endPoint.z - firstPoint.z));
 					double L = carve::geom::distance(firstPoint, endPoint);
 
-					// Get number of tesselated segments (note default is 100, write new function!)
+					/*// Get number of tesselated segments (note default is 100, write new function!)
 					int numSegments = 100;
 					// Create a tesselated vector
 					std::vector < double > ti(numSegments,0);
@@ -998,20 +998,19 @@ namespace OpenInfraPlatform {
 					
 					//Calculate clothoid points. Fresnel equastion.
 
-					std::vector<carve::geom::vector<3> > clothoidPoints;
-					clothoidPoints.x[0, 0];
-					clothoidPoints.y[0, 0];
-					clothoidPoints.z[0, 0];
+					std::vector<carve::geom::vector<3>> clothoidPoints;
+					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
 					
 					for (int i = 1; i < numSegments; ++i) 
 					{
+						getPointonCurve();
 						clothoidPoints.push_back(carve::geom::vector<3>(
 							carve::geom::VECTOR(
-								clothoidPoint.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
-									clothoidPoint.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - ]))*pointInterval_ti,
+								clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
+									clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
 										0)));
 					}
-
+					*/
 					// Add intagral constant
 
 					std::vector<carve::geom::vector<3> > newClothoidPoints;
@@ -1023,6 +1022,7 @@ namespace OpenInfraPlatform {
 						newClothoidPoints.push_back(point3d);
 
 					}
+
 					// Convert to newClothoidPoints
 
 					GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
@@ -1030,7 +1030,6 @@ namespace OpenInfraPlatform {
 						newClothoidPoints.at(0).x,
 						newClothoidPoints.at(0).y,
 						newClothoidPoints.at(0).z));
-					return;
 
 				}
 #endif
@@ -2345,29 +2344,30 @@ namespace OpenInfraPlatform {
 				}
 
 
-/*#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
+
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				* \note								Not impemented yet.
-				*
+				*/
 				template <>
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clorhoid,
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
 					// Interpret parameter
-					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
-
-					// Get radius
-					double clothoidRadius = clothoid->Radius * this->UnitConvert()->getLengthInMeterFactor();
-					// Get clothoid's position
-					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(clothoid->Position);
-					// Calculate point + apply position
-					return placement * carve::geom::VECTOR(clothoidRadius * cos(angle), clothoidRadius * sin(angle), 0.);
+					
+					
+				/*
+					return carve::geom::VECTOR(clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti, 
+						                       clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
+								               0)));
+					*/
+					
 				}
-#endif*/
+#endif
 
 
 			protected:
