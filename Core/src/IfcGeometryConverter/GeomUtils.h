@@ -65,6 +65,9 @@ namespace OpenInfraPlatform
 			class GeomUtils {
 			public:
 
+				static bool GeomUtils::areEqual(const double first, 
+					const double second, const double precision);
+
 				static carve::geom::vector<3> computePolygonCentroid(
 					const std::vector<carve::geom::vector<3> >& polygon);
 				static carve::geom::vector<3> computePolygonNormal(

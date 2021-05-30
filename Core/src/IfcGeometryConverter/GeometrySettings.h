@@ -37,13 +37,14 @@
 
 #include "CarveHeaders.h"
 
+
 #define GEOM_TOLERANCE  0.0000001
 #ifdef _DEBUG
 #define HALF_SPACE_BOX_SIZE 100
 #else
 	#define HALF_SPACE_BOX_SIZE 100
 #endif
-
+#include "GeomUtils.h"
 
 namespace OpenInfraPlatform
 {
@@ -173,7 +174,7 @@ namespace OpenInfraPlatform
 				*/
 				bool areEqual(const double first,const double second,const double precision) const
 				{
-					return abs(first - second) < precision;
+					return GeomUtils::areEqual(first, second, precision);
 				}
 
 				/*!Compare two doubles for equality to the default precision

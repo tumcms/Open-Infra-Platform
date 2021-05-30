@@ -46,6 +46,13 @@ using namespace OpenInfraPlatform::Core::IfcGeometryConverter;
 
 /**********************************************************************************************/
 
+bool GeomUtils::areEqual(const double first, const double second, const double precision) 
+{
+	return abs(first - second) < precision;
+}
+
+/**********************************************************************************************/
+
 carve::geom::vector<3> GeomUtils::computePolygonCentroid( 
 										const std::vector<carve::geom::vector<3> >& polygon )
 {
@@ -1105,8 +1112,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	//Check if x Coordniates are empty.
 	for (auto vector : listOfVectors3D)
 	{
-		if (! vector.x == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.x, 0.))
+		if (GeomUtils::areEqual(vector.x, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove x Coordinate.
@@ -1122,8 +1128,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	notEmptyCoord = false;
 	for (auto vector : listOfVectors3D)
 	{
-		if (!vector.y == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.y, 0.))
+		if (GeomUtils::areEqual(vector.y, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove y Coordinate.
@@ -1139,8 +1144,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	notEmptyCoord = false;
 	for (auto vector : listOfVectors3D)
 	{
-		if (!vector.z == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.z, 0.))
+		if (GeomUtils::areEqual(vector.z, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove z Coordinate.
