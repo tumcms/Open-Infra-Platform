@@ -954,7 +954,7 @@ namespace OpenInfraPlatform {
 					if (clothoid.expired())
 						throw oip::ReferenceExpiredException(clothoid);
 					// **************************************************************************************************************************
-					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC2/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
+					//	https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/schema/ifcgeometryresource/lexical/ifcclothoid.htm
 					//	ENTITY IfcClothoid
 					//		SUBTYPE OF(IfcSpiral);
 					//			Position: IfcAxis2Placement;
