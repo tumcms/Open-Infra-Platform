@@ -62,6 +62,9 @@ namespace OpenInfraPlatform
 				const char* what() const throw() { return s.c_str(); }
 			};
 
+			/*!	\brief Helper functions for calculations of geometries
+
+			*/
 			class GeomUtils {
 			public:
 
