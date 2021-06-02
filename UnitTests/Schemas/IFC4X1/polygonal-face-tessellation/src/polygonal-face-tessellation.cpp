@@ -63,8 +63,19 @@ TEST_F(PolygonalFaceTessellation, AllEntitiesAreRead) {
 }
 
 TEST_F(PolygonalFaceTessellation, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCPOLYGONALFACESET"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCPOLYGONALFACESET"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYGONALFACE"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYGONALFACEWITHVOIDS"; });
+
+	EXPECT_NE(result1, express_model->entities.end()); 
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
+}
+
+TEST_F(PolygonalFaceTessellation, CountEssentialEntities) {
+	auto result = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYGONALFACE"; });
+	
+	EXPECT_EQ(result, 10);
 }
 
 TEST_F(PolygonalFaceTessellation, ImageIsSaved)
