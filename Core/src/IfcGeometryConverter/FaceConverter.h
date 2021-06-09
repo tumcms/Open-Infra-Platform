@@ -307,8 +307,10 @@ namespace OpenInfraPlatform {
 
 						// CONVERTION FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
 
-						// declaration of return value
-						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();;
+						// declaration of result variable for polylines
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						// declaration of result variable for polyhedrons (surface)
+						std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
 						// declaration of a list, for each curve point (=face point) its x, y, z coordinate will be stored as string with an id
 						std::unordered_map<std::string, int> vertexMap;
@@ -351,7 +353,7 @@ namespace OpenInfraPlatform {
 									key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
 
 									// search, whether current point is in internal list of points,
-									// vertexMay.find(..) returns past-the-end-iterator, if point does not exist
+									// vertexMap.find(..) returns past-the-end-iterator, if point does not exist
 									if (vertexMap.find(key.str()) != vertexMap.end())
 									{
 										// point exist;
@@ -363,17 +365,26 @@ namespace OpenInfraPlatform {
 										// point doesn't exist;
 										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
 										indices[k] = polylineData->addVertex(facePoints[k]);
+										// store face-point k in polyhedronData; vertex id is identical to vertices of polyline 
+										polyhedronData->addVertex(facePoints[k]);
+
 										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
 										vertexMap[key.str()] = indices[k];
 									}
 
-									// add obtaind index to poly line
+									// add obtaind index to polyline
 									polylineData->addPolylineIndex(indices[k]);
 								}
+
+								// add triangle-faces to polyhedron
+								polyhedronData->addFace(indices[0], indices[1], indices[2]);
+								polyhedronData->addFace(indices[0], indices[2], indices[3]);
 							}
 						}
 
+						// add polylines and polyhedrons to itemData (= return parameter)
 						itemData->polylines.push_back(polylineData);
+						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
 						return;
 					} // end if IfcBSplineSurfaceWithKnots
 
