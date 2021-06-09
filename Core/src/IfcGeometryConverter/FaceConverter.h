@@ -291,7 +291,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// obtain control points, attribute 3 of IfcBSplineSurface
-					const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = convertIfcCartesianPoint2DVector(surface->ControlPointsList);
+					const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = convertIfcCartesianPointVectorVector(surface->ControlPointsList);
 
 					// Get attribute 4 SurfaceForm. For information only.
 					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
@@ -709,7 +709,7 @@ namespace OpenInfraPlatform {
 
 				//------------------------------------------------------------------------------------------------------------
 				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPoint2DVector
+				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
 				//------------------------------------------------------------------------------------------------------------
 
 						/*! \brief  Converts \c IfcFace to a polygon and adds it to the carve PolyhedronData vector.
@@ -1089,7 +1089,9 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Typename definition (alias) of \c EXPRESSContainer for a easier use of \c OpenInfraPlatform::EarlyBinding::EXPRESSContainer.
 				\c OpenInfraPlatform::EarlyBinding::EXPRESSContainer is defined in EXPRESSContainer.h.
-				The alias is defined for use in the function parameter of \c convertIfcCartesianPoint2DVector.
+				The alias is defined for use in the function parameter of \c convertIfcCartesianPointVectorVector.
+
+				\internal	Should be moved into EXPRESSContainer.h, if there will be a change.
 				*/
 				template <typename T> using EXPRESSContainer = OpenInfraPlatform::EarlyBinding::EXPRESSContainer<T, 0, LIST_MAXSIZE>;
 
@@ -1098,19 +1100,19 @@ namespace OpenInfraPlatform {
 									In the \c ifc -documentation, it's called i. e. 'a list of lists of control points'.
 				\returns			The two-dimensional array of \c carve points.
 				*/
-				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
-					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPointVectorVector(
+					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points)  const throw(...)
 				{
 					// initialise the target vector, reserve space
-					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
-					loop2D.reserve(points2D.size());
+					std::vector<std::vector<carve::geom::vector<3>>> loop = std::vector<std::vector<carve::geom::vector<3>>>();
+					loop.reserve(points.size());
 
 					// convert each row of points, save in target vector
-					for (auto itPoints2D : points2D)
-						loop2D.push_back(curveConverter->convertIfcCartesianPointVector(itPoints2D));
+					for (auto itPoints : points)
+						loop.push_back(curveConverter->convertIfcCartesianPointVector(itPoints));
 
 					// return the target vector
-					return loop2D;
+					return loop;
 				}
 				
 				/*! \internal Still to refactor */
