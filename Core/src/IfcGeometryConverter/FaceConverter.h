@@ -317,9 +317,9 @@ namespace OpenInfraPlatform {
 						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
 
 						// loop over all curve points
-						for (int v = 0; v < numCurvePointsV - 1; ++v)
+						for (size_t v = 0; v < numCurvePointsV - 1; ++v)
 						{
-							for (int u = 0; u < numCurvePointsU - 1; ++u)
+							for (size_t u = 0; u < numCurvePointsU - 1; ++u)
 							{
 								// vector for the 4 corners of one surface-rectangle
 								std::vector<carve::geom::vector<3>> facePoints;
@@ -346,7 +346,7 @@ namespace OpenInfraPlatform {
 								polylineData->beginPolyline();
 
 								// loop over the 4 conter points
-								for (auto k = 0; k < 4; ++k)
+								for (size_t k = 0; k < 4; ++k)
 								{
 									// construct a string of x, y, z coordinates for the current face point
 									std::stringstream key;
