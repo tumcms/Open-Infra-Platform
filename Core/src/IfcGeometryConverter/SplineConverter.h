@@ -91,7 +91,7 @@ namespace OpenInfraPlatform
 							const double accuracy = obtainAccuracy();
 
 							std::vector<carve::geom::vector<3>> curvePoints = 
-								IfcGeometryConverter::SplineUtilities::computeRationalBSplineCurveWithKnots(order, knotArray, controlPoints, weightsData, numCurvePoints, accuracy);
+								IfcGeometryConverter::SplineUtilities::computeBSplineCurveWithKnots(order, knotArray, controlPoints, numCurvePoints, accuracy, weightsData);
 
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
@@ -169,8 +169,8 @@ namespace OpenInfraPlatform
 							// load the weights of the control points
 							const std::vector<std::vector<double>> weights = loadWeightsDataSurface(rationalBSplineSurfaceWithKnots);
 							
-							curvePoints = IfcGeometryConverter::SplineUtilities::computeRationalBSplineSurfaceWithKnots(
-								orderU, orderV, knotsU, knotsV, controlPoints, weights, numCurvePointsU, numCurvePointsV, accuracy);
+							curvePoints = IfcGeometryConverter::SplineUtilities::computeBSplineSurfaceWithKnots(
+								orderU, orderV, knotsU, knotsV, controlPoints, numCurvePointsU, numCurvePointsV, accuracy, weights);
 						}
 						else // (1/2) reverse order - IfcBSplineSurfaceWithKnots
 						{
