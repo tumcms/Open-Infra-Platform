@@ -574,6 +574,7 @@ namespace OpenInfraPlatform {
 					// 2-----3	---> x
 
 					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
 					double planeSpan = HALF_SPACE_BOX_SIZE;
 					polylineData->beginPolyline();
@@ -582,12 +583,21 @@ namespace OpenInfraPlatform {
 					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, -planeSpan, 0.0));
 					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, -planeSpan, 0.0));
 
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, -planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, -planeSpan, 0.0));
+
 					polylineData->addPolylineIndex(0);
 					polylineData->addPolylineIndex(1);
 					polylineData->addPolylineIndex(2);
 					polylineData->addPolylineIndex(3);
 
+					polyhedronData->addFace(0, 1, 2);
+					polyhedronData->addFace(0, 2, 3);
+
 					itemData->polylines.push_back( polylineData );
+					itemData->open_polyhedrons.push_back( polyhedronData );
 					return;
 				}
 
