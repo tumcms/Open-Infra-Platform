@@ -145,7 +145,7 @@ namespace OpenInfraPlatform
 					 */
 					std::vector<std::vector<carve::geom::vector<3>>> convertIfcBSplineSurfaceWithKnots(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>& bsplineSurfaceWithKnots,
-						const carve::math::Matrix& pos, // AT THE MOMENT, NO IDEA WHAT THIS IS
+						const carve::math::Matrix& pos,
 						const std::vector<std::vector<carve::geom::vector<3>>>& controlPoints) const throw(...)
 					{
 						// obtain degree of both b-spline curves, attributes 1 and 2 of IfcBSplineSurface
