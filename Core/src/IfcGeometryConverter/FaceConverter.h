@@ -72,33 +72,15 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts an \c IfcSurface to an array of segments to be rendered on screen.
 				 *
-				 * \param[in] surface		The \c IfcSurface to be converted.
-				 * \param[in] pos			The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData		A pointer to be filled with the relevant data.
-				 *
-				 * \note Calls the other overload FaceConverterT::convertIfcSurface with corresponding input parameters. Adds their result to itemData.
+				 * \param[in]	surface		The \c IfcSurface to be converted.
+				 * \param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				 */
 				void convertIfcSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
-				{
-					std::shared_ptr<carve::input::PolylineSetData> polyline =
-						convertIfcSurface(surface, pos);
-					if (polyline->getVertexCount() > 1) 
-						itemData->polylines.push_back(polyline);
-				}
-
-				/*! \brief Converts \c IfcSurface to a according to subtype.
-					\param		surface	\c IfcSurface entity to be interpreted.
-					\param		pos
-					\return		polylineData
-					\note		The \c IfcSurface subtypes are \c IfcBoundedSurface,  \c IfcElementarySurface and  \c IfcSweptSurface.
-				*/
-
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -107,21 +89,21 @@ namespace OpenInfraPlatform {
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) 
 					{
 						return convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) 
 					{
 						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  
 					{
 						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -132,15 +114,16 @@ namespace OpenInfraPlatform {
 				// IfcBoundedSurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcBoundedSurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
-						*/
+					/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcBoundedSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -150,7 +133,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcBSplineSurface(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/4) IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
@@ -158,7 +141,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCurveBoundedPlane(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedPlane>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
@@ -166,7 +149,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCurveBoundedSurface(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (4/4) IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
@@ -174,7 +157,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcRectangularTrimmedSurface(
 							surface.as<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -185,15 +168,16 @@ namespace OpenInfraPlatform {
 				// IfcElementarySurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcElementarySurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalSurface and \c IfcToroidalSurface.
-						*/
+					/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcElementarySurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\return[in]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalSurface and \c IfcToroidalSurface.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -203,7 +187,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCylindricalSurface(
 							surface.as<typename IfcEntityTypesT::IfcCylindricalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
@@ -211,7 +195,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcPlane(
 							surface.as<typename IfcEntityTypesT::IfcPlane>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/4) IfcSphericalSurface SUBTYPE of IfcElementarySurface
@@ -219,7 +203,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSphericalSurface(
 							surface.as<typename IfcEntityTypesT::IfcSphericalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (4/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
@@ -227,7 +211,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcToroidalSurface(
 							surface.as<typename IfcEntityTypesT::IfcToroidalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -238,15 +222,16 @@ namespace OpenInfraPlatform {
 				// IfcSweptSurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcSweptSurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
-						*/
+					/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcSweptSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -256,7 +241,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSurfaceOfLinearExtrusion(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/2) IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
@@ -264,7 +249,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSurfaceOfRevolution(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfRevolution>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -275,16 +260,17 @@ namespace OpenInfraPlatform {
 				// Conversion functions
 				//--------------------------------------------------------------------------------------------
 
-					/*! \brief  Converts \c IfcBSplineSurface to ...
-						\param	surface	\c IfcBSplineSurface entity to be interpreted.
-						\param	pos
-						\return	polylineData
-						\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
+					/*! \brief  Converts \c IfcBSplineSurface to a triangualted surface of \c PolyhedronData to be displayed.
+					\param[in]	surface		\c IfcBSplineSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
 					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(
+				void convertIfcBSplineSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -387,7 +373,8 @@ namespace OpenInfraPlatform {
 							}
 						}
 
-						return polylineData;
+						itemData->polylines.push_back(polylineData);
+						return;
 					} // end if IfcBSplineSurfaceWithKnots
 
 					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
@@ -396,14 +383,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
-					\param	surface	\c IfcCurveBoundedPlane entity to be interpreted.
-					\param	pos
-					\return	polylineData
-					\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
+				\param[in]	surface		\c IfcCurveBoundedPlane entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+				\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -454,14 +442,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
-				\param	surface	\c IfcCurveBoundedSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcCurveBoundedSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcCurveBoundedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -491,14 +480,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
-				\param	surface	\c IfcRectangularTrimmedSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcRectangularTrimmedSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcRectangularTrimmedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -526,14 +516,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
-				\param	surface	\c IfcCylindricalSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcCylindricalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcCylindricalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -550,14 +541,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcPlane to ...
-				\param	surface	\c IfcPlane entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcPlane entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcPlane is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -584,19 +576,20 @@ namespace OpenInfraPlatform {
 					polylineData->addPolylineIndex(2);
 					polylineData->addPolylineIndex(3);
 
-					return polylineData;
-
+					itemData->polylines.push_back( polylineData );
+					return;
 				}
 
 				/*! \brief  Converts \c IfcSphericalSurface to ...
-				\param	surface	\c IfcSphericalSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcSphericalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSphericalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -613,14 +606,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcToroidalSurface to ...
-				\param	surface	\c IfcToroidalSurface entity to be interpreted.
-				\param	pos
-				\param	polylineData
+				\param[in]	surface		\c IfcToroidalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcToroidalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData>  convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -638,14 +632,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfLinearExtrusion to ...
-				\param	surface	\c IfcSurfaceOfLinearExtrusion entity to be interpreted.
-				\param	pos
-				\param	polylineData
+				\param[in]	surface		\c IfcSurfaceOfLinearExtrusion entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSurfaceOfLinearExtrusion is a subtype of \c IfcSweptSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -684,14 +679,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
-				\param	surface	\c IfcSurfaceOfRevolution entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcSurfaceOfRevolution entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSurfaceOfRevolution is a subtype of \c IfcSweptSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
