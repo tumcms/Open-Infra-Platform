@@ -85,8 +85,8 @@ Meaning of columns:
 | `IfcGradientCurve`                    | :x:                  | `CurveConverter`           | -                     | -     |
 | `IfcHalfSpaceSolid`                   | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcIndexedPolyCurve`                 | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
-| `IfcIndexedPolygonalFace`             | :x:                  | -                          | -                     | -     |
-| `IfcIndexedPolygonalFaceWithVoids`    | :x:                  | `FaceConverter`            | :x:                   | -     |
+| `IfcIndexedPolygonalFace`             | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
+| `IfcIndexedPolygonalFaceWithVoids`    | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcIntersectionCurve`                | :x:                  | -                          | -                     | -     |
 | `IfcLightSourceAmbient`               | :x:                  | -                          | -                     | -     |
 | `IfcLightSourceDirectional`           | :x:                  | -                          | -                     | -     |
