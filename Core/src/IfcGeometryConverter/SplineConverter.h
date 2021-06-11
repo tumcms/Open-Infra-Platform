@@ -112,19 +112,7 @@ namespace OpenInfraPlatform
 							GeomUtils::appendPointsToCurve(curvePoints, loops);
 							// return loops;
 						}
-						// there is no further subtype, which is known now (ifc 4x3 RC 1)
-						else if (numControlPoints == order)
-						{
-							// if the number of control points is equal to the order ( = degree + 1 ), there are enough information 
-							// to calculate a Bezier Curve - but it isn't mentioned in the ifc documentation
-
-							// TODO: has to be implemented,
-							//       the knotArray has to be set in a specific way
-							//       with this special knotArray the function computeBSplineCurveWithKnots can be called for calculation
-
-							throw oip::UnhandledException(splineCurve);
-						}
-						// it's unknown what to do with this ifc entity
+						// it's unknown what to do with this unknown ifc entity
 						else
 						{
 							throw oip::UnhandledException(splineCurve);
