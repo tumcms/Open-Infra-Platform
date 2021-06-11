@@ -1112,8 +1112,8 @@ namespace OpenInfraPlatform {
 				*/
 				template <typename T> using EXPRESSContainer = OpenInfraPlatform::EarlyBinding::EXPRESSContainer<T, 0, LIST_MAXSIZE>;
 
-				/*! \brief Converts a two-dimensional array of \c IfcCartesianPoint-s to a array of \c carve points.
-				\param	points2D	The two-dimensional array of \c IfcCartesianPoint-s to be converted.
+				/*! \brief Converts a two-dimensional array of \c IfcCartesianPoint -s to a array of \c carve points.
+				\param	points2D	The two-dimensional array of \c IfcCartesianPoint -s to be converted.
 									In the \c ifc -documentation, it's called i. e. 'a list of lists of control points'.
 				\returns			The two-dimensional array of \c carve points.
 				*/

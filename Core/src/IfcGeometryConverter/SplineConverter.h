@@ -131,13 +131,13 @@ namespace OpenInfraPlatform
 						}
 					}
 
-					/*! \brief Converts \c IfcBSplineSurface subtypes to an array of surface-points.
+					/*! \brief Converts \c IfcBSplineSurfaceWithKnots subtypes to an array of surface-points.
 					 *
 					 * This convert function can handle
 					 * \c IfcBSplineSurfaceWithKnots and
 					 * \c IfcRationalBSplineSurfaceWithKnots.
 					 *
-					 * \param[in]	bsplineSurfaceWithKnots		\c IfcBSplineSurface entity to be converted.
+					 * \param[in]	bsplineSurfaceWithKnots		\c IfcBSplineSurfaceWithKnots entity to be converted.
 					 * \param[in]	pos							The relative location of the origin of the representation's coordinate system within the geometric context.
 					 * \param[in]	controlPoints				A vector of the B-Spline control points, must be obtain from the \c IfcBSplineSurface entity.
 					 *
@@ -236,9 +236,9 @@ namespace OpenInfraPlatform
 						return obtainKnotArray(bspline->Knots, bspline->KnotMultiplicities, numKnotsArray);
 					}
 
-					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
+					/*! \brief Loads the knot arrays from an \c IfcBSplineSurfaceWithKnots.
 						*
-						* \param[in]	bspline				The \c IfcBSplineCurveWithKnots entity from where the knots have to be loaded.
+						* \param[in]	bspline				The \c IfcBSplineSurfaceWithKnots entity from where the knots have to be loaded.
 						* \param[in]	numKnotsArrayU		The total number of knots in direction u, which define the basis functions ( = orderU + total number of control points U )
 						* \param[in]	numKnotsArrayV		The total number of knots in direction v, which define the basis functions ( = orderV + total number of control points V )
 						*
@@ -319,7 +319,7 @@ namespace OpenInfraPlatform
 
 					/*! \brief	Loads the weights of the control points from a surface (\c IfcRationalBSplineSurfaceWithKnots ).
 					 *
-					 * \param[in]	surface	The ifc-instance of type \c IfcRationalBSplineSurfaceWithKnots from where the weights should be loaded.
+					 * \param[in]	surface		The ifc-instance of type \c IfcRationalBSplineSurfaceWithKnots from where the weights should be loaded.
 					 *
 					 * \return	The array (vector of vectors) with the weights per control point.
 					 */
@@ -340,7 +340,7 @@ namespace OpenInfraPlatform
 						return weights;
 					}
 
-					/*! \brief Loads the weights of the control points from a vector of IfcReal (i.e. from an \c IfcRationalBSplineCurveWithKnots ).
+					/*! \brief Loads the weights of the control points from a vector of \c IfcReal (i.e. from an \c IfcRationalBSplineCurveWithKnots ).
 					 *
 					 * \param[in]	weightsIfc	The vector from which the weights have to be loaded.
 					 *

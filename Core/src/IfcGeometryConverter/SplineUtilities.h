@@ -137,13 +137,13 @@ namespace OpenInfraPlatform
 
 				/*! \brief Computes the surface points of the B-Spline surface.
 				 *
-				 * All information has to be loaded from an \c IfcBSplineSurfaceWithKnots entity before calling this function.
+				 * All information has to be loaded from an \c IfcBSplineSurfaceWithKnots entity or obtained somehow else before calling this function.
 				 *
 				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
-				 * \param[in]	knotArrayU			The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
-				 * \param[in]	knotArrayV			The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
-				 * \param[in]	controlPoints		The field of the B-Spline surface control points.
+				 * \param[in]	knotArrayU			The array / vector of knots in direction u, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	knotArrayV			The array / vector of knots in direction v, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	controlPoints		The field of the B-Spline-Surface control points.
 				 * \param[in]	numCurvePointsU		The number of curve points in direction u where the surface s(u,v) has to be evaluated.
 				 * \param[in]	numCurvePointsV		The number of curve points in direction v where the surface s(u,v) has to be evaluated.
 				 * \param[in]	accuracy			Accuracy which is technically needed in the calculation.
@@ -209,15 +209,15 @@ namespace OpenInfraPlatform
 					return curvePoints;
 				}
 				
-				/*! \brief Computes the surface points of the B-Spline surface.
+				/*! \brief Computes the surface points of the rational B-Spline surface.
 				 *
-				 * All information has to be loaded from an \c IfcBSplineSurfaceWithKnots entity before calling this function.
+				 * All information has to be loaded from an \c IfcRationalBSplineSurfaceWithKnots entity or obtained somehow else before calling this function.
 				 *
 				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
-				 * \param[in]	knotArrayU			The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
-				 * \param[in]	knotArrayV			The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
-				 * \param[in]	controlPoints		The field of the B-Spline surface control points.
+				 * \param[in]	knotArrayU			The array / vector of knots in direction u, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	knotArrayV			The array / vector of knots in direction v, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	controlPoints		The field of the B-Spline-Surface control points.
 				 * \param[in]	weights				The array with the weight values per control point, the function \c loadWeightsData gives this vector.
 				 * \param[in]	numCurvePointsU		The number of curve points in direction u where the surface s(u,v) has to be evaluated.
 				 * \param[in]	numCurvePointsV		The number of curve points in direction v where the surface s(u,v) has to be evaluated.
@@ -363,15 +363,15 @@ namespace OpenInfraPlatform
 
 				/*! \brief Computes the B-Spline-Surface point at the location (u,v).
 				 *
-				 * This function is for B-Spline-Surfaces from an IfcBSplineSurfaceWithKnots-entity.
+				 * This function is for B-Spline-Surfaces from an \c IfcBSplineSurfaceWithKnots entity.
 				 *
 				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	u					The parameter value u of the surface s(u,v).
 				 * \param[in]	v					The parameter value v of the surface s(u,v).
 				 * \param[in]	controlPoints		The array of the B-Spline control points.
-				 * \param[in]	knotsU				The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
-				 * \param[in]	knotsV				The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
+				 * \param[in]	knotsU				The array / vector of knots in direction u, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	knotsV				The array / vector of knots in direction v, the function \c loadKnotArraySurface gives this vector.
 				 *
 				 * \return		The B-Spline surface point at the position t.
 				 */
@@ -411,7 +411,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Computes the rational-B-Spline-Surface point at the location (u,v).
 				 *
-				 * This function is for rational-B-Spline-Surfaces from an IfcRationalBSplineSurfaceWithKnots-entity.
+				 * This function is for rational-B-Spline-Surfaces from an \c IfcRationalBSplineSurfaceWithKnots entity.
 				 *
 				 * \param[in]	orderU				In direction u, order of the B-Spline or rather the basis functions ( =degree+1 )
 				 * \param[in]	orderV				In direction v, order of the B-Spline or rather the basis functions ( =degree+1 )
@@ -419,8 +419,8 @@ namespace OpenInfraPlatform
 				 * \param[in]	v					The parameter value v of the surface s(u,v).
 				 * \param[in]	controlPoints		The array of the B-Spline control points.
 				 * \param[in]	weights				The array with the weight values per control point, the function \c loadWeightsData gives this vector.
-				 * \param[in]	knotsU				The array / vector of knots in direction u, the function \c loadKnotArray gives this vector.
-				 * \param[in]	knotsV				The array / vector of knots in direction v, the function \c loadKnotArray gives this vector.
+				 * \param[in]	knotsU				The array / vector of knots in direction u, the function \c loadKnotArraySurface gives this vector.
+				 * \param[in]	knotsV				The array / vector of knots in direction v, the function \c loadKnotArraySurface gives this vector.
 				 *
 				 * \return		The B-Spline surface point at the position t.
 				 */
