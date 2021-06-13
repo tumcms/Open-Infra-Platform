@@ -180,7 +180,7 @@ namespace OpenInfraPlatform
 					double & distToIntesection1, double & distToIntesection2);
 
 				/**********************************************************************************************/
-				/*! \brief Appedns vector of points (in 3D) to the curve.
+				/*! \brief Appends vector of points (in 3D) to the curve.
 				*
 				* \param[in] points_vec				A vector of points. 
 				*
@@ -193,7 +193,7 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3>>& target_vec);
 
 				/**********************************************************************************************/
-				/*! \brief Appedns vector of points (in 2D) to the curve.
+				/*! \brief Appends vector of points (in 2D) to the curve.
 				*
 				* \param[in] points_vec				A vector of points.
 				*
