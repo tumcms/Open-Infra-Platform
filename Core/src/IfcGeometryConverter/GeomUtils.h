@@ -185,6 +185,8 @@ namespace OpenInfraPlatform
 				* \param[in] points_vec				A vector of points. 
 				*
 				* \param[out] target_vec			A curve. 
+				* 
+				* \note Dupliation of points is checked in the function. All duplicated points are skipped. 
 				*/
 				static void appendPointsToCurve(
 					const std::vector<carve::geom::vector<3>>& points_vec,
@@ -196,6 +198,8 @@ namespace OpenInfraPlatform
 				* \param[in] points_vec				A vector of points.
 				*
 				* \param[out] target_vec			A curve.
+				*
+				* \note Dupliation of points is checked in the function. All duplicated points are skipped.
 				*/
 				static void appendPointsToCurve(
 					const std::vector<carve::geom::vector<2>>& points_vec,
@@ -212,13 +216,13 @@ namespace OpenInfraPlatform
 					const carve::math::Matrix& matrix_a);
 
 				/**********************************************************************************************/
-				/*! \brief Calculates a closest point on the line to the point. 
+				/*! \brief Calculates the closest point on the line given another point. 
 				*
 				* \param[in] point					Point outside the line. 
 				* \param[in] line_origin			Line origin point. 
 				* \param[in] line_direction			Direction of the line. 	
 				*
-				* \param[out] closest				Closest point on the line to the point.
+				* \param[out] closest				Closest point on the (infinite) line to the point.
 				*/
 				static void closestPointOnLine(const carve::geom::vector<3>& point,
 					const carve::geom::vector<3>& line_origin,
@@ -226,13 +230,13 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3>& closest);
 
 				/**********************************************************************************************/
-				/*! \brief Calculates a closest point on the line to the point.
+				/*! \brief Calculates the closest point on the line given another point.
 				*
 				* \param[in] point					Point outside the line.
 				* \param[in] line_origin			Line origin point.
 				* \param[in] line_direction			Direction of the line.
 				*
-				* \param[out] closest				Closest point on the line to the point.
+				* \param[out] closest				Closest point on the (infinite) line to the point.
 				*/
 				static void closestPointOnLine(const buw::Vector3f& point,
 					const buw::Vector3f& line_origin,
@@ -242,12 +246,15 @@ namespace OpenInfraPlatform
 				/**********************************************************************************************/
 				/*! \brief Verify if point is on the segment of the line. 
 				*
-				* \param[in] lambda					Lambda of the line. 
 				* \param[in] point					Point which should be verified. 
 				* \param[in] line_origin			Line origin point.
 				* \param[in] line_direction			Direction of the line.
 				*
+				* \param[out] lambda				The ratio of where the point lies on the line. 
+				*
 				* \return 							Returns true, if point is on the line. False otherwise.
+				*
+				* \note EXAMPLE: If lambda = 0, point is equal to line_origin. If lambda = 1, point is equal line_origin + line_direction.
 				*/
 				static bool isPointOnLineSegment(double& lambda,
 					const buw::Vector3f& point,
@@ -257,9 +264,9 @@ namespace OpenInfraPlatform
 				/**********************************************************************************************/
 				/*! \brief Extrude geometry. 
 				*
-				* \param[in] paths					List of several sets of points of the geometry.
-				* \param[in] dir					The direction, where geometry should be extruded.
-				* \param[in] closed					Boolean operator, which shows, if geometry is closed.
+				* \param[in] paths					List of several sets of points of the geometry (profiles to be extruded).
+				* \param[in] dir					The direction + length, where geometry should be extruded.
+				* \param[in] closed					Should the geometry be closed, i.e. include a face at the bottom and top as well or is only the mantel of interest?
 				*
 				* \param[out] poly_data				List of faces of the geometry.
 				*/
