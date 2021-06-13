@@ -113,10 +113,10 @@ namespace OpenInfraPlatform
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
 				*
-				* \param[in] initialPointSeg1		Initial point of the first intersecting segment.
-				* \param[in] terminalPointSeg1		Terminal point of the first intersecting segment.
-				* \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
-				* \param[in] terminalPointSeg2		Terminal point of the second intersecting segment, which describes the direction of the line.
+				* \param[in] initialPointSeg1		1st line segment, 1st point.
+				* \param[in] terminalPointSeg1		1st line segment, 2nd point.
+				* \param[in] initialPointSeg2		2nd line segment, 1st point.
+				* \param[in] terminalPointSeg2		2nd line segment, 2nd point.
 				* \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line.
 				*
 				* \return							Returns true, if lines are intersecting with each other. False otherwise.
@@ -130,10 +130,10 @@ namespace OpenInfraPlatform
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
 				*
-				* \param[in] initialPointSeg1		Initial point of the first intersecting segment, which describes the direction of the line.
-				* \param[in] terminalPointSeg1		Terminal point of the first intersecting segment, which describes the direction of the line.
-				* \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
-				* \param[in] terminalPointSeg2		Terminal point of the second iintersecting segment, which describes the direction of the line.
+				* \param[in] initialPointSeg1		1st line segment, 1st point.
+				* \param[in] terminalPointSeg1		1st line segment, 2nd point.
+				* \param[in] initialPointSeg2		2nd line segment, 1st point.
+				* \param[in] terminalPointSeg2		2nd line segment, 2nd point.
 				* \param[out] intersectionPoint		Coordinates of the intersection point between first line and second line.
 				*
 				* \return							Returns true, if lines are intersecting with each other. False otherwise.
@@ -147,10 +147,10 @@ namespace OpenInfraPlatform
 				/**********************************************************************************************/
 				/*! \brief Calculates coordinates of the intersection point.
 				*
-				* \param[in] initialPointSeg1		Initial point of the first intersecting line.
-				* \param[in] terminalPointSeg1		Terminal point of the first intersecting line.
-				* \param[in] initialPointSeg2		Initial point of the second intersecting line.
-				* \param[in] terminalPointSeg2		Terminal point of the second intersecting line.
+				* \param[in] initialPointSeg1		1st line segment, 1st point.
+				* \param[in] terminalPointSeg1		1st line segment, 2nd point.
+				* \param[in] initialPointSeg2		2nd line segment, 1st point.
+				* \param[in] terminalPointSeg2		2nd line segment, 2nd point.
 				* \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line segment.
 				*
 				* \return							Returns true, if lines are intersecting with each other. False otherwise.
@@ -160,6 +160,24 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<2>& initialPointSeg2,
 					const carve::geom::vector<2>& terminalPointSeg2,
 					carve::geom::vector<2> & intersectionPoint);
+
+				/**********************************************************************************************/
+				/*! \brief Calculates distances between start points of the segment and their intersection.
+				* \param[in] initialPointSeg1		1st line segment, 1st point.
+				* \param[in] terminalPointSeg1		1st line segment, 2nd point.
+				* \param[in] initialPointSeg2		2nd line segment, 1st point.
+				* \param[in] terminalPointSeg2		2nd line segment, 2nd point.
+				*
+				* \param[out] distToIntesection1	Distance from initialPointSeg1 to the segment intresection, which is calculated as section of the first segment.
+				* \param[out] distToIntesection2	Distance from initialPointSeg2 to the segment intresection, which is calculated as section of the second segment.
+				*
+				* \return							Returns true, if lines are intersecting with each other. False otherwise.
+				*/
+				static bool GeomUtils::LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
+					const carve::geom::vector<2>& terminalPointSeg1,
+					const carve::geom::vector<2>& initialPointSeg2,
+					const carve::geom::vector<2>& terminalPointSeg2,
+					double & distToIntesection1, double & distToIntesection2);
 
 				/**********************************************************************************************/
 				/*! \brief Appedns vector of points (in 3D) to the curve.
