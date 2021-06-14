@@ -4,6 +4,8 @@ Guide on how to compile the project TUM OpenInfraPlatform.
 
 *NOTE:* This document is only a snapshot of the current state (November 2020) and may become obsolete in the future.
 
+*NOTE 2:* Although the system is set up to function cross-platform (CMake), we are currently only developing actively for Windows platform. No guarantees for Linux (although it should theoretically function).
+
 ## Content 
 
 1. [Prerequisites](#Prerequisites)

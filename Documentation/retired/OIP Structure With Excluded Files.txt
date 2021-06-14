@@ -1,0 +1,306 @@
+//			OPENINFRAPLATFORM STRUCTURE (Open with Notepad++ and import "OIP Structure Language" for better overview)
+
+[//		|- CMakePredefinedTargets								(No exclusions)
+			|- ALL_BUILD
+			|- INSTALL
+			|- PACKAGE
+			|- RUN_TESTS
+]			|- ZERO_CHECK
+[//		|- Copy													(No exclusions)
+			|- BlueFrameworkCopyBinaries
+			|- CloudCompareCopyBinaries
+			|- CopyOpenInfraPlatformUIResources
+			|- libLASCopyBinaries
+			|- OklabiCopyBinaries
+			|- QSimpleUpdaterCopyBinaries
+			|- Qt5CopyBinaries
+]			|- ZLIBCopyBinaries
+[//		|- ThirdParty											(No exclusions)
+			|- carve
+				|- carve
+				|- carve_filesformats
+				|- carve_misc
+				|- close_manifold
+				|- convert
+				|- cutgraph
+				|- extrude
+				|- face_merge
+				|- gloop_image
+				|- gloop_math
+				|- gloop_model
+				|- intersect
+				|- slice
+				|- test_aabb
+				|- test_carve_polyhedrons_2
+				|- test_eigen
+				|- test_geom
+				|- test_rescale
+				|- test_spacetree
+				|- tetrahedron
+				|- triangulate
+			|- QSimpleUpdater
+]			|- QtXlsxWriter
+[//		|- OpenInfraPlatform
+[//			|- EarlyBinding										(No exclusions)
+				|- OpenInfraPlatform.IFC2X3
+]				|- OpenInfraPlatform.IFC4X1
+[//			|- ExpressBindingGenerator							(No exclusions; New build only necessary once or after modification of the generators)
+				|- Commands
+					|- Commands.GenerateEarlyBinding			(Build third)
+					|- Commands.UpdateBoostMPL					(Build first)
+[				|- OpenInfraPlatform.ExpressBindingGenerator	(Build second)
+					|- CMake Rules
+					|- ExpressBindingGenerator
+						|- Generator
+						|- Meta
+						|- Parser
+						|- main.cpp
+						|- ...
+					|- Header Files
+]]				|- Source Files
+[//			|- OpenInfraPlatform.Core
+				|- Core
+[					|- DataManagement
+[						|- (X)Command
+							|- (X)CommandCreateClothoid.*
+							|- (X)CreateAccidentReport.*
+							|- (X)CreateRandomTerrain.*
+							|- (X)DeleteAlignment.*
+							|- (X)DeleteSurface.*
+							|- (X)ImportXYZ.*
+]							|- (X)SelectAlignment.*
+[						|- (X)Export
+							|- (X)Export.*
+							|- (X)ExportIfc4x1.*
+							|- (X)ExportIfc4x1ExcelReport.*
+							|- (X)ExportIfcAlignment1x0.*
+							|- (X)ExportIfcOWL4x1.*
+							|- (X)ExportIfcRoad.*
+							|- (X)ExportLandInfra.*
+							|- (X)ExportLandXML.*
+							|- (X)ExportObj.*
+							|- (X)ExportOkstra.*
+							|- (X)ExportOkstraOWL.*
+							|- (X)ExportSVG.*
+]							|- (X)ExportSVGEAdvanced.*
+[						|- General
+							|- AsyncJob.*
+							|- Data.*
+							|- namespace.h
+]							|- PickIdGenerator.*
+[						|- (X)Import
+							|- (X)Import.*
+							|- (X)ImportIfc4x1.*
+							|- (X)HeightmapImport.*
+							|- (X)ImportD40.*
+							|- (X)ImportIfcAlignment1x0.*
+							|- (X)ImportIfcRoad.*
+							|- (X)ImportLandInfra.*
+							|- (X)ImportLandXml.*
+							|- (X)ImportOkstra.*
+							|- (X)ImportOSM.*
+							|- (X)ImportRoadXML.*
+							|- (X)LandXMLBaseTypes.*
+							|- (X)MeshImport.*
+							|- (X)OutputStreamLandXMLDataBuilder.*
+]]							|- (X)RandomTerrainImport.*							
+[					|- IfcGeometryConverter
+						|- CarveHeaders.h
+						|- ConverterBuw.h
+						|- CurveConverter.h
+						|- FaceConverter.h
+						|- GeometryInputData.*
+						|- GeometrySettings.*
+						|- GeomUtils.*
+						|- IfcImporter.h
+						|- IfcPeekStepReader.*
+						|- PlacementConverter.h
+						|- ProfileCache.h
+						|- ProfileConverter.h
+						|- RecursiveCallException.h
+						|- RepresentationConverter.h
+						|- SolidModelConverter.h
+						|- SplineConverter.h
+						|- StylesConverter.h
+						|- UnhandledRepresentationException.h
+]						|- UnitConverter.*
+[					|- (X)UnitTests
+						|- (X)Infrastructure
+							|- (X)HorizontalAlignmentElement2DArbitraryCurve
+							|- (X)HorizontalAlignmentElement2DArc
+							|- (X)HorizontalAlignmentElement2DClothoid
+							|- (X)HorizontalAlignmentElement2DLine
+							|- (X)IfcOWLExport
+							|- (X)LandInfraExportImport
+							|- (X)OkstraExportImport
+							|- (X)TrafficSign
+]						|- (X)main.cpp
+]				|- Source Files		
+[//			|- OpenInfraPlatform.UI
+				|- Source Files
+[				|- UserInterface
+[					|- ColorPicker
+]						|- (...)
+[					|- (X)Data
+]						|- (X)(...)
+[					|- Dialogues
+						|- LicenseAndCopyrightInformation.*
+						|- MainWindow.*
+						|- (X)AddGeoreferenceDialog.*
+						|- (X)CodeEditorWindow.*
+						|- (X)CodeTextEdit.*
+						|- (X)CreateAccidentReportDialog.*
+						|- (X)ExportExcelDialog.*
+						|- (X)ExportIfc4x1Dialog.*
+						|- (X)ExportIfcAlignment1x0Dialog.*
+						|- (X)ExportIfcZipDialog.*
+						|- (X)GenerateTerrainDialog.*
+						|- (X)HelpBrowser.*
+						|- (X)highlighter.*
+						|- (X)Ifc4x1TreeItem.*
+						|- (X)Ifc4x1TreeModel.*
+						|- (X)OpenInfraMap.*
+						|- (X)OSMImportDialog.*
+						|- (X)PrecisionTest.h
+						|- PreferencesDialog.*
+						|- resource.h
+						|- (X)ShowIFCtree.*
+						|- (X)SimpleTreeItem.*
+						|- (X)SimpleTreeModel.*
+						|- (X)VectorTableModel.*
+]						|- (X)XYZImportDialog.*
+[					|- Forms
+						|- LicenseAndCopyrightInformation.ui
+						|- MainWindow.ui
+						|- PreferencesDialog.ui
+						|- (X)AddGeoreferenceDialog.ui
+						|- (X)addgeoreferencingdialogue.ui
+						|- (X)CodeEditorWindow.ui
+						|- (X)CreateAccidentReport.ui
+						|- (X)CreateArcClothoidArc.ui
+						|- (X)CreateArcClothoidArcMeth2.ui
+						|- (X)CreateArcClothoidClothoidArc.ui
+						|- (X)CreateArcClothoidClothoidArcMeth2.ui
+						|- (X)CreateClothoid.ui
+						|- (X)CreateClothoid2.ui
+						|- (X)CreateLineArcArcArcLine.ui
+						|- (X)CreateLineArcArcLine.ui
+						|- (X)CreateLineClothoidArcClothoidLine.ui
+						|- (X)CreateLineClothoidClothoidLine.ui
+						|- (X)CurvatureWindow.ui
+						|- (X)ExportExcel.ui
+						|- (X)ExportIfc4x1Dialog.ui
+						|- (X)ExportIfcAlignmentDialog.ui
+						|- (X)ExportIfcZipDialog.ui
+						|- (X)GenerateTerrain.ui
+						|- (X)georeferencingdialog.ui
+						|- (X)importifczipdialog.ui
+						|- (X)OSMImportDialog.ui
+						|- (X)showifctree.ui
+						|- (X)VerticalAlignentWindow.ui
+]						|- (X)XYZImportDialog.ui
+[					|- QCustomPlot
+]						|- (...)
+[					|- (X)Resources
+]						|- (X)(...)
+[					|- Shader
+[						|- D3D
+							|- AlignmentShader.hlsl
+							|- BoxShader.hlsl
+							|- brdf.hlsl.inc
+							|- CoordinateSystem.hlsl
+							|- DEMShader.hlsl
+							|- GradientQuad.hlsl
+							|- IfcGeometryEffect.hlsl
+							|- Map.hlsl
+							|- OctreeShader.hlsl
+							|- PointCloudShader.hlsl
+							|- SectionedSolidShader.hlsl
+							|- SkyboxEffect.hlsl
+							|- VertexCacheLine.hlsl
+							|- ViewCubeEffect.hlsl
+							|- (X)BillboardShader.hlsl
+]							|- (X)TrafficSignShader.hlsl
+						|- AlignmentEffect.be
+						|- BoundingBoxEffect.be
+						|- BoxEffect.be
+						|- DEMEffect.be
+						|- GradientClearEffect.be
+						|- IfcGeometryEffect.be
+						|- OctreeEffect.be
+						|- PointCloudEffect.be
+						|- SectionedSolidEffect.be
+						|- UIElementsEffect.be
+						|- ViewCubeEffect.be
+						|- (X)BillboardEffect.be
+						|- (X)SkyboxEffect.be
+]						|- (X)TrafficSignEffect.be
+[					|- (X)Tools
+						|- (X)CreateArcClothoidArcDialog.*
+						|- (X)CreateArcClothoidArcMeth2Dialog.*
+						|- (X)CreateArcClothoidClothoidArcDialog.*
+						|- (X)CreateArcClothoidClothoidArcMeth2Dialog.*
+						|- (X)CreateClothoidDialog.*
+						|- (X)CreateClothoidDialog2.*
+						|- (X)CreateLineArcArcArcLineDialog.*
+						|- (X)CreateLineArcArcLineDialog.*
+						|- (X)CreateLineClothoidArcClothoidLineDialog.*
+						|- (X)LineClothoidClothoidLineDialog.*
+]						|- (X)functions.*
+[					|- (X)UnitTesting
+						|- (X)Benchmark.*
+]						|- (X)ImageTester.*
+[					|- (X)View2DWindow
+						|- (X)Alignment2DScene.*
+						|- (X)CurvatureWindow.*
+]						|- (X)VerticalAlignmentWindow.*
+[					|- ViewPanel
+[						|- Effects
+							|- IfcGeometryEffect.*
+							|- PointCloudEffect.*
+							|- UIElementsEffect.*
+							|- (X)AlignmentEffect.*
+							|- (X)BillboardEffect.*
+							|- (X)BoundingBoxEffect.*
+							|- (X)BoxEffect.*
+							|- (X)DEMEffect.*
+							|- (X)GirderEffect.*
+							|- (X)GradientClearEffect.*
+							|- (X)SectionedSolidEffect.*
+							|- (X)SkyboxEffect.*
+							|- (X)SlabFieldEffect.*
+]							|- (X)TrafficSignEffect.*
+						|- CoordinateSystem.*
+						|- eView.h
+						|- RenderResources.*
+						|- Tool.*
+						|- View.*
+						|- Viewport.*
+]]]						|- Viewport_CrossSection.cpp	
+							
+[//			|- (X)OpenInfraPlatform.PointCloudProcessing (MODULE)
+				|- PointCloudProcessing
+					|- Octree.*
+					|- PointCloud.*
+					|- PointCloudProcessing.*
+					|- PointCloudSection.*
+				|- Source Files
+]]					|- mocs_compilation.cpp
+
+
+
+
+
+
+
+
+
+
+
+
+// (...) multiple files not listed
+// (X) currently excluded
+// .* means .cpp and .h
+// // bold
+// [] collapsible
+// {} temporarily deactivated
