@@ -46,6 +46,13 @@ using namespace OpenInfraPlatform::Core::IfcGeometryConverter;
 
 /**********************************************************************************************/
 
+bool GeomUtils::areEqual(const double first, const double second, const double precision) 
+{
+	return abs(first - second) < precision;
+}
+
+/**********************************************************************************************/
+
 carve::geom::vector<3> GeomUtils::computePolygonCentroid( 
 										const std::vector<carve::geom::vector<3> >& polygon )
 {
@@ -333,6 +340,8 @@ void GeomUtils::extrude(
 	}
 }
 
+/**********************************************************************************************/
+
 void GeomUtils::incorporateVoids(const std::vector<std::vector<carve::geom2d::P2>>& face_loops_input,
 	std::vector<carve::geom2d::P2>& merged_path,
 	std::vector<carve::triangulate::tri_idx>& triangulated, 
@@ -385,6 +394,8 @@ void GeomUtils::incorporateVoids(const std::vector<std::vector<carve::geom2d::P2
 		throw oip::InconsistentGeometryException("Error in function GeomUtils::incorporateVoids");
 	}
 }
+
+/**********************************************************************************************/
 
 std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 	const std::vector<std::vector<carve::geom::vector<2>>> & face_loops_input, carve::geom::vector<3>& normal_first_loop)
@@ -448,12 +459,7 @@ std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
 }
 
 /**********************************************************************************************/
-/*! \brief Computes an inverse of the matrix.
-*
-* \param[in] matrix_a				An initial invertible matrix.
-*
-* \return							Inverted matrix
-*/
+
 carve::math::Matrix GeomUtils::computeInverse(const carve::math::Matrix& matrix_a)
 {
 	int i, j;	// col, row
@@ -659,16 +665,8 @@ bool GeomUtils::isPointOnLineSegment( double& target_lambda,
 }
 
 /**********************************************************************************************/
-/*! \brief Calculates distances between start points of the segment and their intersection. 
-* \param[in] initialPointSeg1		Initial point of the first intersecting segment.			
-* \param[in] terminalPointSeg1		Terminal point of the first intersecting segment.
-* \param[in] initialPointSeg2		Initial point of the second intersecting segment.			
-* \param[in] terminalPointSeg2		Terminal point of the second intersecting segment.
-* \param[out] distToIntesection1	Distance from initialPointSeg1 to the segment intresection, which is calculated as section of the first segment. 
-* \param[out] distToIntesection2	Distance from initialPointSeg2 to the segment intresection, which is calculated as section of the second segment. 
-* \return							Returns true, if lines are intersecting with each other. False otherwise.
-*/
-bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
+
+bool GeomUtils::LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
 									const carve::geom::vector<2>& terminalPointSeg1,
 									const carve::geom::vector<2>& initialPointSeg2,
 									const carve::geom::vector<2>& terminalPointSeg2, 
@@ -694,14 +692,7 @@ bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1
 }
 
 /**********************************************************************************************/
-/*! \brief Calculates coordinates of the intersection point.
-* \param[in] initialPointSeg1		Initial point of the first intersecting segment.
-* \param[in] terminalPointSeg1		Terminal point of the first intersecting segment.
-* \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
-* \param[in] terminalPointSeg2		Terminal point of the second intersecting segment, which describes the direction of the line.
-* \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line.
-* \return							Returns true, if lines are intersecting with each other. False otherwise.
-*/
+
 bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 												const carve::geom::vector<2>& terminalPointSeg1, 
 												const carve::geom::vector<2>& initialPointSeg2,
@@ -721,14 +712,7 @@ bool GeomUtils::LineSegmentToLineIntersection(const carve::geom::vector<2>& init
 }
 
 /**********************************************************************************************/
-/*! \brief Calculates coordinates of the intersection point.
-* \param[in] initialPointSeg1		Initial point of the first intersecting segment, which describes the direction of the line.
-* \param[in] terminalPointSeg1		Terminal point of the first intersecting segment, which describes the direction of the line.
-* \param[in] initialPointSeg2		Initial point of the second intersecting segment, which describes the direction of the line.
-* \param[in] terminalPointSeg2		Terminal point of the second iintersecting segment, which describes the direction of the line.
-* \param[out] intersectionPoint		Coordinates of the intersection point between first line and second line.
-* \return							Returns true, if lines are intersecting with each other. False otherwise.
-*/
+
 bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2>& initialPointSeg1,
 														const carve::geom::vector<2>& terminalPointSeg1,
 														const carve::geom::vector<2>& initialPointSeg2,
@@ -749,15 +733,9 @@ bool GeomUtils::LineSegmentToLineSegmentIntersection(const carve::geom::vector<2
 	}
 	return false;
 }
+
 /**********************************************************************************************/
-/*! \brief Calculates coordinates of the intersection point.
-* \param[in] initialPointSeg1		Initial point of the first intersecting line.
-* \param[in] terminalPointSeg1		Terminal point of the first intersecting line.
-* \param[in] initialPointSeg2		Initial point of the second intersecting line.
-* \param[in] terminalPointSeg2		Terminal point of the second intersecting line.
-* \param[out] intersectionPoint		Coordinates of the intersection point between first line segment and second line segment.
-* \return							Returns true, if lines are intersecting with each other. False otherwise.
-*/
+
 bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 										const carve::geom::vector<2>& terminalPointSeg1,
 										const carve::geom::vector<2>& initialPointSeg2,
@@ -1026,13 +1004,7 @@ bool GeomUtils::bisectingPlane(const carve::geom::vector<3>& v1,
 }
 
 /**********************************************************************************************/
-/*! \brief Calculates a matrix of the plane.
-* \param[in] planeNormal			A normal vector of the plane. 
-* \param[in] planePosition			Global coordinates of the point positioned on the plane. 
-* \param[in] localZ					A direction vector on the plane. 
-*
-* \return							Returns calculated matrix of the plane.
-*/
+
 carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>& planeNormal,
 		const carve::geom::vector<3>& planePosition, 
 		const carve::geom::vector<3>& localZ)
@@ -1067,14 +1039,7 @@ carve::math::Matrix GeomUtils::convertPlane2Matrix( const carve::geom::vector<3>
 }
 
 /**********************************************************************************************/
-/*! \brief Applies a position to the point.
-*
-* \param[in] listOfPoint				A list of points to be converted.
-* \param[in] positionMatrix			A position matrix, which should be applied to the points.
-* \param[in] ammountOfPoints			Number of points.
-*
-* \return[out]							List of points with applied position.
-*/
+
 void  GeomUtils::applyPositionToVertex(
 	const std::vector<carve::geom::vector<3>>& listOfPoints,
 	const carve::math::Matrix & positionMatrix,
@@ -1090,14 +1055,7 @@ void  GeomUtils::applyPositionToVertex(
 }
 
 /**********************************************************************************************/
-/*! \brief Applies a position to the point.
-*
-* \param[in] listOfPoint				A list of points to be converted.
-* \param[in] positionMatrix			A position matrix, which should be applied to the points.
-* \param[in] ammountOfPoints			Number of points.
-*
-* \return[out]							List of points with applied position.
-*/
+
 std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::vector<carve::geom::vector<3>>& listOfVectors3D) 
 {
 	std::vector<carve::geom::vector<2>> listOfVectors2D;
@@ -1105,8 +1063,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	//Check if x Coordniates are empty.
 	for (auto vector : listOfVectors3D)
 	{
-		if (! vector.x == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.x, 0.))
+		if (GeomUtils::areEqual(vector.x, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove x Coordinate.
@@ -1122,8 +1079,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	notEmptyCoord = false;
 	for (auto vector : listOfVectors3D)
 	{
-		if (!vector.y == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.y, 0.))
+		if (GeomUtils::areEqual(vector.y, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove y Coordinate.
@@ -1139,8 +1095,7 @@ std::vector<carve::geom::vector<2>> GeomUtils::removeEmptyCoordinate(const std::
 	notEmptyCoord = false;
 	for (auto vector : listOfVectors3D)
 	{
-		if (!vector.z == 0.)
-		//if (!this->GeomSettings()->areEqual(vector.z, 0.))
+		if (GeomUtils::areEqual(vector.z, 0., carve::EPSILON))
 			notEmptyCoord = true;
 	}
 	//Remove z Coordinate.
