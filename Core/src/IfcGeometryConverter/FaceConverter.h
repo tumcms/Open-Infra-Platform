@@ -1125,7 +1125,7 @@ namespace OpenInfraPlatform {
 					loop.reserve(points.size());
 
 					// convert each row of points, save in target vector
-					for (auto& itPoints : points)
+					for (const auto& itPoints : points)
 						loop.push_back(curveConverter->convertIfcCartesianPointVector(itPoints));
 
 					// return the target vector
