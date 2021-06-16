@@ -42,9 +42,9 @@
 #include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
 #endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-#include "EarlyBinding\IFC4X3_RC3\src\EMTIFC4X3_RC3EntityTypes.h"
-#include "EarlyBinding\IFC4X3_RC3\src\IFC4X3_RC3Entities.h"
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+#include "EarlyBinding\IFC4X3_RC4\src\EMTIFC4X3_RC4EntityTypes.h"
+#include "EarlyBinding\IFC4X3_RC4\src\IFC4X3_RC4Entities.h"
 #endif
 
 #include "namespace.h"
