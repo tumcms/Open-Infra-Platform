@@ -886,8 +886,8 @@ namespace OpenInfraPlatform
 				curveConverter->convertIfcCurve(
 					fixedRefSweptAreaSolid->Directrix, basis_curve_points, segment_start_points);
 
-				double start_param = fixedRefSweptAreaSolid->StartParam.value_or(0.0);	// TO DO: optional
-				double end_param = fixedRefSweptAreaSolid->EndParam.value_or(1.0);		// TO DO: optional
+				//double start_param = fixedRefSweptAreaSolid->StartParam.value_or(0.0);	// TO DO: optional
+				//double end_param = fixedRefSweptAreaSolid->EndParam.value_or(1.0);		// TO DO: optional
 
 				carve::geom::vector<3> fixedRef = placementConverter->convertIfcDirection(
 					fixedRefSweptAreaSolid->FixedReference);

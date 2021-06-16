@@ -76,9 +76,9 @@ using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 #include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
 #endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-#include <EarlyBinding/IFC4X3_RC3/src/reader/IFC4X3_RC3Reader.h>
-#include <EarlyBinding/IFC4X3_RC3/src/IFC4X3_RC3.h>
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+#include <EarlyBinding/IFC4X3_RC4/src/reader/IFC4X3_RC4Reader.h>
+#include <EarlyBinding/IFC4X3_RC4/src/IFC4X3_RC4.h>
 #endif
 
 
@@ -212,13 +212,13 @@ int main(int argc, char **argv) {
 			throw std::exception("IFC4X3_RC1 not compiled");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
-		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC3) {
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC4) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
 			renderer =
-				setUpRenderer<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filepath);
-#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-			throw std::exception("IFC4X3_RC3 not compiled");
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+				setUpRenderer<emt::IFC4X3_RC4EntityTypes, OpenInfraPlatform::IFC4X3_RC4::IFC4X3_RC4Reader>(filepath);
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			throw std::exception("IFC4X3_RC4 not compiled");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC4
 		}
 		else
 		{
