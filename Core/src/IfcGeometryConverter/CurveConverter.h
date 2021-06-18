@@ -915,7 +915,7 @@ namespace OpenInfraPlatform
 					// IfcBlossCurve SUBTYPE OF IfcSpiral
 					if (spiral.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
 					{
-						return convertIfcSpiral(spiral.as<typename IfcEntityTypesT::IfcBlossCurve>(),
+						return convertIfcBlossCurve(spiral.as<typename IfcEntityTypesT::IfcBlossCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcBlossCurve
 
@@ -987,7 +987,7 @@ namespace OpenInfraPlatform
 					
 					// Part 1: Get information from IfcClothoid.
 					//1.1 Clothoid position
-					carve::math::Matrix clothoidPositionMatrix = carve::matrix::IDENT();
+					carve::math::Matrix clothoidPositionMatrix = carve::math::Matrix::IDENT();
 					if (clothoid->Position)
 					{
 						clothoidPositionMatrix = placementConverter->convertIfcAxis2Placement(clothoid->Position.get());
@@ -1001,7 +1001,7 @@ namespace OpenInfraPlatform
 					// Get parameter of the clothoid for trimming end.
 					carve::geom::vector<3> endPoint = getPointOnCurve<typename IfcEntityTypesT::IfcClothoid>(clothoid, trim2Vec, trimmingPreference);
 
-					//get L, A, R 
+					// get L, A, R 
 					// A - Clothoid constant.
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 
@@ -1009,37 +1009,40 @@ namespace OpenInfraPlatform
 					//double L = sqrt(pow(endPoint.x- firstPoint.x)+pow(endPoint.y - firstPoint.y)+ pow(endPoint.z - firstPoint.z));
 					double L = carve::geom::distance(firstPoint, endPoint);
 
-					/*// Get number of tesselated segments (note default is 100, write new function!)
+					// Get number of tesselated segments (note default is 100, write new function!)
 					int numSegments = 100;
-					// Create a tesselated vector
-					std::vector < double > ti(numSegments,0);
-					double pointInterval_ti = (endPoint.x - firstPoint.x) / (numSegments - 1);
-					for (int i = 1; i < ti.size(); ++i)
+					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
+					double l = L / A * sqrt(M_PI);
+					/*
+					// Create a tessalated vector by clothoid length 
+					std::vector<carve::geom::vector<3>> ti;
+					ti[0] = 0;
+					// Calculate intervals for tessaleted vector
+					double pointInterval_ti = (l - 0) / (numSegments - 1);
+
+					//Add points to new tesselated vector
+					for (int i = 1; i < numSegments; ++i)
 					{
 						ti.push_back(ti[i - 1] + pointInterval_ti);
 					}
-					
-					//Calculate clothoid points. Fresnel equastion.
+					*/
+					// Calculate clothoid points. Parametrisation
 
 					std::vector<carve::geom::vector<3>> clothoidPoints;
 					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
 					
 					for (int i = 1; i < numSegments; ++i) 
 					{
-						getPointonCurve();
-						clothoidPoints.push_back(carve::geom::vector<3>(
-							carve::geom::VECTOR(
-								clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
-									clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
-										0)));
+						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
+					
 					}
-					*/
-					// Add intagral constant
+					
+					// Add integral constant (position)
 
-					std::vector<carve::geom::vector<3> > newClothoidPoints;
-					for (int i = 1; i < newClothoidPoints.size; ++i)
+					std::vector<carve::geom::vector<3>> newClothoidPoints;
+					for (int i = 0; i < clothoidPoints.size; ++i)
 					{
-						carve::geom::vector<2>&  point = clothoid_points.at(i);
+						carve::geom::vector<3>&  point = clothoidPoints.at(i);
 						carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
 						point3d = clothoidPositionMatrix * point3d;
 						newClothoidPoints.push_back(point3d);
