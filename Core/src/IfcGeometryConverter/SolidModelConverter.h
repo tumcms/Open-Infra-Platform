@@ -253,13 +253,32 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(manifoldSolidBrep);
 			}
 
+			/*! \brief Converts \c IfcAdvancedBrep to meshes.
+			 *
+			 * \param[in] advancedBrep			The \c IfcAdvancedBrep to be converted.
+			 * \param[in] pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData				A pointer to be filled with the relevant data.
+			 */
 			void convertIfcAdvancedBrep(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedBrep> &advancedBrep,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
-				throw oip::UnhandledException(advancedBrep);
+				if (advancedBrep.expired())
+					throw oip::ReferenceExpiredException(advancedBrep);
+
+				// get attribute 1
+				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell>& outerShell = advancedBrep->Outer;
+				
+				// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
+				if (advancedBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>()) {
+					throw oip::UnhandledException(advancedBrep);
+				}
+				
+				// get itemData from IfcClosedShell
+				convertIfcClosedShell(outerShell, pos, itemData);
+				return;
 			}
 
 			void convertIfcFacetedBrep(
