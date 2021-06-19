@@ -747,10 +747,8 @@ namespace OpenInfraPlatform {
 					std::map<std::string, uint32_t> polygonIndices;
 
 					// Loop through all faces
-					for (auto it = faces.cbegin(); it != faces.cend(); ++it) 
+					for (const auto& face : faces) 
 					{ //TODO Stefan
-						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
-
 						if (face.expired()) {
 							throw oip::ReferenceExpiredException(face);
 						}
