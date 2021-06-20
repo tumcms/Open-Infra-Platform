@@ -748,15 +748,13 @@ namespace OpenInfraPlatform {
 
 					// Loop through all faces
 					for (const auto& face : faces) 
-					{ //TODO Stefan
+					{
 						if (face.expired()) {
 							throw oip::ReferenceExpiredException(face);
 						}
 
-						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
-						{
-							throw oip::InconsistentGeometryException(face, "IFC Face conversion failed with these faces");
-						}
+						// get mesh data into polygon and polygonIndices
+						convertIfcFace(face, pos, polygon, polygonIndices);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
@@ -768,11 +766,10 @@ namespace OpenInfraPlatform {
 				\param	pos
 				\param	polygon
 				\param	polygonIndices
-				\return conversionFailed true/false
 				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
 				*/
 
-				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
 					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
@@ -780,8 +777,6 @@ namespace OpenInfraPlatform {
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
 					}
-					// Indicates if conversion has failed
-					bool conversionFailed = false;
 
 					// Id of face in step file
 					const uint32_t faceID = face->getId();
@@ -940,7 +935,7 @@ namespace OpenInfraPlatform {
 					}
 
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
-					return !conversionFailed;
+					return;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
