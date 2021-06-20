@@ -812,12 +812,9 @@ namespace OpenInfraPlatform {
 							{
 								pointID++;
 
-								// apply global transformation to vertex
-								const carve::geom::vector<3> v = vertex3D;
-
 								// set string id and search for existing vertex in polygon
 								std::stringstream vertexString;
-								vertexString << v.x << " " << v.y << " " << v.z;
+								vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
 								auto itFound = polygonIndices.find(vertexString.str());
 
 								uint32_t index = 0;
@@ -827,7 +824,7 @@ namespace OpenInfraPlatform {
 								}
 								else 
 								{
-									index = polygon->addVertex(v);
+									index = polygon->addVertex(vertex3D);
 									polygonIndices[vertexString.str()] = index;
 								}
 
