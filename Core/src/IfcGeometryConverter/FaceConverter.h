@@ -779,13 +779,15 @@ namespace OpenInfraPlatform {
 					}
 
 					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D;
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
 					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
 
 					// Save polygon indices of merged vertices
 					std::map<uint32_t, uint32_t> mergedIndices;
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds;
-					modBounds.reserve(2);
+
+					// get list of IfcFaceBound-entities with IfcFaceOuterBound at index 0
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds = convertIfcFaceBoundList(face->Bounds);
+
 					bool faceLoopReversed = false;
 
 					// Loop through all boundary definitions
@@ -793,20 +795,6 @@ namespace OpenInfraPlatform {
 
 					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
-
-					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
-					for (const auto& bound : face->Bounds)
-					{
-						if (bound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
-						{
-							modBounds.insert(modBounds.begin(), bound);
-						}
-						else 
-						{
-							modBounds.push_back(bound);
-						}
-					}
-					modBounds.shrink_to_fit();
 
 					for (const auto& bound : modBounds) 
 					{
@@ -933,6 +921,30 @@ namespace OpenInfraPlatform {
 
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
 					return;
+				}
+
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> convertIfcFaceBoundList(
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& faceBounds) const noexcept(true)
+				{
+					// declare target vector
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds;
+					modBounds.reserve(2);
+					
+					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
+					for (const auto& bound : faceBounds)
+					{
+						if (bound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
+						{
+							modBounds.insert(modBounds.begin(), bound);
+						}
+						else
+						{
+							modBounds.push_back(bound);
+						}
+					}
+					modBounds.shrink_to_fit();
+
+					return modBounds;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
