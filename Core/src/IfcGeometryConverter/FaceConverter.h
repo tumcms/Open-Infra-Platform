@@ -786,7 +786,8 @@ namespace OpenInfraPlatform {
 					std::map<uint32_t, uint32_t> mergedIndices;
 
 					// get list of IfcFaceBound-entities with IfcFaceOuterBound at index 0
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds = convertIfcFaceBoundList(face->Bounds);
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds = face->Bounds;
+					convertIfcFaceBoundList(modBounds);
 
 					bool faceLoopReversed = false;
 
@@ -922,29 +923,25 @@ namespace OpenInfraPlatform {
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
 					return;
 				}
-
-				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> convertIfcFaceBoundList(
-					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& faceBounds) const noexcept(true)
+				
+				void convertIfcFaceBoundList(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& faceBounds) const noexcept(true)
 				{
-					// declare target vector
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds;
-					modBounds.reserve(2);
-					
-					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
-					for (const auto& bound : faceBounds)
+					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
+					for (auto it = faceBounds.begin(); it != faceBounds.end(); it++)
 					{
-						if (bound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
+						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
 						{
-							modBounds.insert(modBounds.begin(), bound);
-						}
-						else
-						{
-							modBounds.push_back(bound);
+							// swap element 'it' with first element
+							std::rotate(faceBounds.begin(), it, it + 1);
+
+							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
+							// "One loop is optionally distinguished as the outer loop of the face."
+							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
+							// thus, return after THE outer boundary was found
+							return;
 						}
 					}
-					modBounds.shrink_to_fit();
-
-					return modBounds;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
