@@ -785,9 +785,10 @@ namespace OpenInfraPlatform {
 					// Save polygon indices of merged vertices
 					std::map<uint32_t, uint32_t> mergedIndices;
 
-					// get list of IfcFaceBound-entities with IfcFaceOuterBound at index 0
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds = face->Bounds;
-					convertIfcFaceBoundList(modBounds);
+					// get list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// one bound loop contains a list of loop points (carve::gem::vector<3>)
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
+					convertIfcFaceBoundList(face->Bounds, pos, faceBoundLoops);
 
 					bool faceLoopReversed = false;
 
@@ -797,13 +798,9 @@ namespace OpenInfraPlatform {
 					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
 
-					for (const auto& bound : modBounds) 
+					for (auto& loopVertices3D : faceBoundLoops)
 					{
 						boundID++;
-
-						// get vertices of one boundary loop into loopVertices3D
-						std::vector<carve::geom::vector<3>> loopVertices3D;
-						convertIfcFaceBound(bound, pos, loopVertices3D);
 
 						//	3 Vertices Triangle
 						if (loopVertices3D.size() == 3) 
@@ -900,22 +897,31 @@ namespace OpenInfraPlatform {
 				}
 				
 				void convertIfcFaceBoundList(
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& faceBounds) const noexcept(true)
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds,
+					const carve::math::Matrix& pos,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops) const noexcept(true)
 				{
 					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
-					for (auto it = faceBounds.begin(); it != faceBounds.end(); it++)
+					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
 					{
 						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
 						{
 							// swap element 'it' with first element
-							std::rotate(faceBounds.begin(), it, it + 1);
+							std::rotate(ifcFaceBounds.begin(), it, it + 1);
 
 							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
 							// "One loop is optionally distinguished as the outer loop of the face."
 							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
-							// thus, return after THE outer boundary was found
-							return;
+							// thus, break the for-loop after THE outer boundary was found
+							break;
 						}
+					}
+
+					faceBoundLoops.resize(ifcFaceBounds.size());
+					for (size_t i = 0; i < ifcFaceBounds.size(); i++)
+					{
+						// get vertices of one bound loop into faceBoundLoops[i]
+						convertIfcFaceBound(ifcFaceBounds[i], pos, faceBoundLoops[i]);
 					}
 				}
 
