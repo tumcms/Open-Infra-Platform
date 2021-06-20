@@ -792,12 +792,11 @@ namespace OpenInfraPlatform {
 
 					bool faceLoopReversed = false;
 
-					// Loop through all boundary definitions
-					int boundID = -1;
-
 					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
 
+					// Loop through all boundary definitions
+					int boundID = -1;
 					for (auto& loopVertices3D : faceBoundLoops)
 					{
 						boundID++;
