@@ -778,9 +778,6 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(face);
 					}
 
-					// Id of face in step file
-					const uint32_t faceID = face->getId();
-
 					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
 					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D;
 					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
