@@ -801,34 +801,9 @@ namespace OpenInfraPlatform {
 					{
 						boundID++;
 
-						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
-						bool polyOrientation = bound->Orientation;
-
-						if (!loop) {
-							throw oip::InconsistentModellingException(face, " No valid loop");
-						}
-						
-						// Collect all vertices of the current loop
+						// get vertices of one boundary loop into loopVertices3D
 						std::vector<carve::geom::vector<3>> loopVertices3D;
-						curveConverter->convertIfcLoop(loop, loopVertices3D);
-
-						for (auto& vertex : loopVertices3D) 
-						{
-							vertex = pos * vertex;
-						}
-
-						if (loopVertices3D.size() < 3) 
-						{
-							throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
-						}
-						
-
-						// Check for orientation and reverse vertices order if FALSE
-						if (!polyOrientation) 
-						{
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-						}
+						convertIfcFaceBound(bound, pos, loopVertices3D);
 
 						//	3 Vertices Triangle
 						if (loopVertices3D.size() == 3) 
@@ -942,6 +917,41 @@ namespace OpenInfraPlatform {
 							return;
 						}
 					}
+				}
+
+				void convertIfcFaceBound(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
+					const carve::math::Matrix& pos,
+					std::vector<carve::geom::vector<3>>& loopVertices3D) const noexcept(false)
+				{
+					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
+					bool polyOrientation = bound->Orientation;
+
+					if (!loop) {
+						throw oip::InconsistentModellingException(bound, " No valid loop");
+					}
+
+					// Collect all vertices of the current loop
+					curveConverter->convertIfcLoop(loop, loopVertices3D);
+
+					for (auto& vertex : loopVertices3D)
+					{
+						vertex = pos * vertex;
+					}
+
+					if (loopVertices3D.size() < 3)
+					{
+						throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
+					}
+
+					// Check for orientation and reverse vertices order if FALSE
+					if (!polyOrientation)
+					{
+						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+					}
+
+					return;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
