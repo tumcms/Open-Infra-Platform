@@ -805,11 +805,8 @@ namespace OpenInfraPlatform {
 							std::vector<uint32_t> triangleIndices;
 							triangleIndices.reserve(3);
 
-							int pointID = -1;
 							for (const auto& vertex3D : loopVertices3D) 
 							{
-								pointID++;
-
 								// set string id and search for existing vertex in polygon
 								std::stringstream vertexString;
 								vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
