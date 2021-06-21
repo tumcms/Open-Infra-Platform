@@ -801,8 +801,9 @@ namespace OpenInfraPlatform {
 					{
 						boundID++;
 
-						//	3 Vertices Triangle
-						if (loopVertices3D.size() == 3) 
+						//	3 Vertices Triangle without inner bound (= hole):
+						//	-> simple direct triangle construction is possible (probably fast)
+						if ((loopVertices3D.size() == 3) && (faceBoundLoops.size() == 1))
 						{
 							std::vector<uint32_t> triangleIndices;
 							triangleIndices.reserve(3);
@@ -832,9 +833,12 @@ namespace OpenInfraPlatform {
 								mergedIndices[pointID] = index;
 							}
 							polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+							return;
 						}
 
-						//	> 3 Vertices Triangle					
+						//	> 3 Vertices Triangle
+						//	-> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+						//	   here, preparation of vertices per loop
 						std::vector<carve::geom2d::P2> loopVertices2D;
 
 						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
