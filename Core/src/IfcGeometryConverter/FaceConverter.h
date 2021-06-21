@@ -791,14 +791,14 @@ namespace OpenInfraPlatform {
 					{
 						// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
 						addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
-						return;
 					}
+					else
+					{
+						// general case: arbitrary number of vertices, possible inner bound (= hole)
+						//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
 
-					// else general case: arbitrary number of vertices, possible inner bound (= hole)
-					//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
-					addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
-
-					return;
+						addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
+					}
 				}
 				
 				void convertIfcFaceBoundList(
