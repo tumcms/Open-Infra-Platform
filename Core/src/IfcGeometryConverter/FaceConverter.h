@@ -771,7 +771,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
 					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
 				{
 					if (face.expired()) {
