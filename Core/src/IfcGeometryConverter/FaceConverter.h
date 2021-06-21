@@ -802,31 +802,7 @@ namespace OpenInfraPlatform {
 						//	-> simple direct triangle construction is possible (probably fast)
 						if ((loopVertices3D.size() == 3) && (faceBoundLoops.size() == 1))
 						{
-							std::vector<uint32_t> triangleIndices;
-							triangleIndices.reserve(3);
-
-							for (const auto& vertex3D : loopVertices3D) 
-							{
-								// set string id and search for existing vertex in polygon
-								std::stringstream vertexString;
-								vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
-								auto itFound = polygonIndices.find(vertexString.str());
-
-								uint32_t index = 0;
-								if (itFound != polygonIndices.end()) 
-								{
-									index = itFound->second;
-								}
-								else 
-								{
-									index = polygon->addVertex(vertex3D);
-									polygonIndices[vertexString.str()] = index;
-								}
-
-								triangleIndices.push_back(index);
-							}
-							polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
-							return;
+							addTriangleToPolyhedronData(loopVertices3D, polygon, polygonIndices);
 						}
 
 						//	> 3 Vertices Triangle
@@ -950,6 +926,38 @@ namespace OpenInfraPlatform {
 						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 					}
 
+					return;
+				}
+
+				void addTriangleToPolyhedronData(
+					const std::vector<carve::geom::vector<3>>& loopVertices3D,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
+					std::map<std::string, uint32_t>& polygonIndices) const noexcept(true)
+				{
+					std::vector<uint32_t> triangleIndices;
+					triangleIndices.reserve(3);
+
+					for (const auto& vertex3D : loopVertices3D)
+					{
+						// set string id and search for existing vertex in polygon
+						std::stringstream vertexString;
+						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
+						auto itFound = polygonIndices.find(vertexString.str());
+
+						uint32_t index = 0;
+						if (itFound != polygonIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polygon->addVertex(vertex3D);
+							polygonIndices[vertexString.str()] = index;
+						}
+
+						triangleIndices.push_back(index);
+					}
+					polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
 					return;
 				}
 
