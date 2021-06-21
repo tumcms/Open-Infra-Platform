@@ -782,9 +782,6 @@ namespace OpenInfraPlatform {
 					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
 					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
 
-					// Save polygon indices of merged vertices
-					std::map<uint32_t, uint32_t> mergedIndices;
-
 					// get list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
 					// one bound loop contains a list of loop points (carve::gem::vector<3>)
 					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
@@ -830,7 +827,6 @@ namespace OpenInfraPlatform {
 								}
 
 								triangleIndices.push_back(index);
-								mergedIndices[pointID] = index;
 							}
 							polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
 							return;
