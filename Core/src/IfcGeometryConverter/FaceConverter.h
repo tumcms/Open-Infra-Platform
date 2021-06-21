@@ -726,7 +726,8 @@ namespace OpenInfraPlatform {
 
 				//------------------------------------------------------------------------------------------------------------
 				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
+				// convertIfcFaceList, convertIfcFace, convertIfcFaceBoundList, covnertIfcFaceBound, addTriangleToPolyhedronData, 
+				// convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
 				//------------------------------------------------------------------------------------------------------------
 
 						/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
