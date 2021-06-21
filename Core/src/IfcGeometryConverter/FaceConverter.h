@@ -727,7 +727,7 @@ namespace OpenInfraPlatform {
 				//------------------------------------------------------------------------------------------------------------
 				// FaceConverter functions:
 				// convertIfcFaceList, convertIfcFace, convertIfcFaceBoundList, covnertIfcFaceBound, addTriangleToPolyhedronData, 
-				// convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
+				// addArbitraryFaceToPolyhedronData, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
 				//------------------------------------------------------------------------------------------------------------
 
 						/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
@@ -796,76 +796,8 @@ namespace OpenInfraPlatform {
 
 					// else general case: arbitrary number of vertices, possible inner bound (= hole)
 					//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+					addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
 
-					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
-					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
-
-					bool faceLoopReversed = false;
-
-					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
-					ProjectionPlane plane = UNDEFINED;
-
-					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
-					int boundID = -1;
-					for (auto& loopVertices3D : faceBoundLoops)
-					{
-						boundID++;
-						
-						std::vector<carve::geom2d::P2> loopVertices2D;
-
-						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
-						{
-							throw oip::InconsistentGeometryException(face, "loop could not be projected");
-						}
-
-						if (loopVertices2D.size() < 3) 
-						{
-							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
-						}
-
-						// push back vertices to all faceVertices
-						faceVertices2D.push_back(loopVertices2D);
-						faceVertices3D.push_back(loopVertices3D);
-					}
-
-					// If no faceVertices were collected, no carve operations are required
-					if (faceVertices2D.empty()) 
-					{
-						throw oip::InconsistentGeometryException(face, "no faceVertices were collected"); 
-					}
-
-					// Result after incorporating holes in polygons if defined
-					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
-
-					// merged vertices after incorporating of holes
-					std::vector<carve::geom2d::P2> mergedVertices2D;
-					std::vector<carve::geom::vector<3>> mergedVertices3D;
-
-					try 
-					{
-						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
-
-						for (const auto& incorpIndex : incorporatedIndices) 
-						{
-							size_t loopIndex = incorpIndex.first;
-							size_t vertexIndex = incorpIndex.second;
-
-							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
-							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
-
-							// add vertices to merged results
-							mergedVertices2D.push_back(point2D);
-							mergedVertices3D.push_back(point3D);
-						}
-
-					}
-					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
-					{
-						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
-					}
-
-					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
 					return;
 				}
 				
@@ -962,6 +894,84 @@ namespace OpenInfraPlatform {
 						triangleIndices.push_back(index);
 					}
 					polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+					return;
+				}
+
+				void addArbitraryFaceToPolyhedronData(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
+					std::map<std::string, uint32_t>& polygonIndices) const noexcept(false)
+				{
+					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
+					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
+
+					bool faceLoopReversed = false;
+
+					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
+					ProjectionPlane plane = UNDEFINED;
+
+					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
+					int boundID = -1;
+					for (auto& loopVertices3D : faceBoundLoops)
+					{
+						boundID++;
+
+						std::vector<carve::geom2d::P2> loopVertices2D;
+
+						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed))
+						{
+							throw oip::InconsistentGeometryException(face, "loop could not be projected");
+						}
+
+						if (loopVertices2D.size() < 3)
+						{
+							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
+						}
+
+						// push back vertices to all faceVertices
+						faceVertices2D.push_back(loopVertices2D);
+						faceVertices3D.push_back(loopVertices3D);
+					}
+
+					// If no faceVertices were collected, no carve operations are required
+					if (faceVertices2D.empty())
+					{
+						throw oip::InconsistentGeometryException(face, "no faceVertices were collected");
+					}
+
+					// Result after incorporating holes in polygons if defined
+					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
+
+					// merged vertices after incorporating of holes
+					std::vector<carve::geom2d::P2> mergedVertices2D;
+					std::vector<carve::geom::vector<3>> mergedVertices3D;
+
+					try
+					{
+						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
+
+						for (const auto& incorpIndex : incorporatedIndices)
+						{
+							size_t loopIndex = incorpIndex.first;
+							size_t vertexIndex = incorpIndex.second;
+
+							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
+							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
+
+							// add vertices to merged results
+							mergedVertices2D.push_back(point2D);
+							mergedVertices3D.push_back(point3D);
+						}
+
+					}
+					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
+					{
+						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
+					}
+
+					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
 					return;
 				}
 
