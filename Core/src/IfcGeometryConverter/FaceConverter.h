@@ -779,36 +779,39 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(face);
 					}
 
-					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
-					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
-
-					// get list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// get attribute 1:
+					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
 					// one bound loop contains a list of loop points (carve::gem::vector<3>)
 					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
 					convertIfcFaceBoundList(face->Bounds, pos, faceBoundLoops);
+
+					// if simple case: one triangle without inner bound (= hole)
+					//  -> simple direct triangle construction is possible (probably fast)
+					if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
+					{
+						// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
+						addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
+						return;
+					}
+
+					// else general case: arbitrary number of vertices, possible inner bound (= hole)
+					//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+
+					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
+					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
 
 					bool faceLoopReversed = false;
 
 					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
 
-					// Loop through all boundary definitions
+					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
 					int boundID = -1;
 					for (auto& loopVertices3D : faceBoundLoops)
 					{
 						boundID++;
-
-						//	3 Vertices Triangle without inner bound (= hole):
-						//	-> simple direct triangle construction is possible (probably fast)
-						if ((loopVertices3D.size() == 3) && (faceBoundLoops.size() == 1))
-						{
-							addTriangleToPolyhedronData(loopVertices3D, polygon, polygonIndices);
-						}
-
-						//	> 3 Vertices Triangle
-						//	-> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
-						//	   here, preparation of vertices per loop
+						
 						std::vector<carve::geom2d::P2> loopVertices2D;
 
 						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
