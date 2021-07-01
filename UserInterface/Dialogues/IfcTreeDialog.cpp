@@ -42,14 +42,14 @@ OpenInfraPlatform::UserInterface::IfcTreeDialog::~IfcTreeDialog()
 
 void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 {
-	////for first testing just get last model, later this will be changed to selecting the model need
+	////testing treeview with contents of IFC file
 	//auto model = Core::DataManagement::DocumentManager::getInstance().getData().getLastModel();
 	//if (std::dynamic_pointer_cast<oip::IfcModel>(model))
 	//{
 	//	auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
 	//	auto expressModelShared = ifcModel->getExpressModel();
 	//	OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel = expressModelShared.get();
-	//	auto treeModel = new IfcTreeModel(expressModel);
+	//	IfcTreeModel *treeModel = new IfcTreeModel(expressModel);
 	//	ui_->ifcTreeView->setModel(treeModel);
 	//	((QDialog*)this)->show();
 	//}
@@ -59,18 +59,14 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 	//	throw  oip::UnhandledException("Last model is not a IFC model");
 	//}
 
-
 	//testing simple tree example 
-	//QFile file(":/default.txt");
-	//std::string cwd = _getcwd(NULL, 0);
-	//QFile file("..//..//Open-Infra-Platform//testdata//default.txt");
-	//file.open(QIODevice::ReadOnly);
-	//IfcTreeModel model(file.readAll());
-	//file.close();
+	QFile file("..//..//Open-Infra-Platform//testdata//default.txt");
+	file.open(QIODevice::ReadOnly);
+	IfcTreeModel *model = new IfcTreeModel(file.readAll());
+	file.close();
 
-	IfcTreeModel model(QString("May the stars align"));
-	ui_->ifcTreeView->setModel(&model);
-	ui_->ifcTreeView->setWindowTitle(QObject::tr("Title"));
+	ui_->ifcTreeView->setModel(model);
+	ui_->ifcTreeView->setWindowTitle(QObject::tr("Simple Tree Model"));
 	((QDialog*)this)->show();
 
 	////testing with QFileSystemModel 
