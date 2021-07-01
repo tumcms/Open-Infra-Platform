@@ -44,7 +44,7 @@ namespace OpenInfraPlatform
 
 		private:
 			Ui::IfcTreeDialog* ui_;
-			OpenInfraPlatform::UserInterface::View* view_;
+			//OpenInfraPlatform::UserInterface::View* view_;
 		}; // end class IfcTree
 	} // end namespace UserInterface
 } // end namespace OpenInfraPlatform
