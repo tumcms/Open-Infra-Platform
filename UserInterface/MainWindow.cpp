@@ -479,7 +479,25 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			auto filename = QString::fromStdString(p.filename().string());
 
 			// only add if not yet present
-			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1).isEmpty() )
+			auto found = modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1);
+
+			if (   found.isEmpty()
+				|| std::find_if(found.begin(), found.end(), [&model](auto& el) -> bool 
+			{ 
+				for (int i = 0; i < el->childCount(); i++)
+				{
+					if (el->child(i)->text(0).compare("GeoRef", Qt::CaseInsensitive) == 0
+						&& (el->child(i)->text(1).compare( QString( model->getGeorefMetadata().codeEPSG.c_str() )) == 0
+						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0))
+						return true;
+				}
+				return false;
+
+				//auto lst = el->treeWidget()->findItems("GeoRef", Qt::MatchFlag::MatchExactly, 0);
+				//return (!lst.empty() && 
+				//			(lst.first()->text(1).toStdString() == model->getGeorefMetadata().codeEPSG
+				//		||   lst.first()->text(1).toStdString() == model->getGeorefMetadata().WKT));
+			}) == found.end())
 			{
 				// structure
 				// 1. filename

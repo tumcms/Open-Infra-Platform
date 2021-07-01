@@ -23,7 +23,7 @@ DATA;
 #15= IFCORGANIZATION($,'TUM','Chair of Computational Modeling and Simulation',$,$);
 #16= IFCCARTESIANPOINT((0.,0.,0.));
 #17= IFCPROJECTEDCRS('EPSG:31467','EPSG:31467 - DHDN / 3-Degree Gauss-Krueger Zone 3','EPSG:31467',$,'Gauss-Krueger','3',#18);
-#18= IFCSIUNIT($,.LENGTHUNIT.,$,.METRE.);
+#18= IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.);
 
 #5= IFCRELAGGREGATES('0Hl9Nntub70vjDziXcwNSk',$,$,$,#1,(#19));
 
