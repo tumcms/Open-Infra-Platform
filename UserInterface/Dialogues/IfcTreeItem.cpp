@@ -26,57 +26,50 @@
 OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem)
 {
 	data_ = data;
-	m_parentItem = parentItem;
+	parentItem_ = parentItem;
 	//itemData_.push_back(data_->getStepLine());
-	m_itemData.push_back(QString::fromStdString(data_->classname()));
+	itemData_.push_back(QString::fromStdString(data_->classname()));
 }
-//
-//OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem()
-//{
-//	data_ = nullptr;
-//	parentItem_ = nullptr;
-//	std::string text = "Title";
-//	itemData_.push_back(text);
-//}
-//
-//OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
-//{
-//	//childItems_.clear();
-//	qDeleteAll(childItems_);
-//}
-//
-//void OpenInfraPlatform::UserInterface::IfcTreeItem::appendchild(IfcTreeItem *child)
-//{
-//	childItems_.append(child);
-//}
-//
-//OpenInfraPlatform::UserInterface::IfcTreeItem* OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
-//{
-//	if (row < 0 || row >= childItems_.size())
-//		throw oip::UnhandledException("Child index out of range (IfcTreeItem::child)");
-//
-//	return childItems_.at(row);
-//}
-//
-//int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
-//{
-//	int nrOfChilds = childItems_.count();
-//	return nrOfChilds;
-//}
-//
-//int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
-//{
-//	int nrOfColumns = itemData_.size(); //size right here?
-//	return nrOfColumns;
-//}
-//
-//QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
-//{
-//	if (column < 0 || column >= itemData_.size())
-//		return QVariant();
-//	//QString text = QString::fromStdString(itemData_.at(column));
-//	return QString("text");
-//}
+
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parent)
+{
+	parentItem_ = parent;
+	itemData_ = data;
+}
+
+OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
+{
+	qDeleteAll(childItems_);
+}
+
+void OpenInfraPlatform::UserInterface::IfcTreeItem::appendChild(IfcTreeItem *child)
+{
+	childItems_.append(child);
+}
+
+OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
+{
+	//if (row < 0 || row >= m_childItems.size())
+	//	return nullptr;
+	return childItems_.value(row); //QList provides default values in case row is out of range
+}
+
+int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
+{
+	return childItems_.count();
+}
+
+int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
+{
+	return itemData_.count();
+}
+
+QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
+{
+	//if (column < 0 || column >= m_itemData.size())
+	//	return QVariant();
+    return itemData_.value(column); //QList provides default values in case row is out of range
+}
 
 //QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 //{
@@ -99,25 +92,24 @@ OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::Ea
 //	return getIfcClassName();
 //}
 
-//int OpenInfraPlatform::UserInterface::IfcTreeItem::row() const
-//{
-//	if (parentItem_)
-//	{	
-//		return parentItem_->childItems_.indexOf(const_cast<IfcTreeItem*>(this));
-//	}
-//	return 0;
-//}
-//
-//OpenInfraPlatform::UserInterface::IfcTreeItem* OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
-//{
-//	return parentItem_;
-//}
-//
-//QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
-//{
-//	std::string ifcClassName = data_->classname();
-//	return QString::fromStdString(ifcClassName);
-//}
+OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
+{
+	return parentItem_;
+}
+
+int OpenInfraPlatform::UserInterface::IfcTreeItem::row() const
+{
+	if (parentItem_)
+		return parentItem_->childItems_.indexOf(const_cast<IfcTreeItem*>(this));
+
+	return 0;
+}
+
+QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
+{
+	std::string ifcClassName = data_->classname();
+	return QString::fromStdString(ifcClassName);
+}
 
 //struct OpenInfraPlatform::UserInterface::IfcTreeItem::getAttributeDescription 
 //{
@@ -149,56 +141,3 @@ OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::Ea
 //	std::vector<const char*> typename_;
 //	std::vector <QVariant> value_;
 //};
-
-OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parent)
-{
-	m_parentItem = parent;
-	m_itemData = data;
-}
-
-OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
-{
-	qDeleteAll(m_childItems);
-}
-
-void OpenInfraPlatform::UserInterface::IfcTreeItem::appendChild(IfcTreeItem *item)
-{
-	m_childItems.append(item);
-}
-
-OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
-{
-	//if (row < 0 || row >= m_childItems.size())
-	//	return nullptr;
-	return m_childItems.value(row); //QList provides default values in case row is out of range
-}
-
-int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
-{
-	return m_childItems.count();
-}
-
-int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
-{
-	return m_itemData.count();
-}
-
-QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
-{
-	//if (column < 0 || column >= m_itemData.size())
-	//	return QVariant();
-    return m_itemData.value(column);
-}
-
-OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
-{
-	return m_parentItem;
-}
-
-int OpenInfraPlatform::UserInterface::IfcTreeItem::row() const
-{
-	if (m_parentItem)
-		return m_parentItem->m_childItems.indexOf(const_cast<IfcTreeItem*>(this));
-
-	return 0;
-}
