@@ -35,30 +35,14 @@ namespace OpenInfraPlatform
 		{
 			Q_OBJECT;
 
-		//public:
-		//	explicit IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent = nullptr);
-		//	~IfcTreeModel();
-
-		////override from QAbstractItemModel
-		//	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-		//	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-		//	QModelIndex parent(const QModelIndex &index) const override;
-		//	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-		//	int columnCount(const QModelIndex &parent = QModelIndex()) const override;
-		//	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-		//	Qt::ItemFlags flags(const QModelIndex &index) const override;
-
-		//private:
-		//	void setupModelData(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent);
-
-		//	IfcTreeItem *rootItem_;
-
 		public:
-			explicit IfcTreeModel(const QString &data, QObject *parent = 0);
+			//explicit IfcTreeModel(const QString &data, QObject *parent = nullptr);
+			explicit IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent = nullptr);
 			~IfcTreeModel();
-
+			
+			//override from QAbstractItemModel
 			QVariant data(const QModelIndex &index, int role) const override;
-			Qt::ItemFlags flags(const QModelIndex &index) const override;
+			//Qt::ItemFlags flags(const QModelIndex &index) const override;
 			QVariant headerData(int section, Qt::Orientation orientation,
 				int role = Qt::DisplayRole) const override;
 			QModelIndex index(int row, int column,
@@ -68,7 +52,8 @@ namespace OpenInfraPlatform
 			int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
 		private:
-			void setupModelData(const QStringList &lines, IfcTreeItem *parent);
+			//void setupModelData(const QStringList &lines, IfcTreeItem *parent);
+			void setupModelData(const OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent);
 
 			IfcTreeItem *rootItem;
 		};

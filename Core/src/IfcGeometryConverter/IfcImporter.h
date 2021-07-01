@@ -76,14 +76,6 @@ public:
 			// get the georeferencingmetadata from the file
 			georefConverter->init(expressModel);
 
-			//store a pointer to the express model in the in the ifc model (used for the tree viewer)
-			for (auto model : models)
-			{			
-				model->setExpressModel(expressModel);
-			}
-
-
-
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
 				return models;
@@ -102,6 +94,12 @@ public:
 			auto ifcModel = createGeometryModel(nullptr, shapeInputData);
 			if (!ifcModel->isEmpty())
 				models.push_back(ifcModel);
+
+			//store a pointer to the express model in the in the ifc model (used for the tree viewer)
+			for (auto& model : models)
+			{
+				model->setExpressModel(expressModel);
+			}
 
 			return models;
 		}

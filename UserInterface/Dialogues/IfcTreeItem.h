@@ -31,16 +31,6 @@ namespace OpenInfraPlatform {
 		//public:
 		//	explicit IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem);
 		//	explicit IfcTreeItem();
-		//	~IfcTreeItem();
-
-		//	void appendchild(IfcTreeItem *child);
-
-		//	IfcTreeItem *child(int row);
-		//	int childCount() const;
-		//	int columnCount() const;
-		//	QVariant data(int column) const;
-		//	int row() const;
-		//	IfcTreeItem *parentItem();
 		//	QString getIfcClassName() const;
 
 		//private:
@@ -49,10 +39,9 @@ namespace OpenInfraPlatform {
 		//	std::vector<std::string> itemData_;
 		//	IfcTreeItem *parentItem_;
 
-		//	//struct getAttributeDescription;
-
 		public:
 			explicit IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parentItem = 0);
+			explicit IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem);
 			~IfcTreeItem();
 
 			void appendChild(IfcTreeItem *child);
@@ -66,8 +55,11 @@ namespace OpenInfraPlatform {
 
 		private:
 			QList<IfcTreeItem*> m_childItems;
+			OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data_;
 			QList<QVariant> m_itemData;
 			IfcTreeItem *m_parentItem;
+
+			//struct getAttributeDescription;
 		};
 	}
 }

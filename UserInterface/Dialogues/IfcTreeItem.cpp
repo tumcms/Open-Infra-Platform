@@ -23,13 +23,13 @@
 #include "visit_struct\visit_struct.hpp"
 
 
-//OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem)
-//{
-//	data_ = data;
-//	parentItem_ = parentItem;
-//	//itemData_.push_back(data_->getStepLine());
-//	itemData_.push_back(data_->classname());
-//}
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::EarlyBinding::EXPRESSEntity *data, IfcTreeItem *parentItem)
+{
+	data_ = data;
+	m_parentItem = parentItem;
+	//itemData_.push_back(data_->getStepLine());
+	m_itemData.push_back(QString::fromStdString(data_->classname()));
+}
 //
 //OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem()
 //{

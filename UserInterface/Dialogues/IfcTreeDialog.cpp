@@ -42,32 +42,32 @@ OpenInfraPlatform::UserInterface::IfcTreeDialog::~IfcTreeDialog()
 
 void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 {
-	////testing treeview with contents of IFC file
-	//auto model = Core::DataManagement::DocumentManager::getInstance().getData().getLastModel();
-	//if (std::dynamic_pointer_cast<oip::IfcModel>(model))
-	//{
-	//	auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
-	//	auto expressModelShared = ifcModel->getExpressModel();
-	//	OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel = expressModelShared.get();
-	//	IfcTreeModel *treeModel = new IfcTreeModel(expressModel);
-	//	ui_->ifcTreeView->setModel(treeModel);
-	//	((QDialog*)this)->show();
-	//}
-	//else
-	//{
-	//	//only for now till the selected model is properly handled
-	//	throw  oip::UnhandledException("Last model is not a IFC model");
-	//}
+	//testing treeview with contents of IFC file
+	auto model = Core::DataManagement::DocumentManager::getInstance().getData().getLastModel();
+	if (std::dynamic_pointer_cast<oip::IfcModel>(model))
+	{
+		auto ifcModel = std::static_pointer_cast<OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel>(model);
+		auto expressModelShared = ifcModel->getExpressModel();
+		OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel = expressModelShared.get();
+		IfcTreeModel *treeModel = new IfcTreeModel(expressModel);
+		ui_->ifcTreeView->setModel(treeModel);
+		((QDialog*)this)->show();
+	}
+	else
+	{
+		//only for now till the selected model is properly handled
+		throw  oip::UnhandledException("Last model is not a IFC model");
+	}
 
-	//testing simple tree example 
-	QFile file("..//..//Open-Infra-Platform//testdata//default.txt");
-	file.open(QIODevice::ReadOnly);
-	IfcTreeModel *model = new IfcTreeModel(file.readAll());
-	file.close();
+	////testing simple tree example 
+	//QFile file("..//..//Open-Infra-Platform//testdata//default.txt");
+	//file.open(QIODevice::ReadOnly);
+	//IfcTreeModel *model = new IfcTreeModel(file.readAll());
+	//file.close();
 
-	ui_->ifcTreeView->setModel(model);
-	ui_->ifcTreeView->setWindowTitle(QObject::tr("Simple Tree Model"));
-	((QDialog*)this)->show();
+	//ui_->ifcTreeView->setModel(model);
+	//ui_->ifcTreeView->setWindowTitle(QObject::tr("Simple Tree Model"));
+	//((QDialog*)this)->show();
 
 	////testing with QFileSystemModel 
 	//QFileSystemModel *model = new QFileSystemModel;
