@@ -167,8 +167,10 @@
 OpenInfraPlatform::UserInterface::IfcTreeModel::IfcTreeModel(const QString &data, QObject *parent)
 	: QAbstractItemModel(parent)
 {
-	rootItem = new IfcTreeItem({ tr("Title"), tr("Summary") });
-	setupModelData(data.split('\n'), rootItem);
+	QList<QVariant> rootData;
+	rootData << "Title" << "Summary";
+	rootItem = new IfcTreeItem(rootData);
+	setupModelData(data.split(QString("\n")), rootItem);
 }
 
 OpenInfraPlatform::UserInterface::IfcTreeModel::~IfcTreeModel()
@@ -180,7 +182,8 @@ int OpenInfraPlatform::UserInterface::IfcTreeModel::columnCount(const QModelInde
 {
 	if (parent.isValid())
 		return static_cast<IfcTreeItem*>(parent.internalPointer())->columnCount();
-	return rootItem->columnCount();
+	else
+		return rootItem->columnCount();
 }
 
 QVariant OpenInfraPlatform::UserInterface::IfcTreeModel::data(const QModelIndex &index, int role) const
@@ -199,7 +202,7 @@ QVariant OpenInfraPlatform::UserInterface::IfcTreeModel::data(const QModelIndex 
 Qt::ItemFlags OpenInfraPlatform::UserInterface::IfcTreeModel::flags(const QModelIndex &index) const
 {
 	if (!index.isValid())
-		return Qt::NoItemFlags;
+		return 0;
 
 	return QAbstractItemModel::flags(index);
 }
@@ -228,7 +231,8 @@ QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::index(int row, int c
 	IfcTreeItem *childItem = parentItem->child(row);
 	if (childItem)
 		return createIndex(row, column, childItem);
-	return QModelIndex();
+	else
+		return QModelIndex();
 }
 
 QModelIndex OpenInfraPlatform::UserInterface::IfcTreeModel::parent(const QModelIndex &index) const
@@ -261,8 +265,8 @@ int OpenInfraPlatform::UserInterface::IfcTreeModel::rowCount(const QModelIndex &
 
 void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(const QStringList &lines, IfcTreeItem *parent)
 {
-	QVector<IfcTreeItem*> parents;
-	QVector<int> indentations;
+	QList<IfcTreeItem*> parents;
+	QList<int> indentations;
 	parents << parent;
 	indentations << 0;
 
@@ -276,16 +280,14 @@ void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(const QStrin
 			position++;
 		}
 
-		const QString lineData = lines[number].mid(position).trimmed();
+		QString lineData = lines[number].mid(position).trimmed();
 
 		if (!lineData.isEmpty()) {
 			// Read the column data from the rest of the line.
-			const QStringList columnStrings =
-				lineData.split(QLatin1Char('\t'), QString::SkipEmptyParts);
-			QVector<QVariant> columnData;
-			columnData.reserve(columnStrings.count());
-			for (const QString &columnString : columnStrings)
-				columnData << columnString;
+			QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
+			QList<QVariant> columnData;
+			for (int column = 0; column < columnStrings.count(); ++column)
+				columnData << columnStrings[column];
 
 			if (position > indentations.last()) {
 				// The last child of the current parent is now the new parent
@@ -306,6 +308,7 @@ void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(const QStrin
 			// Append a new item to the current parent's list of children.
 			parents.last()->appendChild(new IfcTreeItem(columnData, parents.last()));
 		}
+
 		++number;
 	}
 }

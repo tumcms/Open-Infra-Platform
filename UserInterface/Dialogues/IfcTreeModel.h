@@ -54,7 +54,7 @@ namespace OpenInfraPlatform
 		//	IfcTreeItem *rootItem_;
 
 		public:
-			explicit IfcTreeModel(const QString &data, QObject *parent = nullptr);
+			explicit IfcTreeModel(const QString &data, QObject *parent = 0);
 			~IfcTreeModel();
 
 			QVariant data(const QModelIndex &index, int role) const override;

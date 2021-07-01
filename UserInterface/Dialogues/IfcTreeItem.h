@@ -20,7 +20,7 @@
 
 #include "EXPRESS/EXPRESSReference.h"
 #include <QVariant>
-#include <QVector>
+#include <QList>
 
 
 namespace OpenInfraPlatform {
@@ -52,7 +52,7 @@ namespace OpenInfraPlatform {
 		//	//struct getAttributeDescription;
 
 		public:
-			explicit IfcTreeItem(const QVector<QVariant> &data, IfcTreeItem *parentItem = nullptr);
+			explicit IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parentItem = 0);
 			~IfcTreeItem();
 
 			void appendChild(IfcTreeItem *child);
@@ -65,8 +65,8 @@ namespace OpenInfraPlatform {
 			IfcTreeItem *parentItem();
 
 		private:
-			QVector<IfcTreeItem*> m_childItems;
-			QVector<QVariant> m_itemData;
+			QList<IfcTreeItem*> m_childItems;
+			QList<QVariant> m_itemData;
 			IfcTreeItem *m_parentItem;
 		};
 	}

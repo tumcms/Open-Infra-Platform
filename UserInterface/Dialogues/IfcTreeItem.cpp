@@ -150,9 +150,11 @@
 //	std::vector <QVariant> value_;
 //};
 
-OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const QVector<QVariant> &data, IfcTreeItem *parent)
-	: m_itemData(data), m_parentItem(parent)
-{}
+OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parent)
+{
+	m_parentItem = parent;
+	m_itemData = data;
+}
 
 OpenInfraPlatform::UserInterface::IfcTreeItem::~IfcTreeItem()
 {
@@ -166,9 +168,9 @@ void OpenInfraPlatform::UserInterface::IfcTreeItem::appendChild(IfcTreeItem *ite
 
 OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::child(int row)
 {
-	if (row < 0 || row >= m_childItems.size())
-		return nullptr;
-	return m_childItems.at(row);
+	//if (row < 0 || row >= m_childItems.size())
+	//	return nullptr;
+	return m_childItems.value(row); //QList provides default values in case row is out of range
 }
 
 int OpenInfraPlatform::UserInterface::IfcTreeItem::childCount() const
@@ -183,9 +185,9 @@ int OpenInfraPlatform::UserInterface::IfcTreeItem::columnCount() const
 
 QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 {
-	if (column < 0 || column >= m_itemData.size())
-		return QVariant();
-	return m_itemData.at(column);
+	//if (column < 0 || column >= m_itemData.size())
+	//	return QVariant();
+    return m_itemData.value(column);
 }
 
 OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
