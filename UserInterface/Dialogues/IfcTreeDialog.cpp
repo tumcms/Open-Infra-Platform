@@ -58,33 +58,6 @@ void OpenInfraPlatform::UserInterface::IfcTreeDialog::show()
 		//only for now till the selected model is properly handled
 		throw  oip::UnhandledException("Last model is not a IFC model");
 	}
-
-	////testing simple tree example 
-	//QFile file("..//..//Open-Infra-Platform//testdata//default.txt");
-	//file.open(QIODevice::ReadOnly);
-	//IfcTreeModel *model = new IfcTreeModel(file.readAll());
-	//file.close();
-
-	//ui_->ifcTreeView->setModel(model);
-	//ui_->ifcTreeView->setWindowTitle(QObject::tr("Simple Tree Model"));
-	//((QDialog*)this)->show();
-
-	////testing with QFileSystemModel 
-	//QFileSystemModel *model = new QFileSystemModel;
-	//model->setRootPath(QDir::currentPath());
-	//ui_->ifcTreeView->setModel(model);
-	//ui_->ifcTreeView->setRootIndex(model->index(QDir::currentPath()));
-	//((QDialog*)this)->show();
-
-	////testing with QTreeWidget (IfcTreeDialog.ui needs to be changed)
-	//ui_->ifcTreeView->setColumnCount(1);
-	//QList<QTreeWidgetItem *> items;
-	//for (int i = 0; i < 10; i++)
-	//{
-	//	items.append(new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), QStringList(QString("item: %1").arg(i))));
-	//}
-	//ui_->ifcTreeView->insertTopLevelItems(0, items);
-	//((QDialog*)this)->show();
 }
 
 
