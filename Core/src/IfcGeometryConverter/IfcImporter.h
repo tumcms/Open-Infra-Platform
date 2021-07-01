@@ -77,7 +77,12 @@ public:
 			georefConverter->init(expressModel);
 
 			//store a pointer to the express model in the in the ifc model (used for the tree viewer)
-			ifcModel->setExpressModel(expressModel);
+			for (auto model : models)
+			{			
+				model->setExpressModel(expressModel);
+			}
+
+
 
 			// collect all geometries
 			if (!collectGeometryData(expressModel))
