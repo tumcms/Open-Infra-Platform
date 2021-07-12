@@ -22,6 +22,7 @@
 
 #include "../UserInterface/ViewPanel/View.h"
 #include "../UserInterface/Dialogues/LicenseAndCopyrightInformationDialog.h"
+#include "../UserInterface/Dialogues/IfcTreeDialog.h"
 #include "DataManagement/General/Data.h"
 #include "../UserInterface/Dialogues/PreferencesDialog.h"
 #include "../Core/src/DataManagement/General/ProgressCallback.h"
@@ -141,6 +142,7 @@ namespace OpenInfraPlatform
 			//void on_actionIFC_Alignment_1_1_Export_triggered();
 
 			void on_actionShow_License_and_Copyright_Information_triggered();
+			void on_actionShow_Ifc_Tree_triggered();
 			void on_actionShow_Log_Folder_triggered();
 
 
@@ -366,6 +368,7 @@ namespace OpenInfraPlatform
 			PreferencesDialog*							preferencesDialog_ = nullptr;
 			QProgressDialog*							progressDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
+			IfcTreeDialog*								ifcTreeDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 

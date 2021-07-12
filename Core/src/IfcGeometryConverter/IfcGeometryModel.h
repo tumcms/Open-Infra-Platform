@@ -30,6 +30,7 @@
 #include <IModel.h>
 
 #include "namespace.h"
+#include "EXPRESS/EXPRESSModel.h"
 
 typedef buw::VertexPosition3Color3Normal3 VertexLayout;
 
@@ -80,14 +81,19 @@ namespace OpenInfraPlatform
 				std::vector<std::shared_ptr<GeometryDescription>>	geometries_;
 				std::mutex											geometryMutex_;
 
-				std::string			                filename_;
-				oip::GeorefMetadata					georefMeta_;
+				std::string											filename_;
+				oip::GeorefMetadata									georefMeta_;
+
+				std::shared_ptr<oip::EXPRESSModel>					expressModel_;
 
 			public:
 				void reset();
 
 				void addGeometry(std::shared_ptr<GeometryDescription> geometry);
 				std::vector<std::shared_ptr<GeometryDescription>> const &geometries() const { return geometries_; }
+
+				void setExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel);
+				std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> const getExpressModel() const { return expressModel_; }
 
 				// ---------------------------------------------------------------------------------------------------------------------------------------------------
 				// Interface IModel implementation
