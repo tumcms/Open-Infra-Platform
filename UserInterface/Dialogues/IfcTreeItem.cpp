@@ -31,6 +31,12 @@ OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(OpenInfraPlatform::Ea
 	itemData_.push_back(QString::fromStdString(data_->classname()));
 }
 
+//OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSObject> &data, IfcTreeItem * parent)
+//	: m_managedData(data), m_parentItem(parent), parser_()
+//{
+//	parser_.thisPtr = this;
+//}
+
 OpenInfraPlatform::UserInterface::IfcTreeItem::IfcTreeItem(const QList<QVariant> &data, IfcTreeItem *parent)
 {
 	parentItem_ = parent;
@@ -87,9 +93,6 @@ QVariant OpenInfraPlatform::UserInterface::IfcTreeItem::data(int column) const
 //	//	return attributes.typename_[row];
 //	//	break;
 //	//}
-//	
-//	//return QVariant();
-//	return getIfcClassName();
 //}
 
 OpenInfraPlatform::UserInterface::IfcTreeItem *OpenInfraPlatform::UserInterface::IfcTreeItem::parentItem()
@@ -141,3 +144,38 @@ QString OpenInfraPlatform::UserInterface::IfcTreeItem::getIfcClassName() const
 //	std::vector<const char*> typename_;
 //	std::vector <QVariant> value_;
 //};
+
+//void OpenInfraPlatform::UserInterface::IfcTreeItem::createChildren()
+//{
+//	auto func = [&](auto item)->void {
+//		visit_struct::for_each(item, [&](const char* name, auto &value) {
+//			IfcTreeItem* child;
+//			//if(std::is_base_of<OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object, decltype(value)>::value) {
+//			//	child = new TreeItem(value, this);
+//			//}
+//			//else {
+//			//	child = new TreeItem(OpenInfraPlatform::IfcAlignment1x1::IfcAlignment1x1Object(), this);
+//			//}
+//			std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSObject> ptr = nullptr;
+//			child = new IfcTreeItem(ptr, this);
+//			QList<QVariant> itemData;
+//			itemData << QVariant(name) << QVariant("") << QVariant(typeid(value).name());
+//			this->appendChild(child);
+//		});
+//	};
+//
+//	auto parse = [&](auto item) {
+//		visit_struct::for_each(item, parser_);
+//	};
+//
+//	if (m_managedData && m_managedData.get() != nullptr) {
+//		if (std::dynamic_pointer_cast<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>(m_managedData)) {
+//			//OpenInfraPlatform::IfcAlignment1x1::castToVisitableAndCall<decltype(parse), void>(std::dynamic_pointer_cast<OpenInfraPlatform::EarlyBinding::EXPRESSEntity>(m_managedData), parse);
+//		}
+//	}
+//}
+
+//void OpenInfraPlatform::UserInterface::TreeItem::setItemData(QList<QVariant> itemData)
+//{
+//	itemData_ = itemData;
+//}

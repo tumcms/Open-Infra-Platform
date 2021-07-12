@@ -25,6 +25,28 @@
 #include <QString>
 
 
+//template <typename T, typename S> T cast(S s)
+//{
+//	return dynamic_cast<T>(s);
+//}
+//
+//OpenInfraPlatform::UserInterface::IfcTreeModel::IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent)
+//	: QAbstractItemModel(parent)
+//{
+//	QList<QVariant> rootData;
+//	rootData << "Title" << "Summary";
+//	rootItem = new IfcTreeItem(rootData);
+//
+//	for (auto entity : expressModel->entities) {
+//		IfcTreeItem* child = new IfcTreeItem(entity.second.get(), rootItem);
+//		QList<QVariant> itemData;
+//		itemData << QVariant(entity.first);// << QVariant(entity.second->classname()) << QVariant("");
+//		child->setItemData(itemData);
+//		child->createChildren();
+//		rootItem->appendChild(child);
+//	}
+//}
+
 OpenInfraPlatform::UserInterface::IfcTreeModel::IfcTreeModel(OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, QObject *parent)
 	: QAbstractItemModel(parent)
 {
@@ -127,6 +149,7 @@ int OpenInfraPlatform::UserInterface::IfcTreeModel::rowCount(const QModelIndex &
 
 void OpenInfraPlatform::UserInterface::IfcTreeModel::setupModelData(const OpenInfraPlatform::EarlyBinding::EXPRESSModel *expressModel, IfcTreeItem *parent)
 {
+	//ignoring tree structure for now
 	for (auto entity : expressModel->entities)
 	{
 		parent->appendChild(new IfcTreeItem(entity.second.get(), parent));
