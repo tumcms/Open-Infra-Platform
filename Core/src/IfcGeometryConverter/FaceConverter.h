@@ -744,10 +744,6 @@ namespace OpenInfraPlatform {
 					// Loop through all faces
 					for (const auto& face : faces) 
 					{
-						if (face.expired()) {
-							throw oip::ReferenceExpiredException(face);
-						}
-
 						// get mesh data into polygon and polygonIndices
 						convertIfcFace(face, pos, polygon, polygonIndices);
 					}
