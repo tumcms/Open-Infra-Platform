@@ -1275,45 +1275,41 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate recursive multiplication for calculation Taylor series
 	* \param[in]  value                  value of Taylor series
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear 
-	* \param[in]  myArray
-	* \param[in]  myArrayParentIndex
-	* \param[in]  i_n
-	* \param[in]  n
+	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d 
+	* \param[in]  myArray                matrix with 1xn number of iteration points
+	* \param[in]  i_n                    aktuôä itaration point
+	* \param[in]  n                      number of itaration points
 	*
 	* \return
 	*/
 	void GeomUtils::recursiveMultiplicationTaylor(
-			double	value,
-			std::vector<double> polynomialConstants,
-			size_t	polynomialConstantCnt,
-			std::vector<double> myArray,
-			size_t	myArrayParentIndex,
-			size_t	i_n,
-			size_t	n
+			const double	value,
+			const std::vector<double>& polynomialConstants,
+			std::vector<double>& myArray,
+			const int	i_n,
+			const int	n
 		)
 	{
-		assert(value);
+		if (!value) throw oip::InconsistentGeometryException("...");
 		if (i_n < n - 1) {
-			assert(polynomialConstantCnt && polynomialConstants[0] == 0.);
-			for (size_t i = 1; i < polynomialConstantCnt; i++) {
+			if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("...");
+			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
 					GeomUtils::recursiveMultiplicationTaylor(
 						value * polynomialConstants[i],
-						polynomialConstants, polynomialConstantCnt,
-						myArray, myArrayParentIndex + i,
+						polynomialConstants,
+						myArray,
 						i_n + 1, n
 					);
 				}
 			}
 		}
 		else {
-			assert(i_n == n - 1);
-			for (size_t i = 1; i < polynomialConstantCnt; i++) {
+			if(i_n == n - 1);
+			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
-					assert(myArrayParentIndex + i >= n && myArrayParentIndex + i < polynomialConstantCnt* n + 1);
-					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
+					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("...");
+					myArray[myArray.size() + i] += value * polynomialConstants[i];
 				}
 			}
 		}
@@ -1324,43 +1320,42 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	/*!Calculate the Taylor series 
 	* \param[in]  n                      number of iteration points
 	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear
 	* \param[in]  s                      the length of the curve between two points 
 	*
 	* \return
 	*/
 	double	GeomUtils::computeIntegralTaylorSeriesExpansionElement(
-		size_t	n,
-		std::vector<double> polynomialConstants,
-		size_t	polynomialConstantCnt,
-		double	s
+		const int	n,
+		const std::vector<double>& polynomialConstants,
+		const double	s
 	)
 	{
 		//
 		//	pC = polynomialConstants
-		//	c = polynomialConstantCnt
+		//	c = polynomialConstants.size()
 		// 	x =  indeterminate
 		// 	   =>	pC[c-1] * x^(c-1) + pC[c-2] * x^(c-2) + ... + pC[1] * x^(1) + pC[0] * x^(0) where pC[0] == 0
 		//
-		assert(polynomialConstantCnt && polynomialConstants[0] == 0.);
+		if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("...");
 
 		if (n) {
-			std::vector<double>	myArray(polynomialConstantCnt * n + 1);
+			//create a matrix whith 1xn size
+			std::vector<double>	myArray(polynomialConstants.size() * n + 1);
 			GeomUtils::recursiveMultiplicationTaylor(
 				1.,
-				polynomialConstants, polynomialConstantCnt,
-				myArray, 0,
+				polynomialConstants,
+				myArray,
 				0, n
 			);
 
 			double	value = 0., factor = 1.;
-			for (size_t k = 0; k < polynomialConstantCnt * n + 1; k++)
+			for (int k = 0; k < polynomialConstants.size() * n + 1; k++)
 			{
 				factor *= s;
 				value += myArray[k] * factor / (k + 1);
 			}
 
-			size_t	tB = n;
+			int	tB = n;
 			while (tB > 1)
 			{
 				value /= (double)tB;
@@ -1378,22 +1373,20 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	/*!Calculate i-value of cosine in the Taylor Series, namely negative or positiv value
 	* \param[in]  i                      i-integral step
 	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear
 	* \param[in]  s                      the length of the curve between two points 
 	*
 	* \return                            cosine value
 	*/
 	double	GeomUtils::integralTaylorSeriesCosExpansion( 
-		size_t	i,
-		std::vector<double> polynomialConstants,
-		size_t	polynomialConstantCnt,
-		double	s
+		const int	i,
+		const std::vector<double>& polynomialConstants,
+		const double	s
 	)
 	{
 		double	value =
 			computeIntegralTaylorSeriesExpansionElement(
 				i * 2,
-				polynomialConstants, polynomialConstantCnt,
+				polynomialConstants,
 				s
 			);
 
@@ -1409,22 +1402,20 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	/*!Calculate i-value of sine in the Taylor Series, namely negative or positiv value
 	* \param[in]  i                      i-integral step
 	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear
 	* \param[in]  s                      the length of the curve between two points
 	*
 	* \return                            sine value
 	*/
 	double	GeomUtils::integralTaylorSeriesSinExpansion(
-		size_t	i,
-		std::vector<double> polynomialConstants,
-		size_t	polynomialConstantCnt,
-		double	s
+		const int	i,
+		const std::vector<double>& polynomialConstants,
+		const double	s
 	)
 	{
 		double	value =
 			computeIntegralTaylorSeriesExpansionElement(
 				i * 2 + 1,
-				polynomialConstants, polynomialConstantCnt,
+				polynomialConstants,
 				s
 			);
 
@@ -1439,18 +1430,16 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate cosinus for X in th Taylor Series
 	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear
 	* \param[in]  s                      curve length betwee two points
 	*
 	* \return                            the value of cosine
 	*/
 	double	GeomUtils::integralTaylorSeriesCos(
-		std::vector<double> polynomialConstants,
-		size_t	polynomialConstantCnt,
-		double	s
+		const std::vector<double>& polynomialConstants,
+		const double	s
 	)
 	{
-		size_t	minSteps = (polynomialConstantCnt > 12) ? 4 : 6, maxSteps = 8;
+		int	minSteps = (polynomialConstants.size() > 12) ? 4 : 6, maxSteps = 8;
 		double	borderValue = 0.000001;
 
 		//
@@ -1458,17 +1447,17 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		//
 		double value = 0.;
 
-		size_t i = 0;
+		int i = 0;
 		for (; i < minSteps; i++) {
 			value +=
 				GeomUtils::integralTaylorSeriesCosExpansion(
 					i,
-					polynomialConstants, polynomialConstantCnt,
+					polynomialConstants,
 					s
 				);
 		}
 
-		if (polynomialConstantCnt > 10) {
+		if (polynomialConstants.size() > 10) {
 			return	value;
 		}
 
@@ -1476,7 +1465,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			double	deviation =
 				GeomUtils::integralTaylorSeriesCosExpansion(
 					i,
-					polynomialConstants, polynomialConstantCnt,
+					polynomialConstants,
 					s
 				);
 			value += deviation;
@@ -1489,29 +1478,27 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		value +=
 			GeomUtils::integralTaylorSeriesCosExpansion(
 				i,
-				polynomialConstants, polynomialConstantCnt,
+				polynomialConstants,
 				s
 			);
 
-		assert(i == maxSteps);
+		if(i != maxSteps) throw oip::InconsistentGeometryException("...");
 		return value;
 	}
 	/**********************************************************************************************/
 
 	/*!Calculate sine for Y in th Taylor Series
 	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  polynomialConstantCnt  type of polinomial term - cubic, linear
 	* \param[in]  s                      curve length betwee two points
 	*
 	* \return                            the value of sine
 	*/
 	double	GeomUtils::integralTaylorSeriesSin(
-		std::vector<double> polynomialConstants,
-		size_t	polynomialConstantCnt,
-		double	s
+		const std::vector<double>& polynomialConstants,
+		const double	s
 	)
 	{
-		size_t	minSteps = (polynomialConstantCnt > 12) ? 4 : 6, maxSteps = 8;
+		int	minSteps = (polynomialConstants.size() > 12) ? 4 : 6, maxSteps = 8;
 		double	borderValue = 0.0000001;
 
 		//
@@ -1519,17 +1506,17 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		//
 		double value = 0.;
 
-		size_t i = 0;
+		int i = 0;
 		for (; i < minSteps; i++) {
 			value +=
 				GeomUtils::integralTaylorSeriesSinExpansion(
 					i,
-					polynomialConstants, polynomialConstantCnt,
+					polynomialConstants,
 					s
 				);
 		}
 
-		if (polynomialConstantCnt > 10) {
+		if (polynomialConstants.size() > 10) {
 			return	value;
 		}
 
@@ -1537,7 +1524,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			double	deviation =
 				GeomUtils::integralTaylorSeriesSinExpansion(
 					i,
-					polynomialConstants, polynomialConstantCnt,
+					polynomialConstants,
 					s
 				);
 			value += deviation;
@@ -1550,11 +1537,11 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		value +=
 			GeomUtils::integralTaylorSeriesSinExpansion(
 				i,
-				polynomialConstants, polynomialConstantCnt,
+				polynomialConstants,
 				s
 			);
 
-		assert(i == maxSteps);
+		if(i != maxSteps) throw oip::InconsistentGeometryException("...");
 		return value;
 	}
 
