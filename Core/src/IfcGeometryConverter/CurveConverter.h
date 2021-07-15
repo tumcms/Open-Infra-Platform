@@ -978,7 +978,7 @@ namespace OpenInfraPlatform {
 					// Get parameter of the clothoid for trimming end.
 					carve::geom::vector<3> endPoint = getPointOnCurve<typename IfcEntityTypesT::IfcClothoid>(clothoid, trim2Vec, trimmingPreference);
 
-					// get L, A, R 
+					// get L, A
 					// A - Clothoid constant.
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 
@@ -990,9 +990,9 @@ namespace OpenInfraPlatform {
 					int numSegments = 100;
 					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
 					double l = L / A * sqrt(M_PI);
-					/*
+
 					// Create a tessalated vector by clothoid length 
-					std::vector<carve::geom::vector<3>> ti;
+					/*std::vector<carve::geom::vector<3>> ti;
 					ti[0] = 0;
 					// Calculate intervals for tessaleted vector
 					double pointInterval_ti = (l - 0) / (numSegments - 1);
@@ -1007,7 +1007,7 @@ namespace OpenInfraPlatform {
 
 					std::vector<carve::geom::vector<3>> clothoidPoints;
 					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
-					
+			
 					for (int i = 1; i < numSegments; ++i) 
 					{
 						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
@@ -1017,7 +1017,7 @@ namespace OpenInfraPlatform {
 					// Add integral constant (position)
 
 					std::vector<carve::geom::vector<3>> newClothoidPoints;
-					for (int i = 0; i < clothoidPoints.size; ++i)
+					for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
 					{
 						carve::geom::vector<3>&  point = clothoidPoints.at(i);
 						carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
@@ -2361,13 +2361,28 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
 					// Interpret parameter
+					// Get Clothoid Constant
+					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
+					// Interpret polinomial constant for the following integral computations
+					std::vector<double> polynomialConstants = { 0., 0., A*sqrt(2) / 2, 0., 0. };
+
+					//Calculate tesselated curve->How can I interpret this parameter 
+					double s = 0;
+
+					// Implement Taylor series for x coordinate
+					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, s);
+
+					// Implement Taylor series for y coordinate
+					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, s);
 					
-					
+					return carve::geom::VECTOR(A * sqrt(M_PI)*x, A * sqrt(M_PI)*y, 0.);
+
+
 				/*
 					return carve::geom::VECTOR(clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti, 
 						                       clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
-								               0)));
-					*/
+								               0);
+				*/
 					
 				}
 #endif

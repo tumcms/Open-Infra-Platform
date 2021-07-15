@@ -146,41 +146,34 @@ namespace OpenInfraPlatform
 					std::stringstream& err_poly, int entity_id);
 
 				static void recursiveMultiplicationTaylor(
-					double	value,
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					std::vector<double> myArray,
-					size_t	myArrayParentIndex,
-					size_t	i_n,
-					size_t	n
+					const double	value,
+					const std::vector<double>& polynomialConstants,
+					std::vector<double>& myArray,
+					const int	i_n,
+					const int	n
 				);
 				static double computeIntegralTaylorSeriesExpansionElement(
-					size_t	n,
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					double	s
+					const int	n,
+					const std::vector<double>& polynomialConstants,
+					const double	s
 				);
 				static double integralTaylorSeriesCosExpansion(
-					size_t	i,
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					double	s
+					const int	i,
+					const std::vector<double>& polynomialConstants,
+					const double	s
 				);
 				static double integralTaylorSeriesSinExpansion(
-					size_t	i,
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					double	s
+					const int	i,
+					const std::vector<double>& polynomialConstants,
+					const double	s
 				);
 				static double integralTaylorSeriesCos( 
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					double	s
+					const std::vector<double>& polynomialConstants,
+					const double	s
 				);
 				static double integralTaylorSeriesSin(
-					std::vector<double> polynomialConstants,
-					size_t	polynomialConstantCnt,
-					double	s
+					const std::vector<double>& polynomialConstants,
+					const double	s
 				);
 
 
