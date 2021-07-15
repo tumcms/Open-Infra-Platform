@@ -724,18 +724,12 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(surface);
 				}
 
-				//------------------------------------------------------------------------------------------------------------
-				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convertIfcFaceBoundList, covnertIfcFaceBound, addTriangleToPolyhedronData, 
-				// addArbitraryFaceToPolyhedronData, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
-				//------------------------------------------------------------------------------------------------------------
-
-						/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
-						\param[in]	faces		List \c IfcFace entity to be interpreted.
-						\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
-						\param[out]	itemData	Polygon carve polygon.
-						\note The \c IfcFaceList can be an open or closed shell.
-						*/
+				/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
+				\param[in]	faces		List \c IfcFace entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	Polygon carve polygon.
+				\note The \c IfcFaceList can be an open or closed shell.
+				*/
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
