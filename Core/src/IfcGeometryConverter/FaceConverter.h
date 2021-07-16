@@ -831,12 +831,16 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
 					const carve::math::Matrix& pos) const noexcept(false)
 				{
+					if (bound.expired()) {
+						throw oip::ReferenceExpiredException(bound);
+					}
+
 					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 					bool polyOrientation = bound->Orientation;
 
-					if (!loop) {
-						throw oip::InconsistentModellingException(bound, " No valid loop");
+					if (loop.expired()) {
+						throw oip::ReferenceExpiredException(loop);
 					}
 
 					// declare target variable
