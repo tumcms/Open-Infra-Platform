@@ -801,7 +801,7 @@ namespace OpenInfraPlatform {
 					for (size_t i = 0; i < faceBounds.size(); i++)
 					{
 						// get vertices of one bound loop into faceBoundLoops[i]
-						convertIfcFaceBound(faceBounds[i], pos, faceBoundLoops[i]);
+						faceBoundLoops[i] = convertIfcFaceBound(faceBounds[i], pos);
 					}
 
 					return faceBoundLoops;
@@ -827,10 +827,9 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-				void convertIfcFaceBound(
+				std::vector<carve::geom::vector<3>> convertIfcFaceBound(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
-					const carve::math::Matrix& pos,
-					std::vector<carve::geom::vector<3>>& loopVertices3D) const noexcept(false)
+					const carve::math::Matrix& pos) const noexcept(false)
 				{
 					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
@@ -839,6 +838,9 @@ namespace OpenInfraPlatform {
 					if (!loop) {
 						throw oip::InconsistentModellingException(bound, " No valid loop");
 					}
+
+					// declare target variable
+					std::vector<carve::geom::vector<3>> loopVertices3D;
 
 					// Collect all vertices of the current loop
 					curveConverter->convertIfcLoop(loop, loopVertices3D);
@@ -859,7 +861,7 @@ namespace OpenInfraPlatform {
 						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 					}
 
-					return;
+					return loopVertices3D;
 				}
 
 				void addTriangleToPolyhedronData(
