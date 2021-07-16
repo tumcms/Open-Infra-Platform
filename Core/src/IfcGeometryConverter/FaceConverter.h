@@ -772,8 +772,7 @@ namespace OpenInfraPlatform {
 					// get attribute 1:
 					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
 					// one bound loop contains a list of loop points (carve::gem::vector<3>)
-					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
-					convertIfcFaceBoundList(face->Bounds, pos, faceBoundLoops);
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
 
 					// if simple case: one triangle without inner bound (= hole)
 					//  -> simple direct triangle construction is possible (probably fast)
@@ -791,19 +790,21 @@ namespace OpenInfraPlatform {
 					}
 				}
 				
-				void convertIfcFaceBoundList(
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcFaceBoundList(
 					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds,
-					const carve::math::Matrix& pos,
-					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops) const noexcept(true)
+					const carve::math::Matrix& pos) const noexcept(true)
 				{
 					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> faceBounds = swapOuterBoundaryToFront(ifcFaceBounds);
 
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
 					faceBoundLoops.resize(faceBounds.size());
 					for (size_t i = 0; i < faceBounds.size(); i++)
 					{
 						// get vertices of one bound loop into faceBoundLoops[i]
 						convertIfcFaceBound(faceBounds[i], pos, faceBoundLoops[i]);
 					}
+
+					return faceBoundLoops;
 				}
 
 				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> swapOuterBoundaryToFront(
