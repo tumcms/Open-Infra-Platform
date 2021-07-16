@@ -724,18 +724,12 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(surface);
 				}
 
-				//------------------------------------------------------------------------------------------------------------
-				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
-				//------------------------------------------------------------------------------------------------------------
-
-						/*! \brief  Converts \c IfcFace to a polygon and adds it to the carve PolyhedronData vector.
-						\param	faces \c IfcFace entity to be interpreted.
-						\param	pos
-						\param	itemData
-						\return polygon carve polygon
-						\note The \c IfcFaceList can be an open or closed shell.
-						*/
+				/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
+				\param[in]	faces		List \c IfcFace entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	Polygon carve polygon.
+				\note The \c IfcFaceList can be an open or closed shell.
+				*/
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
@@ -748,18 +742,10 @@ namespace OpenInfraPlatform {
 					std::map<std::string, uint32_t> polygonIndices;
 
 					// Loop through all faces
-					for (auto it = faces.cbegin(); it != faces.cend(); ++it) 
-					{ //TODO Stefan
-						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
-
-						if (face.expired()) {
-							throw oip::ReferenceExpiredException(face);
-						}
-
-						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
-						{
-							throw oip::InconsistentGeometryException(face, "IFC Face conversion failed with these faces");
-						}
+					for (const auto& face : faces) 
+					{
+						// get mesh data into polygon and polygonIndices
+						convertIfcFace(face, pos, polygon, polygonIndices);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
@@ -771,132 +757,177 @@ namespace OpenInfraPlatform {
 				\param	pos
 				\param	polygon
 				\param	polygonIndices
-				\return conversionFailed true/false
 				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
 				*/
 
-				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
 					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
 				{
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
 					}
-					// Indicates if conversion has failed
-					bool conversionFailed = false;
 
-					// Id of face in step file
-					const uint32_t faceID = face->getId();
+					// get attribute 1:
+					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// one bound loop contains a list of loop points (carve::gem::vector<3>)
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
 
+					// if simple case: one triangle without inner bound (= hole)
+					//  -> simple direct triangle construction is possible (probably fast)
+					if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
+					{
+						// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
+						addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
+					}
+					else
+					{
+						// general case: arbitrary number of vertices, possible inner bound (= hole)
+						//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+
+						addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
+					}
+				}
+				
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcFaceBoundList(
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds,
+					const carve::math::Matrix& pos) const noexcept(true)
+				{
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> faceBounds = swapOuterBoundaryToFront(ifcFaceBounds);
+
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
+					faceBoundLoops.resize(faceBounds.size());
+					for (size_t i = 0; i < faceBounds.size(); i++)
+					{
+						// get vertices of one bound loop into faceBoundLoops[i]
+						faceBoundLoops[i] = convertIfcFaceBound(faceBounds[i], pos);
+					}
+
+					return faceBoundLoops;
+				}
+
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> swapOuterBoundaryToFront(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds) const throw(...)
+				{
+					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
+					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
+					{
+						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
+						{
+							// swap element 'it' with first element;
+							std::rotate(ifcFaceBounds.begin(), it, it + 1);
+
+							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
+							// "One loop is optionally distinguished as the outer loop of the face."
+							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
+							// thus, break the for-loop after THE outer boundary was found
+							return ifcFaceBounds;
+						}
+					}
+				}
+
+				std::vector<carve::geom::vector<3>> convertIfcFaceBound(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
+					const carve::math::Matrix& pos) const noexcept(false)
+				{
+					if (bound.expired()) {
+						throw oip::ReferenceExpiredException(bound);
+					}
+
+					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
+					bool polyOrientation = bound->Orientation;
+
+					if (loop.expired()) {
+						throw oip::ReferenceExpiredException(loop);
+					}
+
+					// declare target variable
+					std::vector<carve::geom::vector<3>> loopVertices3D;
+
+					// Collect all vertices of the current loop
+					curveConverter->convertIfcLoop(loop, loopVertices3D);
+
+					if (loopVertices3D.size() < 3)
+					{
+						throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
+					}
+
+					for (auto& vertex : loopVertices3D)
+					{
+						vertex = pos * vertex;
+					}
+
+					// Check for orientation and reverse vertices order if FALSE
+					if (!polyOrientation)
+					{
+						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+					}
+
+					return loopVertices3D;
+				}
+
+				void addTriangleToPolyhedronData(
+					const std::vector<carve::geom::vector<3>>& loopVertices3D,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
+					std::map<std::string, uint32_t>& polygonIndices) const noexcept(true)
+				{
+					std::vector<uint32_t> triangleIndices;
+					triangleIndices.reserve(3);
+
+					for (const auto& vertex3D : loopVertices3D)
+					{
+						// set string id and search for existing vertex in polygon
+						std::stringstream vertexString;
+						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
+						auto itFound = polygonIndices.find(vertexString.str());
+
+						uint32_t index = 0;
+						if (itFound != polygonIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polygon->addVertex(vertex3D);
+							polygonIndices[vertexString.str()] = index;
+						}
+
+						triangleIndices.push_back(index);
+					}
+					polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+				}
+
+				void addArbitraryFaceToPolyhedronData(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon,
+					std::map<std::string, uint32_t>& polygonIndices) const noexcept(false)
+				{
 					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D;
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
 					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
 
-					// Save polygon indices of merged vertices
-					std::map<uint32_t, uint32_t> mergedIndices;
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds;
-					modBounds.reserve(2);
 					bool faceLoopReversed = false;
-
-					// Loop through all boundary definitions
-					int boundID = -1;
 
 					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
 
-					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
-					for (const auto& bound : face->Bounds)
-					{
-						if (bound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
-						{
-							modBounds.insert(modBounds.begin(), bound);
-						}
-						else 
-						{
-							modBounds.push_back(bound);
-						}
-					}
-					modBounds.shrink_to_fit();
-
-					for (const auto& bound : modBounds) 
+					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
+					int boundID = -1;
+					for (auto& loopVertices3D : faceBoundLoops)
 					{
 						boundID++;
 
-						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
-						bool polyOrientation = bound->Orientation;
-
-						if (!loop) {
-							throw oip::InconsistentModellingException(face, " No valid loop");
-						}
-						
-						// Collect all vertices of the current loop
-						std::vector<carve::geom::vector<3>> loopVertices3D;
-						curveConverter->convertIfcLoop(loop, loopVertices3D);
-
-						for (auto& vertex : loopVertices3D) 
-						{
-							vertex = pos * vertex;
-						}
-
-						if (loopVertices3D.size() < 3) 
-						{
-							throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
-						}
-						
-
-						// Check for orientation and reverse vertices order if FALSE
-						if (!polyOrientation) 
-						{
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-						}
-
-						//	3 Vertices Triangle
-						if (loopVertices3D.size() == 3) 
-						{
-							std::vector<uint32_t> triangleIndices;
-							triangleIndices.reserve(3);
-
-							int pointID = -1;
-							for (const auto& vertex3D : loopVertices3D) 
-							{
-								pointID++;
-
-								// apply global transformation to vertex
-								const carve::geom::vector<3> v = vertex3D;
-
-								// set string id and search for existing vertex in polygon
-								std::stringstream vertexString;
-								vertexString << v.x << " " << v.y << " " << v.z;
-								auto itFound = polygonIndices.find(vertexString.str());
-
-								uint32_t index = 0;
-								if (itFound != polygonIndices.end()) 
-								{
-									index = itFound->second;
-								}
-								else 
-								{
-									index = polygon->addVertex(v);
-									polygonIndices[vertexString.str()] = index;
-								}
-
-								triangleIndices.push_back(index);
-								mergedIndices[pointID] = index;
-							}
-							polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
-						}
-
-						//	> 3 Vertices Triangle					
 						std::vector<carve::geom2d::P2> loopVertices2D;
 
-						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
+						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed))
 						{
 							throw oip::InconsistentGeometryException(face, "loop could not be projected");
 						}
 
-						if (loopVertices2D.size() < 3) 
+						if (loopVertices2D.size() < 3)
 						{
 							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
 						}
@@ -907,9 +938,9 @@ namespace OpenInfraPlatform {
 					}
 
 					// If no faceVertices were collected, no carve operations are required
-					if (faceVertices2D.empty()) 
+					if (faceVertices2D.empty())
 					{
-						throw oip::InconsistentGeometryException(face, "no faceVertices were collected"); 
+						throw oip::InconsistentGeometryException(face, "no faceVertices were collected");
 					}
 
 					// Result after incorporating holes in polygons if defined
@@ -919,11 +950,11 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom2d::P2> mergedVertices2D;
 					std::vector<carve::geom::vector<3>> mergedVertices3D;
 
-					try 
+					try
 					{
 						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
 
-						for (const auto& incorpIndex : incorporatedIndices) 
+						for (const auto& incorpIndex : incorporatedIndices)
 						{
 							size_t loopIndex = incorpIndex.first;
 							size_t vertexIndex = incorpIndex.second;
@@ -943,7 +974,6 @@ namespace OpenInfraPlatform {
 					}
 
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
-					return !conversionFailed;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
