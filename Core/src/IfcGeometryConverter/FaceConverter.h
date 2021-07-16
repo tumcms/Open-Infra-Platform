@@ -897,7 +897,6 @@ namespace OpenInfraPlatform {
 						triangleIndices.push_back(index);
 					}
 					polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
-					return;
 				}
 
 				void addArbitraryFaceToPolyhedronData(
@@ -975,7 +974,6 @@ namespace OpenInfraPlatform {
 					}
 
 					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
-					return;
 				}
 
 				/*! \brief  Converts 3D points to 2D.
