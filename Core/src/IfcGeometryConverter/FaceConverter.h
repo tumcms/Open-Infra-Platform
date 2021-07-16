@@ -792,31 +792,37 @@ namespace OpenInfraPlatform {
 				}
 				
 				void convertIfcFaceBoundList(
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds,
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds,
 					const carve::math::Matrix& pos,
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops) const noexcept(true)
+				{
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> faceBounds = swapOuterBoundaryToFront(ifcFaceBounds);
+
+					faceBoundLoops.resize(faceBounds.size());
+					for (size_t i = 0; i < faceBounds.size(); i++)
+					{
+						// get vertices of one bound loop into faceBoundLoops[i]
+						convertIfcFaceBound(faceBounds[i], pos, faceBoundLoops[i]);
+					}
+				}
+
+				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> swapOuterBoundaryToFront(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds) const throw(...)
 				{
 					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
 					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
 					{
 						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
 						{
-							// swap element 'it' with first element
+							// swap element 'it' with first element;
 							std::rotate(ifcFaceBounds.begin(), it, it + 1);
 
 							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
 							// "One loop is optionally distinguished as the outer loop of the face."
 							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
 							// thus, break the for-loop after THE outer boundary was found
-							break;
+							return ifcFaceBounds;
 						}
-					}
-
-					faceBoundLoops.resize(ifcFaceBounds.size());
-					for (size_t i = 0; i < ifcFaceBounds.size(); i++)
-					{
-						// get vertices of one bound loop into faceBoundLoops[i]
-						convertIfcFaceBound(ifcFaceBounds[i], pos, faceBoundLoops[i]);
 					}
 				}
 
