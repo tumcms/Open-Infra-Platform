@@ -849,14 +849,14 @@ namespace OpenInfraPlatform {
 					// Collect all vertices of the current loop
 					curveConverter->convertIfcLoop(loop, loopVertices3D);
 
-					for (auto& vertex : loopVertices3D)
-					{
-						vertex = pos * vertex;
-					}
-
 					if (loopVertices3D.size() < 3)
 					{
 						throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
+					}
+
+					for (auto& vertex : loopVertices3D)
+					{
+						vertex = pos * vertex;
 					}
 
 					// Check for orientation and reverse vertices order if FALSE
