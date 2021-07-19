@@ -910,6 +910,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(){
+	view_->ZoomToOneObject();
+}
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionMerge_LAS_File_triggered() {

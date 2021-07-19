@@ -185,6 +185,7 @@ namespace OpenInfraPlatform
 			//void on_actionVertical_alignment_3D_triggered();
 			//void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
+			void on_actionZoomToOneObject_triggered();
 			//void on_actionAdd_Georeference_triggered();
 
 			//void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);

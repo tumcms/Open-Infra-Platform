@@ -389,6 +389,11 @@ void OpenInfraPlatform::UserInterface::View::enableMap( const bool checked )
 	viewport_->enableMap(checked);
 }
 
+void OpenInfraPlatform::UserInterface::View::ZoomToOneObject()
+{
+	viewport_->ZoomToOneObject();
+}
+
 //void OpenInfraPlatform::UserInterface::View::onViewCubeSelectionChanged(buw::eViewCubeOrientation::Enum state)
 //{
 //	switch (state)

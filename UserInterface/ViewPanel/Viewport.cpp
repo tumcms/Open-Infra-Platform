@@ -886,4 +886,9 @@ void Viewport::reloadShader() {
 	/*billboardEffect_->loadShader();*/
 }
 
+void Viewport::ZoomToOneObject() {
+	
+}
+
+
 OIP_NAMESPACE_OPENINFRAPLATFORM_UI_END

@@ -106,6 +106,8 @@ namespace OpenInfraPlatform {
 			void enableIsoLines(const bool checked);
 			void enableTerrainGradientRamp(const bool checked);
 
+			void ZoomToOneObject();
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 			//---------------------------------------------------------------------------//
 			// Point Cloud

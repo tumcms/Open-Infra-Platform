@@ -3239,6 +3239,7 @@
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
    <addaction name="actionCreateClothoid"/>
+   <addaction name="actionZoomToOneObject"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -3894,6 +3895,18 @@
     <string>Create Clothoid</string>
    </property>
   </action>
+   <action name="actionZoomToOneObject">
+     <property name="icon">
+       <iconset resource="../Resources/OpenInfraPlatform.qrc">
+         <normaloff>:/blueform/ZoomToOneObject.png</normaloff>:/blueform/ZoomToOneObject.png</iconset>
+     </property>
+     <property name="text">
+       <string>Zoom to Object</string>
+     </property>
+     <property name="toolTip">
+       <string>Zoom to Object</string>
+     </property>
+   </action>
   <action name="actionStroke_To_Alignment">
     <property name="text">
       <string>Convert Stroke to Alignment</string>

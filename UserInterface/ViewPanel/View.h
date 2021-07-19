@@ -101,6 +101,8 @@ namespace OpenInfraPlatform
 
 			void showFrameTimes(const bool show);
 
+			void ZoomToOneObject();
+
             Viewport* getViewport();           
 
 			//---------------------------------------------------------------------------//
