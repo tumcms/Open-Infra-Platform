@@ -24,12 +24,12 @@ Furthermore, dependies on third party libraries are stated.
 Base lies the backbone for everything else that follows. Main part are the third party libraries that are linked here. Other than that we have only IModel.h Interface, GeorefMetaData.h, and BBox.h.
 
 Third Party Libraries:
-* Boost ()
-* BlueFramework ()
-* Carve ()
-* Tclap ()
-* FFTW3 ()
-* Doxygen ()
+* Boost (header-only, library for linear algebra, mutlithreading and in general storage management)
+* BlueFramework (open-source rendering engine developed by TUM)
+* Carve (library to work with constructive solid geometry)
+* Tclap (header-only, very small and flexible library providing an interface for accessing and defining command line arguments)
+* FFTW3 (header-only, used for computing fourier trasformations)
+* Doxygen (header-only, tool to generate documentation)
 
 ### <a name="Modules"></a> Modules
 
@@ -38,18 +38,19 @@ In here we have two differnet file formats that we support. First of all, we hav
 
 On the other hand, there is the Point Cloud Processing module. This makes it possible to visualize point clouds of the file type x, y, and z.
 This module has references to the third party libraries:
-* Qt5 ()
-* Liblas ()
-* Eigen ()
-* Cloud Compare ()
+* Qt5 (library that provides elements for the development of graphical user interface)
+* Liblas (used to read and write geodata in LAS format)
+* Eigen (library for linear algebra, matrix and vector operations, numerical solvers, geometric transformations, and similar stuff)
+* Cloud Compare (point cloud processing)
 
 By default the point cloud processing part is deactivated. In order to make use of it the corresponding CMake option needs to be selected (see [CMake Options Documentation](Documentation/markdown/CMakeOptions.md)). The good thing is that the differnet modules can be run simultaneously so that, e.g., one is able to open an IFC file and point cloud at the same time to dirrectly compare them to each other.
 
 ### <a name="UI"></a> User Interface
 
-The underlying part of the user interface is the Rendering module. This contains a self written rendering engine. With the help of this things can be displayed. Depending on the displayed object different types of shaders are implemented. On top of this we have the Graphical User Interface. It bases on the Qt5 library which has a big catalogue of ready to use user interface elemtents. Other linked third party libraries are:
-* Zlib ()
-* Proj ()
+The underlying part of the user interface is the Rendering module. This contains a self written rendering engine. With the help of this things can be displayed. Depending on the displayed object different types of shaders are implemented (also mention blueframework). On top of this we have the Graphical User Interface. It bases on the Qt5 library which has a big catalogue of ready to use user interface elemtents. Other linked third party libraries are:
+* Zlib (provides alorithms for compression and decompression of data)
+* Proj (library that provides functionalities to make conversions between geodetic reference systems)
+
 On the other hand there is also the Unit Testing part. This bases on the google test. Since many unit test base on the visual comparison (visual test) the unit test base includes a geometry model renderer that allows rendering without the use of the graphical user interface. On top of there a various unit tests for IFC, OFF, point clouds and also some other more general unit tests? These provide automated checking whether the implemented funtionalities are all still in place and working. For the case of IFC the [List of supported IFC Representations](./SupportedIFCrepresentations.md) provides information which representation currently has a unit testing in place.
 
 ## <a name="Express_binding"></a> Express binding Generator
@@ -62,10 +63,10 @@ This section will give a short overview of how the expresss binding generator is
 
 Here the basic functionalities are defined, which state how the IFC express schemas are converted to c++ classes, taking into account entities, inverse attributes, attributes, where clauses and so on.
 We have links to the third party libraries:
-* Flex ()
-* Bison ()
-* Tclap ()
-* Boost ()
+* Flex (lexical analzyer generator)
+* Bison (general purpose parser generator)
+* Tclap (header-only, very small and flexible library providing an interface for accessing and defining command line arguments)
+* Boost (header-only, library for linear algebra, mutlithreading and in general storage management)
 
 ### <a name="Commands"></a> Commands
 
