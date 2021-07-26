@@ -16,6 +16,7 @@ It comes with its own `EXPRESS` parser and `C++` classes generator.
 - [CMake Options Documentation](Documentation/markdown/CMakeOptions.md)
 - [Git process Guideline](Documentation/markdown/GitProcess.md)
 - [Coding Guideline](Documentation/markdown/CodingGuideline.md)
+- [Software Architecture](Documentation/markdown/SoftwareArchitecture.md)
 - [Doxymentation Guideline](Documentation/markdown/DoxygenHelp.md)
 - [List of Contributors](Documentation/markdown/Contributors.md)
 
