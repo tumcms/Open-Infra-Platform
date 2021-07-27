@@ -56,23 +56,23 @@ On the other hand, there is the Unit Testing part, which bases on Google Test. S
 
 ## <a name="Express_binding"></a> Express Binding Generator
 
-This section will give a short overview of how the expresss binding generator is working. The general task of the express binding generator is to read a specific IFC schema in the form of a express file to create c++ classes for all of the ifc entities. This allows the quick adaption and support of the newest IFC verisons. The express binding generator consists of three main parts: the executables, the commands, and the early binding library. These will be explained in more detail in the following. (automated mapping from IFC to C++ lib, we do not want to do this for every IFC version manually)
+This section will give a short overview of how the Express Binding Generator is working. The general task of the Express Binding Generator is to read an IFC schema in the form of an EXPRESS file and automatically create C++ classes mirroring the IFC entities. This allows to adapt and support the newest IFC versions quickly. The Express Binding Generator consists of three main parts: the executables, the commands, and the early binding library. These will be explained in more detail in the following.
 
 ![](../images/express_binding.PNG)
 
 ### <a name="Exec"></a> Executables 
 
-Here the basic functionalities are defined, which state how the IFC express schemas are converted to c++ classes, taking into account entities, inverse attributes, attributes, types, where and select clauses and so on. (schema file processed using a Yacc and Bison parser to generate a corresponding meta-model representation in c++, needs to overcome fundamental differences between C++ and EXPRESS, differences between basic types)
-We have links to the third-party libraries:
-* Flex (lexical analzyer generator)
-* Bison (general purpose parser generator)
+In the executables, the basic functionalities are defined, which state how the IFC express schemas are converted to C++ classes, taking into account entities, inverse attributes, attributes, types, and WHERE and SELECT clauses. A Yacc and Bison parser generates a corresponding meta-model representation in C++, which needs to overcome fundamental differences between C++ and EXPRESS.
+The executables make use of the following third-party libraries:
+* Flex (lexical analyzer generator)
+* Bison (general-purpose parser generator)
 * Tclap (small and flexible library providing an interface for accessing and defining command line arguments; header-only)
 * Boost (library for linear algebra, multithreading, and storage management; header-only)
 
 ### <a name="Commands"></a> Commands
 
-This is the part where the express files  (one specific selected one) are read and then according to the schema the c++ classes are generated in order to use them later on. It is currently not possible to build various IFC versions at the same time since they have overlapping classes but also various differences. Therefore one needs to select the IFC version in the [CMake Options Documentation](Documentation/markdown/CMakeOptions.md). 
-Supported IFC Versions are:
+In this section, the selected express file is read, and then according to the schema, the C++ classes are generated. It is currently not possible to build various IFC versions simultaneously since they have overlapping classes with various differences. Therefore one needs to select the desired IFC version for the build process, as described in the [CMake Options Documentation](Documentation/markdown/CMakeOptions.md). <br>
+The supported IFC versions are:
 * IFC2x3_TC1
 * IFC2x4_RC3
 * IFC4_ADD2
@@ -82,5 +82,5 @@ Supported IFC Versions are:
 
 ### <a name="Early_binding_lib"></a> Early Binding Library
 
-Once a specific command is execute and the IFC classes have been built they are ready to use in the form of a library.
+Once a specific command is executed and the IFC classes have been built, they are ready to use in the form of a library.
 
