@@ -1009,10 +1009,14 @@ namespace OpenInfraPlatform
 					//double L = sqrt(pow(endPoint.x- firstPoint.x)+pow(endPoint.y - firstPoint.y)+ pow(endPoint.z - firstPoint.z));
 					double L = carve::geom::distance(firstPoint, endPoint);
 
-					// Get number of tesselated segments (note default is 100, write new function!)
-					int numSegments = 100;
 					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
-					double l = L / A * sqrt(M_PI);
+					double length = L / A * sqrt(M_PI);
+		
+					// Get number of tesselated segments
+					int numSegments = this->GeomSettings()->getNumberOfTessellationSegmentsByLength(length);
+					//Calculate segment length
+					double segmentLength = length / numSegments;
+					double lengthNew = segmentLength;
 
 					// Create a tessalated vector by clothoid length 
 					/*std::vector<carve::geom::vector<3>> ti;
@@ -1034,28 +1038,27 @@ namespace OpenInfraPlatform
 					for (int i = 1; i < numSegments; ++i) 
 					{
 						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
+						lengthNew += segmentLength;
 					
 					}
 					
-					// Add integral constant (position)
-
-					std::vector<carve::geom::vector<3>> newClothoidPoints;
-					for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
+					// Apply position
+					if (clothoidPoints.size() > 0)
 					{
-						carve::geom::vector<3>&  point = clothoidPoints.at(i);
-						carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
-						point3d = clothoidPositionMatrix * point3d;
-						newClothoidPoints.push_back(point3d);
+						std::vector<carve::geom::vector<3>> newClothoidPoints;
+						for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
+						{
+							carve::geom::vector<3> point3d = clothoidPoints.at(i);
+							point3d = clothoidPositionMatrix * point3d;
+							newClothoidPoints.push_back(point3d);
+						}
 
+						GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
+						segmentStartPoints.push_back(carve::geom::VECTOR(
+							newClothoidPoints.at(0).x,
+							newClothoidPoints.at(0).y,
+							newClothoidPoints.at(0).z));
 					}
-
-					// Convert to newClothoidPoints
-
-					GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
-					segmentStartPoints.push_back(carve::geom::VECTOR(
-						newClothoidPoints.at(0).x,
-						newClothoidPoints.at(0).y,
-						newClothoidPoints.at(0).z));
 
 				}
 #endif
@@ -2415,16 +2418,16 @@ namespace OpenInfraPlatform
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., A*sqrt(2) / 2, 0., 0. };
+					std::vector<double> polynomialConstants = { 0., 0., sqrt(2) /A*A* 2, 0., 0. };//incorrect? 
 
 					//Calculate tesselated curve->How can I interpret this parameter 
-					double s = 0;
+					//double s = 0;
 
 					// Implement Taylor series for x coordinate
-					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, s);
+					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter);
 
 					// Implement Taylor series for y coordinate
-					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, s);
+					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter);
 					
 					return carve::geom::VECTOR(A * sqrt(M_PI)*x, A * sqrt(M_PI)*y, 0.);
 
