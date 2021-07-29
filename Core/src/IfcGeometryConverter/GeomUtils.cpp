@@ -1230,10 +1230,10 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate recursive multiplication for calculation Taylor series
 	* \param[in]  value                  value of Taylor series
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d 
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d 
 	* \param[in]  myArray                matrix with 1xn number of iteration points
-	* \param[in]  i_n                    aktuôä itaration point
-	* \param[in]  n                      number of itaration points
+	* \param[in]  i_n                    actual iteration point
+	* \param[in]  n                      number of iteration points
 	*
 	* \return
 	*/
@@ -1245,9 +1245,9 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			const int	n
 		)
 	{
-		if (!value) throw oip::InconsistentGeometryException("...");
+		if (!value) throw oip::InconsistentGeometryException("Invalid polynomial constants!");//to add
 		if (i_n < n - 1) {
-			if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("...");
+			if(polynomialConstants.size() == 0 || polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
 					GeomUtils::recursiveMultiplicationTaylor(
@@ -1260,10 +1260,10 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			}
 		}
 		else {
-			if(i_n == n - 1);
+			if (i_n != n - 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
-					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("...");
+					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArray.size() + i] += value * polynomialConstants[i];
 				}
 			}
@@ -1274,7 +1274,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate the Taylor series 
 	* \param[in]  n                      number of iteration points
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
 	* \param[in]  s                      the length of the curve between two points 
 	*
 	* \return
@@ -1291,7 +1291,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		// 	x =  indeterminate
 		// 	   =>	pC[c-1] * x^(c-1) + pC[c-2] * x^(c-2) + ... + pC[1] * x^(1) + pC[0] * x^(0) where pC[0] == 0
 		//
-		if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("...");
+		if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 
 		if (n) {
 			//create a matrix whith 1xn size
@@ -1327,10 +1327,10 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate i-value of cosine in the Taylor Series, namely negative or positiv value
 	* \param[in]  i                      i-integral step
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
 	* \param[in]  s                      the length of the curve between two points 
 	*
-	* \return                            cosine value
+	* \return                            the value of cosine
 	*/
 	double	GeomUtils::integralTaylorSeriesCosExpansion( 
 		const int	i,
@@ -1356,10 +1356,10 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 	/*!Calculate i-value of sine in the Taylor Series, namely negative or positiv value
 	* \param[in]  i                      i-integral step
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
 	* \param[in]  s                      the length of the curve between two points
 	*
-	* \return                            sine value
+	* \return                            the value of sine
 	*/
 	double	GeomUtils::integralTaylorSeriesSinExpansion(
 		const int	i,
@@ -1384,8 +1384,8 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	/**********************************************************************************************/
 
 	/*!Calculate cosinus for X in th Taylor Series
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  s                      curve length betwee two points
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      curve length between two points
 	*
 	* \return                            the value of cosine
 	*/
@@ -1437,14 +1437,14 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				s
 			);
 
-		if(i != maxSteps) throw oip::InconsistentGeometryException("...");
+		if(i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
 		return value;
 	}
 	/**********************************************************************************************/
 
 	/*!Calculate sine for Y in th Taylor Series
-	* \param[in]  polynomialConstants    polynomial constants for a polyomial term - a,b,c,d
-	* \param[in]  s                      curve length betwee two points
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      curve length between two points
 	*
 	* \return                            the value of sine
 	*/
@@ -1496,7 +1496,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				s
 			);
 
-		if(i != maxSteps) throw oip::InconsistentGeometryException("...");
+		if(i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
 		return value;
 	}
 
