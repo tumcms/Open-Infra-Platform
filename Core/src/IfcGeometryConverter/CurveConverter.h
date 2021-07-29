@@ -1116,6 +1116,9 @@ namespace OpenInfraPlatform
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 					// Calculate the length of clothoid curve from (0,0,0,) to x(l),y(l)
 					double length = L / A * sqrt(M_PI);
 		
@@ -1144,14 +1147,20 @@ namespace OpenInfraPlatform
 			
 					for (int i = 0; i < numSegments; ++i) 
 					{
+<<<<<<< HEAD
 						const IfcEntityTypesT::IfcParameterValue val = lengthNew;
 
 						clothoidPoints.push_back(getPointOnCurve(clothoid, val));
 						//val += segmentLength;
+=======
+						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
+						lengthNew += segmentLength;
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 					
 					}
 					
 					// Apply position
+<<<<<<< HEAD
 					if (!clothoidPoints.empty())
 					{
 						std::vector<carve::geom::vector<3>> newClothoidPoints;
@@ -1220,9 +1229,26 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
 						point3d = clothoidPositionMatrix * point3d;
 						newClothoidPoints.push_back(point3d);
+=======
+					if (clothoidPoints.size() > 0)
+					{
+						std::vector<carve::geom::vector<3>> newClothoidPoints;
+						for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
+						{
+							carve::geom::vector<3> point3d = clothoidPoints.at(i);
+							point3d = clothoidPositionMatrix * point3d;
+							newClothoidPoints.push_back(point3d);
+						}
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 
+						GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
+						segmentStartPoints.push_back(carve::geom::VECTOR(
+							newClothoidPoints.at(0).x,
+							newClothoidPoints.at(0).y,
+							newClothoidPoints.at(0).z));
 					}
 
+<<<<<<< HEAD
 					// Convert to newClothoidPoints
 
 					GeomUtils::appendPointsToCurve(newClothoidPoints, targetVec);
@@ -1236,6 +1262,8 @@ namespace OpenInfraPlatform
 =======
 >>>>>>> 875f326b (Fixed mistakes in Spiral function)
 
+=======
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 				}
 #endif
 
@@ -2715,7 +2743,11 @@ namespace OpenInfraPlatform
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
+<<<<<<< HEAD
 					std::vector<double> polynomialConstants = { 0., 0., 1 /(A*A), 0., 0. };//incorrect? 
+=======
+					std::vector<double> polynomialConstants = { 0., 0., sqrt(2) /A*A* 2, 0., 0. };//incorrect? 
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 
 					//Calculate tesselated curve->How can I interpret this parameter 
 					//double s = 0;

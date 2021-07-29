@@ -1310,8 +1310,13 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			if (i_n != n - 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
+<<<<<<< HEAD
 					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
+=======
+					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+					myArray[myArray.size() + i] += value * polynomialConstants[i];
+>>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
 				}
 			}
 		}
