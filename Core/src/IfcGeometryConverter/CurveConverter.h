@@ -937,6 +937,7 @@ namespace OpenInfraPlatform
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(spiral.as<typename IfcEntityTypesT::IfcClothoid>(),
+<<<<<<< HEAD
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcClothoid
 
@@ -1009,27 +1010,29 @@ namespace OpenInfraPlatform
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcClothoid>(),
+=======
+>>>>>>> 3a97f03f (current mistakes fixed, further comments needed)
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcClothoid
 
 					// IfcCosine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcCosine>())
 					{
-						return convertIfcCosine(conic.as<typename IfcEntityTypesT::IfcCosine>(),
+						return convertIfcCosine(spiral.as<typename IfcEntityTypesT::IfcCosine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcCosine
 
 					// IfcHelmertCurve SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
 					{
-						return convertIfcHelmertCurve(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
+						return convertIfcHelmertCurve(spiral.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcHelmertCurve
 
 					// IfcSine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
-						return convertIfcSine(conic.as<typename IfcEntityTypesT::IfcSine>(),
+						return convertIfcSine(spiral.as<typename IfcEntityTypesT::IfcSine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcSine
 
@@ -1161,6 +1164,7 @@ namespace OpenInfraPlatform
 					
 					// Apply position
 <<<<<<< HEAD
+<<<<<<< HEAD
 					if (!clothoidPoints.empty())
 					{
 						std::vector<carve::geom::vector<3>> newClothoidPoints;
@@ -1231,6 +1235,9 @@ namespace OpenInfraPlatform
 						newClothoidPoints.push_back(point3d);
 =======
 					if (clothoidPoints.size() > 0)
+=======
+					if (!clothoidPoints.empty())
+>>>>>>> 3a97f03f (current mistakes fixed, further comments needed)
 					{
 						std::vector<carve::geom::vector<3>> newClothoidPoints;
 						for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
@@ -1738,6 +1745,7 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const noexcept(false)
 				{
+<<<<<<< HEAD
 					//	ENTITY IfcCurveSegment					//	  SUBTYPE OF(IfcSegment);					//       Placement: IfcPlacement;					//       SegmentStart: IfcCurveMeasureSelect;					//       SegmentLength: IfcCurveMeasureSelect;					//       ParentCurve: IfcCurve;					//	  DERIVE					//		Dim : IfcDimensionCount: = ParentCurve.Dim;					//	END_ENTITY;
 
 					// start point
@@ -1820,6 +1828,18 @@ namespace OpenInfraPlatform
 						GeomUtils::appendPointsToCurve(newPoints, targetVec);
 						segmentStartPoints.push_back(newPoints[0]);
 					}
+=======
+					// start point
+					auto startPoint = getPointOnCurve(curveSegment.ParentCurve, curveSegment.SegmentStart);
+
+					throw oip::UnhandledException(curveSegment);
+
+					//Get length of the trimming curve
+					//double segmentLength = curveSegment->SegmentLength * this->UnitConvert()->getLengthInMeterFactor();
+					
+					// apply placement
+
+>>>>>>> 3a97f03f (current mistakes fixed, further comments needed)
 				}
 #endif
 
@@ -2744,10 +2764,14 @@ namespace OpenInfraPlatform
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
 <<<<<<< HEAD
+<<<<<<< HEAD
 					std::vector<double> polynomialConstants = { 0., 0., 1 /(A*A), 0., 0. };//incorrect? 
 =======
 					std::vector<double> polynomialConstants = { 0., 0., sqrt(2) /A*A* 2, 0., 0. };//incorrect? 
 >>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
+=======
+					std::vector<double> polynomialConstants = { 0., 0., 1 /(A*A), 0., 0. };//incorrect? 
+>>>>>>> 3a97f03f (current mistakes fixed, further comments needed)
 
 					//Calculate tesselated curve->How can I interpret this parameter 
 					//double s = 0;
