@@ -899,28 +899,28 @@ namespace OpenInfraPlatform {
 					// IfcClothoid SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
-						return convertIfcClothoid(conic.as<typename IfcEntityTypesT::IfcClothoid>(),
+						return convertIfcClothoid(spiral.as<typename IfcEntityTypesT::IfcClothoid>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcClothoid
 
 					// IfcCosine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcCosine>())
 					{
-						return convertIfcCosine(conic.as<typename IfcEntityTypesT::IfcCosine>(),
+						return convertIfcCosine(spiral.as<typename IfcEntityTypesT::IfcCosine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcCosine
 
 					// IfcHelmertCurve SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcHelmertCurve>())
 					{
-						return convertIfcHelmertCurve(conic.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
+						return convertIfcHelmertCurve(spiral.as<typename IfcEntityTypesT::IfcHelmertCurve>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcHelmertCurve
 
 					// IfcSine SUBTYPE OF IfcSpiral
 					else if (spiral.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
-						return convertIfcSine(conic.as<typename IfcEntityTypesT::IfcSine>(),
+						return convertIfcSine(spiral.as<typename IfcEntityTypesT::IfcSine>(),
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					} // end if IfcSine
 
@@ -1012,7 +1012,7 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>> clothoidPoints;
 					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
 			
-					for (int i = 1; i < numSegments; ++i) 
+					for (int i = 0; i < numSegments; ++i) 
 					{
 						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
 						lengthNew += segmentLength;
@@ -1020,7 +1020,7 @@ namespace OpenInfraPlatform {
 					}
 					
 					// Apply position
-					if (clothoidPoints.size() > 0)
+					if (!clothoidPoints.empty())
 					{
 						std::vector<carve::geom::vector<3>> newClothoidPoints;
 						for (unsigned int i = 0; i < clothoidPoints.size(); ++i)
@@ -1479,22 +1479,28 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
-					throw oip::UnhandledException(segment);
-					/*
+					//throw oip::UnhandledException(segment);
+					
+					// IfcCurveSegment SUPTYPE of IfcSegment
 					if (segment.isOfType<typename IfcEntityTypesT::IfcCurveSegment>())
 					{
 						return convertIfcCurveSegment(segment.as<typename IfcEntityTypesT::IfcCurveSegment>(), targetVec, segmentStartPoints);
 					}
-					if  (segment.isOfType<typename IfcEntityTypesT::IfcCompositeCurveSegment>())
+					// IfcCompositeCurveSegment SUPTYPE of IfcSegment
+					else if  (segment.isOfType<typename IfcEntityTypesT::IfcCompositeCurveSegment>())
 					{
 						return IfcCompositeCurveSegment(segment.as<typename IfcEntityTypesT::IfcCompositeCurveSegment>(), targetVec, segmentStartPoints);
 					}
-					*/
+					else {
+						throw oip::UnhandledException(segment);
+					}
+					
 				}
 #endif
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 				/*! \brief Converts \c IfcCurveSegment to a series of points and appends them to the curve.
+				* https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC4-voting/HTML/link/ifccurvesegment.htm
 				* \param[in] curveSegment			The \c IfcCurveSegment to be converted.
 				* \param[out] targetVec				The tessellated line.
 				* \param[out] segmentStartPoints	The starting points of separate segments.
@@ -1504,7 +1510,16 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
+					// start point
+					auto startPoint = getPointOnCurve(curveSegment.ParentCurve, curveSegment.SegmentStart);
+
 					throw oip::UnhandledException(curveSegment);
+
+					//Get length of the trimming curve
+					//double segmentLength = curveSegment->SegmentLength * this->UnitConvert()->getLengthInMeterFactor();
+					
+					// apply placement
+
 				}
 #endif
 
@@ -2234,6 +2249,28 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const throw(...)
+				{
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
+						return getPointOnCurve<TCurve>(curve, trimming.get<0>());
+					}
+					case 1:
+					{
+						// Calculate a trimming point using \c IfcParameterValue.
+						return getPointOnCurve<TCurve>(curve, trimming.get<1>());
+					}
+					default:
+						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+					}
+				}
+
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
 				* \tparam TCurve					A type of the curve. 
@@ -2287,6 +2324,13 @@ namespace OpenInfraPlatform {
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
 				{
 					throw oip::UnhandledException(curve);
 				}
@@ -2367,7 +2411,7 @@ namespace OpenInfraPlatform {
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., sqrt(2) /A*A* 2, 0., 0. };//incorrect? 
+					std::vector<double> polynomialConstants = { 0., 0., 1 /(A*A), 0., 0. };//incorrect? 
 
 					//Calculate tesselated curve->How can I interpret this parameter 
 					//double s = 0;
