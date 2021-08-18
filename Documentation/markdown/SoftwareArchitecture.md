@@ -143,4 +143,4 @@ Once a specific command is executed and the IFC classes have been built,
 they are ready to use in the form of a library.
 This gets linked to _Core_ module.
 
-For a more detailed description of the OIP software architecture take a look at the paper by [Hecht and Jaud 2019](Documentation/2019_Hecht_Jaud_FBI.pdf)
+For a more detailed description of OIP software architecture take a look at the paper by [Hecht and Jaud 2019](Documentation/2019_Hecht_Jaud_FBI.pdf)
