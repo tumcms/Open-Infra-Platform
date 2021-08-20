@@ -43,7 +43,7 @@ Meaning of columns:
 | `IfcBoundingBox`                      | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
 | `IfcBoxedHalfSpace`                   | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcBSplineCurveWithKnots`            | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
-| `IfcBSplineSurfaceWithKnots`          | :x:                  | `SplineConverter`          | -                     | -     |
+| `IfcBSplineSurfaceWithKnots`          | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
 | `IfcCartesianPoint`                   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    | -     |
 | `IfcCartesianPointList2D`             | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
 | `IfcCartesianPointList3D`             | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
@@ -116,8 +116,8 @@ Meaning of columns:
 | `IfcPolyLoop`                         | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcPolygonalBoundedHalfSpace`        | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcPolygonalFaceSet`                 | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
-| `IfcRationalBSplineCurveWithKnots`    | :heavy_check_mark:   | `SplineConverter`          | :x:                   | -     |
-| `IfcRationalBSplineSurfaceWithKnots`  | :x:                  | `SplineConverter`          | -                     | -     |
+| `IfcRationalBSplineCurveWithKnots`    | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
+| `IfcRationalBSplineSurfaceWithKnots`  | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
 | `IfcRectangularPyramid`               | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
 | `IfcRectangularTrimmedSurface`        | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150)|
 | `IfcReparametrisedCompositeCurveSegment`| :x:                  | -                          | -                     | -     |
