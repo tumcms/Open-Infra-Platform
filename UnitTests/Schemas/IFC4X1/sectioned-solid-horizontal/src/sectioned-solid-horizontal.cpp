@@ -62,21 +62,21 @@ protected:
 TEST_F(SectionedSolidHorizontal, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(302));
 }
-/*
+
 TEST_F(SectionedSolidHorizontal, IFCHasAnEssentialEntity) {
 	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSECTIONEDSOLIDHORIZONTAL"; });
-	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
-	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
-	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCPOLYLINE"; });
-	auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
+	//auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
+	//auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCINDEXEDPOLYCURVE"; });
+	//auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCPOLYLINE"; });
+	//auto result5 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCALIGNMENTCURVE"; });
 
 	EXPECT_NE(result1, express_model->entities.end());
-	EXPECT_NE(result2, express_model->entities.end());
-	EXPECT_NE(result3, express_model->entities.end());
-	EXPECT_NE(result4, express_model->entities.end());
-	EXPECT_NE(result5, express_model->entities.end());
+	//EXPECT_NE(result2, express_model->entities.end());
+	//EXPECT_NE(result3, express_model->entities.end());
+	//EXPECT_NE(result4, express_model->entities.end());
+	//EXPECT_NE(result5, express_model->entities.end());
 }
-
+/*
 TEST_F(SectionedSolidHorizontal, CountEssentialEntities) {
 	auto result1 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCSECTIONEDSOLIDHORIZONTAL"; });
 	auto result2 = std::count_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCARBITRARYCLOSEDPROFILEDEF"; });
@@ -88,7 +88,7 @@ TEST_F(SectionedSolidHorizontal, CountEssentialEntities) {
 }
 */
 
-TEST_F(SectionedSolidHorizontal ImageIsSaved)
+TEST_F(SectionedSolidHorizontal, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = rendererIfc->captureImage();
