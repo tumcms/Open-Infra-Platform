@@ -72,33 +72,15 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts an \c IfcSurface to an array of segments to be rendered on screen.
 				 *
-				 * \param[in] surface		The \c IfcSurface to be converted.
-				 * \param[in] pos			The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData		A pointer to be filled with the relevant data.
-				 *
-				 * \note Calls the other overload FaceConverterT::convertIfcSurface with corresponding input parameters. Adds their result to itemData.
+				 * \param[in]	surface		The \c IfcSurface to be converted.
+				 * \param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				 */
 				void convertIfcSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
 				) const throw(...)
-				{
-					std::shared_ptr<carve::input::PolylineSetData> polyline =
-						convertIfcSurface(surface, pos);
-					if (polyline->getVertexCount() > 1) 
-						itemData->polylines.push_back(polyline);
-				}
-
-				/*! \brief Converts \c IfcSurface to a according to subtype.
-					\param		surface	\c IfcSurface entity to be interpreted.
-					\param		pos
-					\return		polylineData
-					\note		The \c IfcSurface subtypes are \c IfcBoundedSurface,  \c IfcElementarySurface and  \c IfcSweptSurface.
-				*/
-
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -107,21 +89,21 @@ namespace OpenInfraPlatform {
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBoundedSurface>()) 
 					{
 						return convertIfcBoundedSurface(surface.as<typename IfcEntityTypesT::IfcBoundedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/3) IfcElementarySurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()) 
 					{
 						return convertIfcElementarySurface(surface.as<typename IfcEntityTypesT::IfcElementarySurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/3) IfcSweptSurface SUBTYPE of IfcSurface
 					if (surface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>())  
 					{
 						return convertIfcSweptSurface(surface.as<typename IfcEntityTypesT::IfcSweptSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -132,15 +114,16 @@ namespace OpenInfraPlatform {
 				// IfcBoundedSurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcBoundedSurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
-						*/
+					/*! \brief  Converts \c IfcBoundedSurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcBoundedSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcBoundedSurface subtypes are: \c IfcBSplineSurface, \c IfcCurveBoundedPlane, \c IfcCurveBoundedSurface and \c IfcRectangularTrimmedSurface.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -150,7 +133,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcBSplineSurface(
 							surface.as<typename IfcEntityTypesT::IfcBSplineSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/4) IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface.
@@ -158,7 +141,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCurveBoundedPlane(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedPlane>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/4) IfcCurveBoundedSurface SUBTYPE of IfcBoundedSurface.
@@ -166,7 +149,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCurveBoundedSurface(
 							surface.as<typename IfcEntityTypesT::IfcCurveBoundedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (4/4) IfcRectangularTrimmedSurface SUBTYPE of IfcBoundedSurface.
@@ -174,7 +157,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcRectangularTrimmedSurface(
 							surface.as<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -185,15 +168,16 @@ namespace OpenInfraPlatform {
 				// IfcElementarySurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcElementarySurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalSurface and \c IfcToroidalSurface.
-						*/
+					/*! \brief  Converts \c IfcElementarySurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcElementarySurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\return[in]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalSurface and \c IfcToroidalSurface.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -203,7 +187,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcCylindricalSurface(
 							surface.as<typename IfcEntityTypesT::IfcCylindricalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/4) IfcPlane SUBTYPE of IfcElementarySurface
@@ -211,7 +195,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcPlane(
 							surface.as<typename IfcEntityTypesT::IfcPlane>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (3/4) IfcSphericalSurface SUBTYPE of IfcElementarySurface
@@ -219,7 +203,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSphericalSurface(
 							surface.as<typename IfcEntityTypesT::IfcSphericalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (4/4) IfcToroidalSurface SUBTYPE of IfcElementarySurface
@@ -227,7 +211,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcToroidalSurface(
 							surface.as<typename IfcEntityTypesT::IfcToroidalSurface>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -238,15 +222,16 @@ namespace OpenInfraPlatform {
 				// IfcSweptSurface
 				//--------------------------------------------------------------------------------------------
 
-						/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
-						\param		surface	\c IfcSweptSurface entity to be interpreted.
-						\param		pos
-						\return		polylineData
-						\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
-						*/
+					/*! \brief  Converts \c IfcSweptSurface by calling the conversion function according to subtype.
+					\param[in]	surface		\c IfcSweptSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note		The \c IfcSweptSurface subtypes are \c IfcSurfaceOfLinearExtrusion and \c IfcSurfaceOfRevolution.
+					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -256,7 +241,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSurfaceOfLinearExtrusion(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>(),
-							pos);
+							pos, itemData);
 					}
 
 					// (2/2) IfcSurfaceOfRevolution SUBTYPE of IfcSweptSurface
@@ -264,7 +249,7 @@ namespace OpenInfraPlatform {
 					{
 						return convertIfcSurfaceOfRevolution(
 							surface.as<typename IfcEntityTypesT::IfcSurfaceOfRevolution>(),
-							pos);
+							pos, itemData);
 					}
 
 					// the rest we do not support
@@ -275,53 +260,133 @@ namespace OpenInfraPlatform {
 				// Conversion functions
 				//--------------------------------------------------------------------------------------------
 
-					/*! \brief  Converts \c IfcBSplineSurface to ...
-						\param	surface	\c IfcBSplineSurface entity to be interpreted.
-						\param	pos
-						\return	polylineData
-						\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
+					/*! \brief  Converts \c IfcBSplineSurface to a triangualted surface of \c PolyhedronData to be displayed.
+					\param[in]	surface		\c IfcBSplineSurface entity to be interpreted.
+					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+					\note	The \c IfcBSplineSurface is a subtype of \c IfcBoundedSurface.
 					*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcBSplineSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcBSplineSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
 					}
-					/* TO DO: Finish implementation of convertIfcBSplineSurface
 
-					if(surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>()) const throw(...) 
+					// obtain control points, attribute 3 of IfcBSplineSurface
+					const std::vector<std::vector<carve::geom::vector<3>>> controlPoints = convertIfcCartesianPointVectorVector(surface->ControlPointsList);
+
+					// Get attribute 4 SurfaceForm. For information only.
+					// Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
+					//typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
+
+					// Get attributes 5-7. For information only.
+					//typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
+					//typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
+					//typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
+
+					// (1/1) IfcBSplineSurfaceWithKnots SUBTYPE of IfcBSplineSurface
+					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 					{
+						// create an instance of SplineConverter
+						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
+						
+						// call of SplineConverter;
+						// curvePoints are actually the surface points without a connecting line
+						std::vector<std::vector<carve::geom::vector<3>>> curvePoints = splineConverter.convertIfcBSplineSurfaceWithKnots(
+							surface.as<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>(),
+							pos, controlPoints);
 
-					}
-					else 
-					{
-						// Get attributes 1-4.
-						int uDegree = surface->UDegree;
-						int vDegree = surface->VDegree;
+						// get number of curve / surface points
+						const size_t numCurvePointsU = curvePoints.size();
+						const size_t numCurvePointsV = curvePoints[0].size();
 
-						auto controlPointList = surface->ControlPointsList;
-						for (auto& itControlPointList : controlPointList) {
-							std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>()> vectorControlPointList;
-							std::shared_ptr<ItemData> input_data_cpl_set(new ItemData);
 
-							vectorControlPointList.resize(itControlPointList.size());
-							std::transform(itControlPointList.begin(),
-								itControlPointList.end(),
-								vectorControlPointList.begin(),
-								[](EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> it) { return it.lock(); });
+						// CONVERTION FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
 
+						// declaration of result variable for polylines
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						// declaration of result variable for polyhedrons (surface)
+						std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
+
+						// declaration of a list, for each curve point (=face point) its x, y, z coordinate will be stored as string with an id
+						std::unordered_map<std::string, int> vertexMap;
+						vertexMap.reserve(numCurvePointsU * numCurvePointsV);
+
+						// loop over all curve points
+						for (size_t v = 0; v < numCurvePointsV - 1; ++v)
+						{
+							for (size_t u = 0; u < numCurvePointsU - 1; ++u)
+							{
+								// vector for the 4 corners of one surface-rectangle
+								std::vector<carve::geom::vector<3>> facePoints;
+								facePoints.reserve(4);
+
+								// get the 4 corners of one surface-rectangle
+								facePoints.push_back(curvePoints[u][v]);		 // 00 = A
+								facePoints.push_back(curvePoints[u + 1][v]);	 // 10 = B
+								facePoints.push_back(curvePoints[u + 1][v + 1]); // 11 = C
+								facePoints.push_back(curvePoints[u][v + 1]);	 // 01 = D
+
+								// storage for the 4 point ids of the surface rectangle
+								size_t indices[4];
+
+								// construct a poly line in polylineData:
+								// D<---C    v
+								//      ^    ^
+								//      |    |
+								// A--->B    0-->u
+								//
+								// there is no closing line from D to 
+
+								// start a new poly line
+								polylineData->beginPolyline();
+
+								// loop over the 4 conter points
+								for (size_t k = 0; k < 4; ++k)
+								{
+									// construct a string of x, y, z coordinates for the current face point
+									std::stringstream key;
+									key << facePoints[k].x << " " << facePoints[k].y << " " << facePoints[k].z;
+
+									// search, whether current point is in internal list of points,
+									// vertexMap.find(..) returns past-the-end-iterator, if point does not exist
+									if (vertexMap.find(key.str()) != vertexMap.end())
+									{
+										// point exist;
+										// search for the current point-string 'key' in vertexMap, this returns its id which is stored in indices[k]
+										indices[k] = vertexMap[key.str()];
+									}
+									else
+									{
+										// point doesn't exist;
+										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
+										indices[k] = polylineData->addVertex(facePoints[k]);
+										// store face-point k in polyhedronData; vertex id is identical to vertices of polyline 
+										polyhedronData->addVertex(facePoints[k]);
+
+										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
+										vertexMap[key.str()] = indices[k];
+									}
+
+									// add obtaind index to polyline
+									polylineData->addPolylineIndex(indices[k]);
+								}
+
+								// add triangle-faces to polyhedron
+								polyhedronData->addFace(indices[0], indices[1], indices[2]);
+								polyhedronData->addFace(indices[0], indices[2], indices[3]);
+							}
 						}
 
-						// TO DO: Add enum PLANE_SURF, CYLINDRICAL_SURF, CONICAL_SURF, SPHERICAL_SURF, TOROIDAL_SURF, SURF_OF_REVOLUTION, RULED_SURF, GENERALISED_CONE, QUADRIC_SURF, SURF_OF_LINEAR_EXTRUSION, UNSPECIFIED
-						typename IfcEntityTypesT::IfcBSplineSurfaceForm surfaceForm = surface->SurfaceForm;
-
-						// Get attributes 5-7. For information only.
-						typename IfcEntityTypesT::IfcLogical uClosed = surface->UClosed;
-						typename IfcEntityTypesT::IfcLogical vClosed = surface->VClosed;
-						typename IfcEntityTypesT::IfcLogical selfIntersect = surface->SelfIntersect;
-					}
-					*/
+						// add polylines and polyhedrons to itemData (= return parameter)
+						itemData->polylines.push_back(polylineData);
+						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
+						return;
+					} // end if IfcBSplineSurfaceWithKnots
 
 					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
@@ -329,14 +394,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
-					\param	surface	\c IfcCurveBoundedPlane entity to be interpreted.
-					\param	pos
-					\return	polylineData
-					\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
+				\param[in]	surface		\c IfcCurveBoundedPlane entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
+				\note	The \c IfcCurveBoundedPlane is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -387,14 +453,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedSurface to ...
-				\param	surface	\c IfcCurveBoundedSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcCurveBoundedSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcCurveBoundedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -424,14 +491,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcRectangularTrimmedSurface to ...
-				\param	surface	\c IfcRectangularTrimmedSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcRectangularTrimmedSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcRectangularTrimmedSurface is a subtype of \c IfcBoundedSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -459,14 +527,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcCylindricalSurface to ...
-				\param	surface	\c IfcCylindricalSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcCylindricalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcCylindricalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -483,14 +552,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcPlane to ...
-				\param	surface	\c IfcPlane entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcPlane entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcPlane is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
-					const carve::math::Matrix& pos)  const throw(...) 
+				void convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)  const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -504,6 +574,7 @@ namespace OpenInfraPlatform {
 					// 2-----3	---> x
 
 					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
 					double planeSpan = HALF_SPACE_BOX_SIZE;
 					polylineData->beginPolyline();
@@ -512,24 +583,34 @@ namespace OpenInfraPlatform {
 					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, -planeSpan, 0.0));
 					polylineData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, -planeSpan, 0.0));
 
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(-planeSpan, -planeSpan, 0.0));
+					polyhedronData->addVertex(surfaceMatrix * carve::geom::VECTOR(planeSpan, -planeSpan, 0.0));
+
 					polylineData->addPolylineIndex(0);
 					polylineData->addPolylineIndex(1);
 					polylineData->addPolylineIndex(2);
 					polylineData->addPolylineIndex(3);
 
-					return polylineData;
+					polyhedronData->addFace(0, 1, 2);
+					polyhedronData->addFace(0, 2, 3);
 
+					itemData->polylines.push_back( polylineData );
+					itemData->open_polyhedrons.push_back( polyhedronData );
+					return;
 				}
 
 				/*! \brief  Converts \c IfcSphericalSurface to ...
-				\param	surface	\c IfcSphericalSurface entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcSphericalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSphericalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -546,14 +627,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcToroidalSurface to ...
-				\param	surface	\c IfcToroidalSurface entity to be interpreted.
-				\param	pos
-				\param	polylineData
+				\param[in]	surface		\c IfcToroidalSurface entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcToroidalSurface is a subtype of \c IfcElementarySurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData>  convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -571,14 +653,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfLinearExtrusion to ...
-				\param	surface	\c IfcSurfaceOfLinearExtrusion entity to be interpreted.
-				\param	pos
-				\param	polylineData
+				\param[in]	surface		\c IfcSurfaceOfLinearExtrusion entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSurfaceOfLinearExtrusion is a subtype of \c IfcSweptSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -617,14 +700,15 @@ namespace OpenInfraPlatform {
 				}
 
 				/*! \brief  Converts \c IfcSurfaceOfRevolution to ...
-				\param	surface	\c IfcSurfaceOfRevolution entity to be interpreted.
-				\param	pos
-				\return	polylineData
+				\param[in]	surface		\c IfcSurfaceOfRevolution entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
 				\note	The \c IfcSurfaceOfRevolution is a subtype of \c IfcSweptSurface.
 				*/
 
-				std::shared_ptr<carve::input::PolylineSetData> convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
-					const carve::math::Matrix& pos) const throw(...) 
+				void convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const throw(...)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -642,7 +726,7 @@ namespace OpenInfraPlatform {
 
 				//------------------------------------------------------------------------------------------------------------
 				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPoint2DVector
+				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
 				//------------------------------------------------------------------------------------------------------------
 
 						/*! \brief  Converts \c IfcFace to a polygon and adds it to the carve PolyhedronData vector.
@@ -1020,57 +1104,32 @@ namespace OpenInfraPlatform {
 
 				}
 
-				/*! \brief Converts \c IfcCartesianPoint to a 2D vector.
-				\param	faceVertices2D to be triangulated using carve
-				\param	faceVertices3D to be added to the triangulation
+				/*! \brief Typename definition (alias) of \c EXPRESSContainer for a easier use of \c OpenInfraPlatform::EarlyBinding::EXPRESSContainer.
+				\c OpenInfraPlatform::EarlyBinding::EXPRESSContainer is defined in EXPRESSContainer.h.
+				The alias is defined for use in the function parameter of \c convertIfcCartesianPointVectorVector.
+
+				\internal	Should be moved into EXPRESSContainer.h, if there will be a change.
 				*/
+				template <typename T> using EXPRESSContainer = OpenInfraPlatform::EarlyBinding::EXPRESSContainer<T, 0, LIST_MAXSIZE>;
 
-				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPoint2DVector(
-					const std::vector<std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points2D)  const throw(...)
+				/*! \brief Converts a two-dimensional array of \c IfcCartesianPoint -s to a array of \c carve points.
+				\param	points2D	The two-dimensional array of \c IfcCartesianPoint -s to be converted.
+									In the \c ifc -documentation, it's called i. e. 'a list of lists of control points'.
+				\returns			The two-dimensional array of \c carve points.
+				*/
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPointVectorVector(
+					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points)  const throw(...)
 				{
-					if (points2D.expired()) {
-						throw oip::ReferenceExpiredException(points2D);
-					}
-					std::vector<std::vector<carve::geom::vector<3>>> loop2D = std::vector<std::vector<carve::geom::vector<3>>>();
-					const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
-					const uint32_t numPointsY = points2D.size();
-					loop2D.reserve(numPointsY);
+					// initialise the target vector, reserve space
+					std::vector<std::vector<carve::geom::vector<3>>> loop = std::vector<std::vector<carve::geom::vector<3>>>();
+					loop.reserve(points.size());
 
-					for (unsigned int j = 0; j < numPointsY; ++j) //TODO Stefan
-					{
-						const uint32_t numPointsX = points2D[j].size();
-						const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>& points = points2D[j];
+					// convert each row of points, save in target vector
+					for (const auto& itPoints : points)
+						loop.push_back(curveConverter->convertIfcCartesianPointVector(itPoints));
 
-						for (unsigned int i = 0; i < numPointsX; ++i) 
-						{
-							/*const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcLengthMeasure>>& coords =
-								points[i]->m_Coordinates;*/
-							const std::vector<double>& coords = points[i]->Coordinates;
-							if (coords.size() > 2) 
-							{
-								/*double x = coords[0]->m_value * lengthFactor;
-								double y = coords[1]->m_value * lengthFactor;
-								double z = coords[2]->m_value * lengthFactor;
-								*/
-								double x = coords[0] * lengthFactor;
-								double y = coords[1] * lengthFactor;
-								double z = coords[2] * lengthFactor;
-								loop2D[j].push_back(carve::geom::VECTOR(x, y, z));
-							}
-							else if (coords.size() > 1) 
-							{
-								double x = coords[0] * lengthFactor;
-								double y = coords[1] * lengthFactor;
-
-								loop2D[j].push_back(carve::geom::VECTOR(x, y, 0.0));
-							}
-							else 
-							{
-								throw oip::InconsistentGeometryException(points2D, "ifc_pt->Coordinates.size() != 2");
-							}
-						}
-					}
-					return loop2D;
+					// return the target vector
+					return loop;
 				}
 				
 				/*! \internal Still to refactor */
@@ -1128,161 +1187,303 @@ namespace OpenInfraPlatform {
 					}
 				}
 
-
-				/*! \internal Still to refactor */
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcTessellatedItem to a triangulated vector.
+				*
+				* \param[in] tessItem					A pointer to data from \c IfcTessellatedItem.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
 				void convertIfcTessellatedItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-					) const throw(...) 
+				) const throw(...)
 				{
 					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
-						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-						auto& faceSet = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>();
-
-						double length_factor = UnitConvert()->getLengthInMeterFactor();
-
-						// obtain vertices from coordinates list and add them to the new polygon
-						for (const auto& point : faceSet->Coordinates->CoordList)
-						{
-							carve::geom::vector<3> vertex =
-								carve::geom::VECTOR(point[0],
-									point[1],
-									point[2]) * length_factor;
-
-							// apply transformation
-							vertex = pos * vertex;
-
-							polygon->addVertex(vertex);
-						}
-
-						auto& coordinatesIndices = faceSet->CoordIndex;
-						auto& pnIndices = faceSet->PnIndex; // optional
-						
-						std::vector<int> flags;
-						if (tessItem.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
-						{
-							auto tin = tessItem.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
-							flags.resize(tin->Flags.size());
-							std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
-						}
-
-						// read coordinates index list and create faces
-						int i = 0;
-						for (auto& indices : coordinatesIndices)
-						{
-							if (indices.size() < 3)
-							{
-								throw oip::InconsistentModellingException(tessItem, "invalid size of coordIndex attribute.");
-							}
-							
-							// determine vertices' indices
-							size_t i0, i1, i2;
-
-							if (pnIndices)
-							{
-								i0 = pnIndices.get()[indices[0] - 1] - 1;
-								i1 = pnIndices.get()[indices[1] - 1] - 1;
-								i2 = pnIndices.get()[indices[2] - 1] - 1;
-							}
-							else
-							{
-								i0 = indices[0] - 1;
-								i1 = indices[1] - 1;
-								i2 = indices[2] - 1;
-							}
-
-							// account for flags, if there
-							if (!flags.empty())
-							{
-								// skip void triangles
-								if (flags[i++] < 0)
-									continue;
-								// add break line
-								else
-								{
-									if (flags[i-1] & 1) // first flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i0));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i1));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-									if (flags[i-1] & 2) // second flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i1));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i2));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-									if (flags[i-1] & 4) // third flag set
-									{
-										std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-										polylineData->beginPolyline();
-										polylineData->addVertex(polygon->getVertex(i0));
-										polylineData->addPolylineIndex(0);
-										polylineData->addVertex(polygon->getVertex(i2));
-										polylineData->addPolylineIndex(1);
-										itemData->polylines.push_back(polylineData);
-									}
-								}
-							}
-
-							polygon->addFace(i0, i1, i2);
-						}
-
-						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						convertIfcTriangulatedFaceSet(tessItem.template as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>(), 
+							pos, itemData);
 						return;
 					}
 
 					if (tessItem.template isOfType<typename IfcEntityTypesT::IfcPolygonalFaceSet>())
 					{
-						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
-						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
+						convertIfcPolygonalFaceSet(tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>(), 
+							pos, itemData);
+						return;
+					}
+					throw oip::UnhandledException(tessItem);
+				}
 
-						double length_factor = UnitConvert()->getLengthInMeterFactor();
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcTriangulatedFaceSet to a triangulated vector.
+				*
+				* \param[in] faceSet					A pointer to data from \c IfcTriangulatedFaceSet.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcTriangulatedFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcTriangulatedFaceSet>& faceSet,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
+				{
+					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					
+					// obtain vertices from coordinates list and add them to the new polygon
+					for (const auto& point : faceSet->Coordinates->CoordList)
+					{
+						carve::geom::vector<3> vertex =
+							carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
 
-						// obtain vertices from coordinates list and add them to the new polygon
-						for (const auto& point : faceSet->Coordinates->CoordList)
+						// apply transformation
+						vertex = pos * vertex;
+
+						polygon->addVertex(vertex);
+					}
+
+					auto& coordinatesIndices = faceSet->CoordIndex;
+					auto& pnIndices = faceSet->PnIndex; // optional
+
+					std::vector<int> flags;
+					if (faceSet.isOfType<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>())
+					{
+						auto tin = faceSet.as<typename IfcEntityTypesT::IfcTriangulatedIrregularNetwork>();
+						flags.resize(tin->Flags.size());
+						std::transform(tin->Flags.begin(), tin->Flags.end(), flags.begin(), [](auto& it) { return (int)it; });
+					}
+
+					// read coordinates index list and create faces
+					int i = 0;
+					for (auto& indices : coordinatesIndices)
+					{
+						if (indices.size() < 3)
 						{
-							carve::geom::vector<3> vertex =
-								carve::geom::VECTOR(point[0],
-									point[1],
-									point[2]) * length_factor;
-
-							// apply transformation
-							vertex = pos * vertex;
-
-							polygon->addVertex(vertex);
+							throw oip::InconsistentModellingException(faceSet, "invalid size of coordIndex attribute.");
 						}
 
-						auto& faces = faceSet->Faces;
-						auto& pnIndices = faceSet->PnIndex; // optional
+						// determine vertices' indices
+						size_t i0, i1, i2;
 
-						for( auto& face : faces )
+						if (pnIndices)
+						{
+							i0 = pnIndices.get()[indices[0] - 1] - 1;
+							i1 = pnIndices.get()[indices[1] - 1] - 1;
+							i2 = pnIndices.get()[indices[2] - 1] - 1;
+						}
+						else
+						{
+							i0 = indices[0] - 1;
+							i1 = indices[1] - 1;
+							i2 = indices[2] - 1;
+						}
+
+						// account for flags, if there
+						if (!flags.empty())
+						{
+							// skip void triangles
+							if (flags[i++] < 0)
+								continue;
+							// add break line
+							else
+							{
+								if (flags[i - 1] & 1) // first flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i0));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i1));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+								if (flags[i - 1] & 2) // second flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i1));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i2));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+								if (flags[i - 1] & 4) // third flag set
+								{
+									std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+									polylineData->beginPolyline();
+									polylineData->addVertex(polygon->getVertex(i0));
+									polylineData->addPolylineIndex(0);
+									polylineData->addVertex(polygon->getVertex(i2));
+									polylineData->addPolylineIndex(1);
+									itemData->polylines.push_back(polylineData);
+								}
+							}
+						}
+
+						polygon->addFace(i0, i1, i2);
+					}
+
+					itemData->open_or_closed_polyhedrons.push_back(polygon);
+				}
+				
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPolygonalFaceSet to a triangulated vector.
+				*
+				* \param[in] faceSet					A pointer to data from \c IfcPolygonalFaceSet.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcPolygonalFaceSet(const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet, 
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
+				{
+					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					
+					// obtain vertices from coordinates list and add them to the new polygon
+					for (const auto& point : faceSet->Coordinates->CoordList)
+					{
+
+						carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
+							carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+						// apply transformation
+						vertex = pos * vertex;
+
+						polygon->addVertex(vertex);
+					}
+
+
+					auto& faces = faceSet->Faces;
+					auto& pnIndices = faceSet->PnIndex; // optional
+
+					for (auto& face : faces)
+					{
+						if (!face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
 						{
 							// determine vertices' indices
 							std::vector<size_t> indices(face->CoordIndex.size());
 							std::transform(std::begin(face->CoordIndex), std::end(face->CoordIndex), std::begin(indices),
 								[&pnIndices](auto& el) -> size_t { return pnIndices ? pnIndices.get()[el - 1] - 1 : el - 1; });
 							polygon->addFace(std::begin(indices), std::end(indices));
-
-							if (face.template isOfType<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>())
-								BLUE_LOG(warning) << "Ignoring voids at " << face->getErrorLog();
 						}
 
-						itemData->open_or_closed_polyhedrons.push_back(polygon);
-						return;
+						else {
+							convertIfcIndexedPolygonalFaceWithVoids(
+								face.template as<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>(), faceSet, polygon);
+						}
+					}
+					itemData->open_or_closed_polyhedrons.push_back(polygon);
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcIndexedPolygonalFaceWithVoids to a triangulated vector.
+				*
+				* \param[in] faceWithVoids				A pointer to data from \c IfcIndexedPolygonalFaceWithVoids.
+				* \param[in] faceSet					A pointer to data from \c IfcPolygonalFaceSet.
+				*
+				* \param[out] polygon					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcIndexedPolygonalFaceWithVoids(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcIndexedPolygonalFaceWithVoids>& faceWithVoids,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalFaceSet>& faceSet,
+					std::shared_ptr<carve::input::PolyhedronData> polygon) const noexcept(false)
+				{
+					// 1. Build loops of actual points
+					std::vector<std::vector<carve::geom::vector<3>>> loops;
+					std::vector<carve::geom::vector<3>> outerLoop;
+					std::vector<std::vector<size_t>> indexLoops;
+					std::vector<size_t> outerIndexLoop;
+
+					for (const auto outerLoopPointIndex : faceWithVoids->CoordIndex)
+					{
+						const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+						carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
+							point[1],
+							point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+						outerLoop.push_back(vertex);
+						outerIndexLoop.push_back(outerLoopPointIndex);
+					}
+					indexLoops.push_back(outerIndexLoop);
+					loops.push_back(outerLoop);
+
+					for (const auto& innerLoop : faceWithVoids->InnerCoordIndices)
+					{
+						std::vector<carve::geom::vector<3>> loop;
+						std::vector<size_t> IndexLoop;
+						for (const auto& outerLoopPointIndex : innerLoop)
+						{
+							const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
+							carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
+								point[1],
+								point[2]) * UnitConvert()->getLengthInMeterFactor();
+
+							IndexLoop.push_back(outerLoopPointIndex);
+							loop.push_back(vertex);
+						}
+						indexLoops.push_back(IndexLoop);
+						loops.push_back(loop);
 					}
 
-					throw oip::UnhandledException(tessItem);
+					std::vector<std::vector<carve::geom::vector<2>>> loops2D;
+					carve::geom::vector<3> normalOfPlane = GeomUtils::computePolygonNormal(loops[0]);
+
+					carve::math::Matrix planeMatrix = GeomUtils::convertPlane2Matrix(
+						normalOfPlane, loops[0][0], loops[0][1] - loops[0][0]);
+					carve::math::Matrix inversePlaneMatrix = GeomUtils::computeInverse(planeMatrix);
+
+					for (const auto& loop : loops)
+					{
+						std::vector<carve::geom::vector<2>> loop2D;
+						std::vector<carve::geom::vector<3>> loop3Dto2D;
+						for (const auto& point : loop)
+						{
+							carve::geom::vector<3> point3Dto2D = inversePlaneMatrix * point;
+							loop3Dto2D.push_back(point3Dto2D);
+						}
+						loop2D = GeomUtils::removeEmptyCoordinate(loop3Dto2D);
+						loops2D.push_back(loop2D);
+					}
+
+					// 2. Call geomUtils
+					carve::geom::vector<3> normalFirstLoop;
+					std::vector<std::vector<carve::geom2d::P2>>	faceLoops = GeomUtils::correctWinding(loops2D, normalFirstLoop);
+
+					std::vector<carve::geom2d::P2> mergedPath;
+					std::vector<carve::triangulate::tri_idx> triangulatedList;
+					std::vector<std::pair<size_t, size_t>> pathAllLoops;
+
+					GeomUtils::incorporateVoids(faceLoops, mergedPath, triangulatedList, pathAllLoops);
+
+					// mergedPath
+					//  9<---------------------------8
+					//  |                            ^
+					//  |   2------------------>3    |
+					//  |   ^                   |    |
+					//  |   |                   v    |
+					//  |   1, 5<---------------4    |
+					//  v /                          |
+					//  0, 6, 10-------------------->7
+					// triangulated list
+					// ( (6,5,7), (7,5,4), (7,4,8), ..., (9,1,0) )
+					// pathAllLoops
+					// ( (0,0), (1,0), (1,1), (1,2), (1,3), (1,0), (0,0), (0,1), (0,2), (0,3), (0,0) )
+
+					// 3. Given the results, find corresponding indices of points in the original array. 
+					for (const auto& triang : triangulatedList)
+					{
+						polygon->addFace(
+							indexLoops[pathAllLoops[triang.a].first][pathAllLoops[triang.a].second] - 1,
+							indexLoops[pathAllLoops[triang.b].first][pathAllLoops[triang.b].second] - 1,
+							indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] - 1
+						);
+					}
 				}
 
 				protected:

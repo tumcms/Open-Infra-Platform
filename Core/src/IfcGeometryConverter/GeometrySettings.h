@@ -37,13 +37,14 @@
 
 #include "CarveHeaders.h"
 
+
 #define GEOM_TOLERANCE  0.0000001
 #ifdef _DEBUG
 #define HALF_SPACE_BOX_SIZE 100
 #else
 	#define HALF_SPACE_BOX_SIZE 100
 #endif
-
+#include "GeomUtils.h"
 
 namespace OpenInfraPlatform
 {
@@ -71,11 +72,9 @@ namespace OpenInfraPlatform
 
 				\return The number of vertices
 				*/
-				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcStart, const double dArcEnd)
-				{
-					return getNumberOfVerticesForTessellation(dRadius, abs(dArcStart - dArcEnd));
-				}
+				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcStart, const double dArcEnd);
 				
+
 				/*! Calculates the number of vertices needed for tessellation of an arc
 
 				\param[in] dRadius		The radius of the arc
@@ -83,22 +82,8 @@ namespace OpenInfraPlatform
 
 				\return The number of vertices
 				*/
-				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcExtent = 2. * M_PI)
-				{
-					// if radius is smaller then the precision of the model, it is a straight (curvature -> infinity)
-					if (dRadius < getPrecision())
-						return 2;
-
-					// what's the biggest angle so that the precision still holds
-					// that is, the maximum distance between the arc and the line between two points on the arc < precision
-					double alpha = acos((dRadius - getTessellationPrecision()) / dRadius);
-
-					// we need at least this many segments along the arc
-					int numOfVertices = (int) ceil(dArcExtent / alpha);
-
-					// return at least 2 (start & end)
-					return carve::util::max_functor()(numOfVertices , 2);
-				}
+				int getNumberOfVerticesForTessellation(const double dRadius, const double dArcExtent = 2. * M_PI);
+				
 
 				/*! Calculates the arc segment length when tessellating an arc
 
@@ -107,10 +92,8 @@ namespace OpenInfraPlatform
 
 				\return The angular length of the segment [in radians]
 				*/
-				double getAngleLength(const double dRadius, const double dArcExtent = 2.0 * M_PI)
-				{
-					return dArcExtent / (double)(getNumberOfSegmentsForTessellation(dRadius, dArcExtent));
-				}
+				double getAngleLength(const double dRadius, const double dArcExtent = 2.0 * M_PI);
+				
 
 				/*! Calculates the number of segments when tessellating an arc
 
@@ -119,27 +102,21 @@ namespace OpenInfraPlatform
 
 				\return The number of segments [in radians]
 				*/
-				int getNumberOfSegmentsForTessellation(const double dRadius, const double dArcExtent = 2.0 * M_PI)
-				{
-					return getNumberOfVerticesForTessellation(dRadius, dArcExtent) - 1;
-				}
+				int getNumberOfSegmentsForTessellation(const double dRadius, const double dArcExtent = 2.0 * M_PI);
+				
 
 				/*! returns the precision of the model
 				
 				
 				*/
-				double getPrecision() const
-				{
-					return carve::EPSILON; //TODO remove constant and replace with content from IFC (i.e. introduce member, getter / setter)
-				}
+				double getPrecision() const;
+				
 				
 				/*! returns the tessellation precision of the model
 
 				*/
-				double getTessellationPrecision() const
-				{
-					return 0.01;
-				}
+				double getTessellationPrecision() const;
+				
 
 				/*! \brief Normalizes given angle to lie within the specified interval.
 
@@ -150,20 +127,9 @@ namespace OpenInfraPlatform
 				\note The interval is increased to a minimum of \c dMin \c + \c 2*PI if needed.
 				\note The borders are swaped to fulfil \c dMin \c < \c dMax.
 				*/
-				void normalizeAngle(double& dAngle, double dMin = 0., double dMax = M_TWOPI)
-				{
-					if (dMax < dMin)
-						std::swap(dMin, dMax);
-					if (dMax - dMin < M_TWOPI)
-						dMax = dMin + M_TWOPI;
+				void normalizeAngle(double& dAngle, double dMin = 0., double dMax = M_TWOPI);
+				
 
-					while (dAngle > dMax) {
-						dAngle -= M_TWOPI;
-					}
-					while (dAngle < dMin) {
-						dAngle += M_TWOPI;
-					}
-				}
 				/*!Compare two doubles for equality to the custom precision
 				* \param[in]    first      The first value
 				* \param[in]    second     The second value
@@ -171,10 +137,8 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const double first,const double second,const double precision) const
-				{
-					return abs(first - second) < precision;
-				}
+				bool areEqual(const double first, const double second, const double precision) const;
+				
 
 				/*!Compare two doubles for equality to the default precision
 				* \param[in]    first      The first value
@@ -182,10 +146,7 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const double first, const double second) const
-				{
-					return areEqual(first, second, getPrecision());
-				}
+				bool areEqual(const double first, const double second) const;
 
 				/*!Compare two 2D vectors for equality to the default precision
 				* \param[in]    first      The first 2D-point of vector
@@ -193,10 +154,7 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const
-				{
-					return areEqual(first, second, getPrecision());
-				}
+				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second) const;
 
 				/*!Compare two 3D vectors for equality to the default precision
 				* \param[in]    first      The first 3D-point of vector
@@ -204,11 +162,8 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const
-				{
-					return areEqual(first, second, getPrecision());
-				}
-
+				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second) const;
+				
 				/*!Compare two 2D vectors for equality to the custom precision
 				* \param[in]    first      The first 2D-point of vector
 				* \param[in]    second     The second 2D-point of vector
@@ -216,10 +171,7 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second,const double precision) const
-				{
-					return areEqual(first.x, second.x, precision) && areEqual(first.y, second.y, precision);
-				}
+				bool areEqual(const carve::geom::vector<2>& first, const  carve::geom::vector<2>& second, const double precision) const;
 
 				/*!Compare two 3D vectors for equality to the custom precision
 				* \param[in]    first      The first 3D-point of vector
@@ -228,14 +180,9 @@ namespace OpenInfraPlatform
 				*
 				* \return true, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second, const double precision) const
-				{
-					return areEqual(first.x, second.x, precision) && areEqual(first.y, second.y, precision) && areEqual(first.z, second.z, precision);
-				}
+				bool areEqual(const  carve::geom::vector<3>& first, const  carve::geom::vector<3>& second, const double precision) const;
 						   
-				carve::csg::CSG::CLASSIFY_TYPE getCSGtype() {
-					return classify_type;
-				}
+				carve::csg::CSG::CLASSIFY_TYPE getCSGtype();
 
 				/*! Calculates the number of segments when tessellating an curve
 

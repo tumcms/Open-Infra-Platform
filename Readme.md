@@ -13,6 +13,7 @@ It comes with its own `EXPRESS` parser and `C++` classes generator.
 ## Documentation
 
 - [Building OIP on your machine](Documentation/markdown/SetupHelp.md)
+- [Software Architecture](Documentation/markdown/SoftwareArchitecture.md)
 - [CMake Options Documentation](Documentation/markdown/CMakeOptions.md)
 - [Git process Guideline](Documentation/markdown/GitProcess.md)
 - [Coding Guideline](Documentation/markdown/CodingGuideline.md)
