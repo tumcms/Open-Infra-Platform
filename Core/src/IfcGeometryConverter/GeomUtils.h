@@ -377,6 +377,7 @@ namespace OpenInfraPlatform
 					const double	value,
 					const std::vector<double>& polynomialConstants,
 					std::vector<double>& myArray,
+					size_t myArrayParentIndex,
 					const int	i_n,
 					const int	n
 				);
