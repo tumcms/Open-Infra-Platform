@@ -495,10 +495,13 @@ namespace OpenInfraPlatform
 						std::vector<carve::geom::vector<3>> segment_vec;
 						convertIfcSegment(segment, segment_vec, segmentStartPoints);
 <<<<<<< HEAD
+<<<<<<< HEAD
 #endif
 						if (!segment_vec.empty()) 
 						{
 =======
+=======
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 						if (!segment_vec.empty()) {
 >>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
@@ -875,6 +878,7 @@ namespace OpenInfraPlatform
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 =======
@@ -890,6 +894,10 @@ namespace OpenInfraPlatform
 >>>>>>> 875f326b (Fixed mistakes in Spiral function)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 >>>>>>> 92a31da5 (Added IfsSpiral converter)
+=======
+				// IfcSpiral SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 =======
 				// IfcSpiral SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
@@ -1039,6 +1047,7 @@ namespace OpenInfraPlatform
 					// the rest we do not support
 					throw oip::UnhandledException(spiral);
 				}
+
 				// IfcClothoid SUBTYPE of IfcSpiral (exists starting IFC4X3_RC3)
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcClothoid to a tesselated curve.
@@ -1151,14 +1160,20 @@ namespace OpenInfraPlatform
 					for (int i = 0; i < numSegments; ++i) 
 					{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 						const IfcEntityTypesT::IfcParameterValue val = lengthNew;
 
 						clothoidPoints.push_back(getPointOnCurve(clothoid, val));
 						//val += segmentLength;
+<<<<<<< HEAD
 =======
 						clothoidPoints.push_back(getPointOnCurve(clothoid, trim1Vec, trimmingPreference));
 						lengthNew += segmentLength;
 >>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
+=======
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 					
 					}
 					
@@ -1746,6 +1761,7 @@ namespace OpenInfraPlatform
 				) const noexcept(false)
 				{
 <<<<<<< HEAD
+<<<<<<< HEAD
 					//	ENTITY IfcCurveSegment					//	  SUBTYPE OF(IfcSegment);					//       Placement: IfcPlacement;					//       SegmentStart: IfcCurveMeasureSelect;					//       SegmentLength: IfcCurveMeasureSelect;					//       ParentCurve: IfcCurve;					//	  DERIVE					//		Dim : IfcDimensionCount: = ParentCurve.Dim;					//	END_ENTITY;
 
 					// start point
@@ -1829,17 +1845,94 @@ namespace OpenInfraPlatform
 						segmentStartPoints.push_back(newPoints[0]);
 					}
 =======
+=======
+					//	ENTITY IfcCurveSegment					//	  SUBTYPE OF(IfcSegment);					//       Placement: IfcPlacement;					//       SegmentStart: IfcCurveMeasureSelect;					//       SegmentLength: IfcCurveMeasureSelect;					//       ParentCurve: IfcCurve;					//	  DERIVE					//		Dim : IfcDimensionCount: = ParentCurve.Dim;					//	END_ENTITY;
+
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 					// start point
-					auto startPoint = getPointOnCurve(curveSegment.ParentCurve, curveSegment.SegmentStart);
+					auto startPoint = getPointOnCurve(curveSegment->ParentCurve, curveSegment->SegmentStart);
 
-					throw oip::UnhandledException(curveSegment);
+					// Get length of the segment curve
+					double length = 0.;
+					switch (curveSegment->SegmentLength.which())
+					{
+					case 0:
+					{
+						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+						length = curveSegment->SegmentLength.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+					}
+					case 1:
+					{
+						// Calculate the length using \c IfcParameterValue.
+						length = curveSegment->SegmentLength.get<1>();
+					}
+					default:
+						throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentLength!");
+					}
 
-					//Get length of the trimming curve
-					//double segmentLength = curveSegment->SegmentLength * this->UnitConvert()->getLengthInMeterFactor();
-					
-					// apply placement
+					// Determine segments
+					double numSegments = 500;
+					double deltaLength = length / numSegments;
 
+<<<<<<< HEAD
 >>>>>>> 3a97f03f (current mistakes fixed, further comments needed)
+=======
+					std::vector<carve::geom::vector<3>> segmentPoints;
+					double lengthAlong = 0.;
+					switch (curveSegment->SegmentStart.which())
+					{
+					case 0:
+					{
+						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+						lengthAlong = curveSegment->SegmentStart.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+					}
+					case 1:
+					{
+						// Calculate the length using \c IfcParameterValue.
+						lengthAlong = curveSegment->SegmentStart.get<1>();
+					}
+					default:
+						throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentStart!");
+					}
+
+					auto runningLength = curveSegment->SegmentStart;
+					for( int i = 0; i < numSegments; ++i )
+					{ 
+						// determine point
+						segmentPoints.push_back(getPointOnCurve(curveSegment->ParentCurve, runningLength));
+						// determine next length
+						lengthAlong += deltaLength;
+						switch (runningLength.which())
+						{
+						case 0:
+						{
+							// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+							runningLength.get<0>() = lengthAlong;// *this->UnitConvert()->getLengthInMeterFactor();
+						}
+						case 1:
+						{
+							// Calculate the length using \c IfcParameterValue.
+							runningLength.get<1>() = lengthAlong;
+						}
+						default:
+							throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentStart!");
+						}
+					}
+
+					if (!segmentPoints.empty())
+					{
+						// apply placement
+						const carve::math::Matrix placement = placementConverter->convertIfcPlacement(curveSegment->Placement);
+
+						std::vector<carve::geom::vector<3>> newPoints;
+						for (const auto& point : segmentPoints)
+						{
+							newPoints.push_back(placement * point);
+						}
+						GeomUtils::appendPointsToCurve(newPoints, targetVec);
+						segmentStartPoints.push_back(newPoints[0]);
+					}
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 				}
 #endif
 
@@ -2742,10 +2835,14 @@ namespace OpenInfraPlatform
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 =======
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC3)
 >>>>>>> 875f326b (Fixed mistakes in Spiral function)
+=======
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.

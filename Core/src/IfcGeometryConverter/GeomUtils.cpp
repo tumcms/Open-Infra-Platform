@@ -1311,12 +1311,17 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
 =======
 					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArray.size() + i] += value * polynomialConstants[i];
 >>>>>>> 34bd9d8c (Fixed mistakes, added new function "getNumberOfTessellationSegmentsByLength" for segmentation)
+=======
+					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
+>>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
 				}
 			}
 		}
