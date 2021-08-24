@@ -1286,6 +1286,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			const double	value,
 			const std::vector<double>& polynomialConstants,
 			std::vector<double>& myArray,
+		    size_t myArrayParentIndex,
 			const int	i_n,
 			const int	n
 		)
@@ -1299,6 +1300,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 						value * polynomialConstants[i],
 						polynomialConstants,
 						myArray,
+						myArrayParentIndex + i,
 						i_n + 1, n
 					);
 				}
@@ -1308,8 +1310,8 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 			if (i_n != n - 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 			for (int i = 1; i < polynomialConstants.size(); i++) {
 				if (polynomialConstants[i]) {
-					if(myArray.size() + i <= n && myArray.size() + i > polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
-					myArray[myArray.size() + i] += value * polynomialConstants[i];
+					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
 				}
 			}
 		}
@@ -1340,11 +1342,12 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 
 		if (n) {
 			//create a matrix whith 1xn size
-			std::vector<double>	myArray(polynomialConstants.size() * n + 1);
+			std::vector<double> myArray(polynomialConstants.size() * n + 1);
 			GeomUtils::recursiveMultiplicationTaylor(
 				1.,
 				polynomialConstants,
 				myArray,
+				0,
 				0, n
 			);
 
@@ -1361,6 +1364,8 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				value /= (double)tB;
 				tB--;
 			}
+
+			//delete[] myArray;
 
 			return	value;
 		}
@@ -1439,7 +1444,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		const double	s
 	)
 	{
-		int	minSteps = (polynomialConstants.size() > 12) ? 4 : 6, maxSteps = 8;
+		int	minSteps = (polynomialConstants.size() > 7) ? 4 : 6, maxSteps = 8;
 		double	borderValue = 0.000001;
 
 		//
@@ -1457,7 +1462,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				);
 		}
 
-		if (polynomialConstants.size() > 10) {
+		if (polynomialConstants.size() > 7) {
 			return	value;
 		}
 
@@ -1498,7 +1503,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 		const double	s
 	)
 	{
-		int	minSteps = (polynomialConstants.size() > 12) ? 4 : 6, maxSteps = 8;
+		int	minSteps = (polynomialConstants.size() > 7) ? 4 : 6, maxSteps = 8;
 		double	borderValue = 0.0000001;
 
 		//
@@ -1516,7 +1521,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				);
 		}
 
-		if (polynomialConstants.size() > 10) {
+		if (polynomialConstants.size() > 7) {
 			return	value;
 		}
 
