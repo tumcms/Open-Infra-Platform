@@ -1508,10 +1508,15 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const throw(...)
 				{
-					//	ENTITY IfcCurveSegment					//	  SUBTYPE OF(IfcSegment);					//       Placement: IfcPlacement;					//       SegmentStart: IfcCurveMeasureSelect;					//       SegmentLength: IfcCurveMeasureSelect;					//       ParentCurve: IfcCurve;					//	  DERIVE					//		Dim : IfcDimensionCount: = ParentCurve.Dim;					//	END_ENTITY;
-
-					// start point
-					auto startPoint = getPointOnCurve(curveSegment->ParentCurve, curveSegment->SegmentStart);
+					//	ENTITY IfcCurveSegment
+					//	  SUBTYPE OF(IfcSegment);
+					//       Placement: IfcPlacement;
+					//       SegmentStart: IfcCurveMeasureSelect;
+					//       SegmentLength: IfcCurveMeasureSelect;
+					//       ParentCurve: IfcCurve;
+					//	  DERIVE
+					//		Dim : IfcDimensionCount: = ParentCurve.Dim;
+					//	END_ENTITY;
 
 					// Get length of the segment curve
 					double length = 0.;
@@ -1521,11 +1526,13 @@ namespace OpenInfraPlatform {
 					{
 						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
 						length = curveSegment->SegmentLength.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+						break;
 					}
 					case 1:
 					{
 						// Calculate the length using \c IfcParameterValue.
 						length = curveSegment->SegmentLength.get<1>();
+						break;
 					}
 					default:
 						throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentLength!");
@@ -1543,21 +1550,36 @@ namespace OpenInfraPlatform {
 					{
 						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
 						lengthAlong = curveSegment->SegmentStart.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+						break;
 					}
 					case 1:
 					{
 						// Calculate the length using \c IfcParameterValue.
 						lengthAlong = curveSegment->SegmentStart.get<1>();
+						break;
 					}
 					default:
 						throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentStart!");
 					}
 
-					auto runningLength = curveSegment->SegmentStart;
+				    auto runningLength = curveSegment->SegmentStart;
 					for( int i = 0; i < numSegments; ++i )
 					{ 
 						// determine point
-						segmentPoints.push_back(getPointOnCurve(curveSegment->ParentCurve, runningLength));
+						carve::geom::vector<3> point;
+						if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength));
+						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcLine>(), runningLength));
+						}
+						else (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCircle>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength));
+						}
+						segmentPoints.push_back(point);
 						// determine next length
 						lengthAlong += deltaLength;
 						switch (runningLength.which())
@@ -1565,12 +1587,14 @@ namespace OpenInfraPlatform {
 						case 0:
 						{
 							// Calculate the length using \c IfcNonNegativeLengthMeasure. 
-							runningLength.get<0>() = lengthAlong;// *this->UnitConvert()->getLengthInMeterFactor();
+							runningLength = typename IfcEntityTypesT::IfcNonNegativeLengthMeasure(lengthAlong);// *this->UnitConvert()->getLengthInMeterFactor();
+							break;
 						}
 						case 1:
 						{
 							// Calculate the length using \c IfcParameterValue.
-							runningLength.get<1>() = lengthAlong;
+							runningLength = typename IfcEntityTypesT::IfcParameterValue(lengthAlong);
+							break;
 						}
 						default:
 							throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentStart!");
@@ -2470,8 +2494,7 @@ namespace OpenInfraPlatform {
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
-				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
-				* \note								Not impemented yet.
+				* \note															
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
@@ -2481,26 +2504,40 @@ namespace OpenInfraPlatform {
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., 1 /(A*A), 0., 0. };//incorrect? 
-
-					//Calculate tesselated curve->How can I interpret this parameter 
-					//double s = 0;
+					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
 					// Implement Taylor series for x coordinate
-					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter);
+					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter / std::fabs(A));
 
 					// Implement Taylor series for y coordinate
-					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter);
-					
-					return carve::geom::VECTOR(A * sqrt(M_PI)*x, A * sqrt(M_PI)*y, 0.);
+					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / std::fabs(A));
 
+					return std::fabs(A) * carve::geom::VECTOR( sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
+				}
 
-				/*
-					return carve::geom::VECTOR(clothoidPoints.x[i - 1] + A * sqrt(M_PI)*cos(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti, 
-						                       clothoidPoints.y[i - 1] + A * sqrt(M_PI)*sin(M_PI / 2 * (ti[i - 1] * ti[i - 1]))*pointInterval_ti,
-								               0);
+				/*! \brief Calculates a trimming point on the clothoid using \c IfcNonNegativeLengthMeasure.
+				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
+				* \param[in] parameter				A pointer to data from \c IfcNonNegativeLengthMeasure.
+				* \return							The location of the trimming point.
+				* \note											
 				*/
-					
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+				{
+					// Interpret parameter
+					// Get Clothoid Constant
+					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
+					// Interpret polinomial constant for the following integral computations
+					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
+
+					// Implement Taylor series for x coordinate
+					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter / std::fabs(A));
+
+					// Implement Taylor series for y coordinate
+					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / std::fabs(A));
+
+					return std::fabs(A) * carve::geom::VECTOR(sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
 				}
 #endif
 
