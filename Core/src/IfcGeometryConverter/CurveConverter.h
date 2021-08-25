@@ -4119,7 +4119,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// Determine segments
-					double numSegments = 500;
+					double numSegments = 100;
 					double deltaLength = length / numSegments;
 
 					std::vector<carve::geom::vector<3>> segmentPoints;
@@ -4149,15 +4149,15 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3> point;
 						if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 						{
-							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength));
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
 						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 						{
-							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcLine>(), runningLength));
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcLine>(), runningLength);
 						}
-						else (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCircle>())
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCircle>())
 						{
-							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength));
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
 						segmentPoints.push_back(point);
 						// determine next length
@@ -4183,6 +4183,8 @@ namespace OpenInfraPlatform {
 
 					if (!segmentPoints.empty())
 					{
+						//TODO rotate for start to be in (1,0) direction
+
 						// apply placement
 						const carve::math::Matrix placement = placementConverter->convertIfcPlacement(curveSegment->Placement);
 
@@ -4191,6 +4193,9 @@ namespace OpenInfraPlatform {
 						{
 							newPoints.push_back(placement * point);
 						}
+
+						BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
+
 						GeomUtils::appendPointsToCurve(newPoints, targetVec);
 						segmentStartPoints.push_back(newPoints[0]);
 					}
@@ -5084,15 +5089,16 @@ namespace OpenInfraPlatform {
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
+					std::vector<double> polynomialConstants = { 0., 0., A, 0. };
+					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
 					// Implement Taylor series for x coordinate
-					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter / std::fabs(A));
+					double x = SpiralUtils::integralTaylorSeriesCos(polynomialConstants, parameter / 100.);
 
 					// Implement Taylor series for y coordinate
-					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / std::fabs(A));
+					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / 100.);
 
-					return std::fabs(A) * carve::geom::VECTOR( sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
+					return 100. * carve::geom::VECTOR( sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
 				}
 
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcNonNegativeLengthMeasure.
@@ -5111,7 +5117,9 @@ namespace OpenInfraPlatform {
 					// Interpret polinomial constant for the following integral computations
 					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
+					//std::vector<double> polynomialConstants = { 0., 0., (A / std::fabs(A*A*A))/2), 0. };
 					// Implement Taylor series for x coordinate
+
 					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter / std::fabs(A));
 
 					// Implement Taylor series for y coordinate
