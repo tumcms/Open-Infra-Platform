@@ -432,6 +432,7 @@ namespace OpenInfraPlatform {
 					}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 					// (12/*) IfcPlanarExtent SUBTYPE OF IfcGeometricRepresentationItem
 					if (geomItem.isOfType<typename IfcEntityTypesT::IfcPlanarExtent>())
 					{
@@ -441,6 +442,8 @@ namespace OpenInfraPlatform {
 						return;
 					}
 =======
+=======
+>>>>>>> 39a6ed9c (Added new representation for IfcSegment)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 					// (12/*) IfcSegment SUBTYPE OF IfcGeometricRepresentationItem
 					if (geomItem.isOfType<typename IfcEntityTypesT::IfcSegment>())
@@ -461,6 +464,9 @@ namespace OpenInfraPlatform {
 						return;
 					}
 #endif
+<<<<<<< HEAD
+>>>>>>> 39a6ed9c (Added new representation for IfcSegment)
+=======
 >>>>>>> 39a6ed9c (Added new representation for IfcSegment)
 
 					throw oip::UnhandledException(geomItem);
