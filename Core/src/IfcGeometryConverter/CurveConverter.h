@@ -1592,14 +1592,23 @@ namespace OpenInfraPlatform {
 					if (!segmentPoints.empty())
 					{
 						//TODO rotate for start to be in (1,0) direction
-
+						carve::geom::vector<3> point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
+						//Calculate angle between (0,0) and point
+						double theta = std::atan2(point.y,point.x);
+						//calculate rotation
+						carve::math::Matrix rotationMatrix = carve::math::Matrix(
+							std::cos(theta), -std::sin(theta), 0., 0.,
+							std::sin(theta), std::cos(theta), 0., 0.,
+							0, 0, 1., 0.,
+							0., 0., 0., 1.);
+					
 						// apply placement
 						const carve::math::Matrix placement = placementConverter->convertIfcPlacement(curveSegment->Placement);
 
 						std::vector<carve::geom::vector<3>> newPoints;
 						for (const auto& point : segmentPoints)
 						{
-							newPoints.push_back(placement * point);
+							newPoints.push_back(rotationMatrix * placement * point);
 						}
 
 						//BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
