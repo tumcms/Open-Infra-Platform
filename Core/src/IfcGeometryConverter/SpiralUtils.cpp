@@ -1,3 +1,20 @@
+/*
+	Copyright (c) 2021 Technical University of Munich
+	Chair of Computational Modeling and Simulation.
+
+	TUM Open Infra Platform is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License Version 3
+	as published by the Free Software Foundation.
+
+	TUM Open Infra Platform is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 //
 //  Author:  Peter Bonsma
 //  $Date: 1999-12-31 23:59:59 +0000 (Wed, 31 Jan 1999) $
@@ -9,32 +26,46 @@
 //  more info for commercial use:  peter.bonsma@rdf.bg
 //
 
-#include	"../stdafx.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <iostream>
+#include <utility>
+#include <sstream>
 
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<string.h>
-#include	<assert.h>
-#include	<cmath>
+#include "CarveHeaders.h"
 
+#include "GeometrySettings.h"
+#include "ProfileConverter.h"
+#include "CurveConverter.h"
 
-#include	"spiral.h"
+#include "SpiralUtils.h"
 
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
+/**********************************************************************************************/
+/*!Calculate recursive multiplication for calculation Taylor series
+* \param[in]  value                  value of Taylor series
+* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+* \param[in]  myArray                matrix with 1xn number of iteration points
+* \param[in]  i_n                    actual iteration point
+* \param[in]  n                      number of iteration points
+*
+* \return
+*/
 void	RecursiveMultiplication(
-	double	value,
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
-	double	* myArray,
-	uint_t	myArrayParentIndex,
-	uint_t	i_n,
-	uint_t	n
+	const double	value,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	std::vector<double>&  myArray,
+	const int myArrayParentIndex,
+	const int i_n,
+	const int n
 )
 {
-	assert(value);
+	if (!value) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 	if (i_n < n - 1) {
-		assert(polynomialConstantCnt && polynomialConstants[0] == 0.);
-		for (uint_t i = 1; i < polynomialConstantCnt; i++) {
+		if(polynomialConstantCnt && polynomialConstants[0] != 0.)throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+		for (int i = 1; i < polynomialConstantCnt; i++) {
 			if (polynomialConstants[i]) {
 				RecursiveMultiplication(
 					value * polynomialConstants[i],
@@ -46,21 +77,29 @@ void	RecursiveMultiplication(
 		}
 	}
 	else {
-		assert(i_n == n - 1);
-		for (uint_t i = 1; i < polynomialConstantCnt; i++) {
+		if (i_n != n - 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+		for (int i = 1; i < polynomialConstantCnt; i++) {
 			if (polynomialConstants[i]) {
-				assert(myArrayParentIndex + i >= n && myArrayParentIndex + i < polynomialConstantCnt* n + 1);
+				if (myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstantCnt* n + 1)throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 				myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
 			}
 		}
 	}
 }
+/**********************************************************************************************/
 
+/*!Calculate the Taylor series
+* \param[in]  n                      number of iteration points
+* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+* \param[in]  s                      the length of the curve between two points
+*
+* \return
+*/
 double	IntegralTaylorSeriesExpansionElement(
-	uint_t	n,
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
-	double	s
+	const int n,
+	const std::vector<double>& polynomialConstants,
+	int polynomialConstantCnt,
+	const double	s
 )
 {
 	//
@@ -69,14 +108,15 @@ double	IntegralTaylorSeriesExpansionElement(
 	// 	x =  indeterminate
 	// 	   =>	pC[c-1] * x^(c-1) + pC[c-2] * x^(c-2) + ... + pC[1] * x^(1) + pC[0] * x^(0) where pC[0] == 0
 	//
-	assert(polynomialConstantCnt && polynomialConstants[0] == 0.);
+	if (polynomialConstantCnt && polynomialConstants[0] != 0.)throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 
 	if (n) {
-#ifdef _ALLOC
-		double	* myArray = (double*)calloc(polynomialConstantCnt * n + 1, sizeof(double));
-#else
-		double	* myArray = new double[polynomialConstantCnt * n + 1]();
-#endif
+//#ifdef _ALLOC
+		std::vector<double> myArray(polynomialConstantCnt*n + 1);
+//#else
+		//std::vector<double> myArray = new double* [polynomialConstantCnt*n + 1]();
+		//std::vector<double>  myArray = new double[polynomialConstantCnt * n + 1]();
+//#endif
 
 		RecursiveMultiplication(
 			1.,
@@ -86,23 +126,23 @@ double	IntegralTaylorSeriesExpansionElement(
 		);
 
 		double	value = 0., factor = 1.;
-		for (uint_t k = 0; k < polynomialConstantCnt * n + 1; k++) {
+		for (int k = 0; k < polynomialConstantCnt * n + 1; k++) {
 			factor *= s;
 			value += myArray[k] * factor / (k + 1);
 		}
 
-		uint_t	tB = n;
+		int	tB = n;
 		while (tB > 1) {
 			value /= (double)tB;
 			tB--;
 		}
-
+/*
 #ifdef _ALLOC
 		free(myArray);
 #else
-		delete[] myArray;
+		delete[] & myArray;
 #endif
-
+*/
 		return	value;
 	}
 	else {
@@ -110,10 +150,10 @@ double	IntegralTaylorSeriesExpansionElement(
 	}
 }
 
-double	IntegralTaylorSeriesCosExpansion(
-	uint_t	i,
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
+double IntegralTaylorSeriesCosExpansion(
+	const int i,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
 	double	s
 )
 {
@@ -133,9 +173,9 @@ double	IntegralTaylorSeriesCosExpansion(
 }
 
 double	IntegralTaylorSeriesSinExpansion(
-	uint_t	i,
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
+	const int i,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
 	double	s
 )
 {
@@ -154,13 +194,13 @@ double	IntegralTaylorSeriesSinExpansion(
 	}
 }
 
-double	IntegralTaylorSeriesCos(
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
+double	SpiralUtils::IntegralTaylorSeriesCos(
+	const std::vector<double>& polynomialConstants,
+	const int	polynomialConstantCnt,
 	double	s
 )
 {
-	uint_t	minSteps = (polynomialConstantCnt > 7) ? 4 : 6, maxSteps = 8;
+	int	minSteps = (polynomialConstantCnt > 7) ? 4 : 6, maxSteps = 8;
 	double	borderValue = 0.000001;
 
 	//
@@ -168,7 +208,7 @@ double	IntegralTaylorSeriesCos(
 	//
 	double value = 0.;
 
-	uint_t i = 0;
+	int i = 0;
 	for (; i < minSteps; i++) {
 		value +=
 			IntegralTaylorSeriesCosExpansion(
@@ -203,17 +243,17 @@ double	IntegralTaylorSeriesCos(
 			s
 		);
 
-	assert(i == maxSteps);
+	if (i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
 	return value;
 }
 
-double	IntegralTaylorSeriesSin(
-	double	* polynomialConstants,
-	uint_t	polynomialConstantCnt,
-	double	s
+double	SpiralUtils::IntegralTaylorSeriesSin(
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double	s
 )
 {
-	uint_t	minSteps = (polynomialConstantCnt > 7) ? 4 : 6, maxSteps = 8;
+	int	minSteps = (polynomialConstantCnt > 7) ? 4 : 6, maxSteps = 8;
 	double	borderValue = 0.0000001;
 
 	//
@@ -221,7 +261,7 @@ double	IntegralTaylorSeriesSin(
 	//
 	double value = 0.;
 
-	uint_t i = 0;
+	int i = 0;
 	for (; i < minSteps; i++) {
 		value +=
 			IntegralTaylorSeriesSinExpansion(
@@ -256,7 +296,7 @@ double	IntegralTaylorSeriesSin(
 			s
 		);
 
-	assert(i == maxSteps);
+	if (i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
 	return value;
 }
 
@@ -266,15 +306,15 @@ double	IntegralTaylorSeriesSin(
 //
 
 
-double	NumericalIntegrationCos(
-	double		length,
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt
+double	SpiralUtils::NumericalIntegrationCos(
+	const double length,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt
 )
 {
 	double	factor = 1.,
 		value = polynomialConstants[0];
-	for (uint_t i = 1; i < polynomialConstantCnt; i++) {
+	for (int i = 1; i < polynomialConstantCnt; i++) {
 		factor *= length;
 		value += polynomialConstants[i] * factor;
 	}
@@ -282,15 +322,15 @@ double	NumericalIntegrationCos(
 	return	std::cos(value);
 }
 
-double	NumericalIntegrationSin(
-	double		length,
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt
+double	SpiralUtils::NumericalIntegrationSin(
+	const double length,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt
 )
 {
 	double	factor = 1.,
 		value = polynomialConstants[0];
-	for (uint_t i = 1; i < polynomialConstantCnt; i++) {
+	for (int i = 1; i < polynomialConstantCnt; i++) {
 		factor *= length;
 		value += polynomialConstants[i] * factor;
 	}
@@ -298,60 +338,60 @@ double	NumericalIntegrationSin(
 	return	std::sin(value);
 }
 
-double	NumericalIntegrationCos(
-	double		offset,
-	double		length,
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		minWidth,
-	double		angle
+double	SpiralUtils::NumericalIntegrationCos(
+	const double offset,
+	const double length,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double minWidth,
+	const double angle
 )
 {
-	double	P1y = NumericalIntegrationCos(offset + length / 6., polynomialConstants, polynomialConstantCnt);
-	double	P2y = NumericalIntegrationCos(offset + length / 2., polynomialConstants, polynomialConstantCnt);
-	double	P3y = NumericalIntegrationCos(offset + length - length / 6., polynomialConstants, polynomialConstantCnt);
+	double	P1y = SpiralUtils::NumericalIntegrationCos(offset + length / 6., polynomialConstants, polynomialConstantCnt);
+	double	P2y = SpiralUtils::NumericalIntegrationCos(offset + length / 2., polynomialConstants, polynomialConstantCnt);
+	double	P3y = SpiralUtils::NumericalIntegrationCos(offset + length - length / 6., polynomialConstants, polynomialConstantCnt);
 
 	double	distance = 2. * (P2y - P1y) - (P3y - P1y);
 
 	if ((length / 6. > minWidth) &&
 		(distance > angle * length)) {
-		double	a = NumericalIntegrationCos(offset, length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
-			b = NumericalIntegrationCos(offset + length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
-			c = NumericalIntegrationCos(offset + 2. * length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle);
+		double	a = SpiralUtils::NumericalIntegrationCos(offset, length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
+			b = SpiralUtils::NumericalIntegrationCos(offset + length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
+			c = SpiralUtils::NumericalIntegrationCos(offset + 2. * length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle);
 
-		assert(a * 3. <= length);
-		assert(b * 3. <= length);
-		assert(c * 3. <= length);
+		if (a * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
+		if (b * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
+		if (c * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
 		return	a + b + c;
 	}
 
 	return	(P1y + P2y + P3y) * length / 3.;
 }
 
-double	NumericalIntegrationSin(
-	double		offset,
-	double		length,
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		minWidth,
-	double		angle
+double	SpiralUtils::NumericalIntegrationSin(
+	const double		offset,
+	const double		length,
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double minWidth,
+	const double angle
 )
 {
-	double	P1y = NumericalIntegrationSin(offset + length / 6., polynomialConstants, polynomialConstantCnt);
-	double	P2y = NumericalIntegrationSin(offset + length / 2., polynomialConstants, polynomialConstantCnt);
-	double	P3y = NumericalIntegrationSin(offset + length - length / 6., polynomialConstants, polynomialConstantCnt);
+	double	P1y = SpiralUtils::NumericalIntegrationSin(offset + length / 6., polynomialConstants, polynomialConstantCnt);
+	double	P2y = SpiralUtils::NumericalIntegrationSin(offset + length / 2., polynomialConstants, polynomialConstantCnt);
+	double	P3y = SpiralUtils::NumericalIntegrationSin(offset + length - length / 6., polynomialConstants, polynomialConstantCnt);
 
 	double	distance = 2. * (P2y - P1y) - (P3y - P1y);
 
 	if ((length / 6. > minWidth) &&
 		(distance > angle * length)) {
-		double	a = NumericalIntegrationSin(offset, length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
-			b = NumericalIntegrationSin(offset + length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
-			c = NumericalIntegrationSin(offset + 2. * length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle);
+		double	a = SpiralUtils::NumericalIntegrationSin(offset, length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
+			b = SpiralUtils::NumericalIntegrationSin(offset + length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle),
+			c = SpiralUtils::NumericalIntegrationSin(offset + 2. * length / 3., length / 3., polynomialConstants, polynomialConstantCnt, minWidth, angle);
 
-		assert(a * 3. < length);
-		assert(b * 3. < length);
-		assert(c * 3. < length);
+		if (a * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
+		if (b * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
+		if (c * 3. > length) throw oip::InconsistentGeometryException("Incorrect length implementation");
 		return	a + b + c;
 	}
 
@@ -359,18 +399,18 @@ double	NumericalIntegrationSin(
 }
 
 double	NumericalIntegrationCos__(
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		s
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double s
 )
 {
-	int_t	initialPartCnt = 10;
+	int	initialPartCnt = 10;
 	double	minWidth = 0.0000001, angle = 0.0000001;
 
 	double	partSize = s / initialPartCnt, value = 0.;
-	for (int_t i = 0; i < initialPartCnt; i++) {
+	for (int i = 0; i < initialPartCnt; i++) {
 		value +=
-			NumericalIntegrationCos(
+			SpiralUtils::NumericalIntegrationCos(
 				i * partSize,
 				partSize,
 				polynomialConstants,
@@ -384,18 +424,18 @@ double	NumericalIntegrationCos__(
 }
 
 double	NumericalIntegrationSin__(
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		s
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double s
 )
 {
-	int_t	initialPartCnt = 1000;
+	int	initialPartCnt = 1000;
 	double	minWidth = 0.0000001, angle = 0.0000001;
 
 	double	partSize = s / initialPartCnt, value = 0.;
-	for (int_t i = 0; i < initialPartCnt; i++) {
+	for (int i = 0; i < initialPartCnt; i++) {
 		value +=
-			NumericalIntegrationSin(
+			SpiralUtils::NumericalIntegrationSin(
 				i * partSize,
 				partSize,
 				polynomialConstants,
@@ -408,66 +448,70 @@ double	NumericalIntegrationSin__(
 	return	value;
 }
 
-double	NumericalIntegrationCos(
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		s
+double	SpiralUtils::NumericalIntegrationCos(
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double s
 )
 {
 	if (s) {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		double A;
 
 		{
-#ifdef _ALLOC
-			double	* localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
-#else
-			double	* localPolynomialConstants = new double[polynomialConstantCnt];
-#endif
+//#ifdef _ALLOC
+			std::vector<double>localPolynomialConstants(polynomialConstantCnt);
+			//double	* localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
+//#else
+//			std::vector<double>& localPolynomialConstants = new double [polynomialConstantCnt];
+			//std::vector<double>& localPolynomialConstants = new double[polynomialConstantCnt];
+//#endif
 
-			for (uint_t i = 0; i < polynomialConstantCnt; i++) {
+			for (int i = 0; i < polynomialConstantCnt; i++) {
 				localPolynomialConstants[i] = polynomialConstants[i];
 			}
 
 			double	value = NumericalIntegrationCos__(localPolynomialConstants, polynomialConstantCnt, s);
-
-#ifdef _ALLOC
-			free(localPolynomialConstants);
-#else
-			delete[] localPolynomialConstants;
-#endif
+//
+//#ifdef _ALLOC
+//			free(localPolynomialConstants);
+//#else
+//			delete[] & localPolynomialConstants;
+//#endif
 
 			A = value;
 		}
-#endif // _DEBUG
+//#endif // _DEBUG
 
 		double B;
 
 		{
-#ifdef _ALLOC
-			double	* localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
-#else
-			double	* localPolynomialConstants = new double[polynomialConstantCnt];
-#endif
+//#ifdef _ALLOC
+			//std::vector<double>& localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
+			std::vector<double>localPolynomialConstants(polynomialConstantCnt);
+//#else
+//			//std::vector<double>& localPolynomialConstants = new double[polynomialConstantCnt];
+//			std::vector<double> localPolynomialConstants(polynomialConstantCnt);
+//#endif
 
 			double	factor = 1.;
-			for (uint_t i = 0; i < polynomialConstantCnt; i++) {
+			for (int i = 0; i < polynomialConstantCnt; i++) {
 				localPolynomialConstants[i] = polynomialConstants[i] * factor;
 				factor *= s;
 			}
 
 			double	value = NumericalIntegrationCos__(localPolynomialConstants, polynomialConstantCnt, 1.);
-
-#ifdef _ALLOC
-			free(localPolynomialConstants);
-#else
-			delete[] localPolynomialConstants;
-#endif
+//
+//#ifdef _ALLOC
+//			free(localPolynomialConstants);
+//#else
+//			delete[] & localPolynomialConstants;
+//#endif
 
 			B = s * value;
 		}
 
-		assert(std::fabs(A - B) < 0.00001 * _max_(std::fabs(A), 1.));
+		if (std::fabs(A - B) > 0.00001 * std::max(std::fabs(A), 1.)) throw oip::InconsistentGeometryException("Incorrect geometry implementation");
 
 		return	B;
 	}
@@ -475,69 +519,75 @@ double	NumericalIntegrationCos(
 	return	0.;
 }
 
-double	NumericalIntegrationSin(
-	double		* polynomialConstants,
-	uint_t		polynomialConstantCnt,
-	double		s
+double	SpiralUtils::NumericalIntegrationSin(
+	const std::vector<double>& polynomialConstants,
+	const int polynomialConstantCnt,
+	const double s
 )
 {
 	if (s) {
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		double A;
 
 		{
-#ifdef _ALLOC
-			double	* localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
-#else
-			double	* localPolynomialConstants = new double[polynomialConstantCnt];
-#endif
+//#ifdef _ALLOC
+			//std::vector<double>& localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
+			std::vector<double>localPolynomialConstants(polynomialConstantCnt);
+//#else
+//			//std::vector<double>& localPolynomialConstants = new double[polynomialConstantCnt];
+//			std::vector<double> localPolynomialConstants(polynomialConstantCnt);
+//#endif
 
-			for (uint_t i = 0; i < polynomialConstantCnt; i++) {
+			for (int i = 0; i < polynomialConstantCnt; i++) {
 				localPolynomialConstants[i] = polynomialConstants[i];
 			}
 
 			double	value = NumericalIntegrationSin__(localPolynomialConstants, polynomialConstantCnt, s);
 
-#ifdef _ALLOC
-			free(localPolynomialConstants);
-#else
-			delete[] localPolynomialConstants;
-#endif
+//#ifdef _ALLOC
+//			free(localPolynomialConstants);
+//#else
+//			delete[] &localPolynomialConstants;
+//#endif
 
 			A = value;
 		}
-#endif // _DEBUG
+//#endif // _DEBUG
 
 		double B;
 
 		{
-#ifdef _ALLOC
-			double	* localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
-#else
-			double	* localPolynomialConstants = new double[polynomialConstantCnt];
-#endif
+//#ifdef _ALLOC
+			//const std::vector<double>& localPolynomialConstants = (double*)malloc(polynomialConstantCnt * sizeof(double));
+			std::vector<double>localPolynomialConstants(polynomialConstantCnt);
+//#else
+//			//std::vector<double>& localPolynomialConstants = new double[polynomialConstantCnt];
+//			std::vector<double> localPolynomialConstants(polynomialConstantCnt);
+//#endif
 
 			double	factor = 1.;
-			for (uint_t i = 0; i < polynomialConstantCnt; i++) {
+			for (int i = 0; i < polynomialConstantCnt; i++) {
 				localPolynomialConstants[i] = polynomialConstants[i] * factor;
 				factor *= s;
 			}
 
 			double	value = NumericalIntegrationSin__(localPolynomialConstants, polynomialConstantCnt, 1.);
-
-#ifdef _ALLOC
-			free(localPolynomialConstants);
-#else
-			delete[] localPolynomialConstants;
-#endif
+//
+//#ifdef _ALLOC
+//			free(localPolynomialConstants);
+//#else
+//			delete[] &localPolynomialConstants;
+//#endif
 
 			B = s * value;
 		}
 
-		assert(std::fabs(A - B) < 0.000001 * _max_(std::fabs(A), 1.));
+		if (std::fabs(A - B) > 0.000001 * std::max(std::fabs(A), 1.)) throw oip::InconsistentGeometryException("Incorrect integral implementation");
 
 		return	B;
 	}
 
 	return	0.;
 }
+
+OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_END
