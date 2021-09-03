@@ -28,6 +28,7 @@
 #include "ConverterBase.h"
 
 #include "GeomUtils.h"
+#include "SpiralUtils.h"
 #include "PlacementConverter.h"
 #include "ProfileConverter.h"
 #include "SplineConverter.h"
@@ -986,24 +987,11 @@ namespace OpenInfraPlatform {
 					double length = L / A * sqrt(M_PI);
 		
 					// Get number of tesselated segments
-					int numSegments = this->GeomSettings()->getNumberOfTessellationSegmentsByLength(length);
+					//int numSegments = this->GeomSettings()->getNumberOfTessellationSegmentsByLength(length);
 					//Calculate segment length
+					int numSegments = 100;
 					double segmentLength = length / numSegments;
 					double lengthNew = segmentLength;
-
-					// Create a tessalated vector by clothoid length 
-					/*std::vector<carve::geom::vector<3>> ti;
-					ti[0] = 0;
-					// Calculate intervals for tessaleted vector
-					double pointInterval_ti = (l - 0) / (numSegments - 1);
-
-					//Add points to new tesselated vector
-					for (int i = 1; i < numSegments; ++i)
-					{
-						ti.push_back(ti[i - 1] + pointInterval_ti);
-					}
-					*/
-					// Calculate clothoid points. Parametrisation
 
 					std::vector<carve::geom::vector<3>> clothoidPoints;
 					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
@@ -1614,7 +1602,7 @@ namespace OpenInfraPlatform {
 							newPoints.push_back(placement * point);
 						}
 
-						BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
+						//BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
 
 						GeomUtils::appendPointsToCurve(newPoints, targetVec);
 						segmentStartPoints.push_back(newPoints[0]);
@@ -2509,16 +2497,16 @@ namespace OpenInfraPlatform {
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., A, 0. };
+					//std::vector<double> polynomialConstants = { 0., 0., A, 0. };
 					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
 					// Implement Taylor series for x coordinate
-					double x = SpiralUtils::integralTaylorSeriesCos(polynomialConstants, parameter / 100.);
+					double x = SpiralUtils::XclothoidByConstant(A, parameter);
 
 					// Implement Taylor series for y coordinate
-					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / 100.);
+					double y = SpiralUtils::YclothoidByConstant(A, parameter);
 
-					return 100. * carve::geom::VECTOR( sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
+					return carve::geom::VECTOR(x, y, 0.);
 				}
 
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcNonNegativeLengthMeasure.
@@ -2534,18 +2522,16 @@ namespace OpenInfraPlatform {
 					// Interpret parameter
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
-					// Interpret polinomial constant for the following integral computations
-					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
+					//std::vector<double> polynomialConstants = { 0., 0., A, 0. };
+					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
-					//std::vector<double> polynomialConstants = { 0., 0., (A / std::fabs(A*A*A))/2), 0. };
 					// Implement Taylor series for x coordinate
-
-					double x = GeomUtils::integralTaylorSeriesCos(polynomialConstants, parameter / std::fabs(A));
+					double x = SpiralUtils::XclothoidByConstant(A, parameter);
 
 					// Implement Taylor series for y coordinate
-					double y = GeomUtils::integralTaylorSeriesSin(polynomialConstants, parameter / std::fabs(A));
+					double y = SpiralUtils::YclothoidByConstant(A, parameter);
 
-					return std::fabs(A) * carve::geom::VECTOR(sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
+					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
 
