@@ -552,6 +552,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 					// do nothing
 				}
 
+				//8. Function delete an object
+				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
+				{
+					auto itemBlendObject = new QTreeWidgetItem(itemModel);
+					itemBlendObject->setText(0, "Blend object");
+
+					QPushButton *launchBlendObjectButton = new QPushButton();
+					launchBlendObjectButton->setText("Blend object");
+					QObject::connect(launchBlendObjectButton, SIGNAL(clicked()), this, SLOT(on_actionDeleteObject_triggered()));
+					modelsTreeWidget_->setItemWidget(itemBlendObject, 1, launchBlendObjectButton);
+				}
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -908,6 +919,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	out << "camera->setPosition(" << pos.x() << ", " << pos.y() << ", " << pos.z() << ", buw::InfraCamera::CAMERA);" << std::endl;
 	out << "camera->setRotation(" << rot.x() << ", " << rot.y() << ");" << std::endl;
 	*/
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionBlendObject_triggered() {
+
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
