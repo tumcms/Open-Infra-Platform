@@ -144,7 +144,6 @@ namespace OpenInfraPlatform
 			void on_actionShow_Log_Folder_triggered();
 
 
-
 			//void on_actionCreate_Accident_Report_triggered();
 			//void on_actionImport_OSM_File_triggered();
 			//void on_actionLandXML_triggered();
@@ -185,7 +184,8 @@ namespace OpenInfraPlatform
 			//void on_actionVertical_alignment_3D_triggered();
 			//void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
-			void on_actionZoomToOneObject_triggered();
+
+			void on_actionZoomToOneObject_triggered(); 
 			//void on_actionAdd_Georeference_triggered();
 
 			//void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);
@@ -367,7 +367,6 @@ namespace OpenInfraPlatform
 			PreferencesDialog*							preferencesDialog_ = nullptr;
 			QProgressDialog*							progressDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
-
 			QProgressBar*								progressBar_;
 
 			std::vector<QCustomPlot*>					plots_;

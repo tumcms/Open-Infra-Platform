@@ -506,6 +506,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				//       - min, mid, max : QVector3D
 				// 4.  - GeoRef : georeferencing metadata
 				//       - key - val
+				// 6. Function zoom to object
 
 				// 1. filename
 				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
@@ -550,6 +551,18 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				{
 					itemGeoref->setText(1, "unknown");
 					// do nothing
+				}
+
+				//6. Function zoom to object
+				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
+				{
+					auto itemZoomToObject = new QTreeWidgetItem(itemModel);
+					itemZoomToObject->setText(0, "Zoom To Object");
+
+					QPushButton *launchZoomToObjectButton = new QPushButton();
+					launchZoomToObjectButton->setText("Zoom To Object");
+					QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered()));
+					modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
 				}
 
 				// expanded per default
