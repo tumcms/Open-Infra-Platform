@@ -4,7 +4,6 @@
     <file>clothoid.svg</file>
     <file>open.png</file>
     <file>redo.svg</file>
-    <file>ZoomToOneObject.png</file>
   </qresource>
   <qresource prefix="images">
     <file>splash.png</file>
