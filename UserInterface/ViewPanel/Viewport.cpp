@@ -886,8 +886,8 @@ void Viewport::reloadShader() {
 	/*billboardEffect_->loadShader();*/
 }
 
-void Viewport::ZoomToOneObject() {
-	
+void Viewport::ZoomToOneObject(buw::Vector3f zoomMinExtend_, buw::Vector3f zoomMaxExtend_) {
+	cameraController_->fitToView(zoomMinExtend_, zoomMaxExtend_);
 }
 
 

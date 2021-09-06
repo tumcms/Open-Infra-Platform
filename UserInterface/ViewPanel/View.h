@@ -101,7 +101,7 @@ namespace OpenInfraPlatform
 
 			void showFrameTimes(const bool show);
 
-			void ZoomToOneObject();
+			void ZoomToOneObject(buw::Vector3f zoomMinExtend_, buw::Vector3f zoomMaxExtend_);
 
             Viewport* getViewport();           
 

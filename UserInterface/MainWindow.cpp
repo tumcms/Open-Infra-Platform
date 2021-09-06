@@ -561,7 +561,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 					QPushButton *launchZoomToObjectButton = new QPushButton();
 					launchZoomToObjectButton->setText("Zoom To Object");
-					QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered()));
+					QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
 					modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
 				}
 
@@ -923,8 +923,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(){
-	view_->ZoomToOneObject();
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IfcModel>& model){
+	oip::BBox zoomBox = model->getExtent();
+	
+	buw::Vector3d offset = -zoomBox.center();
+	buw::Vector3f zoomMinExtend_ = (zoomBox.min() + offset).cast<float>();
+	buw::Vector3f zoomMaxExtend_ = (zoomBox.max() + offset).cast<float>();;
+	
+	view_->ZoomToOneObject(zoomMinExtend_, zoomMaxExtend_);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
