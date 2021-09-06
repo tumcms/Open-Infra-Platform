@@ -552,6 +552,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 					// do nothing
 				}
 
+				//6. Function delete an object
+				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
+				{
+					auto itemDeleteObject = new QTreeWidgetItem(itemModel);
+					itemDeleteObject->setText(0, "Delete object");
+
+					QPushButton *launchDeleteObjectButton = new QPushButton();
+					launchDeleteObjectButton->setText("Delete object");
+					QObject::connect(launchDeleteObjectButton, SIGNAL(clicked()), this, SLOT(on_actionDeleteObject_triggered()));
+					modelsTreeWidget_->setItemWidget(itemDeleteObject, 1, launchDeleteObjectButton);
+				}
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -908,6 +919,10 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	out << "camera->setPosition(" << pos.x() << ", " << pos.y() << ", " << pos.z() << ", buw::InfraCamera::CAMERA);" << std::endl;
 	out << "camera->setRotation(" << rot.x() << ", " << rot.y() << ");" << std::endl;
 	*/
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_triggered(){
+
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
