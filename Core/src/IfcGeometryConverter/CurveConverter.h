@@ -4171,10 +4171,19 @@ namespace OpenInfraPlatform {
 
 					if (!segmentPoints.empty())
 					{
-						//TODO rotate for start to be in (1,0) direction
+						/*//TODO rotate for start to be in (1,0) direction
 						carve::geom::vector<3> point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
 						//Calculate angle between (0,0) and point
 						double theta = std::atan2(point.y,point.x);
+						//calculate rotation
+						carve::math::Matrix rotationMatrix = carve::math::Matrix(
+							std::cos(theta), -std::sin(theta), 0., 0.,
+							std::sin(theta), std::cos(theta), 0., 0.,
+							0, 0, 1., 0.,
+							0., 0., 0., 1.);*/
+				
+						//get the angle
+						double theta = getAngleOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), length);
 						//calculate rotation
 						carve::math::Matrix rotationMatrix = carve::math::Matrix(
 							std::cos(theta), -std::sin(theta), 0., 0.,
@@ -5090,10 +5099,10 @@ namespace OpenInfraPlatform {
 					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
 					// Implement Taylor series for x coordinate
-					double x = SpiralUtils::XclothoidByConstant(A, parameter);
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
 					// Implement Taylor series for y coordinate
-					double y = SpiralUtils::YclothoidByConstant(A, parameter);
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
 					return carve::geom::VECTOR(x, y, 0.);
 				}
@@ -5115,13 +5124,35 @@ namespace OpenInfraPlatform {
 					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
 					// Implement Taylor series for x coordinate
-					double x = SpiralUtils::XclothoidByConstant(A, parameter);
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
 					// Implement Taylor series for y coordinate
-					double y = SpiralUtils::YclothoidByConstant(A, parameter);
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
 					return carve::geom::VECTOR(x, y, 0.);
 				}
+
+
+				/*! \brief Calculates aan angle of the clothoid.
+				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
+				* \param[in] parameter				The lenth.
+				* \return							The Angle.
+				* \note
+				*/
+				double getAngleOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const double & parameter) const throw(...)
+				{
+					//get clothoid constant -> linear term
+					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
+					//get calculated linearterm
+					double term = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
+
+					std::vector<double> polynomialConstants = { 0.,0.,term };
+
+					return SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstants, polynomialConstants.size(), parameter);
+
+				}
+
 #endif
 
 
