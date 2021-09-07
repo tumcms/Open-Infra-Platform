@@ -839,10 +839,6 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 					bool polyOrientation = bound->Orientation;
 
-					if (loop.expired()) {
-						throw oip::ReferenceExpiredException(loop);
-					}
-
 					// declare target variable
 					std::vector<carve::geom::vector<3>> loopVertices3D;
 

@@ -1351,25 +1351,29 @@ namespace OpenInfraPlatform {
 #endif
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
-				* \param[in] ifcloop				The \c IfcLoop to be converted.
+				* \param[in] ifcLoop				The \c IfcLoop to be converted.
 				* \param[out] loop					The series of points.
 				*/
-				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcloop,
+				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcLoop,
 					std::vector<carve::geom::vector<3>>& loop
 				) const throw(...)
 				{
-					if (ifcloop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
+					if (ifcLoop.expired()) {
+						throw oip::ReferenceExpiredException(ifcLoop);
+					}
+
+					if (ifcLoop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						return convertIfcPolyLoop(ifcloop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
+						return convertIfcPolyLoop(ifcLoop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
 					} // end if polyloop
 
-					else if (ifcloop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
+					else if (ifcLoop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						return convertIfcEdgeLoop(ifcloop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
+						return convertIfcEdgeLoop(ifcLoop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
 					} // end if edge loop
 
 					else {
-						throw oip::UnhandledException(ifcloop);
+						throw oip::UnhandledException(ifcLoop);
 					}
 					
 				} // end convertIfcLoop
