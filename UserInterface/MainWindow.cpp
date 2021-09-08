@@ -560,7 +560,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 					QPushButton *launchDeleteObjectButton = new QPushButton();
 					launchDeleteObjectButton->setText("Delete object");
-					QObject::connect(launchDeleteObjectButton, SIGNAL(clicked()), this, SLOT(on_actionDeleteObject_triggered()));
+					QObject::connect(launchDeleteObjectButton, SIGNAL(clicked()), this, SLOT(on_actionDeleteObject_triggered(model, filename)));
 					modelsTreeWidget_->setItemWidget(itemDeleteObject, 1, launchDeleteObjectButton);
 				}
 				// expanded per default
@@ -921,8 +921,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_triggered(){
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_triggered(const std::shared_ptr<oip::IfcModel>& model, const QString& filename){
+	
+	QMessageBox::information(this, tr("Delete object"),
+		tr("The Button works!"), QMessageBox::Ok);
+	//OpenInfraPlatform::Core::DataManagement::Data::removeModel(model);
 
+	for (auto el : modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1))
+		modelsTreeWidget_->invisibleRootItem()->removeChild(el);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
