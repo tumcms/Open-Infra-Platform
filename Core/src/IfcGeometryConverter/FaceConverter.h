@@ -837,7 +837,6 @@ namespace OpenInfraPlatform {
 
 					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
-					bool polyOrientation = bound->Orientation;
 
 					// Collect all vertices of the current loop
 					std::vector<carve::geom::vector<3>> loopVertices3D = curveConverter->convertIfcLoop(loop);
@@ -853,7 +852,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// Check for orientation and reverse vertices order if FALSE
-					if (!polyOrientation)
+					if (!(bound->Orientation))
 					{
 						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
 					}
