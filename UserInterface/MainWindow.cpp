@@ -924,6 +924,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 }
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IfcModel>& model){
+	QMessageBox::information(this, tr("Convert Zoom to object"), 
+	tr("The Button works!"), QMessageBox::Ok);
+
 	oip::BBox zoomBox = model->getExtent();
 	
 	buw::Vector3d offset = -zoomBox.center();
