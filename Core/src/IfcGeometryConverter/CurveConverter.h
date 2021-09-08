@@ -1352,10 +1352,9 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
 				* \param[in] ifcLoop				The \c IfcLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*/
-				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcLoop,
-					std::vector<carve::geom::vector<3>>& loop
+				std::vector<carve::geom::vector<3>> convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcLoop
 				) const throw(...)
 				{
 					if (ifcLoop.expired()) {
@@ -1364,12 +1363,12 @@ namespace OpenInfraPlatform {
 
 					if (ifcLoop.isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						return convertIfcPolyLoop(ifcLoop.as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
+						return convertIfcPolyLoop(ifcLoop.as<typename IfcEntityTypesT::IfcPolyLoop>());
 					} // end if polyloop
 
 					else if (ifcLoop.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						return convertIfcEdgeLoop(ifcLoop.as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
+						return convertIfcEdgeLoop(ifcLoop.as<typename IfcEntityTypesT::IfcEdgeLoop>());
 					} // end if edge loop
 
 					else {
@@ -1380,12 +1379,13 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts \c IfcPolyLoop to a series of points.
 				* \param[in] polyLoop				The \c IfcPolyLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*/
-				void convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop,
-					std::vector<carve::geom::vector<3>>& loop) const throw(...)
+				std::vector<carve::geom::vector<3>> convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop
+				) const throw(...)
 				{
-					convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon, loop);
+					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon);
+
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
@@ -1395,22 +1395,25 @@ namespace OpenInfraPlatform {
 							continue;
 						}
 						
-						break;
+						return loop;
 					}
 				}
 
 				/*! \brief Converts \c IfcEdgeLoop to a series of points.
 				* \param[in] edgeLoop				The \c IfcEdgeLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*
 				* \note The function disregards topological relationships.
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
-					std::vector<carve::geom::vector<3>>& loop) const throw(...)
+				std::vector<carve::geom::vector<3>> convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop
+				) const throw(...)
 				{
+					// ToDo: maybe, variable definition of 'loop' has to be moved to correct place
+					std::vector<carve::geom::vector<3>> loop;
+
 					for (auto &orientedEdge : edgeLoop->EdgeList) {
 						// which are described by the type of its edge element object
 						EXPRESSReference<typename IfcEntityTypesT::IfcEdge> edgeElement = orientedEdge->EdgeElement;
@@ -1456,6 +1459,9 @@ namespace OpenInfraPlatform {
 							}
 						}
 					}
+
+					// ToDo: maybe, return has to be moved to correct place
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcEdge and adds it to the plolyline. 
@@ -1514,17 +1520,18 @@ namespace OpenInfraPlatform {
 				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
 				*
 				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
-				* \param[out] loop				The series of points.
+				* \return				The series of points.
 				*
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcCartesianPointVectorSkipDuplicates(
-					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
-					std::vector<carve::geom::vector<3> >& loop
+				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVectorSkipDuplicates(
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints
 				) const throw(...)
 				{
+					std::vector<carve::geom::vector<3>> loop;
+
 					carve::geom::vector<3>  vertex_previous;
 					bool first = true;
 
@@ -1550,6 +1557,8 @@ namespace OpenInfraPlatform {
 						loop.push_back(vertex);
 						vertex_previous = vertex;
 					}
+
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcCartesianPointList to a series of points.

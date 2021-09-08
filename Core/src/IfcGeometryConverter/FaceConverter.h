@@ -839,11 +839,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
 					bool polyOrientation = bound->Orientation;
 
-					// declare target variable
-					std::vector<carve::geom::vector<3>> loopVertices3D;
-
 					// Collect all vertices of the current loop
-					curveConverter->convertIfcLoop(loop, loopVertices3D);
+					std::vector<carve::geom::vector<3>> loopVertices3D = curveConverter->convertIfcLoop(loop);
 
 					if (loopVertices3D.size() < 3)
 					{
