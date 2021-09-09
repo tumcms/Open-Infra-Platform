@@ -469,7 +469,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			delete modelsBBoxWidgetItem_; modelsBBoxWidgetItem_ = nullptr;
 		}
 		// add the complete bounding box
-		modelsBBoxWidgetItem_ = addBBox(modelsTreeWidget_->invisibleRootItem(), data.getExtents());
+		auto fullBBox = data.getExtents();
+		modelsBBoxWidgetItem_ = addBBox(modelsTreeWidget_->invisibleRootItem(), fullBBox);
 		modelsBBoxWidgetItem_->setText(1, "Complete bounding box");
 
 		// loop through the models
@@ -554,17 +555,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				}
 
 				//6. Function zoom to object
-				if (std::dynamic_pointer_cast<oip::IfcModel>(model))
-				{
-					auto itemZoomToObject = new QTreeWidgetItem(itemModel);
-					itemZoomToObject->setText(0, "Zoom To Object");
+				auto itemZoomToObject = new QTreeWidgetItem(itemModel);
+				itemZoomToObject->setText(0, "Zoom To Object");
 
-					QPushButton *launchZoomToObjectButton = new QPushButton();
-					launchZoomToObjectButton->setText("Zoom To Object");
-					QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
-					modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
-				}
-
+				QPushButton *launchZoomToObjectButton = new QPushButton();
+				launchZoomToObjectButton->setText("Zoom To Object");
+				//QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
+				QObject::connect(launchZoomToObjectButton, &QPushButton::clicked, [this, model, fullBBox] { on_actionZoomToOneObject_triggered(model, fullBBox); } );
+				modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
+				
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -923,17 +922,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IfcModel>& model){
-	QMessageBox::information(this, tr("Convert Zoom to object"), 
-	tr("The Button works!"), QMessageBox::Ok);
-
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IModel>& model, const oip::BBox & fullBBox)
+{
 	oip::BBox zoomBox = model->getExtent();
 	
-	buw::Vector3d offset = -zoomBox.center();
-	buw::Vector3f zoomMinExtend_ = (zoomBox.min() + offset).cast<float>();
-	buw::Vector3f zoomMaxExtend_ = (zoomBox.max() + offset).cast<float>();;
+	//buw::Vector3d offset = -zoomBox.center();
+	buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
+	buw::Vector3f zoomMaxExtend = (zoomBox.max() - fullBBox.center()).cast<float>();
 	
-	view_->ZoomToOneObject(zoomMinExtend_, zoomMaxExtend_);
+	view_->on_zoomToOneObject(zoomMinExtend, zoomMaxExtend);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING

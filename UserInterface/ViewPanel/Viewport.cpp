@@ -527,7 +527,7 @@ buw::Vector2i Viewport::getSize() const {
 }
 
 void Viewport::goHome() {
-    cameraController_->fitToView(minExtend_, maxExtend_);
+    fitToView(minExtend_, maxExtend_);
 }
 
 void Viewport::toggleSnow() {
@@ -886,8 +886,8 @@ void Viewport::reloadShader() {
 	/*billboardEffect_->loadShader();*/
 }
 
-void Viewport::ZoomToOneObject(buw::Vector3f zoomMinExtend_, buw::Vector3f zoomMaxExtend_) {
-	cameraController_->fitToView(zoomMinExtend_, zoomMaxExtend_);
+void Viewport::fitToView(buw::Vector3f zoomMinExtend, buw::Vector3f zoomMaxExtend) {
+	cameraController_->fitToView(zoomMinExtend, zoomMaxExtend);
 }
 
 

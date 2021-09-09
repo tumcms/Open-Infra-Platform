@@ -106,7 +106,7 @@ namespace OpenInfraPlatform {
 			void enableIsoLines(const bool checked);
 			void enableTerrainGradientRamp(const bool checked);
 
-			void ZoomToOneObject(buw::Vector3f zoomMinExtend_, buw::Vector3f zoomMaxExtend_);
+			void fitToView(buw::Vector3f zoomMinExtend, buw::Vector3f zoomMaxExtend);
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 			//---------------------------------------------------------------------------//

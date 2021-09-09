@@ -185,7 +185,7 @@ namespace OpenInfraPlatform
 			//void on_actionVertical_alignment_triggered();
 			void on_actionViewport_as_screenshot_triggered();
 
-			void on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IfcModel>& model);
+			void on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IModel>& model, const oip::BBox & fullBBox);
 			//void on_actionAdd_Georeference_triggered();
 
 			//void on_checkBoxDifferentColorsForVerticalAlignmentElements_clicked(bool checked);

@@ -101,7 +101,7 @@ namespace OpenInfraPlatform
 
 			void showFrameTimes(const bool show);
 
-			void ZoomToOneObject(buw::Vector3f zoomMinExtend_, buw::Vector3f zoomMaxExtend_);
+			
 
             Viewport* getViewport();           
 
@@ -119,6 +119,8 @@ namespace OpenInfraPlatform
 			virtual void changeEvent(QEvent* evt) override;
 
             void rotate(buw::Vector2f value);
+
+			void on_zoomToOneObject(buw::Vector3f zoomMinExtend, buw::Vector3f zoomMaxExtend);
 
 		private:
 			void retranslateView();

@@ -389,9 +389,9 @@ void OpenInfraPlatform::UserInterface::View::enableMap( const bool checked )
 	viewport_->enableMap(checked);
 }
 
-void OpenInfraPlatform::UserInterface::View::ZoomToOneObject(buw::Vector3f zoomMinExtend_ ,buw::Vector3f zoomMaxExtend_)
+void OpenInfraPlatform::UserInterface::View::on_zoomToOneObject(buw::Vector3f zoomMinExtend, buw::Vector3f zoomMaxExtend)
 {
-	viewport_->ZoomToOneObject(zoomMinExtend_, zoomMaxExtend_);
+	viewport_->fitToView(zoomMinExtend, zoomMaxExtend);
 }
 
 //void OpenInfraPlatform::UserInterface::View::onViewCubeSelectionChanged(buw::eViewCubeOrientation::Enum state)
