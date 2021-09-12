@@ -86,8 +86,8 @@ You will need to install:
     * Finish the installation.
 
 8. **Doxygen**
-	*  Download & install Doxygen - find [here](http://doxygen.nl/files/doxygen-1.8.20-setup.exe).
-       * Default search path is `C:/thirdparty/doxygen`
+	*  Download & install Doxygen - find [here](https://sourceforge.net/projects/doxygen/files/rel-1.8.20/doxygen-1.8.20-setup.exe/download).
+       * Default search path is `C:/thirdparty/doxygen/bin`
        * If deviating, please set the `DOXYGEN_EXECUTABLE` variable correspondingly
 	*  Download & install DOT - find [here](https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.zip)
        * Default search path is `C:/thirdparty/graphviz_dot`
