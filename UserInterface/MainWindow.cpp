@@ -560,7 +560,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 					QPushButton *launchBlendObjectButton = new QPushButton();
 					launchBlendObjectButton->setText("Blend object");
-					QObject::connect(launchBlendObjectButton, SIGNAL(clicked()), this, SLOT(on_actionDeleteObject_triggered()));
+					QObject::connect(launchBlendObjectButton, &QPushButton::clicked, [this, model] {on_actionBlendObject_triggered(model); });
 					modelsTreeWidget_->setItemWidget(itemBlendObject, 1, launchBlendObjectButton);
 				}
 				// expanded per default
@@ -921,8 +921,9 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionBlendObject_triggered() {
-
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionBlendObject_triggered(const std::shared_ptr<oip::IModel>& model) {
+	QMessageBox::information(this, tr("Convert Zoom to object"),
+		tr("The Button works!"), QMessageBox::Ok);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
