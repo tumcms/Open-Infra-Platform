@@ -16,11 +16,11 @@
 #
 
 # Updated to 3.13 in revision 531
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.19)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
-cmake_policy(SET CMP0071 OLD)
+#cmake_policy(SET CMP0071 OLD)
 
 project(OpenInfraPlatform CXX)
 
@@ -111,8 +111,11 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_75_0"
 		"C:\\thirdparty\\boost_1_75_0")
-	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.14.2\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
-	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.15.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
+	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W\\share\\cmake\\proj4\\proj")
+	SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${OIP_Boost_DIR})
+    SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${OIP_Boost_DIR}\\lib")
+
 endif()
 
 #------------------------------------------------------------------------------
