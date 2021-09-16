@@ -326,7 +326,7 @@ Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlat
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
 	find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-		"C:/thirdparty/doxygen"
+		"C:/thirdparty/doxygen/bin"
 	)
 
 	find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
