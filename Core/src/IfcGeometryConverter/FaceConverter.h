@@ -798,11 +798,10 @@ namespace OpenInfraPlatform {
 
 					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
 					faceBoundLoops.resize(ifcFaceBounds.size());
-					for (size_t i = 0; i < ifcFaceBounds.size(); i++)
-					{
-						// get vertices of one bound loop into faceBoundLoops[i]
-						faceBoundLoops[i] = convertIfcFaceBound(ifcFaceBounds[i], pos);
-					}
+
+					// for each bound loop: get vertices into faceBoundLoops[i]
+					std::transform(ifcFaceBounds.begin(), ifcFaceBounds.end(), faceBoundLoops.begin(),
+						[this, &pos](EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound> ifcFaceBound) { return convertIfcFaceBound(ifcFaceBound, pos); });
 
 					return faceBoundLoops;
 				}
