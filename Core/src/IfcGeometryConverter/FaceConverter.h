@@ -790,6 +790,14 @@ namespace OpenInfraPlatform {
 					}
 				}
 				
+				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
+				 * The first loop in the return list is converted from the \c IfcFaceOuterBound entity.
+				 * Only one boundary should be of this type.
+				 *
+				 * \param[in]	ifcFaceBounds	List of \c IfcFaceBound entities to be converted.
+				 * \param[in]	pos				The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \return		List of boundary loops.
+				 */
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcFaceBoundList(
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds,
 					const carve::math::Matrix& pos) const noexcept(true)
@@ -806,6 +814,10 @@ namespace OpenInfraPlatform {
 					return faceBoundLoops;
 				}
 
+				/*! \brief  Swaps the \c IfcFaceOuterBound entity to the first position in the list of \c IfcFaceBound entities.
+				 * Only one boundary loop can be an \c IfcFaceOuterBound entity. But in general, it's optional. 
+				 * \param[in,out]	ifcFaceBounds	List of \c IfcFaceBound entities in which the \c IfcFaceOuterBound entity has to be swaped to the front.
+				 */
 				void swapOuterBoundaryToFront(
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds
 				) const throw(...)
@@ -827,6 +839,11 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief  Converts a \c IfcFaceBound (or \c IfcFaceOuterBound) entity to a boundary loop of geometry points.
+				 * \param[in]	bound	\c IfcFaceBound entity to be converted.
+				 * \param[in]	pos				The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \return		List of geometry points which describe the boundary loop.
+				 */
 				std::vector<carve::geom::vector<3>> convertIfcFaceBound(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
 					const carve::math::Matrix& pos) const noexcept(false)
