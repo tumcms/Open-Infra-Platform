@@ -483,9 +483,9 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts \c IfcTopologicalRepresentationItem to meshes and polylines.
 				 *
-				 * \param[in] mapped_item The \c IfcTopologicalRepresentationItem to be converted.
-				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 * \param[in] topo_item			The \c IfcTopologicalRepresentationItem to be converted.
+				 * \param[in] objectPlacement	The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData			A pointer to be filled with the relevant data.
 				 */
 				void convertIfcTopologicalRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
