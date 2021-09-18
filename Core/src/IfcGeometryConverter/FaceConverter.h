@@ -804,8 +804,7 @@ namespace OpenInfraPlatform {
 				{
 					swapOuterBoundaryToFront(ifcFaceBounds);
 
-					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops;
-					faceBoundLoops.resize(ifcFaceBounds.size());
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops (ifcFaceBounds.size());
 
 					// for each bound loop: get vertices into faceBoundLoops[i]
 					std::transform(ifcFaceBounds.begin(), ifcFaceBounds.end(), faceBoundLoops.begin(),
