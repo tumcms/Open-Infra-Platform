@@ -494,7 +494,7 @@ namespace OpenInfraPlatform {
 				) const throw(...)
 				{
 					// IfcTopologicalRepresentationItem 
-					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
+					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
 
 					// (1/*) IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 					if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>()) {
@@ -507,6 +507,18 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
 						curveConverter->convertIfcEdge(topo_item.as<typename IfcEntityTypesT::IfcEdge>(), objectPlacement, polyline_data);
 						itemData->polylines.push_back(polyline_data);
+						return;
+					}
+
+					// (3/*) IfcFace SUBTYPE OF IfcTopologicalRepresentationItem
+					// until now, this if-block isn't tested with an ifc-file
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcFace>()) {
+						// Carve polygon of the converted face
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+						// Contains polygon indices of vertices (x,y,z converted to string)
+						std::map<std::string, uint32_t> polygonIndices;
+						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices);
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
 						return;
 					}
 
