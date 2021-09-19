@@ -800,7 +800,7 @@ namespace OpenInfraPlatform {
 				 */
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcFaceBoundList(
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds,
-					const carve::math::Matrix& pos) const noexcept(true)
+					const carve::math::Matrix& pos) const noexcept(false)
 				{
 					swapOuterBoundaryToFront(ifcFaceBounds);
 
@@ -819,8 +819,13 @@ namespace OpenInfraPlatform {
 				 */
 				void swapOuterBoundaryToFront(
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds
-				) const throw(...)
+				) const noexcept(false)
 				{
+					// throw, if there are multiple IfcFaceOuterBound
+					if (1 < std::count_if(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& faceBound) { return faceBound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>(); })) {
+						throw oip::InconsistentModellingException("Face boundary has more than one outer boundary. Entity #" + std::to_string(ifcFaceBounds[0].getId()) + " " + ifcFaceBounds[0].classname() + " is involved.");
+					}
+
 					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
 					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
 					{
