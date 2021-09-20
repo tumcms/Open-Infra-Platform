@@ -521,7 +521,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
-				addBBox(itemModel, model->getExtent());
+				oip::BBox& modelBBox = model->getExtent();
+				addBBox(itemModel, modelBBox);
 
 				// 4.  - GeoRef : georeferencing metadata
 				//       - key - val
@@ -561,7 +562,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				QPushButton *launchZoomToObjectButton = new QPushButton();
 				launchZoomToObjectButton->setText("Zoom To Object");
 				//QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
-				QObject::connect(launchZoomToObjectButton, &QPushButton::clicked, [this, model, fullBBox] { on_actionZoomToOneObject_triggered(model, fullBBox); } );
+				QObject::connect(launchZoomToObjectButton, &QPushButton::clicked, [this, model, fullBBox, modelBBox] { on_actionZoomToOneObject_triggered(model, fullBBox, modelBBox); } );
 				modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
 				
 				// expanded per default
@@ -922,13 +923,19 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IModel>& model, const oip::BBox & fullBBox)
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IModel>& model, const oip::BBox & fullBBox, const oip::BBox & modelBBox)
 {
 	oip::BBox zoomBox = model->getExtent();
-	
+	buw::Vector3f zoomBoxmin = zoomBox.min().cast<float>();
+	buw::Vector3f zoomBoxmax = zoomBox.max().cast<float>();
+	buw::Vector3f fullBBoxCenter = fullBBox.center().cast<float>();
+
+	buw::Vector3f zoomMinExtend = (modelBBox.min() - fullBBox.center()).cast<float>();
+	buw::Vector3f zoomMaxExtend = (modelBBox.max() - fullBBox.center()).cast<float>();
+
 	//buw::Vector3d offset = -zoomBox.center();
-	buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
-	buw::Vector3f zoomMaxExtend = (zoomBox.max() - fullBBox.center()).cast<float>();
+	//buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
+	//buw::Vector3f zoomMaxExtend = (zoomBox.max() - fullBBox.center()).cast<float>();
 	
 	view_->on_zoomToOneObject(zoomMinExtend, zoomMaxExtend);
 }
