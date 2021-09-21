@@ -189,7 +189,7 @@ private:
 				georefMeta->addDataEntry( "Map Zone", projectedCRS->MapZone.get());
 			if (projectedCRS->MapUnit)
 			{
-				double factor = UnitConvert()->convertUnit(projectedCRS->MapUnit);
+				double factor = this->UnitConvert()->convertUnit(projectedCRS->MapUnit);
 				georefMeta->scale = factor;
 				georefMeta->addDataEntry( "Map Unit Factor to meters", std::to_string(factor) );
 			}

@@ -1247,7 +1247,7 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						auto faceSet = tessItem.template as<typename IfcEntityTypesT::IfcPolygonalFaceSet>();
 
-						double length_factor = UnitConvert()->getLengthInMeterFactor();
+						double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 
 						// obtain vertices from coordinates list and add them to the new polygon
 						for (const auto& point : faceSet->Coordinates->CoordList)

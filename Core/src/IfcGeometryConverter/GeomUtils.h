@@ -84,7 +84,7 @@ namespace OpenInfraPlatform
 					const carve::geom::vector<2>& terminalPointSeg2,
 					carve::geom::vector<2> & intersectionPoint);
 
-				static bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
+				static bool LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 					const carve::geom::vector<2>& terminalPointSeg1,
 					const carve::geom::vector<2>& initialPointSeg2,
 					const carve::geom::vector<2>& terminalPointSeg2,

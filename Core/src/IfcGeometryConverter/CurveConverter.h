@@ -2165,10 +2165,10 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
-					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
+					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
 					
 					// Get radius
-					double circleRadius = circle->Radius * UnitConvert()->getLengthInMeterFactor();
+					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
 					return carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
@@ -2182,13 +2182,13 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
-					double angle = parameter * UnitConvert()->getAngleInRadianFactor();
+					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
 					// determine position
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
 					// Get radius
-					double xRadius = ellipse->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-					double yRadius = ellipse->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
 
 					return conicPositionMatrix * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
 				}

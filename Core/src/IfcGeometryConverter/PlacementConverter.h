@@ -807,9 +807,9 @@ namespace OpenInfraPlatform {
 					carve::math::Matrix gridPositionMatrix = carve::math::Matrix::IDENT();
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
 					
-					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), UnitConvert());
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter = std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> gridConv(GeomSettings(), UnitConvert(), placementConverter);
+					CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
 					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
 
 					if (!gridAxis->SameSense)

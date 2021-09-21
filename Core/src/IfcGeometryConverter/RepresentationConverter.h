@@ -640,7 +640,7 @@ namespace OpenInfraPlatform {
 						return;
 					}
 					const int product_id = ifcElement->getId();
-					const double length_factor = UnitConvert()->getLengthInMeterFactor();
+					const double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 					
 					// convert opening representation
 					for ( auto rel_voids : ifcElement->HasOpenings )
