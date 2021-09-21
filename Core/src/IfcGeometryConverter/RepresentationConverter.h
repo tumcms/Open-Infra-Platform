@@ -535,7 +535,7 @@ namespace OpenInfraPlatform {
 						polyline_data->beginPolyline();
 
 						// add all vertices to polyline
-						for (auto v : vertices) {
+						for (const auto& v : vertices) {
 							polyline_data->addPolylineIndex(polyline_data->addVertex(v));
 						}
 
@@ -555,7 +555,7 @@ namespace OpenInfraPlatform {
 						polyline_data->beginPolyline();
 
 						// add all vertices to polyline
-						for (auto v : vertices) {
+						for (const auto& v : vertices) {
 							polyline_data->addPolylineIndex(polyline_data->addVertex(objectPlacement * v));
 						}
 
