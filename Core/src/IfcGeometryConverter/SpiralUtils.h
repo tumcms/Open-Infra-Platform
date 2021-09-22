@@ -321,7 +321,7 @@ namespace OpenInfraPlatform
 					);
 				}
 
-				/*static	inline	double	XbyAngleDeviationPolynomial(
+				static	inline	double	XbyAngleDeviationPolynomial(
 					double	a,
 					double	b,
 					double	c,
@@ -354,7 +354,7 @@ namespace OpenInfraPlatform
 						polynomialConstantCnt,
 						s
 					);
-				}*/
+				}
 
 				static	inline	double	YbyAngleDeviationPolynomial(
 					double	a,
@@ -466,7 +466,7 @@ namespace OpenInfraPlatform
 					);
 				}
 
-				/*static	inline	double	YbyAngleDeviationPolynomial(
+				static	inline	double	YbyAngleDeviationPolynomial(
 					double	a,
 					double	b,
 					double	c,
@@ -499,7 +499,7 @@ namespace OpenInfraPlatform
 						polynomialConstantCnt,
 						s
 					);
-				}*/
+				}
 
 				static	inline	double	XbyAngleDeviationPolynomialByTerms(
 					double	septicTerm,
@@ -587,7 +587,7 @@ namespace OpenInfraPlatform
 					);
 				}
 
-				/*static	inline	double	XbyAngleDeviationPolynomialByTerms(
+				static	inline	double	XbyAngleDeviationPolynomialByTerms(
 					double	cubicTerm,
 					double	quadraticTerm,
 					double	linearTerm,
@@ -612,7 +612,7 @@ namespace OpenInfraPlatform
 						a, b, c, d,
 						s
 					);
-				}*/
+				}
 
 				static	inline	double	YbyAngleDeviationPolynomialByTerms(
 					double	septicTerm,
@@ -700,7 +700,7 @@ namespace OpenInfraPlatform
 					);
 				}
 
-				/*static	inline	double	YbyAngleDeviationPolynomialByTerms(
+				static	inline	double	YbyAngleDeviationPolynomialByTerms(
 					double	cubicTerm,
 					double	quadraticTerm,
 					double	linearTerm,
@@ -725,9 +725,9 @@ namespace OpenInfraPlatform
 						a, b, c, d,
 						s
 					);
-				}*/
+				}
 
-				/*static	inline	double	XbyAngleDeviationPolynomialByTerms(
+				static	inline	double	XbyAngleDeviationPolynomialByTerms(
 					double	quadraticTerm,
 					double	linearTerm,
 					double	constantTerm,
@@ -772,8 +772,8 @@ namespace OpenInfraPlatform
 						s
 					);
 				}
-				*/
-				/*static	inline	double	YclothoidByConstant(
+				
+				static	inline	double	YclothoidByConstant(
 					double	clothoidConstant,
 					double	s
 				)
@@ -785,7 +785,7 @@ namespace OpenInfraPlatform
 						0.,
 						s
 					);
-				}*/
+				}
 
 
 				//

@@ -4110,7 +4110,7 @@ namespace OpenInfraPlatform {
 					double numSegments = 100;
 					double deltaLength = length / numSegments;
 
-					std::vector<carve::geom::vector<3>> segmentPoints;
+					std::vector<carve::geom::vector<3>> segmentPoints, segmentDirections;
 					double lengthAlong = 0.;
 					switch (curveSegment->SegmentStart.which())
 					{
@@ -4134,20 +4134,24 @@ namespace OpenInfraPlatform {
 					for( int i = 0; i < numSegments; ++i )
 					{ 
 						// determine point
-						carve::geom::vector<3> point;
+						carve::geom::vector<3> point, direction;
 						if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
 						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcLine>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcLine>(), runningLength);
 						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCircle>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
 						segmentPoints.push_back(point);
+						segmentDirections.push_back(direction);
 						// determine next length
 						lengthAlong += deltaLength;
 						switch (runningLength.which())
@@ -4182,22 +4186,33 @@ namespace OpenInfraPlatform {
 							0, 0, 1., 0.,
 							0., 0., 0., 1.);*/
 				
-						//get the angle
-						double theta = getAngleOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), length);
+						//get the local coordinate system
+						carve::geom::vector<3> tangent = segmentDirections[0].normalize();
+						//tangent.y = tangent.y;
+						carve::geom::vector<3> localZ = carve::geom::VECTOR(0., 0., 1.),
+							orthogonal = carve::geom::cross(localZ, tangent).normalize(),
+							translate = -segmentPoints[0];
 						//calculate rotation
 						carve::math::Matrix rotationMatrix = carve::math::Matrix(
-							std::cos(theta), -std::sin(theta), 0., 0.,
-							std::sin(theta), std::cos(theta), 0., 0.,
-							0, 0, 1., 0.,
+							tangent.x, orthogonal.x, localZ.x, 0.,
+							tangent.y, orthogonal.y, localZ.y, 0.,
+							tangent.z, orthogonal.z, localZ.z, 0.,
 							0., 0., 0., 1.);
-					
+						/*carve::math::Matrix rotationMatrix = carve::math::Matrix(
+							0, -1, localZ.x, 0.,
+							1, 0, localZ.y, 0.,
+							0, 0, localZ.z, 0.,
+							0., 0., 0., 1.);*/
 						// apply placement
-						const carve::math::Matrix placement = placementConverter->convertIfcPlacement(curveSegment->Placement);
+						const carve::math::Matrix placement =
+							placementConverter->convertIfcPlacement(curveSegment->Placement)
+							//* GeomUtils::computeInverse(rotationMatrix);
+							* rotationMatrix;
 
 						std::vector<carve::geom::vector<3>> newPoints;
 						for (const auto& point : segmentPoints)
 						{
-							newPoints.push_back(rotationMatrix * placement * point);
+							newPoints.push_back(placement * (point + translate));
 						}
 
 						//BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
@@ -5081,13 +5096,24 @@ namespace OpenInfraPlatform {
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
-				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
+				/*! \brief Calculates a trimming point on the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note															
 				*/
 				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+				{
+					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
@@ -5107,50 +5133,122 @@ namespace OpenInfraPlatform {
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 
-				/*! \brief Calculates a trimming point on the clothoid using \c IfcNonNegativeLengthMeasure.
-				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
-				* \param[in] parameter				A pointer to data from \c IfcNonNegativeLengthMeasure.
+				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] trimming				A pointer to data from \c IfcTrimmingSelect.
 				* \return							The location of the trimming point.
-				* \note											
 				*/
-				template <>
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
 				{
-					// Interpret parameter
-					// Get Clothoid Constant
-					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
-					//std::vector<double> polynomialConstants = { 0., 0., A, 0. };
-					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
-
-					// Implement Taylor series for x coordinate
-					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
-
-					// Implement Taylor series for y coordinate
-					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
-
-					return carve::geom::VECTOR(x, y, 0.);
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						// Calculate a trimming point using \c IfcCartesianPoint. 
+						return getDirectionOfCurve<TCurve>(curve, trimming.get<0>());
+					}
+					case 1:
+					{
+						// Calculate a trimming point using \c IfcParameterValue.
+						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
+					}
+					default:
+						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+					}
+				}
+				
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const throw(...)
+				{
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
+						return getDirectionOfCurve<TCurve>(curve, trimming.get<0>());
+					}
+					case 1:
+					{
+						// Calculate a trimming point using \c IfcParameterValue.
+						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
+					}
+					default:
+						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+					}
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcCartesianPoint & point) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
 
-				/*! \brief Calculates aan angle of the clothoid.
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				/*! \brief Calculates an angle of the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
-				* \param[in] parameter				The lenth.
-				* \return							The Angle.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
 				* \note
 				*/
-				double getAngleOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const double & parameter) const throw(...)
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+				{
+					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
+					const double& parameter) const throw(...)
 				{
 					//get clothoid constant -> linear term
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					//get calculated linearterm
-					double term = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
-					std::vector<double> polynomialConstants = { 0.,0.,term };
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
+				
 
-					return SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstants, polynomialConstants.size(), parameter);
+					// double term = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., 0., A, 0., parameter);
 
+					//std::vector<double> polynomialConstants = { 0.,0.,term };
+
+					//double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstants, polynomialConstants.size(), parameter);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 
 #endif
