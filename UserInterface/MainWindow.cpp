@@ -489,7 +489,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				{
 					if (el->child(i)->text(0).compare("GeoRef", Qt::CaseInsensitive) == 0
 						&& (el->child(i)->text(1).compare( QString( model->getGeorefMetadata().codeEPSG.c_str() )) == 0
-						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0))
+						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0
+							|| el->child(i)->text(1).compare(QString("unknown")) == 0))
 						return true;
 				}
 				return false;
@@ -930,8 +931,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_trig
 	buw::Vector3f zoomBoxmax = zoomBox.max().cast<float>();
 	buw::Vector3f fullBBoxCenter = fullBBox.center().cast<float>();
 
-	buw::Vector3f zoomMinExtend = (modelBBox.min() - fullBBox.center()).cast<float>();
-	buw::Vector3f zoomMaxExtend = (modelBBox.max() - fullBBox.center()).cast<float>();
+	
+	buw::Vector3f delta = (fullBBox.center() - modelBBox.center()).cast<float>();
+
+	//buw::Vector3f zoomMinExtend = (modelBBox.min() - fullBBox.center()).cast<float>();
+	//buw::Vector3f zoomMaxExtend = (modelBBox.max() - fullBBox.center()).cast<float>();
+
+	buw::Vector3f zoomMinExtend = modelBBox.min().cast<float>() - delta;
+	buw::Vector3f zoomMaxExtend = modelBBox.max().cast<float>() - delta;
 
 	//buw::Vector3d offset = -zoomBox.center();
 	//buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
