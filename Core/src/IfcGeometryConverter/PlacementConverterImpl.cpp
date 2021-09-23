@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -20,6 +20,11 @@
 #include "EarlyBinding\IFC4X1\src\EMTIFC4X1EntityTypes.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1Entities.h"
+#include "EarlyBinding\IFC4X3_RC1\src\EMTIFC4X3_RC1EntityTypes.h"
+#endif
+
 #include "PlacementConverter.h"
 #include "PlacementConverterImpl.h"
 
@@ -38,21 +43,29 @@ namespace OpenInfraPlatform {
 				if (linearPlacement.expired())
 					throw oip::ReferenceExpiredException(linearPlacement);
 				// check if correct type
-				if (!linearPlacement->PlacementRelTo.isOfType<emt::IFC4X1EntityTypes::IfcBoundedCurve>())
+				if (!linearPlacement->PlacementRelTo.template isOfType<emt::IFC4X1EntityTypes::IfcBoundedCurve>())
 					throw oip::InconsistentModellingException(linearPlacement, "Only a IfcBoundedCurve can be used as a reference curve.");
 				// return the curve
-                return linearPlacement->PlacementRelTo.as<emt::IFC4X1EntityTypes::IfcBoundedCurve>();
+                return linearPlacement->PlacementRelTo.template as<emt::IFC4X1EntityTypes::IfcBoundedCurve>();
             }
-			
+		#endif
+
+			// IFC 4x3_RC1 specifics
+		#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 			template <>
-			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
-				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
+			EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X3_RC1EntityTypes>::getCurveOfPlacement(
+				const EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const
-            {
-				// no relative placement in IFC4x1
-                return 0.;
-            }
+			{
+				// check input
+				if (linearPlacement.expired())
+					throw oip::ReferenceExpiredException(linearPlacement);
+				// check if correct type
+				if (!linearPlacement->PlacementMeasuredAlong.template isOfType<emt::IFC4X3_RC1EntityTypes::IfcBoundedCurve>())
+					throw oip::InconsistentModellingException(linearPlacement, "Only IfcBoundedCurve can be a base curve for IfcLinearPlacement.");
+				// return the curve
+				return linearPlacement->PlacementMeasuredAlong.template as<emt::IFC4X3_RC1EntityTypes::IfcBoundedCurve>();
+			}
 		#endif
 
         }

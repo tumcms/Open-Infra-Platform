@@ -1,6 +1,6 @@
 /*
     This file is part of Expresso, a simple early binding generator for EXPRESS.
-	Copyright (c) 2016 Technical University of Munich
+	Copyright (c) 2021 Technical University of Munich
 	Chair of Computational Modeling and Simulation.
 
     BlueFramework is free software; you can redistribute it and/or modify
@@ -51,6 +51,13 @@ public:
 	    
 	}
 
+	EXPRESSReference(EXPRESSReference&& other)
+		:
+		base(other),
+		refId{ other.refId },
+		model{ other.model }
+	{}
+
 	EXPRESSReference(const std::shared_ptr<EXPRESSEntity>& to, const std::shared_ptr<EXPRESSModel>& model) {
 		if (std::dynamic_pointer_cast<T>(to) != nullptr) {
 			this->operator=(constructInstance(to->getId(), model));
@@ -97,6 +104,16 @@ public:
 
 	const std::string getStepParameter() const override;
 	
+	template <class V>
+	const bool operator==(const EXPRESSReference<V>& other) const
+	{
+		return this->refId == other.getId();
+	}
+	template <class V>
+	const bool operator!=(const EXPRESSReference<V>& other) const
+	{
+		return !operator==<V>(other);
+	}
 
 	T* operator->() { return this->lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
@@ -134,6 +151,10 @@ public:
 		if (model->entities.count(refId) > 0) {
 			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 		}
+		else {
+			const std::string err = "Could not find reference with ID=" + std::to_string(refId);
+			throw std::invalid_argument(err.c_str());
+		}
 		reference.refId = refId;
 		reference.model = model;
 		return reference;
@@ -141,6 +162,7 @@ public:
 
 	const std::string classname() const override;
 	
+	const size_t getId() const { return refId; }
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
 	{
@@ -153,18 +175,14 @@ public:
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());;
 	}
 
 	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
 	}
 
 	template <typename TTarget> bool isOfType() const {

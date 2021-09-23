@@ -1,7 +1,7 @@
 /*
   This file is part of TUM Open Infra Platform Early Binding EXPRESS
   Generator, a simple early binding generator for EXPRESS.
-  Copyright (c) 2016-2017 Technical University of Munich
+  Copyright (c) 2021 Technical University of Munich
   Chair of Computational Modeling and Simulation.
 
   TUM Open Infra Platform Early Binding EXPRESS Generator is free
@@ -79,7 +79,7 @@ std::string license =
 
 std::string license_cmake =
 "#\n\
-#    Copyright(c) 2020 Technical University of Munich\n\
+#    Copyright(c) 2021 Technical University of Munich\n\
 #    Chair of Computational Modeling and Simulation.\n\
 #\n\
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify\n\
@@ -1356,6 +1356,7 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 	std::function<std::vector<std::string>(std::string)> getAttributes = [&schema](const std::string& name) -> std::vector<std::string> {
 		std::vector<std::string> attributes;
 		for (const auto& attr : schema.getEntityByName(name).getAttributes()) // only own attributes, but inverses as well
+		{
 			if (attr.type->getType() == eEntityAttributeParameterType::TypeNamed)
 				attributes.push_back(attr.type->toString()); // doesn't matter if it is a type or an entity
 			else if (attr.type->getType() == eEntityAttributeParameterType::eGeneralizedType) {
@@ -1365,6 +1366,12 @@ void GeneratorOIP::prepareSplits(const Schema& schema)
 				}
 				attributes.push_back(elementType->toString()); // doesn't matter if it is a type or an entity
 			}
+			// also provide its inverses
+			if (attr.isInverse() || attr.hasInverseCounterpart())
+				for (const auto& inv : attr.getInverses())
+					if( std::find(attributes.begin(), attributes.end(), std::template get<0>(inv)) == attributes.end())
+						attributes.push_back(std::template get<0>(inv));
+		}
 		return attributes;
 	};
 	for (const auto& entity : schema.entities_)
@@ -2196,7 +2203,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for shared(model, lines)");
+	writeLine(file, "std::vector<std::string> errors;");
+	writeLine(file, "#pragma omp parallel for shared(model, lines, errors)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
@@ -2205,6 +2213,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
 	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	writeLine(file, "try {");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2215,8 +2224,19 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 			writeLine(file, "}");
 		}
 	}
-	writeLine(file, "}"); //end if line[0] == '#'
-	writeLine(file, "}"); //end for read file
+	writeLine(file, "}"); //end try 
+	writeLine(file, "catch (const std::exception& ex) {"); // begin catch
+	writeLine(file, "#pragma omp critical");
+	writeLine(file, "errors.push_back(std::string(ex.what()));");
+	writeLine(file, "}"); //end catch 
+	writeLine(file, "} // end if line[0] == '#'");
+	writeLine(file, "} // end for read file");
+	writeLine(file, "if (errors.size() != 0)	{");
+	writeLine(file, "std::string all = \"\";");
+	writeLine(file, "std::for_each(errors.begin(), errors.end(), [&all](const std::string& el) {all += el + \"\\n\"; });");
+	writeLine(file, "all.pop_back();");
+	writeLine(file, "throw std::exception(all.c_str());");
+	writeLine(file, "}");
 	linebreak(file);
 	writeLine(file, "// Initialize inverse parameters");
 	writeLine(file, "size_t numEntities = model->entities.size();");
@@ -2225,16 +2245,16 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "auto it = model->entities.begin();");
 	writeLine(file, "std::advance(it, i);");
 	writeLine(file, "it->second->linkInverse(model);");
-	writeLine(file, "}"); // end for each entity
+	writeLine(file, "} // end for each entity"); 
 	linebreak(file);
 	writeLine(file, "return model;");
 	writeLine(file, "}"); //end try 
-	writeLine(file, "catch(std::exception e) {"); // begin catch
-	writeLine(file, "std::cout << e.what() << std::endl;");
+	writeLine(file, "catch(const std::exception& ex) {"); // begin catch
+	writeLine(file, "throw ex;");
 	writeLine(file, "}"); //end catch 
 	writeLine(file, "}");
 	writeLine(file, "else {");
-	writeLine(file, "throw std::exception(\"Could not open file.\");");
+	writeLine(file, "throw std::exception(\"Could not open IFC file.\");");
 	writeLine(file, "}"); // end else if(file.is_open())
 	writeLine(file, "return nullptr;");
 	writeLine(file, "};"); // end function FromFile
@@ -3129,9 +3149,15 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		writeLine(out, "boost::to_upper(classname);");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
 		for (int i = 0; i < attributes.size() - 1; i++) {
-			writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
+			if( entity.hasQualifiedAttribute(attributes[i].getName()) )
+				writeLine(out, "stepLine += \"*,\"; // " + attributes[i].getName() + " is a qualified attribute of " + name);
+			else
+				writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
 		}
-		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
+		if( entity.hasQualifiedAttribute(attributes.back().getName() ) )
+			writeLine(out, "stepLine += \"*);\"; // " + attributes.back().getName() + " is a qualified attribute of " + name);
+		else
+			writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
 		linebreak(out);

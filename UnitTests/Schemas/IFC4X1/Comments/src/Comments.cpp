@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <reader/IFC4X1Reader.h>
+#include <EarlyBinding/IFC4X1/src/reader/IFC4X1Reader.h>
 #include <namespace.h>
 
 using namespace testing;

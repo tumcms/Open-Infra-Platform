@@ -20,6 +20,8 @@
 
 #define _USE_MATH_DEFINES 
 #include <math.h>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
 #include "CarveHeaders.h"
 
@@ -150,14 +152,14 @@ namespace OpenInfraPlatform
 					//		Dim : IfcDimensionCount: = IfcCurveDim(SELF);
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
-					{
-						return convertIfcBlossCurve(ifcCurve.template as<typename IfcEntityTypesT::IfcBlossCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
-					}
-#endif
+					// IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+//#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+//					if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcBlossCurve>())
+//					{
+//						return convertIfcBlossCurve(ifcCurve.template as<typename IfcEntityTypesT::IfcBlossCurve>(),
+//							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+//					}
+//#endif
 
 					// IfcBoundedCurve SUBTYPE of IfcCurve
 					if (ifcCurve.template isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
@@ -166,8 +168,8 @@ namespace OpenInfraPlatform
 							targetVec, segmentStartPoints);
 					}
 
-					// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						return convertIfcClothoid(ifcCurve.template as<typename IfcEntityTypesT::IfcClothoid>(), 
@@ -203,14 +205,14 @@ namespace OpenInfraPlatform
 							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 					}
 
-					// IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-					else if (ifcCurve.isOfType<typename IfcEntityTypesT::IfcSeriesParameterCurve>())
-					{
-						return convertIfcSeriesParameterCurve(ifcCurve.template as<typename IfcEntityTypesT::IfcSeriesParameterCurve>(),
-							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
-					}
-#endif
+//					// IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+//#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+//					else if (ifcCurve.template isOfType<typename IfcEntityTypesT::IfcSeriesParameterCurve>())
+//					{
+//						return convertIfcSeriesParameterCurve(ifcCurve.template as<typename IfcEntityTypesT::IfcSeriesParameterCurve>(),
+//							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+//					}
+//#endif
 
 					// IfcSurfaceCurve SUPTYPE of IfcCurve
 					if (ifcCurve.template isOfType<typename IfcEntityTypesT::IfcSurfaceCurve>())
@@ -279,32 +281,32 @@ namespace OpenInfraPlatform
 					}
 				} //end convertIfcCurve2D
 
-				// IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-				/**********************************************************************************************/
-				/*! \brief Converts an \c IfcBlossCurve to a tesselated curve.
-				* \param[in] blossCurve				A pointer to data from \c IfcBlossCurve.
-				* \param[out] targetVec				The tessellated line.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcBlossCurve.
-				*
-				* \note The function is not implemented.
-				* \internal TODO.
-				*/
-				void convertIfcBlossCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcBlossCurve>& blossCurve,
-					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement,
-					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
-				) const noexcept(false)
-				{
-					throw oip::UnhandledException(blossCurve);
-				}
-#endif
+				// IfcBlossCurve SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+//#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+//				/**********************************************************************************************/
+//				/*! \brief Converts an \c IfcBlossCurve to a tesselated curve.
+//				* \param[in] blossCurve				A pointer to data from \c IfcBlossCurve.
+//				* \param[out] targetVec				The tessellated line.
+//				* \param[out] segmentStartPoints	The starting points of separate segments.
+//				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+//				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+//				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcBlossCurve.
+//				*
+//				* \note The function is not implemented.
+//				* \internal TODO.
+//				*/
+//				void convertIfcBlossCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcBlossCurve>& blossCurve,
+//					std::vector<carve::geom::vector<3>>& targetVec,
+//					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+//					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+//					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+//					const bool senseAgreement,
+//					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
+//				) const throw(...)
+//				{
+//					throw oip::UnhandledException(blossCurve);
+//				}
+//#endif
 
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcBoundedCurve to a tesselated curve.
@@ -333,7 +335,7 @@ namespace OpenInfraPlatform
 					//		SUBTYPE OF(IfcCurve);
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve (Deprecated starting IFC4x3_RC2)
+					// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve (Deprecated starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					if (boundedCurve.template isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 					{
@@ -363,8 +365,8 @@ namespace OpenInfraPlatform
 							targetVec, segmentStartPoints);
 					} // end if IfcCompositeCurve
 
-					// IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+					// IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcGradientCurve>())
 					{
 						return convertIfcGradientCurve(boundedCurve.template as<typename IfcEntityTypesT::IfcGradientCurve>(),
@@ -390,11 +392,12 @@ namespace OpenInfraPlatform
 							targetVec, segmentStartPoints);
 					} // end if IfcPolyline
 
-					// IfcSegmentedReferenceCurve SUBTYPE OF IfcBoundedCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-					else if (boundedCurve.isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
+					// IfcSegmentedReferenceCurve SUBTYPE OF IfcBoundedCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+					else if (boundedCurve.template isOfType<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>())
 					{
-						return convertIfcGradientCurve(boundedCurve.template as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
+						return convertIfcSegmentedReferenceCurve(
+							boundedCurve.template as<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>(),
 							targetVec, segmentStartPoints);
 					} // end if IfcSegmentedReferenceCurve
 #endif
@@ -409,7 +412,7 @@ namespace OpenInfraPlatform
 					throw oip::UnhandledException(boundedCurve);
 				}
 
-				// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve (Deprecated starting IFC4x3_RC2)
+				// IfcAlignmentCurve SUBTYPE OF IfcBoundedCurve (Deprecated starting IFC4X3_RC4)
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				/**********************************************************************************************/
 				/*! \brief Calculates the 3D point along a curve.
@@ -490,16 +493,20 @@ namespace OpenInfraPlatform
 					for (auto &segment : compositeCurve->Segments) {
 						std::vector<carve::geom::vector<3>> segment_vec;
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
-						if (!segment_vec.empty())
+#else
+						convertIfcSegment(segment, segment_vec, segmentStartPoints);
+#endif
+						if (!segment_vec.empty()) 
 						{
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 						}
 					}
 				}
 
-				// IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				// IfcGradientCurve SUBTYPE of IfcBoundedCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/**********************************************************************************************/
 				/*! \brief Converts base curve (inherited from IfcBoundedCurve) to 3D curve representation using gradient segments
 				* \param[in] gradientCurve			A pointer to data from \c IfcGradientCurve.
@@ -509,7 +516,7 @@ namespace OpenInfraPlatform
 				* \note The function is not implemented.
 				* \internal TODO.
 				*/
-				void convertIfcGradientCurve(EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
+				void convertIfcGradientCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcGradientCurve>& gradientCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const noexcept(false)
@@ -788,15 +795,16 @@ namespace OpenInfraPlatform
 					GeomUtils::appendPointsToCurve(loop, targetVec);
 				}
 
-				// IfcSegmentedReferenceCurve SUBTYPE of IfcBoundedCurve(exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				// IfcSegmentedReferenceCurve SUBTYPE of IfcBoundedCurve(exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/**********************************************************************************************/
 				/*! \brief Converts c\ IfcSegmentedReferenceCurveCalculates to curve segments and appends them to the curve. 
 				* \param[in] segmentedReferenceCurve		A pointer to data from c\ IfcSegmentedReferenceCurve.
 				* \param[out] targetVec						The tessellated line.
 				* \param[out] segmentStartPoints			The starting points of separate segments.
 				*/
-				void convertIfcSegmentedReferenceCurve(EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
+				void convertIfcSegmentedReferenceCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSegmentedReferenceCurve>& segmentedReferenceCurve,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
 				) const noexcept(false)
@@ -861,8 +869,8 @@ namespace OpenInfraPlatform
 					GeomUtils::appendPointsToCurve(basisCurvePoints, targetVec);
 				}
 
-				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				// IfcClothoid SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcClothoid to a tesselated curve.
 				* \param[in] clothoid				A pointer to data from \c IfcClothoid.
@@ -965,17 +973,18 @@ namespace OpenInfraPlatform
 					// **************************************************************************************************************************
 					// Determine position
 					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
 
 					// Get radius
 					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming begin.
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
-					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
-					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, point);
+					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -984,7 +993,7 @@ namespace OpenInfraPlatform
 
 					const double circleCenter_x = 0.0;
 					const double circleCenter_y = 0.0;
-					std::vector<carve::geom::vector<2> > circle_points;
+					std::vector<carve::geom::vector<2>> circle_points;
 					ProfileConverterT<IfcEntityTypesT>::addArcWithEndPoint(
 						circle_points, circleRadius,
 						startAngle, openingAngle,
@@ -994,20 +1003,20 @@ namespace OpenInfraPlatform
 					if (circle_points.size() > 0)
 					{
 						// apply position
-						for (unsigned int i = 0; i < circle_points.size(); ++i)
+						std::vector<carve::geom::vector<3>> newCirclePoints;
+						for (unsigned int i = 0; i < circle_points.size(); ++i) 
 						{
-							carve::geom::vector<2>& point = circle_points.at(i);
-							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0.));
+							carve::geom::vector<2>&  point = circle_points.at(i);
+							carve::geom::vector<3> point3d(carve::geom::VECTOR(point.x, point.y, 0));
 							point3d = conicPositionMatrix * point3d;
-							point.x = point3d.x;
-							point.y = point3d.y;
+							newCirclePoints.push_back(point3d);
 						}
 
-						GeomUtils::appendPointsToCurve(circle_points, targetVec);
+						GeomUtils::appendPointsToCurve(newCirclePoints, targetVec);
 						segmentStartPoints.push_back(carve::geom::VECTOR(
-							circle_points.at(0).x,
-							circle_points.at(0).y,
-							0.));
+							newCirclePoints.at(0).x,
+							newCirclePoints.at(0).y,
+							newCirclePoints.at(0).z));
 					}
 				}
 
@@ -1241,33 +1250,34 @@ namespace OpenInfraPlatform
 					throw oip::UnhandledException(pCurve);
 				}
 
-				// IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4x3_RC2)
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
-				/**********************************************************************************************/
-				/*! \brief Converts an \c IfcSeriesParameterCurve to a tesselated curve.
-				* \param[in] boundedCurve			A pointer to data from \c IfcSeriesParameterCurve.
-				* \param[out] targetVec				The tessellated line.
-				* \param[out] segmentStartPoints	The starting points of separate segments.
-				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
-				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
-				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
-				*
-				* \note The function is not implemented.
-				* \internal TODO.
-				*/
-				void convertIfcSeriesParameterCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeriesParameterCurve>& seriesParameterCurve,
-					std::vector<carve::geom::vector<3>>& targetVec,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
-					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
-					const bool senseAgreement,
-					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
-				) const noexcept(false)
-				{
-					throw oip::UnhandledException(pcurve);
-				}
-				
-#endif
+//				// IfcSeriesParameterCurve SUBTYPE of IfcCurve (exists starting IFC4X3_RC4)
+//#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+//				/**********************************************************************************************/
+//				/*! \brief Converts an \c IfcSeriesParameterCurve to a tesselated curve.
+//				* \param[in] boundedCurve			A pointer to data from \c IfcSeriesParameterCurve.
+//				* \param[out] targetVec				The tessellated line.
+//				* \param[out] segmentStartPoints	The starting points of separate segments.
+//				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+//				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+//				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcCurve.
+//				*
+//				* \note The function is not implemented.
+//				* \internal TODO.
+//				*/
+//				void convertIfcSeriesParameterCurve(
+//					const EXPRESSReference<typename IfcEntityTypesT::IfcSeriesParameterCurve>& seriesParameterCurve,
+//					std::vector<carve::geom::vector<3>>& targetVec,
+//					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+//					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+//					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+//					const bool senseAgreement,
+//					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
+//				) const noexcept(false)
+//				{
+//					throw oip::UnhandledException(seriesParameterCurve);
+//				}
+//				
+//#endif
 
 				// IfcSurfaceCurve SUPTYPE of IfcCurve
 				/**********************************************************************************************/
@@ -1315,7 +1325,7 @@ namespace OpenInfraPlatform
 					*/
 				}
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
 				* \param[in] segment				The \c IfcSegment to be converted.
 				* \param[out] targetVec				The tessellated line.
@@ -1340,7 +1350,7 @@ namespace OpenInfraPlatform
 				}
 #endif
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Converts \c IfcCurveSegment to a series of points and appends them to the curve.
 				* \param[in] curveSegment			The \c IfcCurveSegment to be converted.
 				* \param[out] targetVec				The tessellated line.
@@ -1539,20 +1549,15 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> vertex = placementConverter->convertIfcCartesianPoint(it_cp);
 
 						// skip duplicate vertices
-						if (!first)
+						if (!first) 
 						{
-							if (abs(vertex.x - vertex_previous.x) < 0.00000001)
+							if (this->GeomSettings()->areEqual(vertex, vertex_previous))
 							{
-								if (abs(vertex.y - vertex_previous.y) < 0.00000001)
-								{
-									if (abs(vertex.z - vertex_previous.z) < 0.00000001)
-									{
-										// TODO: is it better to report degenerated loops, or to just omit them?
-										BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << cp->getId();
-										//continue;
-									}
-								}
+								// TODO: is it better to report degenerated loops, or to just omit them?
+								BLUE_LOG(warning) << "Duplicate point in polyloop. IfcPoint #" << cp->getId();
+								//continue;
 							}
+
 						}
 						else
 							first = false;
@@ -1617,6 +1622,7 @@ namespace OpenInfraPlatform
 					return loop;
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				/*! \brief Gets stations for \c IfcAlignmentCurve at which a point of the tesselation has to be calcuated. 
 				* \param[in] alignmentCurve			The \c IfcAlignmentCurve to be converted.
 				* \retrun							The series of stations at which a point of the tesselation has to be calcuated.
@@ -1896,6 +1902,7 @@ namespace OpenInfraPlatform
 
 					return stations;
 				}
+#endif
 
 				// Function 3: Get angle on circle (returns angle if the given point lies on the circle; if not, -1 is returned). 
 				/**********************************************************************************************/
@@ -1911,9 +1918,10 @@ namespace OpenInfraPlatform
 				) const noexcept(false)
 				{
 					carve::geom::vector<3> centerToTrimPoint = trimPoint - circleCenter;
-
-					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)){
+					
+					if (this->GeomSettings()->areEqual(centerToTrimPoint.length(), circleRadius)) {
 						centerToTrimPoint.normalize();
+
 						double cosAngle = carve::geom::dot(centerToTrimPoint, carve::geom::vector<3>(carve::geom::VECTOR(1., 0., 0.)));
 
 						if (this->GeomSettings()->areEqual(abs(cosAngle), 0.)) {
@@ -2068,9 +2076,9 @@ namespace OpenInfraPlatform
 					{
 						switch (trimmingPreference)
 						{
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
-							return points[0]; 
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER:
+							return points[0]; 
+						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
 							return points[1];
 						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED:
 							return points[0];
@@ -2106,7 +2114,7 @@ namespace OpenInfraPlatform
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getPointOnCurve(curve, trimming.get<1>());
+						return getPointOnCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
@@ -2156,20 +2164,40 @@ namespace OpenInfraPlatform
 				}
 
 				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the circle using \c IfcParameterValue.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
+					// Interpret parameter
 					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
-					
+
 					// Get radius
 					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
-					return carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+					// Get conic's position
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
+					// Calculate point + apply position
+					return placement * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
@@ -2177,20 +2205,21 @@ namespace OpenInfraPlatform
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
-				* \note								The position is not applied. All calculations are made based on center in ( 0., 0., 0.).
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
+					// Interpret parameter
 					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
-					// determine position
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
 					// Get radius
 					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
 					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
-
-					return conicPositionMatrix * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+					// Get conic's position
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					// Calculate point + apply position
+					return placement * carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
 				}
 
 				/**********************************************************************************************/
@@ -2199,6 +2228,7 @@ namespace OpenInfraPlatform
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				*/
+				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter)const throw (...)
 				{

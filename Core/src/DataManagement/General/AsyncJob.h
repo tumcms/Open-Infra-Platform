@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -60,6 +60,7 @@ namespace OpenInfraPlatform
 			jobID_++;
 			first_ = true;
 			cancel_ = running_ = false;
+			err_ = "";
 
 			status_ = AsyncStatus();
 
@@ -77,6 +78,8 @@ namespace OpenInfraPlatform
 		bool updateStatus(const std::string& message);
 
 		void cancelJob();
+
+		const std::string errors() const { return err_; }
 
 		/*Signals to communicate job progress/status to the main thread.*/
 		boost::signals2::signal<void()> jobStarting;
@@ -97,6 +100,8 @@ namespace OpenInfraPlatform
 			refreshTimer_ = new QTimer();
 			refreshTimer_->setInterval(200);
 			connect(refreshTimer_, SIGNAL(timeout()), this, SLOT(checkThread()));
+
+			err_ = "";
 		}
 
 		void run();
@@ -114,6 +119,8 @@ namespace OpenInfraPlatform
 		std::mutex statusMutex_;
 		AsyncStatus status_;
 
-		QTimer*	refreshTimer_;
+		QTimer*	refreshTimer_; 
+
+		std::string err_;
 	};
 }

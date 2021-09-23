@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2018 Technical University of Munich
+#    Copyright (c) 2021 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -170,6 +170,17 @@ mark_as_advanced(FORCE BUILD_TESTING)
 FetchContent_MakeAvailable(eigen)
 
 FetchContent_Declare(
+	tclap
+	GIT_REPOSITORY https://github.com/mirror/tclap.git
+	GIT_TAG v1.2.2
+)
+  
+FetchContent_GetProperties(tclap)
+if(NOT tclap_POPULATED)
+	FetchContent_Populate(tclap)
+endif()
+
+FetchContent_Declare(
 	visit_struct
 	GIT_REPOSITORY https://github.com/cbeck88/visit_struct.git
 	GIT_TAG v1.0
@@ -323,7 +334,7 @@ Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlat
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
 	find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-		"C:/thirdparty/doxygen"
+		"C:/thirdparty/doxygen/bin"
 	)
 
 	find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
@@ -730,7 +741,7 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_VERSION_TEWAK "${PROJECT_VERSION_TWEAK}}")
 
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "OpenInfraPlatform")
-set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
 set(CPACK_WIX_UI_BANNER "${PROJECT_SOURCE_DIR}/Data/banner.bmp")
 set(CPACK_WIX_PRODUCT_ICON "${PROJECT_SOURCE_DIR}/UserInterface/Resources/icons/icon.ico")

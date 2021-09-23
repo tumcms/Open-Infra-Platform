@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -51,7 +51,8 @@ namespace OpenInfraPlatform
 				IfcGeometry = 1 << 0,
 				PointCloud = 1 << 1,
 				Preferences = 1 << 2,
-				All = IfcGeometry | PointCloud | Preferences
+				OffGeometry = 1 << 3,
+				All = IfcGeometry | PointCloud | Preferences | OffGeometry
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
@@ -164,12 +165,13 @@ namespace OpenInfraPlatform
 				void ParseExpressAndGeometryModel(const std::string &filename) {
 					auto expressModel = IfcReader::FromFile(filename);
 					auto importer = OpenInfraPlatform::Core::IfcGeometryConverter::IfcImporterT<IfcEntityTypesT>();
-					auto ifcModel = importer.collectData(expressModel);
-					if (ifcModel && !ifcModel->isEmpty()) {
-						ifcModel->setFilename(filename);
-						addModel(ifcModel);
-						latestChangeFlag_ = ChangeFlag::IfcGeometry;
-					}
+					auto models = importer.collectData(expressModel);
+					for( auto& ifcModel : models )
+						if ( !ifcModel->isEmpty()) {
+							ifcModel->setFilename(filename);
+							addModel(ifcModel);
+							latestChangeFlag_ = ChangeFlag::IfcGeometry;
+						}
 				}
 
 			private:
@@ -188,12 +190,12 @@ namespace OpenInfraPlatform
 				int																currentJobID_;
 
 			private:
-				// a collection of models that are loaded
+				//! a collection of models that are loaded
 				std::list<std::shared_ptr<oip::IModel>> models_;
 			public:
-				// add a model to the collection
+				//! add a model to the collection
 				void addModel(buw::ReferenceCounted<oip::IModel> model);
-				// get the last model
+				//! get the last loaded model
 				std::shared_ptr<oip::IModel> getLastModel();
 				//! const getter for all models
 				const std::list<std::shared_ptr<oip::IModel>>& getModels() const { return models_; }

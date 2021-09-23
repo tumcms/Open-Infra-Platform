@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -43,9 +43,17 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+	#include "EarlyBinding\IFC4X3_RC4\src\reader\IFC4X3_RC4Reader.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\EMTIFC4X3_RC4EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\IFC4X3_RC4.h"
+#endif
+
 #include "IfcGeometryConverter\GeometryInputData.h"
 #include "IfcGeometryConverter\IfcPeekStepReader.h"
 #include "IfcGeometryConverter\IfcImporterImpl.h"
+#include "OffConverter\OffModel.h"
+#include "OffConverter\OffReader.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
@@ -121,6 +129,7 @@ void OpenInfraPlatform::Core::DataManagement::Data::import(const std::string & f
 	}
 }
 
+
 void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string& filename)
 {
 	OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("Importing ").append(filename));
@@ -178,20 +187,37 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
 
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC4) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC4EntityTypes, OpenInfraPlatform::IFC4X3_RC4::IFC4X3_RC4Reader>(filename);
+			return;
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			IFCVersionNotCompiled("IFC4X3_RC4");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+		}
+
 		IFCVersionNotCompiled(strSchema);
 		return;
 	}	
 
+	else if (filetype == ".off") {
+		auto offModel = OpenInfraPlatform::Core::OffConverter::OffReader::readFile(filename);
+		addModel(offModel);
+		latestChangeFlag_ = ChangeFlag::OffGeometry;
+		return;
+	}
+
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
-	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
+	if (buw::PointCloud::GetSupportedExtensions().contains(extension)
+		|| extension.toUpper() == "LAS" /*gets handled differently*/) {
 		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
 		addModel(pointCloud);
 		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
-		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << ".";
+		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << "las.";
 	}
 #endif
 
@@ -224,7 +250,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 
 	if(!completed) {
 		/*If job was cancelled show message box to inform the user and return.*/
-		showError("Import job cancelled. Error message was written to log file.", "Import Error!");
+		const std::string err = OpenInfraPlatform::AsyncJob::getInstance().errors();
+		showError(QString::fromStdString("Import job cancelled. Error(s):\n" + (err.empty() ? "None" : err)), "Import Error!");
 		return;
 	}
 
@@ -276,7 +303,7 @@ const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationName()
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationVersionString()
 {
-	return "2020";
+	return "2021";
 }
 
 const char* OpenInfraPlatform::Core::DataManagement::Data::getApplicationOpenFileFilter()

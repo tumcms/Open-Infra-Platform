@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2020 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -30,11 +30,12 @@ namespace OpenInfraPlatform {
             EXPRESSReference<emt::IFC4X1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X1EntityTypes>::getCurveOfPlacement(
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const;
-			
+		#endif
+			// IFC 4x3_RC1 specifics
+		#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 			template <>
-			double PlacementConverterT<emt::IFC4X1EntityTypes>::convertRelativePlacement(
-				const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<emt::IFC4X1EntityTypes::IfcObjectPlacement>>& alreadyApplied
+			EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X3_RC1EntityTypes>::getCurveOfPlacement(
+				const EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const;
 		#endif
 
@@ -42,6 +43,8 @@ namespace OpenInfraPlatform {
 
             There was a change moving from IFC4x1 to IFC4x2 in the naming of the attribute to \c IfcCurve.
             In IFC4x1, the attribute was named \c PlacementRelTo, starting in IFC4x2 it is named \c PlacementMeasuredAlong.
+
+			There was a change in IFC4x3_RC4 - the curve is not an attribute of the linear placement anymore, but rather of the point.
 
             \param[in]	linearPlacement		\c IfcLinearPlacement entity that has the curve reference.
 
@@ -56,47 +59,19 @@ namespace OpenInfraPlatform {
 				if (linearPlacement.expired())
 					throw oip::ReferenceExpiredException(linearPlacement);
 				// check if correct type
-				if (!linearPlacement->PlacementMeasuredAlong.isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
+				if (!linearPlacement
+					->RelativePlacement
+					->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>()
+					->BasisCurve.template isOfType<typename IfcEntityTypesT::IfcBoundedCurve>()
+					)
 					throw oip::InconsistentModellingException(linearPlacement, "Only IfcBoundedCurve can be a base curve for IfcLinearPlacement.");
 				// return the curve
-                return linearPlacement->PlacementMeasuredAlong.as<typename IfcEntityTypesT::IfcBoundedCurve>();
+                return linearPlacement
+					->RelativePlacement
+					->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>()
+					->BasisCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>()
+					;
             };
-
-			/**
-			* @brief Converts the relative placement origin in \c IfcLinearPlacement
-			*
-			* @param alreadyApplied List of already applied transformations. Returns if this one is contained in the list
-			* @param linear_placement The linear placement of which to convert the origin
-			* @return carve::math::Matrix
-			*/
-            template<typename IfcEntityTypesT>
-            double PlacementConverterT<IfcEntityTypesT>::convertRelativePlacement(
-				const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement,
-				std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-			) const 
-            {                        
-				// check input
-				if (linear_placement.expired())
-					throw oip::ReferenceExpiredException(linear_placement);
-
-				// get the start dist along of the relative placement
-                if(linear_placement->PlacementRelTo)
-				{
-					// check for which type (PlacementRelTo is IfcObjectPlacement)
-					if (linear_placement->PlacementRelTo.get().isOfType<typename IfcEntityTypesT::IfcLinearPlacement>())
-					{
-						alreadyApplied.push_back(linear_placement.as<typename IfcEntityTypesT::IfcObjectPlacement>());
-						const auto linearPlacementRelTo = linear_placement->PlacementRelTo.get().as<typename IfcEntityTypesT::IfcLinearPlacement>();
-						double ret = linearPlacementRelTo->Distance->DistanceAlong + convertRelativePlacement(linearPlacementRelTo, alreadyApplied);
-						alreadyApplied.pop_back();
-						return ret;
-					}
-					else
-						throw oip::InconsistentModellingException(linear_placement, "Relative placement to a " + linear_placement->PlacementRelTo.get()->getErrorLog() + "?!");
-				}
-                else
-                    return 0.;
-            }
 
         }
     }

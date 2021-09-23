@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020 Technical University of Munich
+Copyright (c) 2021 Technical University of Munich
 Chair of Computational Modeling and Simulation.
 
 TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -40,27 +40,54 @@ public:
 
 	//! code from the EPSG database
     std::string codeEPSG = "";
+	//! Well known-text representation
+	std::string WKT = "";
 
 	//! additional meta values (like projection's epsg etc.)
 	std::map<std::string, std::string> data;
 	//! add another entry to data
 	void addDataEntry(const std::string& key, const std::string& val) { data.insert(std::pair<std::string,std::string>(key, val)); }
 
-	//! shift values
+	//! shift values (default = 0.)
 	double x = 0.0, y = 0.0, z = 0.0;
-	//! rotation angle around z-axis, in [rad]
+	//! rotation angle around z-axis, in [rad] (default = 0.)
 	double angle = 0.0;
-	//! scale
-	double scale = 1.0;
+	//! scale of axes (default = 1.)
+	double scaleX = 1.0, scaleY = 1.0, scaleZ = 1.0;
 	//! the resulting transformation matrix
 	carve::math::Matrix transformationMatrix()
 	{
+		return scale() * translation() * rotation();
+	}
+
+	carve::math::Matrix rotation()
+	{
 		return carve::math::Matrix(
-			scale, 0.0, 0.0, x,
-			0.0, scale*cos(angle), sin(angle), y,
-			0.0, sin(angle), -scale*cos(angle), z,
+			cos(angle), -sin(angle), 0.0, 0.0,
+			sin(angle), cos(angle), 0.0, 0.0,
+			0.0, 0.0, 1.0, 0.0,
 			0.0, 0.0, 0.0, 1.0);
 	}
+
+	carve::math::Matrix translation()
+	{
+		return carve::math::Matrix(
+			1.0, 0.0, 0.0, x,
+			0.0, 1.0, 0.0, y,
+			0.0, 0.0, 1.0, z,
+			0.0, 0.0, 0.0, 1.0);
+	}
+
+	carve::math::Matrix scale()
+	{
+		return carve::math::Matrix(
+			scaleX, 0.0,    0.0,    0.0,
+			0.0,    scaleY, 0.0,    0.0,
+			0.0,    0.0,    scaleZ, 0.0,
+			0.0,    0.0,    0.0,    1.0);
+	}
+
+
     
 };
 

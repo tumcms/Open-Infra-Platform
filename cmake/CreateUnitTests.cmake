@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2020 Technical University of Munich
+#    Copyright (c) 2021 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 enable_testing()
 include(GoogleTest)
 
-function(CreateIfcFileUnitTestForSchema test_name schema)
+function(CreateIfcFileVisualUnitTestForSchema test_name schema)
 
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}		src/*.cpp)
     file(GLOB OpenInfraPlatform_UnitTests_Schema_${schema}_${test_name}_h	src/*.h)
@@ -47,6 +47,8 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
     target_link_libraries(${UnitTest_Executable_Name}
         PUBLIC
             OpenInfraPlatform.${schema}
+            OpenInfraPlatform.Rendering
+            OpenInfraPlatform.GeometryModelRenderer
             BlueFramework.Engine
             gmock
             gtest
@@ -65,13 +67,57 @@ function(CreateIfcFileUnitTestForSchema test_name schema)
         COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path} ${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}
     )
 
-endfunction()
-
-function(CreateIfcFileVisualUnitTestForSchema test_name schema)
-  CreateIfcFileUnitTestForSchema(${test_name} ${schema})
-  target_link_libraries(${test_name} PUBLIC OpenInfraPlatform.Rendering IfcGeometryModelRenderer)
 endfunction(CreateIfcFileVisualUnitTestForSchema)
 
+function(CreateOffFileVisualUnitTest test_name)
+
+    file(GLOB OpenInfraPlatform_UnitTests_Off_${test_name}		src/*.cpp)
+    file(GLOB OpenInfraPlatform_UnitTests_Off_${test_name}_h	src/*.h)
+
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Off_${test_name}})
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_Off_${test_name}_h})
+    source_group(UnitTests                  FILES ${OpenInfraPlatform_UnitTests_Source})
+
+    set(UnitTest_Executable_Name ${test_name})
+
+    add_executable(${UnitTest_Executable_Name}
+        ${OpenInfraPlatform_UnitTests_Off_${test_name}}
+        ${OpenInfraPlatform_UnitTests_Off_${test_name}_h}
+        ${OpenInfraPlatform_UnitTests_Source}
+    )
+
+    get_directory_property(PARENT_DIR DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PARENT_DIRECTORY)
+
+    target_include_directories(${UnitTest_Executable_Name}
+        PUBLIC
+            ${blue_framework_SOURCE_DIR}/include
+        PRIVATE
+            ${PARENT_DIR}
+    )
+
+    target_link_libraries(${UnitTest_Executable_Name}
+        PUBLIC
+            OpenInfraPlatform.Rendering 
+            OpenInfraPlatform.GeometryModelRenderer
+            BlueFramework.Engine
+            gmock
+            gtest
+            gtest_main
+			Boost::filesystem
+    )
+
+    gtest_discover_tests(${UnitTest_Executable_Name})
+
+    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/Off")
+    set(UnitTest_Data_Rel_Path UnitTests/Off/${test_name}/Data)
+
+    add_custom_command(TARGET ${UnitTest_Executable_Name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copying resources from '${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}' to '${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}'"
+        COMMAND	${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}
+        COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path} ${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}
+    )
+
+endfunction(CreateOffFileVisualUnitTest)
 
 function(CreateGeneratorUnitTest schema)
 

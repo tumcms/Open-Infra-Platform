@@ -55,7 +55,7 @@ You will need to install:
 		* **Mandatory:** Select *binaries x64 msvc2017* or *msvc2019*
 		* **Mandatory:** Select *mingw*
 		
-		![](./fig/Qt_Installation_settings.png)
+![](../images/Qt_Installation_settings.png)
 
 *NOTE:* There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
@@ -75,7 +75,7 @@ You will need to install:
 *NOTE:* CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
 
   * Select local package directory (e.g. `C:\OSGeo4W64\local`).
-  * Select `https://osgeo4w-oslandia.com/` as a download site.
+  * Select `https://download.osgeo.org/` as a download site.
   * Select components to install:
 		
     * Open *Commandline_Utilities*
@@ -83,13 +83,13 @@ You will need to install:
     * Click on *skip* to refresh the line.
     * Select binary (*Bin*) package (the left column).
 		
-    ![](./fig/PROJ_Installation_settings.png)
+![](../images/PROJ_Installation_settings.png)
 
     * Finish the installation.
 
 8. **Doxygen**
-	*  Download & install Doxygen - find [here](http://doxygen.nl/files/doxygen-1.8.20-setup.exe).
-       * Default search path is `C:/thirdparty/doxygen`
+	*  Download & install Doxygen - find [here](https://sourceforge.net/projects/doxygen/files/rel-1.8.20/doxygen-1.8.20-setup.exe/download).
+       * Default search path is `C:/thirdparty/doxygen/bin`
        * If deviating, please set the `DOXYGEN_EXECUTABLE` variable correspondingly
 	*  Download & install DOT - find [here](https://graphviz.gitlab.io/_pages/Download/windows/graphviz-2.38.zip)
        * Default search path is `C:/thirdparty/graphviz_dot`
@@ -110,7 +110,7 @@ You will need to install:
 	* Select *x64*
 	* Write *host=x64* as optional toolset.
 
-![](./fig/CMake_Installation_settings.png)
+![](../images/CMake_Installation_settings.png)
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, consult [CMake options documentation](./CMakeOptions.md).
 

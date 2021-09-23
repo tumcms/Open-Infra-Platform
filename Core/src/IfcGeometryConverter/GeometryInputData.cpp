@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -23,11 +23,10 @@ using namespace OpenInfraPlatform::Core::IfcGeometryConverter;
 
 /**********************************************************************************************/
 
-void ItemData::createMeshSetsFromClosedPolyhedrons()
+void ItemData::createMeshSetsFrom(std::vector<std::shared_ptr<carve::input::PolyhedronData>>& polyhedrons)
 {
-	for( unsigned int i=0; i<closed_polyhedrons.size(); ++i )
+	for( auto& poly_data : polyhedrons )
 	{
-		std::shared_ptr<carve::input::PolyhedronData>& poly_data = closed_polyhedrons[i];
 		if( poly_data->getVertexCount() < 3 )
 		{
 			continue;
@@ -40,5 +39,5 @@ void ItemData::createMeshSetsFromClosedPolyhedrons()
 
 	}
 
-	closed_polyhedrons.clear();
+	polyhedrons.clear();
 }

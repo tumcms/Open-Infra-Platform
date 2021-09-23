@@ -1,5 +1,5 @@
 #/*
-#    Copyright (c) 2018 Technical University of Munich
+#    Copyright (c) 2021 Technical University of Munich
 #    Chair of Computational Modeling and Simulation.
 #
 #    TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -26,20 +26,26 @@ file(GLOB Core_Source 								src/*.*)
 file(GLOB Core_DataManagement_Source 				src/DataManagement/*.*)
 file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
+file(GLOB Core_OffConverter_Source					src/OffConverter/*.*)
 file(GLOB Core_Exception_Source						src/Exception/*.*)
+file(GLOB Core_SplineInterpretation_Source			src/SplineInterpretation/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
 source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_Source})
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
+source_group(Core\\OffConverter					FILES ${Core_OffConverter_Source})
 source_group(Core\\Exception					FILES ${Core_Exception_Source})
+source_group(Core\\SplineInterpretation			FILES ${Core_SplineInterpretation_Source})
 
 add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
 	${Core_DataManagement_Source}
 	${Core_DataManagement_General_Source}
 	${Core_IfcGeometryConverter_Source}
+	${Core_OffConverter_Source}
 	${Core_Exception_Source}
+	${Core_SplineInterpretation_Source}
 )
 
 

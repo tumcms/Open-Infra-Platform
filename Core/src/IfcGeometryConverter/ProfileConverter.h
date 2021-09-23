@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2018 Technical University of Munich
+Copyright (c) 2021 Technical University of Munich
 Chair of Computational Modeling and Simulation.
 
 TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -340,7 +340,7 @@ namespace OpenInfraPlatform {
 							local_z.x = 0;
 							local_z.y = 0;
 							local_z.z = -1;
-							GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
+							matrix_sweep = GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z);
 
 							left_points.push_back(matrix_sweep * point_left);
 							right_points.push_back(matrix_sweep * point_right);

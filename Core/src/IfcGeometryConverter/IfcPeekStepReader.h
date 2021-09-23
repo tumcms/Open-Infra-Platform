@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ namespace OpenInfraPlatform
 				virtual ~IfcPeekStepReader();
 
 				//TODO: Have this amended by cmake configure file
-				enum class IfcSchema : short { IFC2X3, IFC4, IFC4X1, IFC4X3_RC1 };
+				enum class IfcSchema : short { IFC2X3, IFC4, IFC4X1, IFC4X3_RC1, IFC4X3_RC4 };
 				static std::pair<std::string, IfcSchema> parseIfcHeader(const std::string& filename);
 			};
 		}

@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2018 Technical University of Munich
+    Copyright (c) 2021 Technical University of Munich
     Chair of Computational Modeling and Simulation.
 
     TUM Open Infra Platform is free software; you can redistribute it and/or modify
@@ -59,12 +59,18 @@ namespace OpenInfraPlatform
 				oip::BBox				bb;
 				bool isEmpty() const { return meshDescription.isEmpty() && polylineDescription.isEmpty(); }
 				void reset() { meshDescription.reset(); polylineDescription.reset(); bb.reset(); }
-				void UpdateBBox()
+				void UpdateBBox( const carve::geom::aabb<3>& bbox )
 				{
-					for (const auto& vertex : meshDescription.vertices)
-						bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
-					for (const auto& vertex : polylineDescription.vertices)
-						bb.update(vertex[0], vertex[1], vertex[2]);
+					bb.update(bbox.min());
+					bb.update(bbox.max());
+					//for (const auto& vertex : meshDescription.vertices)
+					//	bb.update(vertex.position[0], vertex.position[1], vertex.position[2]);
+					//for (const auto& vertex : polylineDescription.vertices)
+					//	bb.update(vertex[0], vertex[1], vertex[2]);
+				}
+				void UpdateBBox(const carve::geom3d::Vector& pt)
+				{
+					bb.update(pt.x, pt.y, pt.z);
 				}
 			};
 
@@ -75,6 +81,7 @@ namespace OpenInfraPlatform
 				std::mutex											geometryMutex_;
 
 				std::string			                filename_;
+				oip::GeorefMetadata					georefMeta_;
 
 			public:
 				void reset();
@@ -99,6 +106,11 @@ namespace OpenInfraPlatform
 				void setFilename(const std::string& filename) {
 					filename_ = filename;
 				}
+
+				void setGeoref(const oip::GeorefMetadata& georefMeta) {
+					georefMeta_ = georefMeta;
+				}
+
 
 			};
 
