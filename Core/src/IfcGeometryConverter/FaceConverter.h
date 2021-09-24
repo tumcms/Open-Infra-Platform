@@ -844,6 +844,45 @@ namespace OpenInfraPlatform {
 					// ToDo: take sameSense into account by the addFace-construction
 					const bool sameSense = advancedFace->SameSense;
 
+					// get attribute 2
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface = advancedFace->FaceSurface;
+
+					// the surface (geometry) is trimmed by the faceBoundLoops (topology, represented in geometrical description)
+					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the surface.
+					// 7 surface types are valid; each type does probably need its individual handling (how the surface is trimmed by the boundary)
+					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>())
+					{
+						
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>())
+					{
+						
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>())
+					{
+						throw oip::UnhandledException(advancedFace);
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcSphericalSurface>())
+					{
+						throw oip::UnhandledException(advancedFace);
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcToroidalSurface>())
+					{
+						throw oip::UnhandledException(advancedFace);
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>())
+					{
+						throw oip::UnhandledException(advancedFace);
+					}
+					else if (surface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfRevolution>())
+					{
+						throw oip::UnhandledException(advancedFace);
+					}
+					else
+					{
+						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type which is not allowed.");
+					}
+
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
