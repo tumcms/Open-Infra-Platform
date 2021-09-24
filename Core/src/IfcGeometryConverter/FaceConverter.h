@@ -852,7 +852,8 @@ namespace OpenInfraPlatform {
 					// 7 surface types are valid; each type does probably need its individual handling (how the surface is trimmed by the boundary)
 					if (surface.isOfType<typename IfcEntityTypesT::IfcPlane>())
 					{
-						
+						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
+						addArbitraryFaceToPolyhedronData(advancedFace, faceBoundLoops, polygon, polygonIndices);
 					}
 					else if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>())
 					{
