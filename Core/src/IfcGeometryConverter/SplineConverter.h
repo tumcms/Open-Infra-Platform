@@ -199,9 +199,9 @@ namespace OpenInfraPlatform
 					 * \return	  A vector with the B-Spline control points
 					 */
 					std::vector<carve::geom::vector<3>> loadControlPoints(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const throw(...)
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const noexcept(false)
 					{
-						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
+						CurveConverterT<IfcEntityTypesT> curveConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
 						return curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
 					}
 
@@ -363,7 +363,7 @@ namespace OpenInfraPlatform
 					{
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
 						//const double accuracy = 0.0000001;
-						return GeomSettings()->getPrecision();
+						return this->GeomSettings()->getPrecision();
 					}
 
 					/*! \brief Gives the number of curve points.

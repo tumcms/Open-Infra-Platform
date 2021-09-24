@@ -294,7 +294,7 @@ namespace OpenInfraPlatform {
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 					{
 						// create an instance of SplineConverter
-						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
+						SplineConverterT<IfcEntityTypesT> splineConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
 						
 						// call of SplineConverter;
 						// curvePoints are actually the surface points without a connecting line
@@ -1239,7 +1239,7 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3> vertex =
 							carve::geom::VECTOR(point[0],
 								point[1],
-								point[2]) * UnitConvert()->getLengthInMeterFactor();
+								point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 						// apply transformation
 						vertex = pos * vertex;
@@ -1407,7 +1407,7 @@ namespace OpenInfraPlatform {
 						const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
 						carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
 							point[1],
-							point[2]) * UnitConvert()->getLengthInMeterFactor();
+							point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 						outerLoop.push_back(vertex);
 						outerIndexLoop.push_back(outerLoopPointIndex);
@@ -1424,7 +1424,7 @@ namespace OpenInfraPlatform {
 							const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
 							carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
 								point[1],
-								point[2]) * UnitConvert()->getLengthInMeterFactor();
+								point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 							IndexLoop.push_back(outerLoopPointIndex);
 							loop.push_back(vertex);

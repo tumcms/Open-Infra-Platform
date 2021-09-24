@@ -1219,7 +1219,7 @@ namespace OpenInfraPlatform
 				if (revolutionAngle > M_PI * 2.) revolutionAngle = M_PI * 2.;
 				if (revolutionAngle < -M_PI * 2.) revolutionAngle = M_PI * 2.;
 
-				int numOfSegments = GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolutionAngle));
+				int numOfSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(biggestRadius, abs(revolutionAngle));
 				if (numOfSegments < 6)
 				{
 					numOfSegments = 6;
@@ -1347,7 +1347,7 @@ namespace OpenInfraPlatform
 				// Get directrix, radius, inner radius, start parameter and end parameter (attributes 1-5). 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> directrixCurve = sweptDiskSolid->Directrix;
 
-				double radius = sweptDiskSolid->Radius * UnitConvert()->getLengthInMeterFactor();
+				double radius = sweptDiskSolid->Radius * this->UnitConvert()->getLengthInMeterFactor();
 
 				double radiusInner = sweptDiskSolid->InnerRadius.value_or(0.0);
 				double startParam = sweptDiskSolid->StartParam.value_or(0.0);
@@ -1375,8 +1375,8 @@ namespace OpenInfraPlatform
 				std::vector<carve::geom::vector<3>> outerShapePoints;
 				std::vector<carve::geom::vector<3>> innerShapePoints;
 
-				const int numberOfVertices = GeomSettings()->getNumberOfVerticesForTessellation(radius);
-				double deltaAngle = GeomSettings()->getAngleLength(radius);
+				const int numberOfVertices = this->GeomSettings()->getNumberOfVerticesForTessellation(radius);
+				double deltaAngle = this->GeomSettings()->getAngleLength(radius);
 
 				std::vector<carve::geom::vector<3>> circlePoints;
 				std::vector<carve::geom::vector<3>> circlePointsInner;
@@ -1959,9 +1959,9 @@ namespace OpenInfraPlatform
 					pos * placementConverter->convertIfcAxis2Placement3D(rectangularPyramid->Position) :
 					pos;
 
-				double x_length = rectangularPyramid->XLength * 0.5 * UnitConvert()->getLengthInMeterFactor();
-				double  y_length = rectangularPyramid->YLength * 0.5 * UnitConvert()->getLengthInMeterFactor();
-				double height = rectangularPyramid->Height * 0.5 * UnitConvert()->getLengthInMeterFactor();
+				double x_length = rectangularPyramid->XLength * 0.5 * this->UnitConvert()->getLengthInMeterFactor();
+				double  y_length = rectangularPyramid->YLength * 0.5 * this->UnitConvert()->getLengthInMeterFactor();
+				double height = rectangularPyramid->Height * 0.5 * this->UnitConvert()->getLengthInMeterFactor();
 
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0., 0., height));
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(x_length, -y_length, 0.0));
@@ -2010,8 +2010,8 @@ namespace OpenInfraPlatform
 					pos * placementConverter->convertIfcAxis2Placement3D(rightCircularCone->Position) :
 					pos;
 
-				double height = rightCircularCone->Height * UnitConvert()->getLengthInMeterFactor();
-				double radius = rightCircularCone->BottomRadius * UnitConvert()->getLengthInMeterFactor();
+				double height = rightCircularCone->Height * this->UnitConvert()->getLengthInMeterFactor();
+				double radius = rightCircularCone->BottomRadius * this->UnitConvert()->getLengthInMeterFactor();
 
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, height)); // top
 				polyhedronData->addVertex(primitivePlacementMatrix*carve::geom::VECTOR(0.0, 0.0, 0.0)); // bottom center
@@ -2071,11 +2071,11 @@ namespace OpenInfraPlatform
 					pos * placementConverter->convertIfcAxis2Placement3D(rightCircularCylinder->Position) :
 					pos;
 
-				double height = rightCircularCylinder->Height * UnitConvert()->getLengthInMeterFactor();
-				double radius = rightCircularCylinder->Radius * UnitConvert()->getLengthInMeterFactor();
+				double height = rightCircularCylinder->Height * this->UnitConvert()->getLengthInMeterFactor();
+				double radius = rightCircularCylinder->Radius * this->UnitConvert()->getLengthInMeterFactor();
 
-				double deltaAngle = GeomSettings()->getAngleLength(radius);
-				int slices = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+				double deltaAngle = this->GeomSettings()->getAngleLength(radius);
+				int slices = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius);
 
 				for (double angle = 0.; angle < 2 * M_PI; angle += deltaAngle)
 				{
@@ -2123,7 +2123,7 @@ namespace OpenInfraPlatform
 					pos * placementConverter->convertIfcAxis2Placement3D(sphere->Position) :
 					pos;
 
-				double radius = sphere->Radius * UnitConvert()->getLengthInMeterFactor();
+				double radius = sphere->Radius * this->UnitConvert()->getLengthInMeterFactor();
 
 				// seen from the top, each ring is:
 				//        \   |   /
