@@ -811,12 +811,26 @@ namespace OpenInfraPlatform {
 
 					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
 					{
-						
+						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), faceBoundLoops, pos, polygon, polygonIndices);
 					}
 					else
 					{
 						throw oip::UnhandledException(faceSurface);
 					}
+				}
+
+				void convertIfcAdvancedFace(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
+					std::map<std::string, uint32_t> polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+				)  const noexcept(false)
+				{
+					if (advancedFace.expired()) {
+						throw oip::ReferenceExpiredException(advancedFace);
+					}
+
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
