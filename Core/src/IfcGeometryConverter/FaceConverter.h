@@ -776,7 +776,7 @@ namespace OpenInfraPlatform {
 
 					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						
+						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), faceBoundLoops, pos, polygon, polygonIndices);
 					}
 					else
 					{
@@ -794,6 +794,28 @@ namespace OpenInfraPlatform {
 
 							addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
 						}
+					}
+				}
+
+				void convertIfcFaceSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
+					std::map<std::string, uint32_t> polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+				)  const noexcept(false)
+				{
+					if (faceSurface.expired()) {
+						throw oip::ReferenceExpiredException(faceSurface);
+					}
+
+					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
+					{
+						
+					}
+					else
+					{
+						throw oip::UnhandledException(faceSurface);
 					}
 				}
 				
