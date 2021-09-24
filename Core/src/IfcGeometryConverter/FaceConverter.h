@@ -831,6 +831,19 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(advancedFace);
 					}
 
+					// get reference to IfcFaceBound's (attribute 1)
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds = advancedFace->Bounds;
+					// if one face bound is not of the allowed type: throw; else: continue and use already converted faceBoundLoops
+					if (!std::all_of(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& ifcFaceBound) {return
+						ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>() || ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcVertexLoop>(); }))
+					{
+						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a loop type as face boundary which is not allowed.");
+					}
+
+					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
+					// ToDo: take sameSense into account by the addFace-construction
+					const bool sameSense = advancedFace->SameSense;
+
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
