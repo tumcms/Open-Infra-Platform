@@ -1486,6 +1486,16 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)
+					const noexcept(false)
+				{
+					double 	sizeInX = planarExtent->SizeInX;
+					double 	sizeInY = planarExtent->SizeInY;
+					
+				}
+
 				protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
