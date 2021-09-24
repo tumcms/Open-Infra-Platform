@@ -774,19 +774,26 @@ namespace OpenInfraPlatform {
 					// one bound loop contains a list of loop points (carve::gem::vector<3>)
 					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
 
-					// if simple case: one triangle without inner bound (= hole)
-					//  -> simple direct triangle construction is possible (probably fast)
-					if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
+					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
-						addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
+						
 					}
 					else
 					{
-						// general case: arbitrary number of vertices, possible inner bound (= hole)
-						//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+						// if simple case: one triangle without inner bound (= hole)
+						//  -> simple direct triangle construction is possible (probably fast)
+						if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
+						{
+							// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
+							addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
+						}
+						else
+						{
+							// general case: arbitrary number of vertices, possible inner bound (= hole)
+							//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
 
-						addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
+							addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
+						}
 					}
 				}
 				
