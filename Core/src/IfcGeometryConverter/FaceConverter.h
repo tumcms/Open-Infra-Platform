@@ -1493,6 +1493,13 @@ namespace OpenInfraPlatform {
 				{
 					double 	sizeInX = planarExtent->SizeInX;
 					double 	sizeInY = planarExtent->SizeInY;
+
+					carve::math::Matrix inversePosition = GeomUtils::computeInverse(pos);
+
+					//An extent is a rectangle specified by providing the coordinate of the lower left corner and the coordinate of the upper right corner in map units.
+					carve::geom::vector<3> lowerLeftCorner = inversePosition * carve::geom::VECTOR(-sizeInX, -sizeInY, 0.);
+					carve::geom::vector<3> upperRightCorner = inversePosition * carve::geom::VECTOR(sizeInX, sizeInY, 0.);
+
 					
 				}
 
