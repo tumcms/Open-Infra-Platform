@@ -1486,22 +1486,54 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+
+
 				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData)
 					const noexcept(false)
 				{
+					std::vector<carve::geom::vector<3>> loops;
+					std::vector<carve::geom::vector<3>> segment_start_points;
+					convertIfcPlanarExtent(planarExtent, loops, segment_start_points);
+
+					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					polylineData->beginPolyline();
+					for (int i = 0; i < loops.size(); ++i) {
+						polylineData->addVertex(pos * loops.at(i));
+						polylineData->addPolylineIndex(i);
+					}
+					itemData->polylines.push_back(polylineData);
+				}
+
+
+				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
+					std::vector<carve::geom::vector<3>>& loops,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints)
+					const noexcept(false) 
+				{
 					double 	sizeInX = planarExtent->SizeInX;
 					double 	sizeInY = planarExtent->SizeInY;
 
-					carve::math::Matrix inversePosition = GeomUtils::computeInverse(pos);
-
 					//An extent is a rectangle specified by providing the coordinate of the lower left corner and the coordinate of the upper right corner in map units.
-					carve::geom::vector<3> lowerLeftCorner = inversePosition * carve::geom::VECTOR(-sizeInX, -sizeInY, 0.);
-					carve::geom::vector<3> upperRightCorner = inversePosition * carve::geom::VECTOR(sizeInX, sizeInY, 0.);
+					carve::geom::vector<3> lowerLeftCorner = carve::geom::VECTOR(-sizeInX, -sizeInY, 0.);
+					carve::geom::vector<3> upperRightCorner = carve::geom::VECTOR(sizeInX, sizeInY, 0.);
 
-					
+					//I am not sure, if ItemData will take only 2 points of the rectangle, so I will add other 2 points here. 
+					carve::geom::vector<3> lowerRightCorner = carve::geom::VECTOR(sizeInX, -sizeInY, 0.);
+					carve::geom::vector<3> upperLeftCorner = carve::geom::VECTOR(-sizeInX, sizeInY, 0.);
+
+					EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox =
+						planarExtent.as<typename IfcEntityTypesT::IfcPlanarBox>();
+
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(planarBox->Placement);
+					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
+
+
+
 				}
+
+
 
 				protected:
 
