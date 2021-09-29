@@ -1523,6 +1523,7 @@ namespace OpenInfraPlatform {
 					carve::geom::vector<3> lowerRightCorner = carve::geom::VECTOR(sizeInX, -sizeInY, 0.);
 					carve::geom::vector<3> upperLeftCorner = carve::geom::VECTOR(-sizeInX, sizeInY, 0.);
 
+					//IfcPlanarBox
 					EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox =
 						planarExtent.as<typename IfcEntityTypesT::IfcPlanarBox>();
 
@@ -1530,9 +1531,13 @@ namespace OpenInfraPlatform {
 					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
 
 
+					loops.push_back(inverseConicPositionMatrix * lowerLeftCorner);
+					loops.push_back(inverseConicPositionMatrix * lowerRightCorner);
+					loops.push_back(inverseConicPositionMatrix * upperRightCorner);
+					loops.push_back(inverseConicPositionMatrix * upperLeftCorner);
 
+					segmentStartPoints.push_back(inverseConicPositionMatrix * lowerLeftCorner);
 				}
-
 
 
 				protected:
