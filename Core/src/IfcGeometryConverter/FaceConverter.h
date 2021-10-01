@@ -1493,50 +1493,65 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<ItemData>& itemData)
 					const noexcept(false)
 				{
-					std::vector<carve::geom::vector<3>> loops;
-					std::vector<carve::geom::vector<3>> segment_start_points;
-					convertIfcPlanarExtent(planarExtent, loops, segment_start_points);
+					if (planarExtent.expired())
+						throw oip::ReferenceExpiredException(planarExtent);
 
-					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
-					polylineData->beginPolyline();
-					for (int i = 0; i < loops.size(); ++i) {
-						polylineData->addVertex(pos * loops.at(i));
-						polylineData->addPolylineIndex(i);
-					}
-					itemData->polylines.push_back(polylineData);
+					if (planarExtent.template isOfType<typename IfcEntityTypesT::IfcPlanarBox>())
+					{
+						return convertIfcPlanarBox(planarExtent.template as<typename IfcEntityTypesT::IfcPlanarBox>(),
+							pos, itemData);
+					} // end IfcPlanarBox
+
+					throw oip::UnhandledException(planarExtent);
 				}
 
 
-				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
-					std::vector<carve::geom::vector<3>>& loops,
-					std::vector<carve::geom::vector<3>>& segmentStartPoints)
-					const noexcept(false) 
+				void convertIfcPlanarBox(EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) 
+					const noexcept(false)
 				{
-					double 	sizeInX = planarExtent->SizeInX;
-					double 	sizeInY = planarExtent->SizeInY;
+					if (planarBox.expired())
+						throw oip::ReferenceExpiredException(planarBox);
 
-					//An extent is a rectangle specified by providing the coordinate of the lower left corner and the coordinate of the upper right corner in map units.
-					carve::geom::vector<3> lowerLeftCorner = carve::geom::VECTOR(-sizeInX, -sizeInY, 0.);
-					carve::geom::vector<3> upperRightCorner = carve::geom::VECTOR(sizeInX, sizeInY, 0.);
+					//Get Planar Box location 
+					carve::math::Matrix positionMatrix = pos * placementConverter->convertIfcAxis2Placement(planarBox->Placement);
 
-					//I am not sure, if ItemData will take only 2 points of the rectangle, so I will add other 2 points here. 
-					carve::geom::vector<3> lowerRightCorner = carve::geom::VECTOR(sizeInX, -sizeInY, 0.);
-					carve::geom::vector<3> upperLeftCorner = carve::geom::VECTOR(-sizeInX, sizeInY, 0.);
+					double 	extentInX = planarBox->SizeInX;
+					double 	extentInY = planarBox->SizeInY;
 
-					//IfcPlanarBox
-					EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox =
-						planarExtent.as<typename IfcEntityTypesT::IfcPlanarBox>();
+					//  3-----2
+					//  ^     |
+					//  |y    |  
+					//  |     |
+					//  0---->1
+					//     x
 
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(planarBox->Placement);
-					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
+					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
+					polylineData->beginPolyline();
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
 
-					loops.push_back(inverseConicPositionMatrix * lowerLeftCorner);
-					loops.push_back(inverseConicPositionMatrix * lowerRightCorner);
-					loops.push_back(inverseConicPositionMatrix * upperRightCorner);
-					loops.push_back(inverseConicPositionMatrix * upperLeftCorner);
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
 
-					segmentStartPoints.push_back(inverseConicPositionMatrix * lowerLeftCorner);
+					polylineData->addPolylineIndex(0);
+					polylineData->addPolylineIndex(1);
+					polylineData->addPolylineIndex(2);
+					polylineData->addPolylineIndex(3);
+
+					polyhedronData->addFace(0, 1, 2);
+					polyhedronData->addFace(2, 3, 0);
+
+					itemData->polylines.push_back(polylineData);
+					itemData->open_polyhedrons.push_back(polyhedronData);
+
 				}
 
 
