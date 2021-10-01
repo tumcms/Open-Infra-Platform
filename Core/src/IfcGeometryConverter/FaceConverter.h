@@ -802,7 +802,7 @@ namespace OpenInfraPlatform {
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
-					std::map<std::string, uint32_t> polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
 				)  const noexcept(false)
 				{
 					if (faceSurface.expired()) {
@@ -824,7 +824,7 @@ namespace OpenInfraPlatform {
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
-					std::map<std::string, uint32_t> polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
 				)  const noexcept(false)
 				{
 					if (advancedFace.expired()) {
