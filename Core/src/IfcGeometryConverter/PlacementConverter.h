@@ -168,8 +168,11 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
 						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> curveConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					return curveConv.getPointOnCurve<typename IfcEntityTypesT::IfcCurve>(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+                    std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+                        = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+
+					//CurveConverterT<IfcEntityTypesT> curveConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return curveConverter->getPointOnCurve(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
 				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
@@ -935,10 +938,13 @@ namespace OpenInfraPlatform {
 					std::vector<carve::geom::vector<2>> segmentStartPoints;
 					
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
-						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(GeomSettings(), this->UnitConvert());
+						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
+                    std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+                        = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+
+					//CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					curveConverter->convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
 
 					if (!gridAxis->SameSense)
 						// turn around the axis

@@ -201,8 +201,10 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3>> loadControlPoints(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const noexcept(false)
 					{
-						CurveConverterT<IfcEntityTypesT> curveConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
-						return curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+						std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+							= std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+						//CurveConverterT<IfcEntityTypesT> curveConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
+						return curveConverter->convertIfcCartesianPointVector(splineCurve->ControlPointsList);
 					}
 
 					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
