@@ -1252,26 +1252,26 @@ namespace OpenInfraPlatform {
 				}
 
 				void mergePolyhedronsIntoOnePolyhedron(
-					const std::shared_ptr<ItemData> itemdataWithPolyhedronsToBeMerged,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon //Carve polygon of the converted face
+					const std::shared_ptr<ItemData> other,
+					std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron //Carve polygon of the converted face
 				)  const noexcept(false)
 				{
 					const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& inputPolyhedronsCollection{
-						itemdataWithPolyhedronsToBeMerged->closed_polyhedrons,
-						itemdataWithPolyhedronsToBeMerged->open_polyhedrons,
-						itemdataWithPolyhedronsToBeMerged->open_or_closed_polyhedrons };
+						other->closed_polyhedrons,
+						other->open_polyhedrons,
+						other->open_or_closed_polyhedrons };
 
 					for (const auto& inputPolyhedrons : inputPolyhedronsCollection)
 					{
 						for (const std::shared_ptr<carve::input::PolyhedronData>& inputPolyhedron : inputPolyhedrons)
 						{
 							// number of existing vertices in target
-							const size_t indexOffset = polygon->getVertexCount();
+							const size_t indexOffset = targetPolyhedron->getVertexCount();
 
 							// --- add points ---
 							for (const auto& inputPoint : inputPolyhedron->points)
 							{
-								polygon->addVertex(inputPoint);
+								targetPolyhedron->addVertex(inputPoint);
 							}
 
 							// --- add faces ---
@@ -1294,7 +1294,7 @@ namespace OpenInfraPlatform {
 								}
 
 								// add face into target
-								polygon->addFace(indicesTemp.begin(), indicesTemp.end());
+								targetPolyhedron->addFace(indicesTemp.begin(), indicesTemp.end());
 								indicesTemp.clear();
 
 								// set iterator to start of next face
