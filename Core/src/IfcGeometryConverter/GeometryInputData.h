@@ -235,6 +235,61 @@ public:
 		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
 
+	void mergePolyhedronsIntoOnePolyhedron(
+		//const std::shared_ptr<ItemData> other,
+		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron //Carve polygon of the converted face
+	)  const noexcept(false)
+	{
+		const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& inputPolyhedronsCollection{
+			closed_polyhedrons,
+			open_polyhedrons,
+			open_or_closed_polyhedrons };
+
+		for (const auto& inputPolyhedrons : inputPolyhedronsCollection)
+		{
+			for (const std::shared_ptr<carve::input::PolyhedronData>& inputPolyhedron : inputPolyhedrons)
+			{
+				// number of existing vertices in target
+				const size_t indexOffset = targetPolyhedron->getVertexCount();
+
+				// --- add points ---
+				for (const auto& inputPoint : inputPolyhedron->points)
+				{
+					targetPolyhedron->addVertex(inputPoint);
+				}
+
+				// --- add faces ---
+				// iterator indicates position in vector inputPolyhedron
+				size_t iterator = 0;
+				// the indices of each face will be stored temporal in the vector indicesTemp
+				std::vector<size_t> indicesTemp;
+				// loop over faces: numberOfFaces = inputPolyhedron->getFaceCount()
+				for (size_t i = 0; i < inputPolyhedron->getFaceCount(); i++)
+				{
+					// get number of indices which describe one face
+					const size_t nIndicesOfFace = inputPolyhedron->faceIndices[iterator];
+					iterator++;
+
+					indicesTemp.reserve(nIndicesOfFace);
+					for (size_t j = iterator; j < iterator + nIndicesOfFace; j++)
+					{
+						// index shift by number of exiting vertices, store in temporal vector
+						indicesTemp.push_back(inputPolyhedron->faceIndices[j] + indexOffset);
+					}
+
+					// add face into target
+					targetPolyhedron->addFace(indicesTemp.begin(), indicesTemp.end());
+					indicesTemp.clear();
+
+					// set iterator to start of next face
+					iterator += nIndicesOfFace;
+				}
+			}
+		}
+	}
+
+
+
 	bool empty() const { 
 		return closed_polyhedrons.empty()
 			&& open_polyhedrons.empty()
