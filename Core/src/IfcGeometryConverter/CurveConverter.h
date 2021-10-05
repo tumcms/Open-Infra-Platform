@@ -2074,17 +2074,14 @@ namespace OpenInfraPlatform
 					}
 					else if (trimmingVec.size() == 2)
 					{
-						switch (trimmingPreference)
-						{
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER:
-							return points[0]; 
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN:
-							return points[1];
-						case typename IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED:
+						if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER) == typeid(trimmingPreference))
 							return points[0];
-						default:
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN) == typeid(trimmingPreference))
+							return points[1];
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED) == typeid(trimmingPreference))
+							return points[0];
+						else
 							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
-						}
 					}
 					else 
 					{

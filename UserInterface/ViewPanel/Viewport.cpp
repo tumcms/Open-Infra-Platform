@@ -203,8 +203,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 Viewport::~Viewport() {
 
     disconnect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
-    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
-    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
+    //OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
+    //OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
 
     buw::Singleton<oip::RenderResources>::instance().release();
     activeEffects_.clear();

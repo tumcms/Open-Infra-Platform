@@ -383,7 +383,7 @@ namespace OpenInfraPlatform
 				// the stations at which a point of the tessellation has to be calcuated - to be converted and fill the targetVec
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				std::vector<double> stations = curveConverter->getStationsForTessellationOfIfcAlignmentCurve(
-					directrix.typename as<typename IfcEntityTypesT::IfcAlignmentCurve>());
+					directrix.template as<typename IfcEntityTypesT::IfcAlignmentCurve>());
 #else
 				std::vector<double> stations;
 				throw oip::UnhandledException(sectionedSolidHorizontal);
@@ -1589,6 +1589,7 @@ namespace OpenInfraPlatform
 					}
 				}
 			}
+			
 
 			void convertIfcSweptDiskSolidPolygonal(
 				const oip::EXPRESSReference<typename IfcEntityTypesT::IfcSweptDiskSolidPolygonal>& sweptDiskSolidPolygonal,
@@ -1634,7 +1635,7 @@ namespace OpenInfraPlatform
 				//					OR(EXISTS(SecondOperand.Closed) AND SecondOperand.Closed);
 				//	END_ENTITY;
 				// **************************************************************************************************************************
-				
+
 				if (boolResult.expired())
 					throw oip::ReferenceExpiredException(boolResult);
 
@@ -1647,22 +1648,15 @@ namespace OpenInfraPlatform
 				typename IfcEntityTypesT::IfcBooleanOperand ifcSecondOperand = boolResult->SecondOperand;
 
 				carve::csg::CSG::OP csgOperation = carve::csg::CSG::A_MINUS_B;
-				if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION)
-				{
+
+				if (typeid(IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_UNION) == typeid(ifcBooleanOperator))
 					csgOperation = carve::csg::CSG::UNION;
-				}
-				else if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION)
-				{
+				else if (typeid(IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_INTERSECTION) == typeid(ifcBooleanOperator))
 					csgOperation = carve::csg::CSG::INTERSECTION;
-				}
-				else if (ifcBooleanOperator == typename IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE)
-				{
+				else if (typeid(IfcEntityTypesT::IfcBooleanOperator::ENUM::ENUM_DIFFERENCE) == typeid(ifcBooleanOperator))
 					csgOperation = carve::csg::CSG::A_MINUS_B;
-				}
 				else
-				{
 					throw oip::InconsistentModellingException("There is no other CSG operation posible!");
-				}
 
 				// convert the first operand
 				std::shared_ptr<ItemData> firstOperandData(new ItemData());
