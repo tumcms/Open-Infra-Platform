@@ -944,7 +944,18 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_trig
 	//buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
 	//buw::Vector3f zoomMaxExtend = (zoomBox.max() - fullBBox.center()).cast<float>();
 	
-	view_->on_zoomToOneObject(zoomMinExtend, zoomMaxExtend);
+	buw::Vector3f facetedBrepHardcodedMin;
+	facetedBrepHardcodedMin.x() = -0.304879990220018;
+	facetedBrepHardcodedMin.y() = -0.15350296491882; 
+	facetedBrepHardcodedMin.z() = -0.0939999999999991;
+	buw::Vector3f facetedBrepHardcodedMax;
+	facetedBrepHardcodedMax.x() = 0.304879990220018;
+	facetedBrepHardcodedMax.y() = 0.268843232748677;
+	facetedBrepHardcodedMax.z() = 0.;
+
+	view_->on_zoomToOneObject(facetedBrepHardcodedMin, facetedBrepHardcodedMax);
+	//view_->on_zoomToOneObject(zoomMinExtend, zoomMaxExtend);
+
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
