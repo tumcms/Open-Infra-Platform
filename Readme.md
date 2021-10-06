@@ -23,6 +23,7 @@ See [Release Notes](Documentation/markdown/ReleaseNotes.md)
 - [Coding Guideline](Documentation/markdown/CodingGuideline.md)
 - [Doxymentation Guideline](Documentation/markdown/DoxygenHelp.md)
 - [List of Contributors](Documentation/markdown/Contributors.md)
+- [Tools for unit testing and QA](Documentation/markdown/MiniApps.md)
 
 Out-of-sync:
 
