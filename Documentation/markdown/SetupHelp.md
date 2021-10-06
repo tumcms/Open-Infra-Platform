@@ -30,8 +30,8 @@ No guaranty is given for other versions.
 
 You will need to install:
 
-1. **Visual Studio 2017** - find [here](https://my.visualstudio.com/Downloads?q=visual%20studio%202017&wt.mc_id=o~msft~vscom~older-downloads).
-2. **CMake 3.17.0** - find [here](https://cmake.org/download/).
+1. **Visual Studio 2019** - find [here](https://visualstudio.microsoft.com/de/downloads/).
+2. **CMake 3.20.6** - find [here](https://cmake.org/download/).
 3. **git** - find [here](https://git-scm.com/downloads).
 
 ### <a name="Source_code"></a> Download source code 
@@ -42,24 +42,25 @@ You will need to install:
 
 ### <a name="thirdparty"></a> Third-party libraries
 
-4. **Qt 5.14.2** - find [here](https://www.qt.io/download-open-source).
+4. **Qt 5.15.1** - find [here](https://www.qt.io/download-open-source).
 
 	*	Download Qt Online Installer 
 	*	While your computer is downloading Qt installer, create Qt account. 
 	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed (`C:\Qt` should be default option).
+	*	Select Custom installation
 	*	Select components to install:
 
-		* Check the *Archive* box
+		* Check the *Archive* and *Latest releases* box
 		* Click *Filter*
-		* Open section **Qt 5.14.2**
-		* **Mandatory:** Select *binaries x64 msvc2017* or *msvc2019*
-		* **Mandatory:** Select *mingw*
+		* Open section **Qt 5.15.1**
+		* **Mandatory:** Select *MSVC 2019 64-bit*
+		* **Mandatory:** Select *MinGW 8.1.0 64-bit*
 		
 ![](../images/Qt_Installation_settings.png)
 
 *NOTE:* There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
 
-5. **Boost 1_75_0** - [vs2017](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.1-64.exe/download) or [vs2019](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.2-64.exe/download)
+5. **Boost 1_75_0** - [vs2019](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.2-64.exe/download)
 
 	* Create a folder `C:\thirdparty` and install **Boost 1_75_0** to `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`.
 	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`).
@@ -67,20 +68,20 @@ You will need to install:
 6. **Anaconda 2** (version with Python 2.7) - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe). 
 7. **PROJ**
 
-	*	Download OSGeo4W64 Installer - find [here](http://download.osgeo.org/osgeo4w/osgeo4w-setup-x86_64.exe).
+	*	Download OSGeo4W Installer - find [here](download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe).
 	*	In installer, select *Advanced Install*.
 	*	Choose to install from Internet.
 	*	Select directory, where PROJ will be installed.
 
-*NOTE:* CMake expects it at `C:\OSGeo4W64`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
+*NOTE:* CMake expects it at `C:\OSGeo4W`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
 
-  * Select local package directory (e.g. `C:\OSGeo4W64\local`).
+  * Select local package directory (e.g. `C:\OSGeo4W\local`).
   * Select `https://download.osgeo.org/` as a download site.
   * Select components to install:
 		
-    * Open *Commandline_Utilities*
-    * Find *proj-dev* package 
-    * Click on *skip* to refresh the line.
+    * Open *Libs*
+    * Find *proj-devel* package 
+    * Click on *skip* to refresh the line and select version 8.1.1-1.
     * Select binary (*Bin*) package (the left column).
 		
 ![](../images/PROJ_Installation_settings.png)
@@ -106,7 +107,7 @@ You will need to install:
 4. Check the *Grouped* and *Advanced* boxes (top right in CMake GUI).
 5. Click *Configure*. 
 6. Select the Generator:
-	* Select *Visual Studio 15 2017 Win64* or *Visual Studio 16 2019 Win64*.
+	* Select *Visual Studio 16 2019 Win64*.
 	* Select *x64*
 	* Write *host=x64* as optional toolset.
 
@@ -114,7 +115,7 @@ You will need to install:
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, consult [CMake options documentation](./CMakeOptions.md).
 
-*NOTE:* A few (red) warnings in the lower window of CMake can be ignored as long as it states *Configuring done* at the end.
+*NOTE:* Plenty of red warnings in the lower window of CMake can be expected and ignored as long as it states *Configuring done* at the end.
 
 8. After configuration process has successfully finished, click *Generate*.
 9. After generation process is done click *Open Project*. It will open the OpenInfraPlatform solution in Visual Studio.
@@ -125,10 +126,6 @@ You will need to install:
 ### <a name="FirstTime"></a> First Time
 
 When compiling OpenInfraPlatform for the first time, these projects should first be built.
-
-* Execute **Get_OKLABI.cmd** in the `external` folder (e.g. `C:\dev\Open-Infra-Platform\external`) 
-  to prevent an error during the build process. 
-  After the execution of **Get_OKLABI.cmd**, it's necessary to *configure* and *generate* OpenInfraPlatform project once again in CMake.
 
 * In the *project browser* open *OpenInfraPlatform* project folder. 
   In the folder *Commands* build  **OpenInfraPlatform.Commands.UpdateBoostMpl**.
