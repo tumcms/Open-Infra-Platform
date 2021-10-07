@@ -858,7 +858,7 @@ namespace OpenInfraPlatform {
 					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>())
 					{
 						// get surface geometry into inputDataFaceSurface
-						std::shared_ptr<ItemData> inputDataFaceSurface(new ItemData);
+						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
 						convertIfcBSplineSurface(faceSurface.as<typename IfcEntityTypesT::IfcBSplineSurface>(), pos, inputDataFaceSurface);
 
 						// ASSUMPTION: the B-Spline-Surface boundary is already coincident with the loop boundary
