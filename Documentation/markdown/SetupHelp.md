@@ -1,10 +1,8 @@
-# Compiling OpenInfraPlatform 
+# Setting up and Compiling TUM Open Infra Platform 
 
-Guide on how to compile the project TUM OpenInfraPlatform.
+Guide on how to compile the project TUM Open Infra Platform (OIP) from scratch.
 
-*NOTE:* This document is only a snapshot of the current state (January 2021) and may become obsolete in the future.
-
-*NOTE:* For some common mistakes / errors - see [FAQ](./FAQ.md).
+*NOTE:* Additional information about known errors and warnings is provided in [FAQ](./FAQ.md).
 
 ## Content 
 
@@ -13,7 +11,7 @@ Guide on how to compile the project TUM OpenInfraPlatform.
     * [Download source code](#Source_code)
     * [Third-party libraries](#thirdparty)
 2. [Preparing VS solution](#Setup) 
-3. [Building the OpenInfraPlatform in Visual Studio](#Building_OIP) 
+3. [Building the Open Infra Platform in Visual Studio](#Building_OIP) 
 	* [First time](#FirstTime)
 	* [Generating IFC early binding libraries](#generating_EarlyBinding)
 	* [Compiling user interface](#Compiling_interface)
@@ -23,8 +21,7 @@ Guide on how to compile the project TUM OpenInfraPlatform.
 
 These steps need to be completed before you can proceed even to think to compile OIP.
 
-*NOTE:* The OIP only works with the versions listed. 
-No guaranty is given for other versions.
+*NOTE:* The OIP only works with the versions listed (see [tested versions](./FAQ.md#version))
 
 ### <a name="devenv"></a> Development environment
 
@@ -36,7 +33,7 @@ You will need to install:
 
 ### <a name="Source_code"></a> Download source code 
 
- Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open-Infra-Platform).
+Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open-Infra-Platform).
 
 *NOTE:* for detailed instructions consult our [Git Guidelines](./GitProcess.md).
 
@@ -47,7 +44,8 @@ You will need to install:
 	*	Download Qt Online Installer 
 	*	While your computer is downloading Qt installer, create Qt account. 
 	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed (`C:\Qt` should be default option).
-	*	Select Custom installation
+	*	Choose Custom installation
+	*   (recommended) Deselect *Associate common file types with Qt creator*
 	*	Select components to install:
 
 		* Check the *Archive* and *Latest releases* box
@@ -66,6 +64,7 @@ You will need to install:
 	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`).
 
 6. **Anaconda 2** (version with Python 2.7) - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe). 
+
 7. **PROJ**
 
 	*	Download OSGeo4W Installer - find [here](download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe).
@@ -115,17 +114,17 @@ You will need to install:
 
 7. For detailed descriptions of all configuration options that can be selected in the CMake GUI, consult [CMake options documentation](./CMakeOptions.md).
 
-*NOTE:* Plenty of red warnings in the lower window of CMake can be expected and ignored as long as it states *Configuring done* at the end.
+*NOTE:* Plenty of red warnings in the log panel are [fine](./FAQ.md#cmake_warnings).
 
 8. After configuration process has successfully finished, click *Generate*.
-9. After generation process is done click *Open Project*. It will open the OpenInfraPlatform solution in Visual Studio.
+9. After generation process is done click *Open Project*. It will open the solution in Visual Studio.
 
 
-## <a name="Building_OIP"></a> Building the OpenInfraPlatform in Visual Studio 
+## <a name="Building_OIP"></a> Building the Open Infra Platform in Visual Studio 
 
 ### <a name="FirstTime"></a> First Time
 
-When compiling OpenInfraPlatform for the first time, these projects should first be built.
+When compiling OIP for the first time, these projects should first be built.
 
 * In the *project browser* open *OpenInfraPlatform* project folder. 
   In the folder *Commands* build  **OpenInfraPlatform.Commands.UpdateBoostMpl**.
@@ -136,7 +135,7 @@ When compiling OpenInfraPlatform for the first time, these projects should first
 
 ### <a name="generating_EarlyBinding"></a> Generating IFC early binding libraries
 
-*NOTE:* If you are using OpenInfraPlatform only with point clouds, you can skip these steps.
+*NOTE:* If you are using Open Infra Platform only with point clouds, you can skip these steps.
 
 1. Find the folder *ExpressBindingGenerator*. Build project **OpenInfraPlatform.ExpressBindingGenerator**.
 
