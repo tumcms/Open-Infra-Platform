@@ -41,26 +41,32 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 
 4. **Qt 5.15.1** - find [here](https://www.qt.io/download-open-source).
 
-	*	Download Qt Online Installer 
-	*	While your computer is downloading Qt installer, create Qt account. 
-	*	Sign in with your new account to Qt installer and select directory, where Qt will be installed (`C:\Qt` should be default option).
-	*	Choose Custom installation
-	*   (recommended) Deselect *Associate common file types with Qt creator*
-	*	Select components to install:
+  * Download Qt Online Installer 
+  * While your computer is downloading Qt installer, create Qt account. 
+  * Sign in with your new account to Qt installer and select directory, where Qt will be installed (`C:\Qt` should be default option).
 
-		* Check the *Archive* and *Latest releases* box
-		* Click *Filter*
-		* Open section **Qt 5.15.1**
-		* **Mandatory:** Select *MSVC 2019 64-bit*
-		* **Mandatory:** Select *MinGW 8.1.0 64-bit*
+*NOTE:* OIP expects *Qt* at `C:\Qt`, which is the default option. If you deviate from this, please set the `OIP_QT_DIR` variable [correspondingly](./FAQ.md#libraries).
+
+  * Choose Custom installation
+  * (recommended) Deselect *Associate common file types with Qt creator*
+  * Select components to install:
+
+    * Check the *Archive* and *Latest releases* box
+    * Click *Filter*
+    * Open section **Qt 5.15.1**
+    * **Mandatory:** Select *MSVC 2019 64-bit*
+    * **Mandatory:** Select *MinGW 8.1.0 64-bit*
 		
 ![](../images/Qt_Installation_settings.png)
 
-*NOTE:* There are components, which Qt Online Installer selects as default options. You can uncheck these components for saving computer memory.
+*NOTE:* There are components, which *Qt Online Installer* selects as default options. You can uncheck these components for saving computer memory.
 
 5. **Boost 1_75_0** - [vs2019](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.2-64.exe/download)
 
 	* Create a folder `C:\thirdparty` and install **Boost 1_75_0** to `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`.
+
+*NOTE:* OIP expects *boost* at the path specified above. If you deviate from this, please set the `OIP_Boost_DIR` variable [correspondingly](./FAQ.md#libraries).
+
 	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`).
 
 6. **Anaconda 2** (version with Python 2.7) - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe). 
@@ -72,7 +78,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 	*	Choose to install from Internet.
 	*	Select directory, where PROJ will be installed.
 
-*NOTE:* CMake expects it at `C:\OSGeo4W`, which should be the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable correspondingly.
+*NOTE:* OIP expects *PROJ* at `C:\OSGeo4W`, which is the default option. If you deviate from this, please set the `OIP_PROJ_DIR` variable [correspondingly](./FAQ.md#libraries).
 
   * Select local package directory (e.g. `C:\OSGeo4W\local`).
   * Select `https://download.osgeo.org/` as a download site.

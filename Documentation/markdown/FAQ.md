@@ -11,17 +11,22 @@ No guaranty is given for other versions.
 
 Other tested versions (please help us extend this list if you succeed with not-yet listed versions):
 
-- CMake: 3.18.2
+- CMake: 3.21.3
 
 ### <a name="cmake_warnings"></a> CMake shows a lot of red warnings in its log panel.
 
 That is expected behaviour.
-As long as it says *Configuring done* or *Generation done* you're good to go!
+As long as it says (*Configuring done* and) *Generating done* you're good to go!
 
-### I deviated from the default install folders for third party libraries. How to proceed?
+### <a name="libraries"></a> I deviated from the default install folders for third party libraries. How to proceed?
 
 You're on your own here.
 There should be some CMake variables prepared, however this has not been thoroughly tested.
+
+For example, this works:
+
+![](../images/CMake_Exemplary_Paths_Boost_Qt_Proj.png)
+
 
 ## Compilation
 
