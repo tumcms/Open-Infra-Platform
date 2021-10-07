@@ -2,27 +2,55 @@
 
 The FAQs are not in any particular order.
 
-### Compilation
+---
+## Setting up
 
-> Error C2977: 'boost::mpl::list': too many template arguments
+### <a name="version"></a> I have [software X] [version Y] installed on my machine. Will the installation still work?
 
-Compile *OpenInfraPlatform.Commands.UpdateCoostMPL* in the solution.
+The OIP only works with the versions listed in [setup instructions](./SetupHelp.md).
+No guaranty is given for other versions.
 
-> warning C4127: conditional expression is constant
+Other tested versions (please help us extend this list if you succeed with not-yet listed versions):
 
-You can safely ignore it, if it comes from an IFC library.
+- CMake: 3.18.2
 
-> warning C4251: class '...' needs to have dll-interface to be used by clients of class '...'
+### <a name="cmake_warnings></a> CMake shows a lot of red warnings in its log panel.
 
-You can safely ignore it, if it comes from an IFC library.
+That is expected behaviour.
+As long as it says *Configuring done* or *Generation done* you're good to go!
 
-> warning C4506: no definition for inline function
+### I deviated from the default install folders for third party libraries. How to proceed?
 
-You can safely ignore it, if it comes from an IFC library.
+You're on your own here.
+There should be some CMake variables prepared, however this has not been thoroughly tested.
 
-### UI
+---
+## Compilation
 
-> How do I navigate the viewport?
+### Compiling IFC libraries takes a long time.
+
+Welcome to the club!
+
+### Error C2977: 'boost::mpl::list': too many template arguments
+
+Compile **OpenInfraPlatform.Commands.UpdateBoostMPL** provided in the solution in folder `OpenInfraPlatform.Commands`.
+
+### Warning C4127: conditional expression is constant
+
+You can safely ignore it, if it comes from an auto-generated IFC library.
+
+### Warning C4251: class '...' needs to have dll-interface to be used by clients of class '...'
+
+You can safely ignore it, if it comes from an auto-generated IFC library.
+
+### Warning C4506: no definition for inline function
+
+You can safely ignore it, if it comes from an auto-generated IFC library.
+
+---
+## UI
+
+### How do I navigate the viewport?
 
 See [wiki](https://github.com/tumcms/Open-Infra-Platform/wiki/Camera-control).
 
