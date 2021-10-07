@@ -21,7 +21,7 @@ Guide on how to compile the project TUM Open Infra Platform (OIP) from scratch.
 
 These steps need to be completed before you can proceed even to think to compile OIP.
 
-*NOTE:* The OIP only works with the versions listed (see [tested versions](./FAQ.md#version))
+*NOTE:* The OIP only works with the versions listed (see [tested versions](./FAQ.md#version) for further combinations).
 
 ### <a name="devenv"></a> Development environment
 
@@ -85,9 +85,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 		
 ![](../images/PROJ_Installation_settings.png)
 
-    * Finish the installation.
-
-8. **Doxygen**
+8. **Doxygen** & **DOT**
 	*  Download & install Doxygen - find [here](https://sourceforge.net/projects/doxygen/files/rel-1.8.20/doxygen-1.8.20-setup.exe/download).
        * Default search path is `C:/thirdparty/doxygen/bin`
        * If deviating, please set the `DOXYGEN_EXECUTABLE` variable correspondingly
