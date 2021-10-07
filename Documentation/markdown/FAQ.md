@@ -2,7 +2,6 @@
 
 The FAQs are not in any particular order.
 
----
 ## Setting up
 
 ### <a name="version"></a> I have [software X] [version Y] installed on my machine. Will the installation still work?
@@ -14,7 +13,7 @@ Other tested versions (please help us extend this list if you succeed with not-y
 
 - CMake: 3.18.2
 
-### <a name="cmake_warnings></a> CMake shows a lot of red warnings in its log panel.
+### <a name="cmake_warnings"></a> CMake shows a lot of red warnings in its log panel.
 
 That is expected behaviour.
 As long as it says *Configuring done* or *Generation done* you're good to go!
@@ -24,7 +23,6 @@ As long as it says *Configuring done* or *Generation done* you're good to go!
 You're on your own here.
 There should be some CMake variables prepared, however this has not been thoroughly tested.
 
----
 ## Compilation
 
 ### Compiling IFC libraries takes a long time.
