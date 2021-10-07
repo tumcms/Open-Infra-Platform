@@ -106,8 +106,8 @@ Meaning of columns:
 | `IfcOuterBoundaryCurve`               | :x:                  | -                          | -                     | -     |
 | `IfcPath`                             | :x:                  | `RepresentationConverter`  | -                     | -     |
 | `IfcPcurve`                           | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
-| `IfcPlanarExtent`                     | :x:                  | -                          | -                     | -     |
-| `IfcPlanarBox`                        | :x:                  | -                          | -                     | -     |
+| `IfcPlanarExtent`                     | :x:                  | `FaceConverter`            | -                     | -     |
+| `IfcPlanarBox`                        | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcPlane`                            | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcPointByDistanceExpression`        | :heavy_check_mark:   | `PlacementConverter`       | :x:                   | -     |
 | `IfcPointOnCurve`                     | :heavy_check_mark:   | `PlacementConverter`       | :x:                   | -     |
