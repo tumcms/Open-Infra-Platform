@@ -11,6 +11,7 @@ No guaranty is given for other versions.
 
 Other tested versions (please help us extend this list if you succeed with not-yet listed versions):
 
+- CMake: 3.20.5
 - CMake: 3.21.3
 
 ### <a name="cmake_warnings"></a> CMake shows a lot of red warnings in its log panel.
