@@ -17,4 +17,10 @@
 
 include(CreateUnitTests)
 
-CreateIfcFileVisualUnitTestForSchema(clothoid IFC4X3_RC4)
+# get all subdirectories (that is, unit tests)
+SUBDIRLIST(SUBDIRS ${CMAKE_CURRENT_LIST_DIR})
+
+# add to the solution
+FOREACH(subdir ${SUBDIRS})
+	ADD_SUBDIRECTORY(${subdir})
+ENDFOREACH()

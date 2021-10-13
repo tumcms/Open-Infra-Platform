@@ -26,7 +26,7 @@
 
 using namespace testing;
 
-class Clothoid : public IfcVisualTest {
+class CircularArc : public IfcVisualTest {
 protected:
 
 	// Test standard values
@@ -49,45 +49,45 @@ protected:
                 IfcVisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "clothoid"; }
+	virtual std::string TestName() const { return "circular-arc_100.0_300_1000_1_Meter"; }
 	virtual std::string Schema() const { return "IFC4X3_RC4"; }
 
-	const boost::filesystem::path filename = dataPath("clothoid.ifc");
+	const boost::filesystem::path filename = dataPath("circular-arc_100.0_300_1000_1_Meter.ifc");
 
 	std::shared_ptr<oip::EXPRESSModel> express_model = nullptr;
 	buw::ReferenceCounted<oip::IfcImporterT<emt::IFC4X3_RC4EntityTypes>> importer = nullptr;
 };
 
-TEST_F(Clothoid, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(57));
+TEST_F(CircularArc, AllEntitiesAreRead) {
+	EXPECT_THAT(express_model->entities.size(), Eq(80));
 }
 /*
-TEST_F(Clothoid, IFCHasAnEssentialEntity) {
+TEST_F(CircularArc, IFCHasAnEssentialEntity) {
 	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
 	EXPECT_NE(result, express_model->entities.end());
 }
 */
-TEST_F(Clothoid, ImageIsSaved)
+TEST_F(CircularArc, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = rendererIfc->captureImage();
 
 	// Act
-	buw::storeImage(testPath("clothoid.png").string(), image);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter.png").string(), image);
 
 	// Assert
-	EXPECT_NO_THROW(buw::loadImage4b(testPath("clothoid.png").string()));
+	EXPECT_NO_THROW(buw::loadImage4b(testPath("circular-arc_100.0_300_1000_1_Meter.png").string()));
 }
 
-TEST_F(Clothoid, PlaneSurfaceViews)
+TEST_F(CircularArc, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("clothoid_front.png").string());
-	const auto expected_top = buw::loadImage4b(dataPath("clothoid_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("clothoid_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("clothoid_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("clothoid_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("clothoid_back.png").string());
+	const auto expected_front = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_front.png").string());
+	const auto expected_top = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_top.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_bottom.png").string());
+	const auto expected_left = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_left.png").string());
+	const auto expected_right = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_right.png").string());
+	const auto expected_back = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_back.png").string());
 
 	// Act (Front)
 	rendererIfc->setViewDirection(buw::eViewDirection::Front);
@@ -110,12 +110,12 @@ TEST_F(Clothoid, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("clothoidn_front.png").string(), image_front);
-	buw::storeImage(testPath("clothoid_top.png").string(), image_top);
-	buw::storeImage(testPath("clothoid_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("clothoid_left.png").string(), image_left);
-	buw::storeImage(testPath("clothoid_right.png").string(), image_right);
-	buw::storeImage(testPath("clothoid_back.png").string(), image_back);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_front.png").string(), image_front);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_top.png").string(), image_top);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_bottom.png").string(), image_bottom);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_left.png").string(), image_left);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_right.png").string(), image_right);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_back.png").string(), image_back);
 	*/
 
 	// Assert
@@ -127,17 +127,17 @@ TEST_F(Clothoid, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(BasinTessellation, VertexViews)
+TEST_F(CircularArc, VertexViews)
 {
 	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("clothoid_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("clothoid_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("clothoid_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("clothoid_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("clothoid_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("clothoid_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("clothoid_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("clothoid_right_bottom_back.png").string());
+	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_front_left_bottom.png").string());
+	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_front_right_bottom.png").string());
+	const auto expected_top_left_front = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_top_left_front.png").string());
+	const auto expected_top_front_right = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_top_front_right.png").string());
+	const auto expected_top_left_back = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_top_left_back.png").string());
+	const auto expected_top_right_back = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_top_right_back.png").string());
+	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_back_left_bottom.png").string());
+	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("circular-arc_100.0_300_1000_1_Meter_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	rendererIfc->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -166,14 +166,14 @@ TEST_F(BasinTessellation, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("clothoid_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("clothoid_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("bclothoid_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("clothoid_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("clothoid_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("clothoid_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("clothoid_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("clothoid_right_bottom_back.png").string(), image_right_bottom_back);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_front_left_bottom.png").string(), image_front_left_bottom);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_front_right_bottom.png").string(), image_front_right_bottom);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meterc_top_left_front.png").string(), image_top_left_front);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_top_front_right.png").string(), image_top_front_right);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_top_left_back.png").string(), image_top_left_back);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_top_right_back.png").string(), image_top_right_back);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_back_left_bottom.png").string(), image_back_left_bottom);
+	buw::storeImage(testPath("circular-arc_100.0_300_1000_1_Meter_right_bottom_back.png").string(), image_right_bottom_back);
 	*/
 
 	// Assert
