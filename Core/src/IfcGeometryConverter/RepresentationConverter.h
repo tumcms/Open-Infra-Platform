@@ -431,6 +431,15 @@ namespace OpenInfraPlatform {
 						return;
 					}
 
+					// (12/*) IfcPlanarExtent SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcPlanarExtent>())
+					{
+						faceConverter->convertIfcPlanarExtent(
+							geomItem.as<typename IfcEntityTypesT::IfcPlanarExtent>(),
+							pos, itemData);
+						return;
+					}
+
 					throw oip::UnhandledException(geomItem);
 				}
 
