@@ -201,6 +201,7 @@ namespace OpenInfraPlatform
 					return (ceil(newSegmentsOfLength)-1);
 				}
 
+<<<<<<< HEAD
 				/*! Calculates the number of segments when tessellating an curve
 
 				\param[in] length		The length "l" of the lenght
@@ -218,6 +219,8 @@ namespace OpenInfraPlatform
 					return (ceil(newSegmentsOfLength)-1);
 				}
 
+=======
+>>>>>>> origin/IfcClothoid
 			private:
 				int	num_vertices_per_circle;
 				int min_num_vertices_per_arc;

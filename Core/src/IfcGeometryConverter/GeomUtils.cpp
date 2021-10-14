@@ -1312,6 +1312,7 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 				if (polynomialConstants[i]) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
 =======
@@ -1322,6 +1323,10 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
 					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
 >>>>>>> 22673156 (Fixed mistakes in Taylor Series, convertIfcClothoid; added implementation for points in convertIfcCurveSegment)
+=======
+					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
+>>>>>>> origin/IfcClothoid
 				}
 			}
 		}

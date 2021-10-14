@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿/* -*-c++-*- IfcPlusPlus - www.ifcplusplus.com  - Copyright (C) 2011 Fabian Gerold
  * This library is open source and may be redistributed and/or modified under
  * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
@@ -2915,6 +2916,8 @@ namespace OpenInfraPlatform
 =======
 =======
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 ﻿/* -*-c++-*- IfcPlusPlus - www.ifcplusplus.com  - Copyright (C) 2011 Fabian Gerold
  * This library is open source and may be redistributed and/or modified under
  * the terms of the OpenSceneGraph Public License (OSGPL) version 0.0 or
@@ -2946,9 +2949,13 @@ namespace OpenInfraPlatform
 
 #include "GeomUtils.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "SpiralUtils.h"
 =======
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+#include "SpiralUtils.h"
+>>>>>>> origin/IfcClothoid
 #include "PlacementConverter.h"
 #include "ProfileConverter.h"
 #include "SplineConverter.h"
@@ -3908,12 +3915,16 @@ namespace OpenInfraPlatform {
 		
 					// Get number of tesselated segments
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 					//int numSegments = this->GeomSettings()->getNumberOfTessellationSegmentsByLength(length);
 					//Calculate segment length
 					int numSegments = 100;
 					double segmentLength = length / numSegments;
 					double lengthNew = segmentLength;
 
+<<<<<<< HEAD
 =======
 					int numSegments = this->GeomSettings()->getNumberOfTessellationSegmentsByLength(length);
 					//Calculate segment length
@@ -3935,6 +3946,8 @@ namespace OpenInfraPlatform {
 					// Calculate clothoid points. Parametrisation
 
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 					std::vector<carve::geom::vector<3>> clothoidPoints;
 					clothoidPoints[0] = carve::geom::VECTOR(0., 0., 0.);
 			
@@ -4470,16 +4483,22 @@ namespace OpenInfraPlatform {
 
 					// Determine segments
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 					double numSegments = 100;
 					double deltaLength = length / numSegments;
 
 					std::vector<carve::geom::vector<3>> segmentPoints, segmentDirections;
+<<<<<<< HEAD
 =======
 					double numSegments = 500;
 					double deltaLength = length / numSegments;
 
 					std::vector<carve::geom::vector<3>> segmentPoints;
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 					double lengthAlong = 0.;
 					switch (curveSegment->SegmentStart.which())
 					{
@@ -4504,6 +4523,9 @@ namespace OpenInfraPlatform {
 					{ 
 						// determine point
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 						carve::geom::vector<3> point, direction;
 						if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 						{
@@ -4522,6 +4544,7 @@ namespace OpenInfraPlatform {
 						}
 						segmentPoints.push_back(point);
 						segmentDirections.push_back(direction);
+<<<<<<< HEAD
 =======
 						carve::geom::vector<3> point;
 						if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
@@ -4538,6 +4561,8 @@ namespace OpenInfraPlatform {
 						}
 						segmentPoints.push_back(point);
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 						// determine next length
 						lengthAlong += deltaLength;
 						switch (runningLength.which())
@@ -4562,6 +4587,9 @@ namespace OpenInfraPlatform {
 					if (!segmentPoints.empty())
 					{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 						/*//TODO rotate for start to be in (1,0) direction
 						carve::geom::vector<3> point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
 						//Calculate angle between (0,0) and point
@@ -4595,24 +4623,33 @@ namespace OpenInfraPlatform {
 							placementConverter->convertIfcPlacement(curveSegment->Placement)
 							//* GeomUtils::computeInverse(rotationMatrix);
 							* rotationMatrix;
+<<<<<<< HEAD
 =======
 						// apply placement
 						const carve::math::Matrix placement = placementConverter->convertIfcPlacement(curveSegment->Placement);
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 
 						std::vector<carve::geom::vector<3>> newPoints;
 						for (const auto& point : segmentPoints)
 						{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 							newPoints.push_back(placement * (point + translate));
 						}
 
 						//BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
 
+<<<<<<< HEAD
 =======
 							newPoints.push_back(placement * point);
 						}
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 						GeomUtils::appendPointsToCurve(newPoints, targetVec);
 						segmentStartPoints.push_back(newPoints[0]);
 					}
@@ -5493,10 +5530,14 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				/*! \brief Calculates a trimming point on the clothoid.
 =======
 				/*! \brief Calculates a trimming point on the clothoid using \c IfcParameterValue.
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+				/*! \brief Calculates a trimming point on the clothoid.
+>>>>>>> origin/IfcClothoid
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
@@ -5507,6 +5548,9 @@ namespace OpenInfraPlatform {
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				template <>
@@ -5518,13 +5562,19 @@ namespace OpenInfraPlatform {
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
 					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
 				{
+<<<<<<< HEAD
 =======
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 					// Interpret parameter
 					// Get Clothoid Constant
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
 					// Interpret polinomial constant for the following integral computations
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/IfcClothoid
 					//std::vector<double> polynomialConstants = { 0., 0., A, 0. };
 					//std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
@@ -5655,6 +5705,7 @@ namespace OpenInfraPlatform {
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 
+<<<<<<< HEAD
 =======
 					std::vector<double> polynomialConstants = { 0., 0., A / std::fabs(A), 0. };
 
@@ -5692,6 +5743,8 @@ namespace OpenInfraPlatform {
 					return std::fabs(A) * carve::geom::VECTOR(sqrt(M_PI)*x, sqrt(M_PI)*y, 0.);
 				}
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
 #endif
 
 
@@ -5707,6 +5760,9 @@ namespace OpenInfraPlatform {
 
 #endif
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
 =======
 >>>>>>> b0cc65be (changes made in convertIfcCurveSegment, getPointOnCurve for IfcClothoid which includes IfcParameterValue and IfcNonNegativeLengthMeasure as parameter)
+=======
+>>>>>>> origin/IfcClothoid
