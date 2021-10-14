@@ -386,7 +386,6 @@ namespace OpenInfraPlatform
 					directrix.template as<typename IfcEntityTypesT::IfcAlignmentCurve>());
 #else
 				std::vector<double> stations;
-				throw oip::UnhandledException(sectionedSolidHorizontal);
 #endif
 				carve::geom::vector<3> targetPoint3D;
 				carve::geom::vector<3> targetDirection3D;
