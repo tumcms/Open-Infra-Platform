@@ -35,15 +35,22 @@ FetchContent_Declare(
 	GIT_TAG v4.3.0
 )
 
-FetchContent_GetProperties(dep_libtiff)
-if(NOT dep_libtiff_POPULATED)
-	FetchContent_Populate(dep_libtiff)
-	add_subdirectory(${dep_libtiff_SOURCE_DIR}/libtiff ${dep_libtiff_BINARY_DIR} EXCLUDE_FROM_ALL)
+#FetchContent_GetProperties(dep_libtiff)
+#if(NOT dep_libtiff_POPULATED)
+#	FetchContent_Populate(dep_libtiff)
+#	add_subdirectory(${dep_libtiff_SOURCE_DIR}/libtiff ${dep_libtiff_BINARY_DIR} EXCLUDE_FROM_ALL)
+#
+#	set_target_properties(tiff_library PROPERTIES FOLDER "ThirdParty")
+#endif()
 
-	set_target_properties(tiff_library PROPERTIES FOLDER "ThirdParty")
-endif()
-
-set(TIFF_INCLUDE_DIR ${dep_libtiff_SOURCE_DIR}/libtiff)
+#set(TIFF_INCLUDE_DIR "C:/dev/LibTiff/LibTiff/libtiff/libtiff")
+#set(TIFF_LIBRARIES "C:/dev/LibTiff/LibTiff/build/libtiff/Debug/tiffd.dll")
+#set(TIFF_DIRECTORY )
+#if point cloud
+#findtiff()
+set(TIFF_INCLUDE_DIR "C:/OSGeo4W/include")
+set(TIFF_LIBRARY "C:/OSGeo4W/lib/tiff.lib")
+find_package(TIFF REQUIRED)
 
 FetchContent_Declare(
 	dep_libgeo
@@ -105,7 +112,7 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 # Create a target for the library
 set(DEPENDENT_INCLUDE_DIRS
 	src
-	${dep_libtiff_SOURCE_DIR}/include
+	${TIFF_INCLUDE_DIR}
 	${dep_libgeo_SOURCE_DIR}/include
 	${dep_liblas_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
@@ -125,7 +132,7 @@ target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPEN
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 		las
 		las_c
-		tiff_library
+	    ${TIFF_LIBRARIES}
 		geotiff_library
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
