@@ -2195,34 +2195,33 @@ namespace OpenInfraPlatform
 			) const noexcept(false)
 			{
 				// TODO: complete this function + refactoring 
-				/*
+				
 				//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
-				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> base_surface = halfSpaceSolid->BaseSurface;
+				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> baseSurface = halfSpaceSolid->BaseSurface;
 
 				// base surface
-				if (!base_surface.template isOfType<typename IfcEntityTypesT::IfcElementarySurface>())
+				if (!baseSurface.template isOfType<typename IfcEntityTypesT::IfcElementarySurface>())
 				{
-					throw oip::InconsistentModellingException(base_surface,
+					throw oip::InconsistentModellingException(baseSurface,
 						"The base surface shall be an unbounded surface (subtype of IfcElementarySurface)");
 				}
-				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
-					base_surface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
+				
+				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
+					baseSurface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
-				carve::geom::plane<3> base_surface_plane;
-				carve::geom::vector<3> base_surface_position;
-				carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
-				if (base_surface_pos)
+				carve::geom::plane<3> baseSurfacePlane;
+				carve::geom::vector<3> baseSurfacePosition;
+				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
+				if (elemBaseSurface->Position)
 				{
-					placementConverter->getPlane(base_surface_pos.lock(), base_surface_plane, base_surface_position, UnitConvert()->getLengthInMeterFactor());
-					base_position_matrix = placementConverter->convertIfcAxis2Placement3D(base_surface_pos);
+					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
-				bool agreement = halfSpaceSolid->AgreementFlag;
-				if (!agreement)
+				if (!halfSpaceSolid->AgreementFlag)
 				{
-					base_surface_plane.negate();
+					baseSurfacePlane.negate();
 				}
 
 				if (halfSpaceSolid.template isOfType<typename IfcEntityTypesT::IfcBoxedHalfSpace>())
@@ -2235,7 +2234,7 @@ namespace OpenInfraPlatform
 
 				// check dimenstions of other operand
 				double extrusion_depth = HALF_SPACE_BOX_SIZE;
-				carve::geom::vector<3> other_operand_pos = base_surface_position;
+				carve::geom::vector<3> other_operand_pos = baseSurfacePosition;
 				if (otherOperand)
 				{
 					carve::geom::aabb<3> aabb;
@@ -2288,28 +2287,40 @@ namespace OpenInfraPlatform
 
 					if (var == 0)
 					{
-						std::shared_ptr<carve::input::PolylineSetData> surface_data =
-							faceConverter->convertIfcSurface(base_surface, carve::math::Matrix::IDENT());
-						std::vector<carve::geom::vector<3>> base_surface_points = surface_data->points;
+						//std::shared_ptr<carve::input::PolylineSetData> surface_data;
+						std::shared_ptr<ItemData> surface_data(new ItemData());
+						faceConverter->convertIfcSurface(baseSurface, carve::math::Matrix::IDENT(), surface_data);
 
-						if (base_surface_points.size() != 4)
+						std::vector<std::shared_ptr<carve::input::PolylineSetData>> surfacePolylineData = surface_data->polylines;
+
+						std::vector<std::vector<carve::geom::vector<3>>> baseSurfacePointVector;
+
+						for (auto polyline : surfacePolylineData) {
+							baseSurfacePointVector.push_back(polyline->points);
+						}
+
+						std::vector<carve::geom::vector<3>> baseSurface_points = baseSurfacePointVector[0];
+
+						//std::vector<carve::geom::vector<3>> baseSurface_points = surfacePolylineData->points;
+
+						if (baseSurface_points.size() != 4)
 						{
-							BLUE_LOG(warning) << "Invalid IfcHalfSpaceSolid.BaseSurface #" << base_surface->getId();
+							BLUE_LOG(warning) << "Invalid IfcHalfSpaceSolid.BaseSurface #" << baseSurface->getId();
 							return;
 						}
 						// If the agreement flag is TRUE, then the subset is the one the normal points away from
 						bool agreement = halfSpaceSolid->AgreementFlag;
 						if (!agreement)
 						{
-							std::reverse(base_surface_points.begin(), base_surface_points.end());
+							std::reverse(baseSurface_points.begin(), baseSurface_points.end());
 						}
-						carve::geom::vector<3>  base_surface_normal = GeomUtils::computePolygonNormal(base_surface_points);
+						carve::geom::vector<3>  baseSurface_normal = GeomUtils::computePolygonNormal(baseSurface_points);
 
-						carve::geom::vector<3>  half_space_extrusion_direction = -base_surface_normal;
+						carve::geom::vector<3>  half_space_extrusion_direction = -baseSurface_normal;
 						carve::geom::vector<3>  half_space_extrusionVector = half_space_extrusion_direction * HALF_SPACE_BOX_SIZE;
 						std::shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
 						itemData->closed_polyhedrons.push_back(half_space_box_data);
-						extrudeBox(base_surface_points, half_space_extrusionVector, half_space_box_data);
+						extrudeBox(baseSurface_points, half_space_extrusionVector, half_space_box_data);
 
 						// apply object coordinate system
 						for (std::vector<carve::geom::vector<3> >::iterator it_points = half_space_box_data->points.begin(); it_points != half_space_box_data->points.end(); ++it_points)
@@ -2322,16 +2333,16 @@ namespace OpenInfraPlatform
 					if (var == 1)
 					{
 						std::vector<carve::geom::vector<3> > box_base_points;
-						box_base_points.push_back(base_position_matrix*carve::geom::VECTOR(extrusion_depth, extrusion_depth, 0.0));
-						box_base_points.push_back(base_position_matrix*carve::geom::VECTOR(-extrusion_depth, extrusion_depth, 0.0));
-						box_base_points.push_back(base_position_matrix*carve::geom::VECTOR(-extrusion_depth, -extrusion_depth, 0.0));
-						box_base_points.push_back(base_position_matrix*carve::geom::VECTOR(extrusion_depth, -extrusion_depth, 0.0));
+						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(extrusion_depth, extrusion_depth, 0.0));
+						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusion_depth, extrusion_depth, 0.0));
+						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusion_depth, -extrusion_depth, 0.0));
+						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(extrusion_depth, -extrusion_depth, 0.0));
 
-						carve::geom::vector<3>  half_space_extrusion_direction = -base_surface_plane.N;
+						carve::geom::vector<3>  half_space_extrusion_direction = -baseSurfacePlane.N;
 						carve::geom::vector<3>  half_space_extrusionVector = half_space_extrusion_direction * extrusion_depth;
 
 						carve::geom::vector<3>  box_base_normal = GeomUtils::computePolygonNormal(box_base_points);
-						double dot_normal = dot(box_base_normal, base_surface_plane.N);
+						double dot_normal = dot(box_base_normal, baseSurfacePlane.N);
 						if (dot_normal > 0)
 						{
 							std::reverse(box_base_points.begin(), box_base_points.end());
@@ -2350,35 +2361,36 @@ namespace OpenInfraPlatform
 					}
 
 					return;
-				}*/
+				}
 			}
 
 			// Complete this function + refactoring 
-			/*
+			
 			void convertIfcBoxedHalfSpace(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcBoxedHalfSpace>& boxedHalfSpace,
 				const carve::math::Matrix& pos,
-				std::shared_ptr<ItemData> itemData,
-			) const noexcept(false)
+				std::shared_ptr<ItemData> itemData) const noexcept(false)
 			{
-				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
+				throw oip::UnhandledException(boxedHalfSpace);
+				/*
+				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
 					boxedHalfSpace.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
-				carve::geom::plane<3> base_surface_plane;
-				carve::geom::vector<3> base_surface_position;
-				carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
-				if (base_surface_pos)
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurface_pos = elemBaseSurface->Position;
+				carve::geom::plane<3> baseSurfacePlane;
+				carve::geom::vector<3> baseSurfacePosition;
+				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
+				if (baseSurface_pos)
 				{
-					placementConverter->getPlane(base_surface_pos.lock(), base_surface_plane, base_surface_position, UnitConvert()->getLengthInMeterFactor());
-					base_position_matrix = placementConverter->convertIfcAxis2Placement3D(base_surface_pos);
+					placementConverter->getPlane(baseSurface_pos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurface_pos);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
 				bool agreement = boxedHalfSpace->AgreementFlag;
 				if (!agreement)
 				{
-					base_surface_plane.negate();
+					baseSurfacePlane.negate();
 				}
 
 				EXPRESSReference<typename IfcEntityTypesT::IfcBoundingBox> bbox = boxedHalfSpace->Enclosure;
@@ -2388,7 +2400,7 @@ namespace OpenInfraPlatform
 				typename IfcEntityTypesT::IfcLengthMeasure	bbox_z_dim = bbox->ZDim;
 
 				carve::geom::vector<3> corner = placementConverter->convertIfcCartesianPoint(bbox->Corner);
-				carve::math::Matrix box_position_matrix = pos * base_position_matrix*carve::math::Matrix::TRANS(corner);
+				carve::math::Matrix box_position_matrix = pos * basePositionMatrix*carve::math::Matrix::TRANS(corner);
 
 				// else, its an unbounded half space solid, create simple box
 				std::shared_ptr<carve::input::PolyhedronData> polyhedron_data(new carve::input::PolyhedronData());
@@ -2422,39 +2434,40 @@ namespace OpenInfraPlatform
 					poly_point = box_position_matrix * poly_point;
 				}
 
-				return;
-			}*/
+				return;*/
+			}
 
 
-			/*// Complete this function + refactoring 
+			// Complete this function + refactoring 
 			void convertIfcPolygonalBoundedHalfSpace(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>& polygonalHalfSpace,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand,
-				double extrusion_depth
-			) const noexcept(false)
+				double extrusion_depth) const noexcept(false)
 			{
-				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> base_surface = polygonalHalfSpace->BaseSurface;
+				throw oip::UnhandledException(polygonalHalfSpace);
+				/*
+				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> baseSurface = polygonalHalfSpace->BaseSurface;
 
-				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elem_base_surface =
-					base_surface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
+				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
+					baseSurface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->Position;
-				carve::geom::plane<3> base_surface_plane;
-				carve::geom::vector<3> base_surface_position;
-				carve::math::Matrix base_position_matrix(carve::math::Matrix::IDENT());
-				if (base_surface_pos)
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurface_pos = elemBaseSurface->Position;
+				carve::geom::plane<3> baseSurfacePlane;
+				carve::geom::vector<3> baseSurfacePosition;
+				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
+				if (baseSurface_pos)
 				{
-					placementConverter->getPlane(base_surface_pos.lock(), base_surface_plane, base_surface_position, UnitConvert()->getLengthInMeterFactor());
-					base_position_matrix = placementConverter->convertIfcAxis2Placement3D(base_surface_pos);
+					placementConverter->getPlane(baseSurface_pos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurface_pos);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
 				bool agreement = polygonalHalfSpace->AgreementFlag;
 				if (!agreement)
 				{
-					base_surface_plane.negate();
+					baseSurfacePlane.negate();
 				}
 
 				carve::math::Matrix boundary_position_matrix(carve::math::Matrix::IDENT());
@@ -2502,10 +2515,10 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3>& poly_point = poly_data->points[i_base_point];//(*it_points);
 
 					// points below the base surface are projected into plane
-					double distance_to_base_surface = carve::geom::distance(base_surface_plane, poly_point);
+					double distance_to_baseSurface = carve::geom::distance(baseSurfacePlane, poly_point);
 					carve::geom::vector<3> v;
 					double t;
-					carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection(base_surface_plane, poly_point, poly_point + boundary_plane_normal, v, t);
+					carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection(baseSurfacePlane, poly_point, poly_point + boundary_plane_normal, v, t);
 					if (intersect > 0)
 					{
 						if (i_base_point < num_poly_boundary_points)
@@ -2541,8 +2554,8 @@ namespace OpenInfraPlatform
 				//	std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
 				//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(0.8f, 0.0f, 1.0f, 1.0f), true );
 				//	}
-
-			}*/
+				*/
+			}
 
 			bool computeCSG(carve::mesh::MeshSet<3>* op1,
 				carve::mesh::MeshSet<3>* op2,
