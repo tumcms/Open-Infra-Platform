@@ -257,15 +257,11 @@ bool OffReader::getNextUncommentedLine(std::ifstream& offFile, std::string& line
 {
 	while (std::getline(offFile, line))
 	{
-		for (int i = 0; i < line.size(); i++)
+		if (line[0] != '#')
 		{
-			if (line[i] != '#')
-			{
-				return true;
-			}
+			return true;
 		}
-	}
-		
+	}		
 	return false;
 }
 
