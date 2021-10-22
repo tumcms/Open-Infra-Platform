@@ -98,6 +98,10 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			{
 				readQuadFace(lineStream, indices, buwVertices, offVertices);
 			}
+			else if (faceType == 5)
+			{
+				readColorsFromFace(lineStream);
+			}
 			else
 			{
 				offFile.close();
@@ -203,19 +207,26 @@ void OffReader::readQuadFace(std::stringstream& lineStream,
 	buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
 
 	//read color
+	//std::vector<uint32_t> colorVector(3);
+	//lineStream >> colorVector[5] >> colorVector[6] >> colorVector[7];
+	//buw::Vector3f color1 (;
+//	buw::Vector3f color2 = offVertices.at(colorVector[6]);
+	//buw::Vector3f color3 = offVertices.at(colorVector[7]);
+
 	buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
 	buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	buw::Vector3f color3(0.0f, 0.0f, 1.0f); //default color; to be changed later on
 
 	//create vertices with position, color and normal and add to list of all vertices
 	//first triangle
 	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal1));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color2, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color3, normal1));
 
 	//second triangle
 	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color2, normal2));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color3, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal2));
 }
 
 buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
@@ -239,6 +250,15 @@ buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 	normal.normalize();
 
 	return buw::Vector3f(normal.x, normal.y, normal.z);
+
+	buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
+	{
+		std::vector<uint32_t> colorVector(3);
+		lineStream >> colorVector[5] >> colorVector[6] >> colorVector[7];
+
+		return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
+	}
+		
 }
 
 
