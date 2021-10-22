@@ -2233,8 +2233,8 @@ namespace OpenInfraPlatform
 				}
 
 				// check dimenstions of other operand
-				double extrusion_depth = HALF_SPACE_BOX_SIZE;
-				carve::geom::vector<3> other_operand_pos = baseSurfacePosition;
+				double extrusionDepth = HALF_SPACE_BOX_SIZE;
+				carve::geom::vector<3> otherOperandPos = baseSurfacePosition;
 				if (otherOperand)
 				{
 					carve::geom::aabb<3> aabb;
@@ -2258,52 +2258,40 @@ namespace OpenInfraPlatform
 						}
 					}
 					aabb.max();
-					carve::geom::vector<3>& aabb_extent = aabb.extent;
-					double max_extent = std::max(aabb_extent.x, std::max(aabb_extent.y, aabb_extent.z));
-					extrusion_depth = 2.0*max_extent;
-					other_operand_pos = aabb.pos;
+					carve::geom::vector<3>& aabbExtent = aabb.extent;
+					double maxExtent = std::max(aabbExtent.x, std::max(aabbExtent.y, aabbExtent.z));
+					extrusionDepth = 2.0 * maxExtent;
+					otherOperandPos = aabb.pos;
 				}
 
-
+				// ENTITY IfcPolygonalBoundedHalfSpace SUBTYPE OF IfcHalfSpaceSolid
 				if (halfSpaceSolid.template isOfType<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>())
 				{
-					EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace> polygonal_half_space =
-						halfSpaceSolid.template as<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>();
-					// ENTITY IfcPolygonalBoundedHalfSpace
-					//	SUBTYPE OF IfcHalfSpaceSolid;
-					//	Position	 :	IfcAxis2Placement3D;
-					//	PolygonalBoundary	 :	IfcBoundedCurve;
-
 					convertIfcPolygonalBoundedHalfSpace(
 						halfSpaceSolid.template as<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>(), 
-						pos, itemData, otherOperand, extrusion_depth);
+						pos, itemData, otherOperand, extrusionDepth);
 					return;
 				}
+				// else, its an unbounded half space solid, create simple box
 				else
 				{
-					// else, its an unbounded half space solid, create simple box
-
+					//TO DO: adjust var
 					int var = 0;
-
 					if (var == 0)
 					{
-						//std::shared_ptr<carve::input::PolylineSetData> surface_data;
-						std::shared_ptr<ItemData> surface_data(new ItemData());
-						faceConverter->convertIfcSurface(baseSurface, carve::math::Matrix::IDENT(), surface_data);
+						std::shared_ptr<ItemData> surfaceData(new ItemData());
+						faceConverter->convertIfcSurface(baseSurface, carve::math::Matrix::IDENT(), surfaceData);
 
-						std::vector<std::shared_ptr<carve::input::PolylineSetData>> surfacePolylineData = surface_data->polylines;
-
+						std::vector<std::shared_ptr<carve::input::PolylineSetData>> surfacePolylineData = surfaceData->polylines;
 						std::vector<std::vector<carve::geom::vector<3>>> baseSurfacePointVector;
 
 						for (auto polyline : surfacePolylineData) {
 							baseSurfacePointVector.push_back(polyline->points);
 						}
 
-						std::vector<carve::geom::vector<3>> baseSurface_points = baseSurfacePointVector[0];
+						std::vector<carve::geom::vector<3>> baseSurfacePoints = baseSurfacePointVector[0];
 
-						//std::vector<carve::geom::vector<3>> baseSurface_points = surfacePolylineData->points;
-
-						if (baseSurface_points.size() != 4)
+						if (baseSurfacePoints.size() != 4)
 						{
 							BLUE_LOG(warning) << "Invalid IfcHalfSpaceSolid.BaseSurface #" << baseSurface->getId();
 							return;
@@ -2312,15 +2300,15 @@ namespace OpenInfraPlatform
 						bool agreement = halfSpaceSolid->AgreementFlag;
 						if (!agreement)
 						{
-							std::reverse(baseSurface_points.begin(), baseSurface_points.end());
+							std::reverse(baseSurfacePoints.begin(), baseSurfacePoints.end());
 						}
-						carve::geom::vector<3>  baseSurface_normal = GeomUtils::computePolygonNormal(baseSurface_points);
+						carve::geom::vector<3>  baseSurfaceNormal = GeomUtils::computePolygonNormal(baseSurfacePoints);
 
-						carve::geom::vector<3>  half_space_extrusion_direction = -baseSurface_normal;
-						carve::geom::vector<3>  half_space_extrusionVector = half_space_extrusion_direction * HALF_SPACE_BOX_SIZE;
-						std::shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
-						itemData->closed_polyhedrons.push_back(half_space_box_data);
-						extrudeBox(baseSurface_points, half_space_extrusionVector, half_space_box_data);
+						carve::geom::vector<3>  halfSpaceExtrusionDirection = -baseSurfaceNormal;
+						carve::geom::vector<3>  halfSpaceExtrusionVector = halfSpaceExtrusionDirection * HALF_SPACE_BOX_SIZE;
+						std::shared_ptr<carve::input::PolyhedronData> halfSpaceBoxData(new carve::input::PolyhedronData());
+						itemData->closed_polyhedrons.push_back(halfSpaceBoxData);
+						extrudeBox(baseSurfacePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
 						for (std::vector<carve::geom::vector<3> >::iterator it_points = half_space_box_data->points.begin(); it_points != half_space_box_data->points.end(); ++it_points)
@@ -2332,28 +2320,28 @@ namespace OpenInfraPlatform
 
 					if (var == 1)
 					{
-						std::vector<carve::geom::vector<3> > box_base_points;
-						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(extrusion_depth, extrusion_depth, 0.0));
-						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusion_depth, extrusion_depth, 0.0));
-						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusion_depth, -extrusion_depth, 0.0));
-						box_base_points.push_back(basePositionMatrix*carve::geom::VECTOR(extrusion_depth, -extrusion_depth, 0.0));
+						std::vector<carve::geom::vector<3>> boxBasePoints;
+						boxBasePoints.push_back(basePositionMatrix*carve::geom::VECTOR(extrusionDepth, extrusionDepth, 0.0));
+						boxBasePoints.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusionDepth, extrusionDepth, 0.0));
+						boxBasePoints.push_back(basePositionMatrix*carve::geom::VECTOR(-extrusionDepth, -extrusionDepth, 0.0));
+						boxBasePoints.push_back(basePositionMatrix*carve::geom::VECTOR(extrusionDepth, -extrusionDepth, 0.0));
 
-						carve::geom::vector<3>  half_space_extrusion_direction = -baseSurfacePlane.N;
-						carve::geom::vector<3>  half_space_extrusionVector = half_space_extrusion_direction * extrusion_depth;
+						carve::geom::vector<3>  halfSpaceExtrusionDirection = -baseSurfacePlane.N;
+						carve::geom::vector<3>  halfSpaceExtrusionVector = halfSpaceExtrusionDirection * extrusionDepth;
 
-						carve::geom::vector<3>  box_base_normal = GeomUtils::computePolygonNormal(box_base_points);
-						double dot_normal = dot(box_base_normal, baseSurfacePlane.N);
+						carve::geom::vector<3>  boxBaseNormal = GeomUtils::computePolygonNormal(boxBasePoints);
+						double dot_normal = dot(boxBaseNormal, baseSurfacePlane.N);
 						if (dot_normal > 0)
 						{
-							std::reverse(box_base_points.begin(), box_base_points.end());
+							std::reverse(boxBasePoints.begin(), boxBasePoints.end());
 						}
 
-						std::shared_ptr<carve::input::PolyhedronData> half_space_box_data(new carve::input::PolyhedronData());
-						itemData->closed_polyhedrons.push_back(half_space_box_data);
-						extrudeBox(box_base_points, half_space_extrusionVector, half_space_box_data);
+						std::shared_ptr<carve::input::PolyhedronData> halfSpaceBoxData(new carve::input::PolyhedronData());
+						itemData->closed_polyhedrons.push_back(halfSpaceBoxData);
+						extrudeBox(boxBasePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
-						for (std::vector<carve::geom::vector<3> >::iterator it_points = half_space_box_data->points.begin(); it_points != half_space_box_data->points.end(); ++it_points)
+						for (std::vector<carve::geom::vector<3> >::iterator it_points = halfSpaceBoxData->points.begin(); it_points != halfSpaceBoxData->points.end(); ++it_points)
 						{
 							carve::geom::vector<3> & poly_point = (*it_points);
 							poly_point = pos * poly_point;
@@ -2444,7 +2432,7 @@ namespace OpenInfraPlatform
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData,
 				const std::shared_ptr<ItemData>& otherOperand,
-				double extrusion_depth) const noexcept(false)
+				double extrusionDepth) const noexcept(false)
 			{
 				throw oip::UnhandledException(polygonalHalfSpace);
 				/*
@@ -2491,13 +2479,13 @@ namespace OpenInfraPlatform
 
 				if (otherOperand)
 				{
-					extrusion_depth = extrusion_depth * 2.0;
+					extrusionDepth = extrusionDepth * 2.0;
 				}
 				std::stringstream err;
 				std::vector<std::vector<carve::geom::vector<2> > > paths;
 				paths.push_back(polygonal_boundary);
 				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
-				GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusion_depth)), true, poly_data, err);
+				GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusionDepth)), true, poly_data, err);
 
 				const int num_poly_boundary_points = polygonal_boundary.size();
 				if (poly_data->points.size() != 2 * num_poly_boundary_points)
@@ -2527,7 +2515,7 @@ namespace OpenInfraPlatform
 						}
 						else
 						{
-							poly_point = v + boundary_plane_normal * extrusion_depth;
+							poly_point = v + boundary_plane_normal * extrusionDepth;
 						}
 					}
 					else
