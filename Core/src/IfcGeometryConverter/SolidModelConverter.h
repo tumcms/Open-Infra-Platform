@@ -2293,9 +2293,9 @@ namespace OpenInfraPlatform
 
 						if (baseSurfacePoints.size() != 4)
 						{
-							BLUE_LOG(warning) << "Invalid IfcHalfSpaceSolid.BaseSurface #" << baseSurface->getId();
-							return;
+							throw oip::InconsistentModellingException(halfSpaceSolid, "Invalid BaseSurface selected!");
 						}
+
 						// If the agreement flag is TRUE, then the subset is the one the normal points away from
 						bool agreement = halfSpaceSolid->AgreementFlag;
 						if (!agreement)
@@ -2311,10 +2311,9 @@ namespace OpenInfraPlatform
 						extrudeBox(baseSurfacePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
-						for (std::vector<carve::geom::vector<3> >::iterator it_points = half_space_box_data->points.begin(); it_points != half_space_box_data->points.end(); ++it_points)
+						for ( auto point : halfSpaceBoxData->points)
 						{
-							carve::geom::vector<3> & poly_point = (*it_points);
-							poly_point = pos * poly_point;
+							carve::geom::vector<3> & polyPoint = pos * point;
 						}
 					}
 
@@ -2341,14 +2340,11 @@ namespace OpenInfraPlatform
 						extrudeBox(boxBasePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
-						for (std::vector<carve::geom::vector<3> >::iterator it_points = halfSpaceBoxData->points.begin(); it_points != halfSpaceBoxData->points.end(); ++it_points)
+						for (auto point : halfSpaceBoxData->points)
 						{
-							carve::geom::vector<3> & poly_point = (*it_points);
-							poly_point = pos * poly_point;
+							carve::geom::vector<3> & poly_point = pos * point;
 						}
 					}
-
-					return;
 				}
 			}
 
