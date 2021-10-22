@@ -431,8 +431,17 @@ namespace OpenInfraPlatform {
 						return;
 					}
 
+					// (12/*) IfcPlanarExtent SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcPlanarExtent>())
+					{
+						faceConverter->convertIfcPlanarExtent(
+							geomItem.as<typename IfcEntityTypesT::IfcPlanarExtent>(),
+							pos, itemData);
+						return;
+					}
+
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
-					// (12/*) IfcSegment SUBTYPE OF IfcGeometricRepresentationItem
+					// (13/*) IfcSegment SUBTYPE OF IfcGeometricRepresentationItem
 					if (geomItem.isOfType<typename IfcEntityTypesT::IfcSegment>())
 					{
 						std::vector<carve::geom::vector<3>> loops;
