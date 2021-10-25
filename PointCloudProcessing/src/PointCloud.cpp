@@ -66,8 +66,10 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 	if (filter) {
 		CC_FILE_ERROR err;
 		// Load the point cloud from file and store it temporarily.
-		std::shared_ptr<ccHObject> ccTempObject =
-		  std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
+		const QString file(filename);
+		//FileIOFilter::LoadFromFile()
+		auto tmp = FileIOFilter::LoadParameters();
+		const ccHObject* ccTempObject = FileIOFilter::LoadFromFile(file, tmp, FileIOFilter::FindBestFilterForExtension("BIN"), err);
 		if (err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
 			BLUE_LOG(trace) << "Number of child objects:" << QString::number(ccTempObject->getChildrenNumber()).toStdString() << ".";
 			for (size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
@@ -100,6 +102,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 		BLUE_LOG(trace) << "Finished processing child objects. Total size:" << QString::number(pointCloud->size()).toStdString() << ".";
 
 		// Delete our temporary parrent object.
+		delete ccTempObject;
 		ccTempObject = nullptr;
 	} else {
 		if (extension == "LAS") {
@@ -582,7 +585,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 
 	if(false) {
 		for(int i = 1; i < grid.size(); i++) {
-			auto &start = grid.begin();
+			auto start = grid.begin();
 			advance(start, i - 1);
 
 			auto axis = std::get<2>(grid_[*start]);
@@ -592,7 +595,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 
 #pragma omp parallel for
 			for(long ii = i; ii < grid.size(); ii++) {
-				auto &pair = grid.begin();
+				auto pair = grid.begin();
 				advance(pair, ii);
 
 				auto pos = std::get<1>(grid_[*pair]) - center;
@@ -682,7 +685,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 	for(int i = 0; i < grid.size(); i++) {
 
 		// Move to the correct position in the container
-		auto &cell = grid.begin();
+		auto cell = grid.begin();
 		advance(cell, i);
 
 		// Get the indices of all points in the cell
@@ -940,7 +943,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeGrid(buw::GridC
 		for(int i = 0; i < grid_.size(); i++) {
 
 			// Move the iterator to the cell processed by this thread.
-			auto &cell = grid_.begin();
+			auto cell = grid_.begin();
 			advance(cell, i);
 
 			//Number of points in the cell.

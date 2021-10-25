@@ -1386,7 +1386,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_cli
 		desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
 		desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
 
-		pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
+		std::vector<std::pair<size_t, size_t>> pairVector;
+		pointCloud->computePairs(desc, pairVector, callback_);
 		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
 	}
 	else {

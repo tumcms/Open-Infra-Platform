@@ -31,7 +31,7 @@ message(STATUS "Please refer to ./Documentation/markdown/CMakeOptions.md for doc
 #-------------------------------------------------------------------------------------
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
-set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC OFF)
 
 # Changed C++ standard to 14 in revision 534
 set(CMAKE_DEBUG_POSTFIX "d")
