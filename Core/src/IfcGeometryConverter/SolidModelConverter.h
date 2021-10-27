@@ -2194,8 +2194,17 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand
 			) const noexcept(false)
 			{
-				// TODO: complete this function + refactoring 
-				
+				if (halfSpaceSolid.expired())
+					throw oip::ReferenceExpiredException(halfSpaceSolid);
+
+				if (halfSpaceSolid.template isOfType<typename IfcEntityTypesT::IfcBoxedHalfSpace>())
+				{
+					convertIfcBoxedHalfSpace(
+						halfSpaceSolid.template as<typename IfcEntityTypesT::IfcBoxedHalfSpace>(),
+						pos, itemData);
+					return;
+				}
+			
 				//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> baseSurface = halfSpaceSolid->BaseSurface;
 
@@ -2222,14 +2231,6 @@ namespace OpenInfraPlatform
 				if (!halfSpaceSolid->AgreementFlag)
 				{
 					baseSurfacePlane.negate();
-				}
-
-				if (halfSpaceSolid.template isOfType<typename IfcEntityTypesT::IfcBoxedHalfSpace>())
-				{
-					convertIfcBoxedHalfSpace(
-						halfSpaceSolid.template as<typename IfcEntityTypesT::IfcBoxedHalfSpace>(),
-						pos, itemData);
-					return;
 				}
 
 				// check dimenstions of other operand
@@ -2297,8 +2298,7 @@ namespace OpenInfraPlatform
 						}
 
 						// If the agreement flag is TRUE, then the subset is the one the normal points away from
-						bool agreement = halfSpaceSolid->AgreementFlag;
-						if (!agreement)
+						if (!halfSpaceSolid->AgreementFlag)
 						{
 							std::reverse(baseSurfacePoints.begin(), baseSurfacePoints.end());
 						}
@@ -2355,24 +2355,24 @@ namespace OpenInfraPlatform
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData) const noexcept(false)
 			{
-				throw oip::UnhandledException(boxedHalfSpace);
-				/*
+				if (boxedHalfSpace.expired())
+					throw oip::ReferenceExpiredException(boxedHalfSpace);
+
 				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
 					boxedHalfSpace.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurface_pos = elemBaseSurface->Position;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurfacePos = elemBaseSurface->Position;
 				carve::geom::plane<3> baseSurfacePlane;
 				carve::geom::vector<3> baseSurfacePosition;
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
-				if (baseSurface_pos)
+				if (elemBaseSurface->Position)
 				{
-					placementConverter->getPlane(baseSurface_pos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
-					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurface_pos);
+					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
-				bool agreement = boxedHalfSpace->AgreementFlag;
-				if (!agreement)
+				if (!boxedHalfSpace->AgreementFlag)
 				{
 					baseSurfacePlane.negate();
 				}
@@ -2412,13 +2412,10 @@ namespace OpenInfraPlatform
 
 				itemData->closed_polyhedrons.push_back(polyhedron_data);
 				// apply object coordinate system
-				for (std::vector<carve::geom::vector<3>>::iterator it_points = polyhedron_data->points.begin(); it_points != polyhedron_data->points.end(); ++it_points)
+				for ( auto point : polyhedron_data->points)
 				{
-					carve::geom::vector<3> & poly_point = (*it_points);
-					poly_point = box_position_matrix * poly_point;
+					 carve::geom::vector<3> poly_point = box_position_matrix * point;
 				}
-
-				return;*/
 			}
 
 
@@ -2437,14 +2434,14 @@ namespace OpenInfraPlatform
 				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
 					baseSurface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurface_pos = elemBaseSurface->Position;
+				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurfacePos = elemBaseSurface->Position;
 				carve::geom::plane<3> baseSurfacePlane;
 				carve::geom::vector<3> baseSurfacePosition;
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
-				if (baseSurface_pos)
+				if (baseSurfacePos)
 				{
-					placementConverter->getPlane(baseSurface_pos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
-					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurface_pos);
+					placementConverter->getPlane(baseSurfacePos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurfacePos);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
