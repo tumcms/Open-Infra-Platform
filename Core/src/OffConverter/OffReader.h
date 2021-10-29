@@ -108,6 +108,18 @@ public:
 	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
 		const buw::Vector3f& vertex2,
 		const buw::Vector3f& vertex3);
+
+	/**
+	* \brief read color from the line
+	*
+	* This function read color vector from the text line
+	*
+	* \param[in] vertex1 The first vertex of the triangle.
+	* \return The vector wich includes the numbers of RGB color
+	*/
+
+	static buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream);
+
 };
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 

@@ -98,6 +98,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			{
 				readQuadFace(lineStream, indices, buwVertices, offVertices);
 			}
+			//read color
 			else if (faceType == 5)
 			{
 				readColorsFromFace(lineStream);
@@ -167,12 +168,15 @@ void OffReader::readTriangleFace(std::stringstream& lineStream,
 	buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
 
 	//read color
-	buw::Vector3f color(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	buw::Vector3f color1 = OffReader::readColorsFromFace(lineStream);
+	buw::Vector3f color2 = OffReader::readColorsFromFace(lineStream);
+	buw::Vector3f color3 = OffReader::readColorsFromFace(lineStream);
+	//buw::Vector3f color(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
 
 	//create vertices with position, color and normal and add to list of all vertices
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color2, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color3, normal));
 }
 
 void OffReader::readQuadFace(std::stringstream& lineStream, 
@@ -206,16 +210,14 @@ void OffReader::readQuadFace(std::stringstream& lineStream,
 	buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
 	buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
 
-	//read color
-	//std::vector<uint32_t> colorVector(3);
-	//lineStream >> colorVector[5] >> colorVector[6] >> colorVector[7];
-	//buw::Vector3f color1 (;
-//	buw::Vector3f color2 = offVertices.at(colorVector[6]);
-	//buw::Vector3f color3 = offVertices.at(colorVector[7]);
+	//read colors
+	//buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	//buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	//buw::Vector3f color3(0.0f, 0.0f, 1.0f); //default color; to be changed later on
 
-	buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
-	buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
-	buw::Vector3f color3(0.0f, 0.0f, 1.0f); //default color; to be changed later on
+	buw::Vector3f color1 = OffReader::readColorsFromFace(lineStream);
+	buw::Vector3f color2 = OffReader::readColorsFromFace(lineStream);
+	buw::Vector3f color3 = OffReader::readColorsFromFace(lineStream);
 
 	//create vertices with position, color and normal and add to list of all vertices
 	//first triangle
@@ -249,16 +251,23 @@ buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 	carve::geom::vector<3> normal = carve::geom::cross(vector1 - vector2, vector2 - vector3);
 	normal.normalize();
 
-	return buw::Vector3f(normal.x, normal.y, normal.z);
+	return buw::Vector3f(normal.x, normal.y, normal.z);	
+}
+buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
+{
+	carve::geom::vector<3> colorVector;
+	lineStream >> colorVector[5] >> colorVector[6] >> colorVector[7];
+	//RGB Red #FF0000 255 000 000 -> 1.0f, 0.0f, 0.0f
+	//RGB Green #00FF00 000 255 000 -> 0.0f, 1.0f, 0.0f
+	//RGB Blue #0000FF 000 000 255-> 0.0f, 0.0f, 1.0f
+	if (colorVector[5] == 255)//red
+		colorVector.x = 1.0f;
+	else if (colorVector[6] ==255)//green
+		colorVector.y = 1.0f;
+	else if (colorVector[7] == 255)//blue
+		colorVector.z = 1.0f;
 
-	buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
-	{
-		std::vector<uint32_t> colorVector(3);
-		lineStream >> colorVector[5] >> colorVector[6] >> colorVector[7];
-
-		return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
-	}
-		
+	return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
 }
 
 
