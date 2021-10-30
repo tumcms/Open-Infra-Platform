@@ -31,7 +31,7 @@ message(STATUS "Please refer to ./Documentation/markdown/CMakeOptions.md for doc
 #-------------------------------------------------------------------------------------
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
-set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTOMOC ON)
 
 # Changed C++ standard to 14 in revision 534
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -400,7 +400,7 @@ file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Reso
 # Currently not included.
 #file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
 #file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
-# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+#file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
 
 
 # Does currently not work. 
@@ -466,7 +466,7 @@ source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterfa
 # Currently not included.
 #source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
 #source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
-# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+#source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
