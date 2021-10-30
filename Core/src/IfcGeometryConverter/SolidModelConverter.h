@@ -2427,88 +2427,87 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand,
 				double extrusionDepth) const noexcept(false)
 			{
-				throw oip::UnhandledException(polygonalHalfSpace);
-				/*
+				if (polygonalHalfSpace.expired())
+					throw oip::ReferenceExpiredException(polygonalHalfSpace);
+				
 				EXPRESSReference<typename IfcEntityTypesT::IfcSurface> baseSurface = polygonalHalfSpace->BaseSurface;
 
 				EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface> elemBaseSurface =
 					baseSurface.template as <typename IfcEntityTypesT::IfcElementarySurface>();
 
-				oip::EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& baseSurfacePos = elemBaseSurface->Position;
 				carve::geom::plane<3> baseSurfacePlane;
 				carve::geom::vector<3> baseSurfacePosition;
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
-				if (baseSurfacePos)
+				if (elemBaseSurface->Position)
 				{
-					placementConverter->getPlane(baseSurfacePos.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
-					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(baseSurfacePos);
+					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				}
 
 				// If the agreement flag is TRUE, then the subset is the one the normal points away from
-				bool agreement = polygonalHalfSpace->AgreementFlag;
-				if (!agreement)
+				if (!polygonalHalfSpace->AgreementFlag)
 				{
 					baseSurfacePlane.negate();
 				}
 
-				carve::math::Matrix boundary_position_matrix(carve::math::Matrix::IDENT());
-				carve::geom::vector<3> boundary_plane_normal(carve::geom::VECTOR(0, 0, 1));
-				carve::geom::vector<3> boundary_position;
+				carve::math::Matrix boundaryPositionMatrix(carve::math::Matrix::IDENT());
+				carve::geom::vector<3> boundaryPlaneNormal(carve::geom::VECTOR(0, 0, 1));
+				carve::geom::vector<3> boundaryPosition;
 
 				if (polygonalHalfSpace->Position)
 				{
-					boundary_position_matrix = placementConverter->convertIfcAxis2Placement3D(polygonalHalfSpace->Position);
-					boundary_plane_normal = carve::geom::VECTOR(boundary_position_matrix._31, boundary_position_matrix._32, boundary_position_matrix._33);
-					boundary_position = carve::geom::VECTOR(boundary_position_matrix._41, boundary_position_matrix._42, boundary_position_matrix._43);
+					boundaryPositionMatrix = placementConverter->convertIfcAxis2Placement3D(polygonalHalfSpace->Position);
+					boundaryPlaneNormal = carve::geom::VECTOR(boundaryPositionMatrix._31, boundaryPositionMatrix._32, boundaryPositionMatrix._33);
+					boundaryPosition = carve::geom::VECTOR(boundaryPositionMatrix._41, boundaryPositionMatrix._42, boundaryPositionMatrix._43);
 				}
 
 				// PolygonalBoundary is given in 2D
-				std::vector<carve::geom::vector<2>> polygonal_boundary;
-				std::vector<carve::geom::vector<2>> segmentStartPoints_2d;
-				std::shared_ptr<typename IfcEntityTypesT::IfcCurve> bounded_curve = polygonalHalfSpace->PolygonalBoundary.lock();
-				curveConverter->convertIfcCurve2D(bounded_curve, polygonal_boundary, segmentStartPoints_2d);
-				ProfileConverterT<IfcEntityTypesT>::deleteLastPointIfEqualToFirst(polygonal_boundary);
-				ProfileConverterT<IfcEntityTypesT>::simplifyPath(polygonal_boundary);
+				std::vector<carve::geom::vector<2>> polygonalBoundary;
+				std::vector<carve::geom::vector<2>> segmentStartPoints2D;
+				curveConverter->convertIfcCurve2D(polygonalHalfSpace->PolygonalBoundary.lock(), polygonalBoundary, segmentStartPoints2D);
+				ProfileConverterT<IfcEntityTypesT>::deleteLastPointIfEqualToFirst(polygonalBoundary);
+				ProfileConverterT<IfcEntityTypesT>::simplifyPath(polygonalBoundary);
 
 				if (otherOperand)
 				{
 					extrusionDepth = extrusionDepth * 2.0;
 				}
-				std::stringstream err;
-				std::vector<std::vector<carve::geom::vector<2> > > paths;
-				paths.push_back(polygonal_boundary);
-				std::shared_ptr<carve::input::PolyhedronData> poly_data(new carve::input::PolyhedronData);
-				GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusionDepth)), true, poly_data, err);
 
-				const int num_poly_boundary_points = polygonal_boundary.size();
-				if (poly_data->points.size() != 2 * num_poly_boundary_points)
+				std::vector<std::vector<carve::geom::vector<2>>> paths;
+				paths.push_back(polygonalBoundary);
+				std::shared_ptr<carve::input::PolyhedronData> polyData(new carve::input::PolyhedronData);
+				GeomUtils::extrude(paths, carve::geom::vector<3>(carve::geom::VECTOR(0, 0, extrusionDepth)), true, polyData);
+
+				if (polyData->points.size() != 2 * polygonalBoundary.size())
 				{
-					BLUE_LOG(error) << "Problems in extrude: poly_data->points.size() != 2*polygonal_boundary.size()";
-					return;
+					throw oip::InconsistentGeometryException(polygonalHalfSpace, 
+						"Problems in extrude : polyData->points.size() != 2 * polygonalBoundary.size()");
 				}
 
 				// apply position of PolygonalBoundary
-				std::transform(poly_data->points.begin(), poly_data->points.end(), poly_data->points.begin(), [boundary_position_matrix](carve::geom3d::Vector& vertex)->carve::geom3d::Vector { return boundary_position_matrix * vertex; });
+				std::transform(polyData->points.begin(), polyData->points.end(), polyData->points.begin(), 
+					[boundaryPositionMatrix](carve::geom3d::Vector& vertex)->carve::geom3d::Vector
+					{ return boundaryPositionMatrix * vertex; });
 
 				// project to base surface
-				for (int i_base_point = 0; i_base_point < poly_data->points.size(); ++i_base_point)
+				int iBasePoint = 0;
+				for (auto polyPoint : polyData->points)
 				{
-					carve::geom::vector<3>& poly_point = poly_data->points[i_base_point];//(*it_points);
-
+					++iBasePoint;
 					// points below the base surface are projected into plane
-					double distance_to_baseSurface = carve::geom::distance(baseSurfacePlane, poly_point);
-					carve::geom::vector<3> v;
+					double distanceToBaseSurface = carve::geom::distance(baseSurfacePlane, polyPoint);
+					carve::geom::vector<3> intersectionPoint;
 					double t;
-					carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection(baseSurfacePlane, poly_point, poly_point + boundary_plane_normal, v, t);
+					carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection(baseSurfacePlane, polyPoint, polyPoint + boundaryPlaneNormal, intersectionPoint, t);
 					if (intersect > 0)
 					{
-						if (i_base_point < num_poly_boundary_points)
+						if (iBasePoint < polygonalBoundary.size())
 						{
-							poly_point = v;
+							polyPoint = intersectionPoint;
 						}
 						else
 						{
-							poly_point = v + boundary_plane_normal * extrusionDepth;
+							polyPoint = intersectionPoint + boundaryPlaneNormal * extrusionDepth;
 						}
 					}
 					else
@@ -2518,16 +2517,15 @@ namespace OpenInfraPlatform
 				}
 
 				// apply object coordinate system
-				for (std::vector<carve::geom::vector<3> >::iterator it_points = poly_data->points.begin(); it_points != poly_data->points.end(); ++it_points)
-				{
-					carve::geom::vector<3>& poly_point = (*it_points);
-					poly_point = pos * poly_point;
+				for (auto point : polyData->points)
+					{
+					carve::geom::vector<3>& poly_point = pos * point;
 				}
 
-				itemData->closed_polyhedrons.push_back(poly_data);
+				itemData->closed_polyhedrons.push_back(polyData);
 
 
-				//std::shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data->createMesh(carve::input::opts()) );
+				//std::shared_ptr<carve::mesh::MeshSet<3> > meshset( polyData->createMesh(carve::input::opts()) );
 				//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(1.0f, 0.5f, 0.0f, 1.0f), true );
 
 				//	for( int ii=0; ii<otherOperand->meshsets.size(); ++ii )
@@ -2535,7 +2533,7 @@ namespace OpenInfraPlatform
 				//	std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
 				//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(0.8f, 0.0f, 1.0f, 1.0f), true );
 				//	}
-				*/
+				
 			}
 
 			bool computeCSG(carve::mesh::MeshSet<3>* op1,
