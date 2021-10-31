@@ -98,11 +98,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			{
 				readQuadFace(lineStream, indices, buwVertices, offVertices);
 			}
-			//read color
-			else if (nrOfFaces-1)
-			{
-				readColorsFromFace(lineStream);
-			}
+			
 			else
 			{
 				offFile.close();
@@ -261,12 +257,12 @@ buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
 	//RGB Red #FF0000 255 000 000 -> 1.0f, 0.0f, 0.0f
 	//RGB Green #00FF00 000 255 000 -> 0.0f, 1.0f, 0.0f
 	//RGB Blue #0000FF 000 000 255-> 0.0f, 0.0f, 1.0f
-	if (colorVector[5] == 255)//red
-		colorVector.x = 1.0f;
-	else if (colorVector[6] ==255)//green
-		colorVector.y = 1.0f;
-	else if (colorVector[7] == 255)//blue
-		colorVector.z = 1.0f;
+	//if (colorVector[0] == 255)//red
+	//	colorVector.x = 1.0f;
+	//else if (colorVector[1] ==255)//green
+	//	colorVector.y = 1.0f;
+	//else if (colorVector[2] == 255)//blue
+	//	colorVector.z = 1.0f;
 
 	return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
 }
