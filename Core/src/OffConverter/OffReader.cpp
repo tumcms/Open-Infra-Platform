@@ -165,14 +165,9 @@ void OffReader::readTriangleFace(std::stringstream& lineStream,
 
 	//read color
 	buw::Vector3f color = OffReader::readColorsFromFace(lineStream);
-	//buw::Vector3f color2 = OffReader::readColorsFromFace(lineStream);
-	//buw::Vector3f color3 = OffReader::readColorsFromFace(lineStream);
-	//buw::Vector3f color(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
 
 	//create vertices with position, color and normal and add to list of all vertices
 	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
-	//vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color2, normal));
-	//vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color3, normal));
 }
 
 void OffReader::readQuadFace(std::stringstream& lineStream, 
@@ -207,13 +202,7 @@ void OffReader::readQuadFace(std::stringstream& lineStream,
 	buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
 
 	//read colors
-	//buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
-	//buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
-	//buw::Vector3f color3(0.0f, 0.0f, 1.0f); //default color; to be changed later on
-
 	buw::Vector3f color = OffReader::readColorsFromFace(lineStream);
-	//buw::Vector3f color2 = OffReader::readColorsFromFace(lineStream);
-	//buw::Vector3f color3 = OffReader::readColorsFromFace(lineStream);
 
 	//create vertices with position, color and normal and add to list of all vertices
 	//first triangle
@@ -253,16 +242,6 @@ buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
 {
 	carve::geom::vector<3> colorVector;
 	lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
-	//this code read now only 3 colors -> to be change later, it must support other RGB colors
-	//RGB Red #FF0000 255 000 000 -> 1.0f, 0.0f, 0.0f
-	//RGB Green #00FF00 000 255 000 -> 0.0f, 1.0f, 0.0f
-	//RGB Blue #0000FF 000 000 255-> 0.0f, 0.0f, 1.0f
-	//if (colorVector[0] == 255)//red
-	//	colorVector.x = 1.0f;
-	//else if (colorVector[1] ==255)//green
-	//	colorVector.y = 1.0f;
-	//else if (colorVector[2] == 255)//blue
-	//	colorVector.z = 1.0f;
 
 	return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
 }

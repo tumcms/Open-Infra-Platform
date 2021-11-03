@@ -112,7 +112,7 @@ public:
 	/**
 	* \brief read color from the line
 	*
-	* This function read color vector from the text line
+	* This function read color from the text line
 	*
 	* \param[in] lineStream The line stream obtained from file reading (getline).
 	* \return The vector wich includes the numbers of RGB color
