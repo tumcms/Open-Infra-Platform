@@ -116,9 +116,9 @@ public:
 	*
 	* \param[in] offFile The .off file all the information is red from.
 	* \param[in] line The line obtained from file reading (getline).
-	* \return true if the line uncontanes comment or false if the line contanes comment
+	* \return next uncommented line
 	*/
-	static bool getNextUncommentedLine(std::ifstream& offFile, std::string& line);
+	static std::string getNextUncommentedLine(std::ifstream& offFile, std::string& line);
 };
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 
