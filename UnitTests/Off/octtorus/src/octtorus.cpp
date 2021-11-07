@@ -58,9 +58,9 @@ TEST_F(Octtorus, AllEdgesAndFacesRed)
 	// check for the number of vertices 
 	// does not coincide with the number of vertices mentioned in the off file since some vertices are
 	// stored once for every triangle they are part of
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(192));
 	// check for the number of indices (see comment for vertices)
-	EXPECT_THAT(model->geometry().indices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().indices.size(), Eq(192));
 }
 
 TEST_F(Octtorus, ImageIsSaved)

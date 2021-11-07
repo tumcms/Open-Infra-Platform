@@ -106,12 +106,12 @@ TEST_F(Boxcube, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    buw::storeImage(testPath("boxcube_front.png").string(), image_front);
-    buw::storeImage(testPath("boxcube_top.png").string(), image_top);
-    buw::storeImage(testPath("boxcube_bottom.png").string(), image_bottom);
-    buw::storeImage(testPath("boxcube_left.png").string(), image_left);
-    buw::storeImage(testPath("boxcube_right.png").string(), image_right);
-    buw::storeImage(testPath("boxcube_back.png").string(), image_back);
+    //buw::storeImage(testPath("boxcube_front.png").string(), image_front);
+    //buw::storeImage(testPath("boxcube_top.png").string(), image_top);
+    //buw::storeImage(testPath("boxcube_bottom.png").string(), image_bottom);
+    //buw::storeImage(testPath("boxcube_left.png").string(), image_left);
+    //buw::storeImage(testPath("boxcube_right.png").string(), image_right);
+    //buw::storeImage(testPath("boxcube_back.png").string(), image_back);
 
 
 	// Assert
@@ -162,14 +162,14 @@ TEST_F(Boxcube, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	
-    buw::storeImage(testPath("boxcube_front_left_bottom.png").string(), image_front_left_bottom);
-    buw::storeImage(testPath("boxcube_front_right_bottom.png").string(), image_front_right_bottom);
-    buw::storeImage(testPath("boxcube_top_left_front.png").string(), image_top_left_front);
-    buw::storeImage(testPath("boxcube_top_front_right.png").string(), image_top_front_right);
-    buw::storeImage(testPath("boxcube_top_left_back.png").string(), image_top_left_back);
-    buw::storeImage(testPath("boxcube_top_right_back.png").string(), image_top_right_back);
-    buw::storeImage(testPath("boxcube_back_left_bottom.png").string(), image_back_left_bottom);
-    buw::storeImage(testPath("boxcube_right_bottom_back.png").string(), image_right_bottom_back);
+   // buw::storeImage(testPath("boxcube_front_left_bottom.png").string(), image_front_left_bottom);
+   // buw::storeImage(testPath("boxcube_front_right_bottom.png").string(), image_front_right_bottom);
+   // buw::storeImage(testPath("boxcube_top_left_front.png").string(), image_top_left_front);
+   // buw::storeImage(testPath("boxcube_top_front_right.png").string(), image_top_front_right);
+   // buw::storeImage(testPath("boxcube_top_left_back.png").string(), image_top_left_back);
+   // buw::storeImage(testPath("boxcube_top_right_back.png").string(), image_top_right_back);
+   // buw::storeImage(testPath("boxcube_back_left_bottom.png").string(), image_back_left_bottom);
+   // buw::storeImage(testPath("boxcube_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert

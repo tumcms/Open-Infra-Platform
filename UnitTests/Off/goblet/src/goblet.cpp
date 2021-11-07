@@ -106,12 +106,12 @@ TEST_F(Goblet, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    //buw::storeImage(testPath("goblet_front.png").string(), image_front);
-    //buw::storeImage(testPath("goblet_top.png").string(), image_top);
-    //buw::storeImage(testPath("goblet_bottom.png").string(), image_bottom);
-    //buw::storeImage(testPath("goblet_left.png").string(), image_left);
-    //buw::storeImage(testPath("goblet_right.png").string(), image_right);
-    //buw::storeImage(testPath("goblet_back.png").string(), image_back);
+   // buw::storeImage(testPath("goblet_front.png").string(), image_front);
+   // buw::storeImage(testPath("goblet_top.png").string(), image_top);
+   // buw::storeImage(testPath("goblet_bottom.png").string(), image_bottom);
+   // buw::storeImage(testPath("goblet_left.png").string(), image_left);
+   // buw::storeImage(testPath("goblet_right.png").string(), image_right);
+   // buw::storeImage(testPath("goblet_back.png").string(), image_back);
 
 
 	// Assert

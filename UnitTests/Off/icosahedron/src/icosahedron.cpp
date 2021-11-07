@@ -58,9 +58,9 @@ TEST_F(Icosahedron, AllEdgesAndFacesRed)
 	// check for the number of vertices 
 	// does not coincide with the number of vertices mentioned in the off file since some vertices are
 	// stored once for every triangle they are part of
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(60));
 	// check for the number of indices (see comment for vertices)
-	EXPECT_THAT(model->geometry().indices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().indices.size(), Eq(60));
 }
 
 TEST_F(Icosahedron, ImageIsSaved)
@@ -162,14 +162,14 @@ TEST_F(Icosahedron, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	
-    //buw::storeImage(testPath("icosahedron_front_left_bottom.png").string(), image_front_left_bottom);
-    //buw::storeImage(testPath("icosahedron_front_right_bottom.png").string(), image_front_right_bottom);
-    //buw::storeImage(testPath("icosahedron_top_left_front.png").string(), image_top_left_front);
-    //buw::storeImage(testPath("icosahedron_top_front_right.png").string(), image_top_front_right);
-    //buw::storeImage(testPath("icosahedron_top_left_back.png").string(), image_top_left_back);
-    //buw::storeImage(testPath("icosahedron_top_right_back.png").string(), image_top_right_back);
-    //buw::storeImage(testPath("icosahedron_back_left_bottom.png").string(), image_back_left_bottom);
-    //buw::storeImage(testPath("icosahedron_right_bottom_back.png").string(), image_right_bottom_back);
+   // buw::storeImage(testPath("icosahedron_front_left_bottom.png").string(), image_front_left_bottom);
+   // buw::storeImage(testPath("icosahedron_front_right_bottom.png").string(), image_front_right_bottom);
+   // buw::storeImage(testPath("icosahedron_top_left_front.png").string(), image_top_left_front);
+   // buw::storeImage(testPath("icosahedron_top_front_right.png").string(), image_top_front_right);
+   // buw::storeImage(testPath("icosahedron_top_left_back.png").string(), image_top_left_back);
+   // buw::storeImage(testPath("icosahedron_top_right_back.png").string(), image_top_right_back);
+   // buw::storeImage(testPath("icosahedron_back_left_bottom.png").string(), image_back_left_bottom);
+   // buw::storeImage(testPath("icosahedron_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert

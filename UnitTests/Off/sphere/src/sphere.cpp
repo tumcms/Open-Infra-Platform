@@ -58,9 +58,9 @@ TEST_F(Sphere, AllEdgesAndFacesRed)
 	// check for the number of vertices 
 	// does not coincide with the number of vertices mentioned in the off file since some vertices are
 	// stored once for every triangle they are part of
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(1536));
 	// check for the number of indices (see comment for vertices)
-	EXPECT_THAT(model->geometry().indices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().indices.size(), Eq(1536));
 }
 
 TEST_F(Sphere, ImageIsSaved)
@@ -161,16 +161,16 @@ TEST_F(Sphere, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
-    //buw::storeImage(testPath("sphere_front_left_bottom.png").string(), image_front_left_bottom);
-    //buw::storeImage(testPath("sphere_front_right_bottom.png").string(), image_front_right_bottom);
-    //buw::storeImage(testPath("sphere_top_left_front.png").string(), image_top_left_front);
-    //buw::storeImage(testPath("sphere_top_front_right.png").string(), image_top_front_right);
-    //buw::storeImage(testPath("sphere_top_left_back.png").string(), image_top_left_back);
-    //buw::storeImage(testPath("sphere_top_right_back.png").string(), image_top_right_back);
-    //buw::storeImage(testPath("sphere_back_left_bottom.png").string(), image_back_left_bottom);
-    //buw::storeImage(testPath("sphere_right_bottom_back.png").string(), image_right_bottom_back);
-
+	/*
+    buw::storeImage(testPath("sphere_front_left_bottom.png").string(), image_front_left_bottom);
+    buw::storeImage(testPath("sphere_front_right_bottom.png").string(), image_front_right_bottom);
+    buw::storeImage(testPath("sphere_top_left_front.png").string(), image_top_left_front);
+    buw::storeImage(testPath("sphere_top_front_right.png").string(), image_top_front_right);
+    buw::storeImage(testPath("sphere_top_left_back.png").string(), image_top_left_back);
+    buw::storeImage(testPath("sphere_top_right_back.png").string(), image_top_right_back);
+    buw::storeImage(testPath("sphere_back_left_bottom.png").string(), image_back_left_bottom);
+    buw::storeImage(testPath("sphere_right_bottom_back.png").string(), image_right_bottom_back);
+*/
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);

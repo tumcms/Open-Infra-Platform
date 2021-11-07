@@ -58,9 +58,9 @@ TEST_F(Octahedron, AllEdgesAndFacesRed)
 	// check for the number of vertices 
 	// does not coincide with the number of vertices mentioned in the off file since some vertices are
 	// stored once for every triangle they are part of
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().vertices.size(), Eq(24));
 	// check for the number of indices (see comment for vertices)
-	EXPECT_THAT(model->geometry().indices.size(), Eq(3000));
+	EXPECT_THAT(model->geometry().indices.size(), Eq(24));
 }
 
 TEST_F(Octahedron, ImageIsSaved)
@@ -106,12 +106,12 @@ TEST_F(Octahedron, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    //buw::storeImage(testPath("octahedron_front.png").string(), image_front);
-    //buw::storeImage(testPath("octahedron_top.png").string(), image_top);
-    //buw::storeImage(testPath("octahedron_bottom.png").string(), image_bottom);
-    //buw::storeImage(testPath("octahedron_left.png").string(), image_left);
-    //buw::storeImage(testPath("octahedron_right.png").string(), image_right);
-    //buw::storeImage(testPath("octahedron_back.png").string(), image_back);
+   // buw::storeImage(testPath("octahedron_front.png").string(), image_front);
+   // buw::storeImage(testPath("octahedron_top.png").string(), image_top);
+   // buw::storeImage(testPath("octahedron_bottom.png").string(), image_bottom);
+   // buw::storeImage(testPath("octahedron_left.png").string(), image_left);
+   // buw::storeImage(testPath("octahedron_right.png").string(), image_right);
+   // buw::storeImage(testPath("octahedron_back.png").string(), image_back);
 
 
 	// Assert
