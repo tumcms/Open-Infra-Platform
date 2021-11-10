@@ -168,6 +168,8 @@ void OffReader::readTriangleFace(std::stringstream& lineStream,
 
 	//create vertices with position, color and normal and add to list of all vertices
 	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal));
 }
 
 void OffReader::readQuadFace(std::stringstream& lineStream, 
@@ -243,7 +245,11 @@ buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
 	carve::geom::vector<3> colorVector;
 	lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
 
-	return buw::Vector3f(colorVector.x, colorVector.y, colorVector.z);
+	if (!colorVector.exactlyZero())
+		return buw::Vector3f(colorVector.x/255.0f, colorVector.y/255.0f, colorVector.z/255.0f);
+	else
+		return buw::Vector3f(0.0f, 0.0f, 1.0f); // default color - blue
+	
 }
 
 
