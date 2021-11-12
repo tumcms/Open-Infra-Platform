@@ -52,7 +52,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		while (std::getline(offFile, line) && line != "OFF");
 
 		//read number of elements
-		getline(offFile, line);
+		line = OffReader::getNextUncommentedLine(offFile, line);
 		std::vector<int>	lineData;
 		std::stringstream	lineStream(line);
 
@@ -81,7 +81,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		for (int i = 0; i < nrOfFaces; i++)
 		{
 			//which type of face (triangle, quad, ...)
-			std::getline(offFile, line);
+			line = OffReader::getNextUncommentedLine(offFile, line);
 			std::vector<uint32_t> faceVector;
 			std::stringstream lineStream(line);
 
@@ -130,7 +130,7 @@ std::vector<buw::Vector3f> OffReader::readVertices(const int nrOfVertices,
 	std::vector<buw::Vector3f> allVertices;
 	for (int i = 0; i < nrOfVertices; i++)
 	{
-		std::getline(offFile, line);
+		line = OffReader::getNextUncommentedLine(offFile, line);
 		buw::Vector3f position;
 		std::stringstream lineStream(line);
 
@@ -241,5 +241,16 @@ buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 	return buw::Vector3f(normal.x, normal.y, normal.z);
 }
 
+std::string OffReader::getNextUncommentedLine(std::ifstream& offFile, std::string& line)
+{
+	while (std::getline(offFile, line))
+	{
+		if (line[0] != '#')
+		{
+			return line;
+		}
+	}
+	throw oip::OffReaderException("Error in Off file.");
+}
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END

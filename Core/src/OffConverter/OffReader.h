@@ -108,6 +108,17 @@ public:
 	static buw::Vector3f calcNormal(const buw::Vector3f& vertex1,
 		const buw::Vector3f& vertex2,
 		const buw::Vector3f& vertex3);
+
+	/**
+	* \brief get next uncommented line
+	*
+	* This function reads trougt the next line that uncommented.
+	*
+	* \param[in] offFile The .off file all the information is red from.
+	* \param[in] line The line obtained from file reading (getline).
+	* \return next uncommented line
+	*/
+	static std::string getNextUncommentedLine(std::ifstream& offFile, std::string& line);
 };
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END
 
