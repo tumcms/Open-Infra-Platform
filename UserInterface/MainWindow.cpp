@@ -923,7 +923,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_trigger
 	
 	QMessageBox::information(this, tr("Delete object"),
 		tr("The Button works!"), QMessageBox::Ok);
-	//OpenInfraPlatform::Core::DataManagement::Data::removeModel(model);
+	auto data = OpenInfraPlatform::Core::DataManagement::Data::Data();
+	data.removeModel(model);
 
 	for (auto el : modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1))
 		modelsTreeWidget_->invisibleRootItem()->removeChild(el);
