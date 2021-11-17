@@ -63,7 +63,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 
 5. **Boost 1_75_0** - [vs2019](https://sourceforge.net/projects/boost/files/boost-binaries/1.75.0/boost_1_75_0-msvc-14.2-64.exe/download)
 
-	* Create a folder `C:\thirdparty` and install **Boost 1_75_0** to `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`.
+	* Create a folder `C:\thirdparty` and install **Boost 1_75_0** to `C:\thirdparty\vs2019\x64\boost_1_75_0`.
 
 *NOTE:* OIP expects *boost* at the path specified above. If you deviate from this, please set the `OIP_Boost_DIR` variable [correspondingly](./FAQ.md#libraries).
 
