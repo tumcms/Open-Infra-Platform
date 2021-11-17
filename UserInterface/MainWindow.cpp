@@ -1766,22 +1766,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered(
 	HelpBrowser::showPage("index.html");
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
-#ifndef _DEBUG
-	wchar_t* localAppData = 0;
-	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
-
-	std::wstringstream ss;
-	ss << localAppData << _T("/OpenInfraPlatform/") << _T("log.txt");
-
-	CoTaskMemFree(static_cast<void*>(localAppData));
-
-	ShellExecute(0, 0, ss.str().c_str(), 0, 0, SW_SHOW);
-#else
-	ShellExecute(0, 0, _T("log.txt"), 0, 0, SW_SHOW);
-#endif
-
-}
+//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
+//#ifndef _DEBUG
+//	wchar_t* localAppData = 0;
+//	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+//
+//	std::wstringstream ss;
+//	ss << localAppData << _T("/OpenInfraPlatform/") << _T("log.txt");
+//
+//	CoTaskMemFree(static_cast<void*>(localAppData));
+//
+//	ShellExecute(0, 0, ss.str().c_str(), 0, 0, SW_SHOW);
+//#else
+//	ShellExecute(0, 0, _T("log.txt"), 0, 0, SW_SHOW);
+//#endif
+//
+//}
 
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateActionUndo(unsigned int numberOfUndoActions) {
