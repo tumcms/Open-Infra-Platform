@@ -68,20 +68,12 @@ endif()
 # Some checks to ensure that the prerequisites are ok
 #------------------------------------------------------------------------------
 
-if(MSVC_VERSION EQUAL 1900)
-	set(MSVC_VERSION_STRING "vs2015")
-	set(MSVC_VERSION_YEAR "2015")
-	set(CMAKE_CXX_STANDARD 14)
-elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS_EQUAL 1919)
-	set(MSVC_VERSION_STRING "vs2017")
-	set(MSVC_VERSION_YEAR "2017")
-	set(CMAKE_CXX_STANDARD 14)
-elseif(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS_EQUAL 1929)
+if(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS_EQUAL 1929)
 	set(MSVC_VERSION_STRING "vs2019")
 	set(MSVC_VERSION_YEAR "2019")
 	set(CMAKE_CXX_STANDARD 20)
 else()
-	message("Please switch to Visual Studio 14 2015, Visual Studio 15 2017 or Visual Studio 16 2019")
+	message("Please switch to Visual Studio 16 2019")
 	return()
 endif()
 
