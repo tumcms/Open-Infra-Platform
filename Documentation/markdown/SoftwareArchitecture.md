@@ -141,7 +141,13 @@ The supported IFC versions are:
 * IFC4x2 (BIMROAD and DRAFT_1)
 * IFC4x3 (RC1 and RC4)
 
-It is relatively easy to introduce more recent IFC versions to OIP. All that is needed is the new schema definition in the form of the EXPRESS file. With this, the early binding generator creates C++ classes for all entities accordingly. Similar to the already implemented IFC versions, the OIP functionalities can then be modified based on the changes introduced through the new IFC version. With this, it is also possible to develop future IFC extensions and test their behaviour with low implementation effort.
+It is relatively easy to introduce more recent IFC versions to OIP. 
+All that is needed is the new schema definition in the form of the EXPRESS file. 
+With this, the early binding generator creates C++ classes for all entities accordingly. 
+Similar to the already implemented IFC versions, the OIP functionalities can then be modified 
+based on the changes introduced through the new IFC version. 
+With this, it is also possible to develop future IFC extensions 
+and test their behaviour with low implementation effort.
 
 ### <a name="Early_binding_lib"></a> Early Binding Library
 
