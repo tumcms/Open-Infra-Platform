@@ -28,12 +28,12 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 include(ExternalData)
 add_definitions(-DBLUEINFRASTRUCTURE_EXPORT)
 
-# Find thirdparty libraries.
+#[[ Find thirdparty libraries.
 FetchContent_Declare(
 	dep_libtiff
 	GIT_REPOSITORY https://gitlab.com/libtiff/libtiff.git
 	GIT_TAG v4.3.0
-)
+)]]
 
 #FetchContent_GetProperties(dep_libtiff)
 #if(NOT dep_libtiff_POPULATED)
@@ -48,9 +48,9 @@ FetchContent_Declare(
 #set(TIFF_DIRECTORY )
 #if point cloud
 #findtiff()
-set(TIFF_INCLUDE_DIR "C:/OSGeo4W/include")
-set(TIFF_LIBRARY "C:/OSGeo4W/lib/tiff.lib")
-find_package(TIFF REQUIRED)
+#set(TIFF_INCLUDE_DIR "C:/OSGeo4W/include")
+#set(TIFF_LIBRARY "C:/OSGeo4W/lib/tiff.lib")
+#find_package(TIFF REQUIRED)
 
 #[[FetchContent_Declare(
 	dep_libgeo
@@ -66,11 +66,11 @@ if(NOT dep_libgeo_POPULATED)
 	set_target_properties(geotiff_library PROPERTIES FOLDER "ThirdParty")
 endif()]]
 
-set(GeoTIFF_INCLUDE_DIR "C:/OSGeo4W/include")
-set(GeoTIFF_LIBRARY "C:/OSGeo4W/lib/geotiff_i.lib")
+#set(GeoTIFF_INCLUDE_DIR "C:/OSGeo4W/include")
+#set(GeoTIFF_LIBRARY "C:/OSGeo4W/lib/geotiff_i.lib")
 #find_package(GeoTIFF REQUIRED)
 
-FetchContent_Declare(
+#[[FetchContent_Declare(
 	dep_liblas
 	GIT_REPOSITORY https://github.com/libLAS/libLAS.git
 	GIT_TAG 6ada875661c46842433a13f28637f8d3d2c393bc
@@ -88,7 +88,7 @@ if(NOT dep_liblas_POPULATED)
 
 	set_target_properties(las PROPERTIES FOLDER "ThirdParty/libLAS")
 	set_target_properties(las_c PROPERTIES FOLDER "ThirdParty/libLAS")
-endif()
+endif()]]
 
 FetchContent_Declare(
 	cc
@@ -116,10 +116,10 @@ source_group(PointCloudProcessing										FILES ${PointCloudProcessing_Source})
 # Create a target for the library
 set(DEPENDENT_INCLUDE_DIRS
 	src
-	${TIFF_INCLUDE_DIR}
-	${GeoTIFF_INCLUDE_DIR}
+	#${TIFF_INCLUDE_DIR}
+	#${GeoTIFF_INCLUDE_DIR}
 	#${dep_libgeo_SOURCE_DIR}/include
-	${dep_liblas_SOURCE_DIR}/include
+	#${dep_liblas_SOURCE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${blue_framework_SOURCE_DIR}/include
 	${cc_SOURCE_DIR}/CC/include
@@ -135,10 +135,10 @@ add_library(OpenInfraPlatform.PointCloudProcessing SHARED ${PointCloudProcessing
 target_include_directories(OpenInfraPlatform.PointCloudProcessing PUBLIC ${DEPENDENT_INCLUDE_DIRS})
 
 target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
-		las
-		las_c
-	    ${TIFF_LIBRARIES}
-	    ${GeoTIFF_LIBRARIES}
+		#las
+		#las_c
+	    #${TIFF_LIBRARIES}
+	    #${GeoTIFF_LIBRARIES}
 		#geotiff_library
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
