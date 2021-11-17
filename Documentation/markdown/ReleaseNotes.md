@@ -40,7 +40,7 @@
 Bug fixes
 ---------
 
-* Fixing bug in alignment placement (`#443 <https://github.com/OSGeo/PROJ/issues/2692>`_)
+* Fixing bug in alignment placement (`#443 <https://github.com/tumcms/Open-Infra-Platform/pull/443>`_)
 
 
 
