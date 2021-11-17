@@ -67,7 +67,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 
 *NOTE:* OIP expects *boost* at the path specified above. If you deviate from this, please set the `OIP_Boost_DIR` variable [correspondingly](./FAQ.md#libraries).
 
-	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2017\x64\boost_1_75_0` or `C:\thirdparty\vs2019\x64\boost_1_75_0`).
+	* Add this path to the environment variables. (Create new environment variable called `Boost_INCLUDE_DIR`. This variable should point to the binary folder, where **Boost 1_75_0** is staged (e.g. `C:\thirdparty\vs2019\x64\boost_1_75_0`).
 
 6. **Anaconda 2** (version with Python 2.7) - find [here](https://repo.anaconda.com/archive/Anaconda2-2019.10-Windows-x86_64.exe). 
 
