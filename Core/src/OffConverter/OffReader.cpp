@@ -98,7 +98,6 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 			{
 				readQuadFace(lineStream, indices, buwVertices, offVertices);
 			}
-			
 			else
 			{
 				offFile.close();
@@ -243,13 +242,22 @@ buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
 {
 	carve::geom::vector<3> colorVector;
-	lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
+	// copy lineStream into string 
+	std::string value = lineStream.str();
+	// check actual reading position 
+	lineStream.seekg(0, lineStream.cur);
+	int pos = lineStream.tellg();
+	lineStream.seekg(0, lineStream.beg);
+	// set reading position
+	lineStream.seekg(pos);
 
-	if (!colorVector.exactlyZero())
-		return buw::Vector3f(colorVector.x/255.0f, colorVector.y/255.0f, colorVector.z/255.0f);
+	if (pos != value.size())
+	{
+		lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
+		return buw::Vector3f(colorVector.x / 255.0f, colorVector.y / 255.0f, colorVector.z / 255.0f);
+	}
 	else
-		return buw::Vector3f(0.0f, 0.0f, 1.0f); // default color - blue
-	
+		return buw::Vector3f(0.0f, 101 / 255.0f, 189 / 255.0f); // default color - TUM blue
 }
 
 
