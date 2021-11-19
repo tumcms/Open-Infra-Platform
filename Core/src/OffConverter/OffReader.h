@@ -110,6 +110,17 @@ public:
 		const buw::Vector3f& vertex3);
 
 	/**
+	* \brief get next uncommented line
+	*
+	* This function reads trougt the next line that uncommented.
+	*
+	* \param[in] offFile The .off file all the information is red from.
+	* \param[in] line The line obtained from file reading (getline).
+	* \return next uncommented line
+	*/
+	static std::string getNextUncommentedLine(std::ifstream& offFile, std::string& line);
+	
+	/**
 	* \brief read color from the line
 	*
 	* This function read color from the text line
