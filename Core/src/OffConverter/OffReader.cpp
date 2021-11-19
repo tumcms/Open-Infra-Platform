@@ -248,10 +248,10 @@ buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
 	lineStream.seekg(0, lineStream.cur);
 	int pos = lineStream.tellg();
 	lineStream.seekg(0, lineStream.beg);
-	// set reading position
+	// set reading position from begin to actual position
 	lineStream.seekg(pos);
 
-	if (pos != value.size())
+	if (pos != value.size() && value[pos + 1] != '#')
 	{
 		lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
 		return buw::Vector3f(colorVector.x / 255.0f, colorVector.y / 255.0f, colorVector.z / 255.0f);
