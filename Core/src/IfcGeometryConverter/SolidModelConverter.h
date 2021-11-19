@@ -2187,6 +2187,7 @@ namespace OpenInfraPlatform
 				itemData->closed_polyhedrons.push_back(polyhedronData);
 			}
 
+
 			void convertIfcHalfSpaceSolid(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>& halfSpaceSolid,
 				const carve::math::Matrix& pos,
@@ -2308,9 +2309,8 @@ namespace OpenInfraPlatform
 						extrudeBox(baseSurfacePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
-						for ( auto point : halfSpaceBoxData->points)
-						{
-							carve::geom::vector<3> & polyPoint = pos * point;
+						for (auto& point : halfSpaceBoxData->points) {
+							point = pos * point;
 						}
 					}
 					else
@@ -2336,9 +2336,8 @@ namespace OpenInfraPlatform
 						extrudeBox(boxBasePoints, halfSpaceExtrusionVector, halfSpaceBoxData);
 
 						// apply object coordinate system
-						for (auto point : halfSpaceBoxData->points)
-						{
-							carve::geom::vector<3> & poly_point = pos * point;
+						for (auto& point : halfSpaceBoxData->points) {
+							point = pos * point;
 						}
 					}
 				}
@@ -2407,10 +2406,10 @@ namespace OpenInfraPlatform
 				polyhedron_data->addFace(4, 0, 3);
 
 				itemData->closed_polyhedrons.push_back(polyhedron_data);
+
 				// apply object coordinate system
-				for ( auto point : polyhedron_data->points)
-				{
-					 carve::geom::vector<3> poly_point = box_position_matrix * point;
+				for (auto& point : halfSpaceBoxData->points) {
+					point = pos * point;
 				}
 			}
 
@@ -2513,9 +2512,9 @@ namespace OpenInfraPlatform
 				}
 
 				// apply object coordinate system
-				for (auto point : polyData->points)
-					{
-					carve::geom::vector<3>& poly_point = pos * point;
+				for (auto& point : halfSpaceBoxData->points) 
+				{
+					point = pos * point;
 				}
 
 				itemData->closed_polyhedrons.push_back(polyData);
