@@ -25,7 +25,7 @@
 using namespace testing;
 
 
-class Cube : public OffVisualTest 
+class Cube_colored : public OffVisualTest 
 {
 protected:
 
@@ -46,14 +46,14 @@ protected:
 		OffVisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "cube"; }
+	virtual std::string TestName() const { return "cube_colored"; }
 
-	const boost::filesystem::path filename = dataPath("cube.off");
+	const boost::filesystem::path filename = dataPath("cube_colored.off");
 
 	buw::ReferenceCounted<oip::OffModel> model = buw::makeReferenceCounted<oip::OffModel>();
 };
 
-TEST_F(Cube, AllEdgesAndFacesRed)
+TEST_F(Cube_colored, AllEdgesAndFacesRed)
 {
 	// check for the number of vertices 
 	// does not coincide with the number of vertices mentioned in the off file since some vertices are
@@ -63,27 +63,27 @@ TEST_F(Cube, AllEdgesAndFacesRed)
 	EXPECT_THAT(model->geometry().indices.size(), Eq(36));
 }
 
-TEST_F(Cube, ImageIsSaved)
+TEST_F(Cube_colored, ImageIsSaved)
 {
 	// Arrange
 	buw::Image4b image = rendererOff->captureImage();
 
 	// Act
-    buw::storeImage(testPath("cube.png").string(), image);
+    buw::storeImage(testPath("cube_colored.png").string(), image);
 
 	// Assert
-    EXPECT_NO_THROW(buw::loadImage4b(testPath("cube.png").string()));
+    EXPECT_NO_THROW(buw::loadImage4b(testPath("cube_colored.png").string()));
 }
 
-TEST_F(Cube, PlaneSurfaceViews)
+TEST_F(Cube_colored, PlaneSurfaceViews)
 {
 	// Arrange
-    const auto expected_front = buw::loadImage4b(dataPath("cube_front.png").string());
-    const auto expected_top = buw::loadImage4b(dataPath("cube_top.png").string());
-    const auto expected_bottom = buw::loadImage4b(dataPath("cube_bottom.png").string());
-    const auto expected_left = buw::loadImage4b(dataPath("cube_left.png").string());
-    const auto expected_right = buw::loadImage4b(dataPath("cube_right.png").string());
-    const auto expected_back = buw::loadImage4b(dataPath("cube_back.png").string());
+    const auto expected_front = buw::loadImage4b(dataPath("cube_colored_front.png").string());
+    const auto expected_top = buw::loadImage4b(dataPath("cube_colored_top.png").string());
+    const auto expected_bottom = buw::loadImage4b(dataPath("cube_colored_bottom.png").string());
+    const auto expected_left = buw::loadImage4b(dataPath("cube_colored_left.png").string());
+    const auto expected_right = buw::loadImage4b(dataPath("cube_colored_right.png").string());
+    const auto expected_back = buw::loadImage4b(dataPath("cube_colored_back.png").string());
 
 	// Act (Front)
 	rendererOff->setViewDirection(buw::eViewDirection::Front);
@@ -106,12 +106,12 @@ TEST_F(Cube, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-   // buw::storeImage(testPath("cube_front.png").string(), image_front);
-   // buw::storeImage(testPath("cube_top.png").string(), image_top);
-   // buw::storeImage(testPath("cube_bottom.png").string(), image_bottom);
-   // buw::storeImage(testPath("cube_left.png").string(), image_left);
-   // buw::storeImage(testPath("cube_right.png").string(), image_right);
-   // buw::storeImage(testPath("cube_back.png").string(), image_back);
+   // buw::storeImage(testPath("cube_colored_front.png").string(), image_front);
+   // buw::storeImage(testPath("cube_colored_top.png").string(), image_top);
+   // buw::storeImage(testPath("cube_colored_bottom.png").string(), image_bottom);
+   // buw::storeImage(testPath("cube_colored_left.png").string(), image_left);
+   // buw::storeImage(testPath("cube_colored_right.png").string(), image_right);
+   // buw::storeImage(testPath("cube_colored_back.png").string(), image_back);
 
 
 	// Assert
@@ -123,17 +123,17 @@ TEST_F(Cube, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(Cube, VertexViews)
+TEST_F(Cube_colored, VertexViews)
 {
 	// Arrange
-    const auto expected_front_left_bottom = buw::loadImage4b(dataPath("cube_front_left_bottom.png").string());
-    const auto expected_front_right_bottom = buw::loadImage4b(dataPath("cube_front_right_bottom.png").string());
-    const auto expected_top_left_front = buw::loadImage4b(dataPath("cube_top_left_front.png").string());
-    const auto expected_top_front_right = buw::loadImage4b(dataPath("cube_top_front_right.png").string());
-    const auto expected_top_left_back = buw::loadImage4b(dataPath("cube_top_left_back.png").string());
-    const auto expected_top_right_back = buw::loadImage4b(dataPath("cube_top_right_back.png").string());
-    const auto expected_back_left_bottom = buw::loadImage4b(dataPath("cube_back_left_bottom.png").string());
-    const auto expected_right_bottom_back = buw::loadImage4b(dataPath("cube_right_bottom_back.png").string());
+    const auto expected_front_left_bottom = buw::loadImage4b(dataPath("cube_colored_front_left_bottom.png").string());
+    const auto expected_front_right_bottom = buw::loadImage4b(dataPath("cube_colored_front_right_bottom.png").string());
+    const auto expected_top_left_front = buw::loadImage4b(dataPath("cube_colored_top_left_front.png").string());
+    const auto expected_top_front_right = buw::loadImage4b(dataPath("cube_colored_top_front_right.png").string());
+    const auto expected_top_left_back = buw::loadImage4b(dataPath("cube_colored_top_left_back.png").string());
+    const auto expected_top_right_back = buw::loadImage4b(dataPath("cube_colored_top_right_back.png").string());
+    const auto expected_back_left_bottom = buw::loadImage4b(dataPath("cube_colored_back_left_bottom.png").string());
+    const auto expected_right_bottom_back = buw::loadImage4b(dataPath("cube_colored_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
 	rendererOff->setViewDirection(buw::eViewDirection::FrontLeftBottom);
@@ -162,14 +162,14 @@ TEST_F(Cube, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	
-    //buw::storeImage(testPath("cube_front_left_bottom.png").string(), image_front_left_bottom);
-    //buw::storeImage(testPath("cube_front_right_bottom.png").string(), image_front_right_bottom);
-    //buw::storeImage(testPath("cube_top_left_front.png").string(), image_top_left_front);
-    //buw::storeImage(testPath("cube_top_front_right.png").string(), image_top_front_right);
-    //buw::storeImage(testPath("cube_top_left_back.png").string(), image_top_left_back);
-    //buw::storeImage(testPath("cube_top_right_back.png").string(), image_top_right_back);
-    //buw::storeImage(testPath("cube_back_left_bottom.png").string(), image_back_left_bottom);
-    //buw::storeImage(testPath("cube_right_bottom_back.png").string(), image_right_bottom_back);
+    //buw::storeImage(testPath("cube_colored_front_left_bottom.png").string(), image_front_left_bottom);
+    //buw::storeImage(testPath("cube_colored_front_right_bottom.png").string(), image_front_right_bottom);
+    //buw::storeImage(testPath("cube_colored_top_left_front.png").string(), image_top_left_front);
+    //buw::storeImage(testPath("cube_colored_top_front_right.png").string(), image_top_front_right);
+    //buw::storeImage(testPath("cube_colored_top_left_back.png").string(), image_top_left_back);
+    //buw::storeImage(testPath("cube_colored_top_right_back.png").string(), image_top_right_back);
+    //buw::storeImage(testPath("cube_colored_back_left_bottom.png").string(), image_back_left_bottom);
+    //buw::storeImage(testPath("cube_colored_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert
