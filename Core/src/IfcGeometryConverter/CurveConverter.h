@@ -1595,20 +1595,9 @@ namespace OpenInfraPlatform {
 
 					if (!segmentPoints.empty())
 					{
-						/*//TODO rotate for start to be in (1,0) direction
-						carve::geom::vector<3> point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcClothoid>(), runningLength);
-						//Calculate angle between (0,0) and point
-						double theta = std::atan2(point.y,point.x);
-						//calculate rotation
-						carve::math::Matrix rotationMatrix = carve::math::Matrix(
-							std::cos(theta), -std::sin(theta), 0., 0.,
-							std::sin(theta), std::cos(theta), 0., 0.,
-							0, 0, 1., 0.,
-							0., 0., 0., 1.);*/
-				
 						//get the local coordinate system
 						carve::geom::vector<3> tangent = segmentDirections[0].normalize();
-						//tangent.y = tangent.y;
+						tangent.y = -tangent.y;
 						carve::geom::vector<3> localZ = carve::geom::VECTOR(0., 0., 1.),
 							orthogonal = carve::geom::cross(localZ, tangent).normalize(),
 							translate = -segmentPoints[0];
@@ -1618,15 +1607,9 @@ namespace OpenInfraPlatform {
 							tangent.y, orthogonal.y, localZ.y, 0.,
 							tangent.z, orthogonal.z, localZ.z, 0.,
 							0., 0., 0., 1.);
-						/*carve::math::Matrix rotationMatrix = carve::math::Matrix(
-							0, -1, localZ.x, 0.,
-							1, 0, localZ.y, 0.,
-							0, 0, localZ.z, 0.,
-							0., 0., 0., 1.);*/
 						// apply placement
 						const carve::math::Matrix placement =
 							placementConverter->convertIfcPlacement(curveSegment->Placement)
-							//* GeomUtils::computeInverse(rotationMatrix);
 							* rotationMatrix;
 
 						std::vector<carve::geom::vector<3>> newPoints;
@@ -1634,8 +1617,6 @@ namespace OpenInfraPlatform {
 						{
 							newPoints.push_back(placement * (point + translate));
 						}
-
-						//BLUE_LOG(trace) << std::to_string(point[0]) << "," << std::to_string(point[1]) << "," << std::to_string(point[2]) << ";";
 
 						GeomUtils::appendPointsToCurve(newPoints, targetVec);
 						segmentStartPoints.push_back(newPoints[0]);
