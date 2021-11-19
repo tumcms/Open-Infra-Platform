@@ -2096,7 +2096,7 @@ namespace OpenInfraPlatform
 
 			/*! \brief converts \c IfcSphere to meshes.
 			 *
-			 * \param[in] sphere		The \c IfcSphere to be converted.
+			 * \param[in] sphere					The \c IfcSphere to be converted.
 			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
 			 * \param[out] itemData					A pointer to be filled with the relevant data.
 			 *
@@ -2187,7 +2187,15 @@ namespace OpenInfraPlatform
 				itemData->closed_polyhedrons.push_back(polyhedronData);
 			}
 
-
+			/*! \brief converts \c IfcHalfSpaceSolid to meshes.
+			 *
+			 * \param[in] halfSpaceSolid			The \c IfcHalfSpaceSolid to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 * \param[in] otherOperand				A pointer to the other operand.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifchalfspacesolid.htm
+			*/
 			void convertIfcHalfSpaceSolid(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcHalfSpaceSolid>& halfSpaceSolid,
 				const carve::math::Matrix& pos,
@@ -2195,6 +2203,17 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand
 			) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcHalfSpaceSolid
+				//	SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
+				//		SUBTYPE OF(IfcGeometricRepresentationItem);
+				//		BaseSurface: IfcSurface;
+				//		AgreementFlag: IfcBoolean;
+				//	DERIVE
+				//		Dim : IfcDimensionCount: = 3;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				if (halfSpaceSolid.expired())
 					throw oip::ReferenceExpiredException(halfSpaceSolid);
 
@@ -2313,13 +2332,28 @@ namespace OpenInfraPlatform
 				}
 			}
 
-			// Complete this function + refactoring 
-			
+			/*! \brief converts \c IfcBoxedHalfSpace to meshes.
+			 *
+			 * \param[in] halfSpaceSolid			The \c IfcBoxedHalfSpace to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcboxedhalfspace.htm
+			*/
 			void convertIfcBoxedHalfSpace(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcBoxedHalfSpace>& boxedHalfSpace,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcBoxedHalfSpace
+				//		SUBTYPE OF(IfcHalfSpaceSolid);
+				//		Enclosure: IfcBoundingBox;
+				//	WHERE
+				//		UnboundedSurface : NOT('IFCGEOMETRYRESOURCE.IfcCurveBoundedPlane' IN TYPEOF(SELF\IfcHalfSpaceSolid.BaseSurface));
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				if (boxedHalfSpace.expired())
 					throw oip::ReferenceExpiredException(boxedHalfSpace);
 
@@ -2384,7 +2418,15 @@ namespace OpenInfraPlatform
 			}
 
 
-			// Complete this function + refactoring 
+			/*! \brief converts \c IfcPolygonalBoundedHalfSpace to meshes.
+			 *
+			 * \param[in] halfSpaceSolid			The \c IfcPolygonalBoundedHalfSpace to be converted.
+			 * \param[in] pos						The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData					A pointer to be filled with the relevant data.
+			 * \param[in] otherOperand				A pointer to the other operand.
+			 *
+			 * \note See https://standards.buildingsmart.org/IFC/DEV/IFC4_2/FINAL/HTML/schema/ifcgeometricmodelresource/lexical/ifcpolygonalboundedhalfspace.htm
+			*/
 			void convertIfcPolygonalBoundedHalfSpace(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcPolygonalBoundedHalfSpace>& polygonalHalfSpace,
 				const carve::math::Matrix& pos,
@@ -2392,6 +2434,20 @@ namespace OpenInfraPlatform
 				const std::shared_ptr<ItemData>& otherOperand,
 				double extrusionDepth) const noexcept(false)
 			{
+				// **************************************************************************************************************************
+				//	ENTITY IfcPolygonalBoundedHalfSpace
+				//		SUBTYPE OF(IfcHalfSpaceSolid);
+				//		Position: IfcAxis2Placement3D;
+				//		PolygonalBoundary: IfcBoundedCurve;
+				//	WHERE
+				//		BoundaryDim : PolygonalBoundary.Dim = 2;
+				//		BoundaryType: SIZEOF(TYPEOF(PolygonalBoundary) *[
+				//		'IFCGEOMETRYRESOURCE.IfcPolyline',
+				//		'IFCGEOMETRYRESOURCE.IfcCompositeCurve']
+				//		) = 1;
+				//	END_ENTITY;
+				// **************************************************************************************************************************
+
 				if (polygonalHalfSpace.expired())
 					throw oip::ReferenceExpiredException(polygonalHalfSpace);
 				
@@ -2487,18 +2543,7 @@ namespace OpenInfraPlatform
 					point = pos * point;
 				}
 
-				itemData->closed_polyhedrons.push_back(polyData);
-
-
-				//std::shared_ptr<carve::mesh::MeshSet<3> > meshset( polyData->createMesh(carve::input::opts()) );
-				//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(1.0f, 0.5f, 0.0f, 1.0f), true );
-
-				//	for( int ii=0; ii<otherOperand->meshsets.size(); ++ii )
-				//	{
-				//	std::shared_ptr<carve::mesh::MeshSet<3> >& meshset = otherOperand->meshsets[ii];
-				//	renderMeshsetInDebugViewer( meshset.get(), osg::Vec4(0.8f, 0.0f, 1.0f, 1.0f), true );
-				//	}
-				
+				itemData->closed_polyhedrons.push_back(polyData);				
 			}
 
 			bool computeCSG(carve::mesh::MeshSet<3>* op1,
