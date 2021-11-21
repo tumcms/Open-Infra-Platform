@@ -844,52 +844,34 @@ namespace OpenInfraPlatform {
 					// ToDo: take sameSense into account by the addFace-construction
 					const bool sameSense = advancedFace->SameSense;
 
-					// get attribute 2
+					// get reference to IfcSurface (attribute 2)
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& faceSurface = advancedFace->FaceSurface;
+					// in case of IfcAdvancedFace, the FaceSurface-entity is restricted to 3 types (respectively 7 subtypes; according to ifc 4x1)
+					if (!(faceSurface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()
+						|| faceSurface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>()
+						|| faceSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()))
+					{
+						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
+					}
 
 					// the faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description)
 					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the faceSurface.
-					// 7 faceSurface types are valid; each type does probably need its individual handling (how the faceSurface is trimmed by the boundary)
 					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
 					{
 						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
 						addArbitraryFaceToPolyhedronData(advancedFace, faceBoundLoops, polygon, polygonIndices);
 					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>())
+					else
 					{
 						// get surface geometry into inputDataFaceSurface
 						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
-						convertIfcBSplineSurface(faceSurface.as<typename IfcEntityTypesT::IfcBSplineSurface>(), pos, inputDataFaceSurface);
+						convertIfcSurface(faceSurface, pos, inputDataFaceSurface);
 
-						// ASSUMPTION: the B-Spline-Surface boundary is already coincident with the loop boundary
-						// ToDo: in general case, the B-Spline-Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
+						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
+						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
 
 						// append surface-faces to target polygon
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polygon);
-					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcCylindricalSurface>())
-					{
-						throw oip::UnhandledException(advancedFace);
-					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcSphericalSurface>())
-					{
-						throw oip::UnhandledException(advancedFace);
-					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcToroidalSurface>())
-					{
-						throw oip::UnhandledException(advancedFace);
-					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>())
-					{
-						throw oip::UnhandledException(advancedFace);
-					}
-					else if (faceSurface.isOfType<typename IfcEntityTypesT::IfcSurfaceOfRevolution>())
-					{
-						throw oip::UnhandledException(advancedFace);
-					}
-					else
-					{
-						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a FaceSurface type which is not allowed.");
 					}
 
 				}
