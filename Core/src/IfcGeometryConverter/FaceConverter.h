@@ -840,10 +840,6 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a loop type as face boundary which is not allowed.");
 					}
 
-					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
-					// ToDo: take sameSense into account by the addFace-construction
-					const bool sameSense = advancedFace->SameSense;
-
 					// get reference to IfcSurface (attribute 2)
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& faceSurface = advancedFace->FaceSurface;
 					// in case of IfcAdvancedFace, the FaceSurface-entity is restricted to 3 types (respectively 7 subtypes; according to ifc 4x1)
@@ -854,18 +850,39 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
 					}
 
-					// the faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description)
+					computeIfcFaceSurface(advancedFace, faceBoundLoops, pos, polygon, polygonIndices);
+				}
+
+				void computeIfcFaceSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
+					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+				) const noexcept(false)
+				{
+					if (ifcFaceSurface.expired()) {
+						throw oip::ReferenceExpiredException(ifcFaceSurface);
+					}
+
+					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
+					// ToDo: take sameSense into account by the addFace-construction
+					const bool sameSense = ifcFaceSurface->SameSense;
+
+					// get attribute 2: FaceSurface (as IfcSurface)
+					// The faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description).
 					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the faceSurface.
-					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& ifcSurface = ifcFaceSurface->FaceSurface;
+					if (ifcSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
 					{
 						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
-						addArbitraryFaceToPolyhedronData(advancedFace, faceBoundLoops, polygon, polygonIndices);
+						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polygon, polygonIndices);
 					}
 					else
 					{
 						// get surface geometry into inputDataFaceSurface
 						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
-						convertIfcSurface(faceSurface, pos, inputDataFaceSurface);
+						convertIfcSurface(ifcSurface, pos, inputDataFaceSurface);
 
 						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
 						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
@@ -873,7 +890,6 @@ namespace OpenInfraPlatform {
 						// append surface-faces to target polygon
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polygon);
 					}
-
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
