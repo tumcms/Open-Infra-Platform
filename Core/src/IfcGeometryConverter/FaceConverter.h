@@ -815,7 +815,7 @@ namespace OpenInfraPlatform {
 					}
 					else
 					{
-						throw oip::UnhandledException(faceSurface);
+						computeIfcFaceSurface(faceSurface, faceBoundLoops, pos, polygon, polygonIndices);
 					}
 				}
 
