@@ -724,10 +724,10 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(surface);
 				}
 
-				/*! \brief  Converts a list of \c IfcFace -s to a polygon and adds it to the carve PolyhedronData vector.
+				/*! \brief  Converts a list of \c IfcFace -s to a polyhedron and adds it to the carve PolyhedronData vector.
 				\param[in]	faces		List \c IfcFace entity to be interpreted.
 				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[out]	itemData	Polygon carve polygon.
+				\param[out]	itemData	Polyhedron carve polyhedron.
 				\note The \c IfcFaceList can be an open or closed shell.
 				*/
 
@@ -735,35 +735,35 @@ namespace OpenInfraPlatform {
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData> itemData)  const throw(...) 
 				{
-					// Carve polygon of the converted face list
-					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					// Carve polyhedron of the converted face list
+					std::shared_ptr<carve::input::PolyhedronData> polyhedron(new carve::input::PolyhedronData());
 
-					// Contains polygon indices of vertices (x,y,z converted to string)
-					std::map<std::string, uint32_t> polygonIndices;
+					// Contains polyhedron indices of vertices (x,y,z converted to string)
+					std::map<std::string, uint32_t> polyhedronIndices;
 
 					// Loop through all faces
 					for (const auto& face : faces) 
 					{
-						// get mesh data into polygon and polygonIndices
-						convertIfcFace(face, pos, polygon, polygonIndices);
+						// get mesh data into polyhedron and polyhedronIndices
+						convertIfcFace(face, pos, polyhedron, polyhedronIndices);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
-					itemData->open_or_closed_polyhedrons.push_back(polygon);
+					itemData->open_or_closed_polyhedrons.push_back(polyhedron);
 				}
 
 				/*! \brief  Converts \c IfcFace to a vector of face vertices.
 				\param	face \c IfcFace entity to be interpreted.
 				\param	pos
-				\param	polygon
-				\param	polygonIndices
+				\param	polyhedron
+				\param	polyhedronIndices
 				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
 				*/
 
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices)  const throw(...)
 				{
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
@@ -776,7 +776,7 @@ namespace OpenInfraPlatform {
 
 					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), faceBoundLoops, pos, polygon, polygonIndices);
+						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), faceBoundLoops, pos, polyhedron, polyhedronIndices);
 					}
 					else
 					{
@@ -785,14 +785,14 @@ namespace OpenInfraPlatform {
 						if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
 						{
 							// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
-							addTriangleToPolyhedronData(faceBoundLoops[0], polygon, polygonIndices);
+							addTriangleToPolyhedronData(faceBoundLoops[0], polyhedron, polyhedronIndices);
 						}
 						else
 						{
 							// general case: arbitrary number of vertices, possible inner bound (= hole)
 							//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
 
-							addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polygon, polygonIndices);
+							addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polyhedron, polyhedronIndices);
 						}
 					}
 				}
@@ -801,8 +801,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
-					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
+					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
 				)  const noexcept(false)
 				{
 					if (faceSurface.expired()) {
@@ -811,11 +811,11 @@ namespace OpenInfraPlatform {
 
 					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
 					{
-						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), faceBoundLoops, pos, polygon, polygonIndices);
+						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), faceBoundLoops, pos, polyhedron, polyhedronIndices);
 					}
 					else
 					{
-						computeIfcFaceSurface(faceSurface, faceBoundLoops, pos, polygon, polygonIndices);
+						computeIfcFaceSurface(faceSurface, faceBoundLoops, pos, polyhedron, polyhedronIndices);
 					}
 				}
 
@@ -823,8 +823,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
-					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
+					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
 				)  const noexcept(false)
 				{
 					if (advancedFace.expired()) {
@@ -850,15 +850,15 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
 					}
 
-					computeIfcFaceSurface(advancedFace, faceBoundLoops, pos, polygon, polygonIndices);
+					computeIfcFaceSurface(advancedFace, faceBoundLoops, pos, polyhedron, polyhedronIndices);
 				}
 
 				void computeIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon, //Carve polygon of the converted face
-					std::map<std::string, uint32_t>& polygonIndices // Contains polygon indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
+					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
 				) const noexcept(false)
 				{
 					if (ifcFaceSurface.expired()) {
@@ -876,7 +876,7 @@ namespace OpenInfraPlatform {
 					if (ifcSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
 					{
 						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
-						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polygon, polygonIndices);
+						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polyhedron, polyhedronIndices);
 					}
 					else
 					{
@@ -887,8 +887,8 @@ namespace OpenInfraPlatform {
 						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
 						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
 
-						// append surface-faces to target polygon
-						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polygon);
+						// append surface-faces to target polyhedron
+						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron);
 					}
 				}
 				
@@ -985,40 +985,40 @@ namespace OpenInfraPlatform {
 
 				void addTriangleToPolyhedronData(
 					const std::vector<carve::geom::vector<3>>& loopVertices3D,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon,
-					std::map<std::string, uint32_t>& polygonIndices) const noexcept(true)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(true)
 				{
 					std::vector<uint32_t> triangleIndices;
 					triangleIndices.reserve(3);
 
 					for (const auto& vertex3D : loopVertices3D)
 					{
-						// set string id and search for existing vertex in polygon
+						// set string id and search for existing vertex in polyhedron
 						std::stringstream vertexString;
 						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
-						auto itFound = polygonIndices.find(vertexString.str());
+						auto itFound = polyhedronIndices.find(vertexString.str());
 
 						uint32_t index = 0;
-						if (itFound != polygonIndices.end())
+						if (itFound != polyhedronIndices.end())
 						{
 							index = itFound->second;
 						}
 						else
 						{
-							index = polygon->addVertex(vertex3D);
-							polygonIndices[vertexString.str()] = index;
+							index = polyhedron->addVertex(vertex3D);
+							polyhedronIndices[vertexString.str()] = index;
 						}
 
 						triangleIndices.push_back(index);
 					}
-					polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+					polyhedron->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
 				}
 
 				void addArbitraryFaceToPolyhedronData(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
-					std::shared_ptr<carve::input::PolyhedronData>& polygon,
-					std::map<std::string, uint32_t>& polygonIndices) const noexcept(false)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(false)
 				{
 					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
 					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
@@ -1026,7 +1026,7 @@ namespace OpenInfraPlatform {
 
 					bool faceLoopReversed = false;
 
-					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
+					// If polyhedron has more than 3 vertices, then we have to project polyhedron into 2D, so that carve can triangulate the mesh
 					ProjectionPlane plane = UNDEFINED;
 
 					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
@@ -1088,7 +1088,7 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
 					}
 
-					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
+					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polyhedron, polyhedronIndices);
 				}
 
 				/*! \brief  Converts 3D points to 2D.
