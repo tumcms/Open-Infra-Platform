@@ -769,17 +769,17 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(face);
 					}
 
-					// get attribute 1:
-					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
-					// one bound loop contains a list of loop points (carve::gem::vector<3>)
-					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
-
 					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), faceBoundLoops, pos, polyhedron, polyhedronIndices);
+						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), pos, polyhedron, polyhedronIndices);
 					}
 					else
 					{
+						// get attribute 1:
+						// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+						// one bound loop contains a list of loop points (carve::gem::vector<3>)
+						std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
+
 						// if simple case: one triangle without inner bound (= hole)
 						//  -> simple direct triangle construction is possible (probably fast)
 						if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
@@ -799,7 +799,6 @@ namespace OpenInfraPlatform {
 
 				void convertIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
-					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
 					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
@@ -811,17 +810,16 @@ namespace OpenInfraPlatform {
 
 					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
 					{
-						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), faceBoundLoops, pos, polyhedron, polyhedronIndices);
+						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), pos, polyhedron, polyhedronIndices);
 					}
 					else
 					{
-						computeIfcFaceSurface(faceSurface, faceBoundLoops, pos, polyhedron, polyhedronIndices);
+						computeIfcFaceSurface(faceSurface, pos, polyhedron, polyhedronIndices);
 					}
 				}
 
 				void convertIfcAdvancedFace(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
-					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
 					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
@@ -833,7 +831,7 @@ namespace OpenInfraPlatform {
 
 					// get reference to IfcFaceBound's (attribute 1)
 					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds = advancedFace->Bounds;
-					// if one face bound is not of the allowed type: throw; else: continue and use already converted faceBoundLoops
+					// if one face bound is not of the allowed type: throw; else: continue
 					if (!std::all_of(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& ifcFaceBound) {return
 						ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>() || ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcVertexLoop>(); }))
 					{
@@ -850,12 +848,11 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
 					}
 
-					computeIfcFaceSurface(advancedFace, faceBoundLoops, pos, polyhedron, polyhedronIndices);
+					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices);
 				}
 
 				void computeIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
-					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
 					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
@@ -864,6 +861,11 @@ namespace OpenInfraPlatform {
 					if (ifcFaceSurface.expired()) {
 						throw oip::ReferenceExpiredException(ifcFaceSurface);
 					}
+
+					// get attribute 1:
+					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// one bound loop contains a list of loop points (carve::gem::vector<3>)
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(ifcFaceSurface->Bounds, pos);
 
 					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
 					// ToDo: take sameSense into account by the addFace-construction
