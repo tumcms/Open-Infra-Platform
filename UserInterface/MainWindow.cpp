@@ -26,7 +26,7 @@
 #include "Dialogues/resource.h"
 #include "Dialogues/VectorTableModel.h"
 
-#include "ui_mainwindow.h"
+#include <ui_MainWindow.h>
 
 #include <BlueFramework/ImageProcessing/Image.h>
 #include <BlueFramework/ImageProcessing/io.h>
@@ -46,6 +46,7 @@
 #include <codecvt>
 #include <shlobj.h>
 #include <stdlib.h>
+#include <tchar.h>
 
 #include <Resources/RenderResources.h>
 
@@ -408,8 +409,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		updateRecentFileActions();
 
 		// window title update
-		boost::filesystem::path p(data.getLastModel()->getSource());
-		updateWindowTitle(p.filename().string());
+		const boost::filesystem::path modelPath(data.getLastModel()->getSource());
+		updateWindowTitle(modelPath.filename().string());
 
 		// small helper functions
 		auto addVector3D = []( QTreeWidgetItem* parent, const buw::Vector3d& vct, const std::string& propName) -> QTreeWidgetItem* {
@@ -420,17 +421,17 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 			// x
 			auto itemX = new QTreeWidgetItem(itemVct); 
 			itemX->setText(0, "x"); 
-			itemX->setText(1, QString("%1").arg(vct.x()));
+			itemX->setText(1, QString("%1").arg(vct.x(), 0, 'f'));
 
 			// y
 			auto itemY = new QTreeWidgetItem(itemVct);
 			itemY->setText(0, "y"); 
-			itemY->setText(1, QString("%1").arg(vct.y()));
+			itemY->setText(1, QString("%1").arg(vct.y(), 0, 'f'));
 
 			// z
 			auto itemZ = new QTreeWidgetItem(itemVct);
 			itemZ->setText(0, "z");
-			itemZ->setText(1, QString("%1").arg(vct.z()));
+			itemZ->setText(1, QString("%1").arg(vct.z(), 0, 'f'));
 
 			// expanded per default
 			itemVct->setExpanded(true);
@@ -475,17 +476,37 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		// loop through the models
 		for (auto& model : data.getModels())
 		{
-			boost::filesystem::path p(model->getSource());
-			auto filename = QString::fromStdString(p.filename().string());
+			boost::filesystem::path modelPath(model->getSource());
+			auto filename = QString::fromStdString(modelPath.filename().string());
 
 			// only add if not yet present
-			if ( modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1).isEmpty() )
+			auto found = modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1);
+
+			if (   found.isEmpty()
+				|| std::find_if(found.begin(), found.end(), [&model](auto& el) -> bool 
+			{ 
+				for (int i = 0; i < el->childCount(); i++)
+				{
+					if (el->child(i)->text(0).compare("GeoRef", Qt::CaseInsensitive) == 0
+						&& (el->child(i)->text(1).compare( QString( model->getGeorefMetadata().codeEPSG.c_str() )) == 0
+						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0))
+						return true;
+				}
+				return false;
+
+				//auto lst = el->treeWidget()->findItems("GeoRef", Qt::MatchFlag::MatchExactly, 0);
+				//return (!lst.empty() && 
+				//			(lst.first()->text(1).toStdString() == model->getGeorefMetadata().codeEPSG
+				//		||   lst.first()->text(1).toStdString() == model->getGeorefMetadata().WKT));
+			}) == found.end())
 			{
 				// structure
 				// 1. filename
 				// 2.  - source : filepath
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
 
 				// 1. filename
 				auto itemModel = new QTreeWidgetItem(modelsTreeWidget_);
@@ -495,12 +516,43 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 2.  - source : filepath
 				auto itemSource = new QTreeWidgetItem(itemModel); 
 				itemSource->setText(0, "Filepath");
-				itemSource->setText(1, QString::fromStdString(p.string()));
+				itemSource->setText(1, QString::fromStdString(modelPath.string()));
 
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
 				addBBox(itemModel, model->getExtent());
-				
+
+				// 4.  - GeoRef : georeferencing metadata
+				//       - key - val
+				auto itemGeoref = new QTreeWidgetItem(itemModel);
+				itemGeoref->setText(0, "GeoRef");
+				try
+				{
+					if(    model->getGeorefMetadata().codeEPSG != ""
+						|| model->getGeorefMetadata().WKT != "" )
+					{
+						// first, get the EPSG code
+						if (model->getGeorefMetadata().codeEPSG != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().codeEPSG));
+						if (model->getGeorefMetadata().WKT != "")
+							itemGeoref->setText(1, QString::fromStdString(model->getGeorefMetadata().WKT));
+						for (auto& el : model->getGeorefMetadata().data)
+						{
+							auto item = new QTreeWidgetItem(itemGeoref);
+							item->setText(0, QString::fromStdString(el.first));
+							item->setText(1, QString::fromStdString(el.second));
+						}
+					}
+					else {
+						itemGeoref->setText(1, "unknown");
+					}
+				}
+				catch (...)
+				{
+					itemGeoref->setText(1, "unknown");
+					// do nothing
+				}
+
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -622,6 +674,14 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionAbout_triggered() {
 	         .arg(copyright, updater->installedVersion());
 
 	QMessageBox::about(this, tr("About TUM Open Infra Platform 2021"), head + desc);
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionStroke_To_Alignment_triggered()
+{
+	Core::SplineInterpretation::SplineInterpretation splineInterpretation;
+	splineInterpretation.convertSketchToAlignment();
+	//QMessageBox::information(this, tr("Convert Stroke to Alignment"), 
+	//	tr("The Button works! However, there is no implementation of further activities."), QMessageBox::Ok);
 }
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
@@ -1326,7 +1386,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_cli
 		desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
 		desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
 
-		pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
+		std::vector<std::pair<size_t, size_t>> pairVector;
+		pointCloud->computePairs(desc, pairVector, callback_);
 		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
 	}
 	else {
@@ -1705,26 +1766,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered(
 	HelpBrowser::showPage("index.html");
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
-	wchar_t* localAppData = 0;
-	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
-
-	std::wstringstream ss;
-	ss << localAppData << L"/OpenInfraPlatform/";
-
-	CoTaskMemFree(static_cast<void*>(localAppData));
-	// setup converter
-	std::wstring_convert<convert_type, wchar_t> converter;
-
-	// use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-	std::wstring filename = L"log.txt";
-
-#ifndef _DEBUG
-	filename = ss.str().append(L"log.txt");
-#endif
-
-	ShellExecute(0, 0, filename.c_str(), 0, 0, SW_SHOW);
-}
+//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
+//#ifndef _DEBUG
+//	wchar_t* localAppData = 0;
+//	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+//
+//	std::wstringstream ss;
+//	ss << localAppData << _T("/OpenInfraPlatform/") << _T("log.txt");
+//
+//	CoTaskMemFree(static_cast<void*>(localAppData));
+//
+//	ShellExecute(0, 0, ss.str().c_str(), 0, 0, SW_SHOW);
+//#else
+//	ShellExecute(0, 0, _T("log.txt"), 0, 0, SW_SHOW);
+//#endif
+//
+//}
 
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateActionUndo(unsigned int numberOfUndoActions) {

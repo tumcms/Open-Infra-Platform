@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <stdexcept>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 
@@ -49,6 +50,13 @@ public:
 	{
 	    
 	}
+
+	EXPRESSReference(EXPRESSReference&& other)
+		:
+		base(other),
+		refId{ other.refId },
+		model{ other.model }
+	{}
 
 	EXPRESSReference(const std::shared_ptr<EXPRESSEntity>& to, const std::shared_ptr<EXPRESSModel>& model) {
 		if (std::dynamic_pointer_cast<T>(to) != nullptr) {
@@ -96,6 +104,16 @@ public:
 
 	const std::string getStepParameter() const override;
 	
+	template <class V>
+	const bool operator==(const EXPRESSReference<V>& other) const
+	{
+		return this->refId == other.getId();
+	}
+	template <class V>
+	const bool operator!=(const EXPRESSReference<V>& other) const
+	{
+		return !operator==<V>(other);
+	}
 
 	T* operator->() { return this->lock().operator->(); }
 	const T* const operator->() const { return this->base::lock().operator->(); }
@@ -133,6 +151,10 @@ public:
 		if (model->entities.count(refId) > 0) {
 			reference.base::operator=(std::dynamic_pointer_cast<T>(model->entities[refId]));
 		}
+		else {
+			const std::string err = "Could not find reference with ID=" + std::to_string(refId);
+			throw std::invalid_argument(err.c_str());
+		}
 		reference.refId = refId;
 		reference.model = model;
 		return reference;
@@ -140,6 +162,7 @@ public:
 
 	const std::string classname() const override;
 	
+	const size_t getId() const { return refId; }
 
 	friend void swap(EXPRESSReference& first, EXPRESSReference& second)
 	{
@@ -152,18 +175,14 @@ public:
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());;
 	}
 
 	template <typename TTarget> const EXPRESSReference<TTarget> as() const {
 		if (!isOfType<TTarget>())
 			return EXPRESSReference<TTarget>();
 
-		EXPRESSReference<TTarget> target = EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
-		return target;
-		//return EXPRESSReference<TTarget>(std::dynamic_pointer_cast<TTarget>(this->lock()));
+		return EXPRESSReference<TTarget>::constructInstance(this->refId, this->model.lock());
 	}
 
 	template <typename TTarget> bool isOfType() const {

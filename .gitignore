@@ -16,7 +16,9 @@ src/OpenInfraPlatform/log.txt
 IFC4x1ExampleFiles/TUM Open Infra Platform_1935/*
 
 build/*
+out/*
 lib/**
 Documentation/doxymentation/*
 
 .vscode
+.vs

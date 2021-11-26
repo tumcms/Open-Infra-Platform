@@ -43,10 +43,10 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
-	#include "EarlyBinding\IFC4X3_RC2\src\reader/IFC4X3_RC2Reader.h"
-	#include "EarlyBinding\IFC4X3_RC2\src\EMTIFC4X3_RC2EntityTypes.h"
-	#include "EarlyBinding\IFC4X3_RC2\src\IFC4X3_RC2.h"
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+	#include "EarlyBinding\IFC4X3_RC4\src\reader\IFC4X3_RC4Reader.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\EMTIFC4X3_RC4EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\IFC4X3_RC4.h"
 #endif
 
 #include "IfcGeometryConverter\GeometryInputData.h"
@@ -62,6 +62,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/bind/placeholders.hpp>
 
 #include "AsyncJob.h"
 
@@ -86,7 +87,11 @@ bShowReferenceCoordinateSystem(true)
 {
 	latestChangeFlag_ = ChangeFlag::All;
 
-	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
+	AsyncJob::getInstance().jobFinished.connect(boost::bind(
+		&OpenInfraPlatform::Core::DataManagement::Data::jobFinished,
+		this, 
+		boost::placeholders::_1, 
+		boost::placeholders::_2));
 
 }
 
@@ -182,13 +187,13 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
 
-		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC2) {
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC2
-			ParseExpressAndGeometryModel<emt::IFC4X3_RC2EntityTypes, OpenInfraPlatform::IFC4X3_RC2::IFC4X3_RC2Reader>(filename);
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC4) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC4EntityTypes, OpenInfraPlatform::IFC4X3_RC4::IFC4X3_RC4Reader>(filename);
 			return;
-#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC2
-			IFCVersionNotCompiled("IFC4X3_RC2");
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC2
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			IFCVersionNotCompiled("IFC4X3_RC4");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC4
 		}
 
 		IFCVersionNotCompiled(strSchema);
@@ -204,14 +209,15 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
-	if (buw::PointCloud::GetSupportedExtensions().contains(extension)) {
+	if (buw::PointCloud::GetSupportedExtensions().contains(extension)
+		|| extension.toUpper() == "LAS" /*gets handled differently*/) {
 		auto pointCloud = buw::PointCloud::FromFile(filename.data(), true);
 		addModel(pointCloud);
 		latestChangeFlag_ = ChangeFlag::PointCloud;
 		return;
 	}
 	else {
-		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << ".";
+		BLUE_LOG(info) << "Supported PCD extensions: " << buw::PointCloud::GetSupportedExtensions().join(", ").toStdString() << "las.";
 	}
 #endif
 
@@ -244,7 +250,8 @@ void OpenInfraPlatform::Core::DataManagement::Data::jobFinished(int jobID, bool 
 
 	if(!completed) {
 		/*If job was cancelled show message box to inform the user and return.*/
-		showError("Import job cancelled. Error message was written to log file.", "Import Error!");
+		const std::string err = OpenInfraPlatform::AsyncJob::getInstance().errors();
+		showError(QString::fromStdString("Import job cancelled. Error(s):\n" + (err.empty() ? "None" : err)), "Import Error!");
 		return;
 	}
 

@@ -41,7 +41,7 @@ The main task of the elements within `IfcGeometryConverter` namespace is transfo
 
 **Unit conversion**
 
-TUM OpenInfraPlatform assumes everything is in SI units (e.g. meters, radians).
+TUM Open Infra Platform assumes everything is in SI units (e.g. meters, radians).
 
 IFC content is scaled according to the specified units within the file.
 The conversion factors can be obtained with `UnitConvert()` member of conversion classes.

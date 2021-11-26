@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::geom::vector<3> convertIfcPoint(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& point
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// ENTITY IfcPoint
@@ -93,14 +93,17 @@ namespace OpenInfraPlatform {
 					if (point.isOfType<typename IfcEntityTypesT::IfcCartesianPoint>())
 						return convertIfcCartesianPoint(point.as<typename IfcEntityTypesT::IfcCartesianPoint>());
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 					// IfcPointByDistanceExpression
 					if (point.template isOfType<typename IfcEntityTypesT::IfcPointByDistanceExpression>())
 						return convertIfcDistanceExpressionOffsets(point.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>());
 					//TODO this is really, really bad programming - this needs to be done more nicely!!
 #endif
 
-					// IfcPointOnCurve & IfcPointOnSurface are not supported
+					// IfcPointOnCurve 
+					if (point.template isOfType<typename IfcEntityTypesT::IfcPointOnCurve>())
+						return convertIfcPointOnCurve(point.template as<typename IfcEntityTypesT::IfcPointOnCurve>());
+					// IfcPointOnSurface are not supported
 					throw oip::UnhandledException(point);
 				}
 
@@ -114,7 +117,7 @@ namespace OpenInfraPlatform {
                  */
 				carve::geom::vector<3> convertIfcCartesianPoint(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint
-                ) const throw(...)
+                ) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcCartesianPoint
@@ -150,10 +153,29 @@ namespace OpenInfraPlatform {
 					}
 
                     // scale the lengths according to the unit conversion & return
-					return point * UnitConvert()->getLengthInMeterFactor();
+					return point * this->UnitConvert()->getLengthInMeterFactor();
                 }
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+				/*! \brief Converts \c IfcPointOnCurve to a 3D vector.
+				 *
+				 * \param[in]	pointOnCurve			\c IfcPointOnCurve entity to be interpreted.
+				 *
+				 * \return								Calculated 3D vector.
+				 */
+				carve::geom::vector<3> convertIfcPointOnCurve(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcPointOnCurve>& pointOnCurve
+				) const noexcept(false) {
+					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
+						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
+
+                    std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+                        = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+
+					//CurveConverterT<IfcEntityTypesT> curveConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					return curveConverter->getPointOnCurve(pointOnCurve->BasisCurve, pointOnCurve->PointParameter);
+				}
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Converts \c IfcPointByDistanceExpression to a 3D vector.
 				 *
 				 * \param[in]	point	\c IfcPointByDistanceExpression entity to be interpreted.
@@ -179,7 +201,7 @@ namespace OpenInfraPlatform {
                  */
                 carve::geom::vector<3> convertIfcDirection(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcDirection>& ifcDirection
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcDirection
@@ -215,7 +237,7 @@ namespace OpenInfraPlatform {
 					}
 
 					// check
-					if( direction.isZero( GeomSettings()->getPrecision() ) )
+					if( direction.isZero( this->GeomSettings()->getPrecision() ) )
 						throw oip::InconsistentGeometryException(ifcDirection, "Magnitude is zero.");
 
                     // normalize the direction
@@ -231,7 +253,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::geom::vector<3> convertIfcVector(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcVector>& ifcVector
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// IfcVector
@@ -256,7 +278,7 @@ namespace OpenInfraPlatform {
 					// ignore magnitude if == 0
 					if (ifcVector->Magnitude != 0.)
 						// scale the lengths according to the unit conversion & return
-						return direction * ifcVector->Magnitude * UnitConvert()->getLengthInMeterFactor();
+						return direction * ifcVector->Magnitude * this->UnitConvert()->getLengthInMeterFactor();
 					else
 						// otherwise return normalized direction
 						return direction;
@@ -271,7 +293,7 @@ namespace OpenInfraPlatform {
                  */
 				carve::math::Matrix convertIfcPlacement(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcPlacement>& placement
-                ) const throw(...)
+                ) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcPlacement 
@@ -301,7 +323,7 @@ namespace OpenInfraPlatform {
                         return convertIfcAxis2Placement3D( placement.as<typename IfcEntityTypesT::IfcAxis2Placement3D>());
                     }
 					// (4/3) IfcAxis2PlacementLinear SUBTYPE OF IfcPlacement
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 					else if (placement.isOfType<typename IfcEntityTypesT::IfcAxis2PlacementLinear>()) {
 						return convertIfcAxis2PlacementLinear(placement.as<typename IfcEntityTypesT::IfcAxis2PlacementLinear>());
 					}
@@ -319,7 +341,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::math::Matrix convertIfcAxis2Placement2D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement2D>& axis2placement2d
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcAxis2Placement2D 
@@ -346,7 +368,7 @@ namespace OpenInfraPlatform {
                     carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0)); // defaults to (1.0,0.0) according to the specification
 
                     // interpret Location 
-					translate = convertIfcPoint( axis2placement2d->Location );
+					translate = convertIfcPoint( axis2placement2d->Location.template as<typename IfcEntityTypesT::IfcPoint>());
 
                     // interpret RefDirection [OPTIONAL]
                     if(axis2placement2d->RefDirection) {
@@ -381,7 +403,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::math::Matrix convertIfcAxis2Placement3D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D>& axis2placement3d
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     // IfcAxis2Placement2D 
@@ -445,7 +467,7 @@ namespace OpenInfraPlatform {
                 }
 					
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC2)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Converts \c IfcAxis2PlacementLinear to a transformation matrix.
 				 *
 				 * \param[in]	axis2placementLinear	\c IfcAxis2PlacementLinear entity to be interpreted.
@@ -471,7 +493,7 @@ namespace OpenInfraPlatform {
 				 */
 				carve::math::Matrix convertIfcAxis2Placement(
 					const typename IfcEntityTypesT::IfcAxis2Placement& axis_placement
-				) const throw(...)
+				) const noexcept(false)
                 {
 					// **************************************************************************************************************************
 					// RelativePlacement				
@@ -502,8 +524,8 @@ namespace OpenInfraPlatform {
 				carve::math::Matrix convertRelativePlacement(
 					const EXPRESSReference<TObjectPlacement>& placement,
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-				) const throw(...)
-				{
+				) const noexcept(false)
+                {
 					// check input
 					if (placement.expired())
 						throw oip::ReferenceExpiredException(placement);
@@ -529,7 +551,7 @@ namespace OpenInfraPlatform {
                 carve::math::Matrix convertIfcLocalPlacement(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLocalPlacement>& local_placement,
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclocalplacement.htm
@@ -562,7 +584,7 @@ namespace OpenInfraPlatform {
                 bool checkLinearPlacementAgainstAbsolutePlacement(
 					carve::math::Matrix& matrix, 
 					const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement>& linear_placement
-				) const throw(...)
+				) const noexcept(false)
                 {
 					// check input
 					if (linear_placement.expired())
@@ -589,7 +611,7 @@ namespace OpenInfraPlatform {
 #else
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression> & distExpr
 #endif
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // ***********************************************************
                     // ENTITY IfcDistanceExpression
@@ -609,7 +631,7 @@ namespace OpenInfraPlatform {
                         distExpr->OffsetLongitudinal.value_or(0.0),
                         distExpr->OffsetLateral.value_or(0.0),
                         distExpr->OffsetVertical.value_or(0.0)
-                    ) * UnitConvert()->getLengthInMeterFactor();
+                    ) * this->UnitConvert()->getLengthInMeterFactor();
                 }
 
 				// ************************************************************************************
@@ -638,7 +660,11 @@ namespace OpenInfraPlatform {
 
 					return calculatePositionOnAndDirectionOfBaseCurve(
 						getCurveOfPlacement(linear_placement),
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 						linear_placement->Distance,
+#else					// not the best way of solving this (pjanck, 2021.05.24)
+						linear_placement->RelativePlacement->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>(),
+#endif
 						relativeDistAlong);
 				}
 
@@ -671,7 +697,7 @@ namespace OpenInfraPlatform {
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 					bAlongHorizontal = distExpr->AlongHorizontal.value_or(true);
 #endif
-					// IFC4x3_RC2+ -> no attribute -> stays in 3D (if given)
+					// IFC4X3_RC4+ -> no attribute -> stays in 3D (if given)
 
 					// account for relative placement
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
@@ -717,7 +743,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2PlacementLinear>& orientExpr, //TODO this is really bad / only a hot fix (2021-01-17)
 #endif
 					const carve::geom::vector<3> translate = carve::geom::VECTOR(0.,0.,0.)
-				) const throw(...)
+				) const noexcept(false)
                 {
 					//check input
 					if (orientExpr.expired())
@@ -777,7 +803,7 @@ namespace OpenInfraPlatform {
                 carve::math::Matrix calculateCurveOrientationMatrix(
 					const carve::geom::vector<3>& directionOfCurve, 
 					const bool alongHorizontal
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// check
 					if (   alongHorizontal
@@ -817,7 +843,7 @@ namespace OpenInfraPlatform {
                 carve::math::Matrix convertIfcLinearPlacement(
                     const EXPRESSReference<typename IfcEntityTypesT::IfcLinearPlacement> linear_placement,
                     std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-				) const throw(...)
+				) const noexcept(false)
                 {
                     // **************************************************************************************************************************
                     //  https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/link/ifclinearplacement.htm
@@ -914,8 +940,11 @@ namespace OpenInfraPlatform {
 					std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter
 						= std::make_shared<PlacementConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert());
 
-					CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
-					gridConv.convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
+                    std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+                        = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+
+					//CurveConverterT<IfcEntityTypesT> gridConv(this->GeomSettings(), this->UnitConvert(), placementConverter);
+					curveConverter->convertIfcCurve2D(gridAxis->AxisCurve, axisVector, segmentStartPoints);
 
 					if (!gridAxis->SameSense)
 						// turn around the axis
@@ -1137,7 +1166,7 @@ namespace OpenInfraPlatform {
 				carve::math::Matrix convertIfcObjectPlacement(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>& objectPlacement,
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcObjectPlacement>>& alreadyApplied
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// IfcObjectPlacement
@@ -1156,11 +1185,8 @@ namespace OpenInfraPlatform {
 						throw oip::ReferenceExpiredException(objectPlacement);
 
 					// Prevent cyclic relative placement
-					// this doesn't work as long as there is no comparisson operator==
-					//if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
-					for (const auto& el : alreadyApplied)
-						if (el->getId() == objectPlacement->getId())
-							throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
+					if(std::find(alreadyApplied.begin(), alreadyApplied.end(), objectPlacement) != alreadyApplied.end())
+						throw oip::InconsistentModellingException(objectPlacement, "Cyclic application of IfcObjectPlacement!");
 
 					// Add self to apllied
 					alreadyApplied.push_back(objectPlacement);
@@ -1494,9 +1520,9 @@ namespace OpenInfraPlatform {
                     const bool bDistMeasuredAlongHorizontal,
                     carve::geom::vector<3>& vkt3DtargetPoint,
                     carve::geom::vector<3>& vkt3DtargetDirection
-				) const throw(...)
+				) const noexcept(false)
                 {
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined( OIP_MODULE_EARLYBINDING_IFC4X2) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 
                     if(!bDistMeasuredAlongHorizontal)
 						throw oip::UnhandledException("Function convertAlignmentCurveDistAlongToPoint3D: Distance along a 3D curve not supported.");
@@ -1506,8 +1532,8 @@ namespace OpenInfraPlatform {
                     vkt3DtargetDirection = carve::geom::VECTOR(1., 0., 0.);
 
                     // get the length & angle factors
-                    double length_factor = UnitConvert()->getLengthInMeterFactor();
-                    double plane_angle_factor = UnitConvert()->getAngleInRadianFactor();
+                    double length_factor = this->UnitConvert()->getLengthInMeterFactor();
+                    double plane_angle_factor = this->UnitConvert()->getAngleInRadianFactor();
 
 					if (!ifcCurve.isOfType<typename IfcEntityTypesT::IfcAlignmentCurve>())
 						throw oip::UnhandledException("Function convertBoundedCurveDistAlongToPoint3D exclusively handles IfcAlignmentCurve.");
@@ -1856,7 +1882,7 @@ namespace OpenInfraPlatform {
                             const auto& trans_type = trans_curve_segment_2D->TransitionCurveType;
                             // https://www.researchgate.net/publication/273829731_Investigation_of_a_New_Transition_Curve/link/5a6a60ce458515b2d0532a79/download
                             switch(trans_type) {
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BIQUADRATICPARABOLA):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1881,7 +1907,7 @@ namespace OpenInfraPlatform {
                             } // end case BIQUADRATICPARABOLA
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_BLOSSCURVE):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1905,7 +1931,7 @@ namespace OpenInfraPlatform {
                             } // end case BLOSSCURVE
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CLOTHOIDCURVE):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CLOTHOIDCURVE):
                             {
                                 // https://www.springerprofessional.de/transition-curves-for-highway-geometric-design/12088070
                                 // page 26, Eqs. (4.3) and (4.4)
@@ -1926,7 +1952,7 @@ namespace OpenInfraPlatform {
                             } // end case CLOTHOIDCURVE
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_COSINECURVE):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_COSINECURVE):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1947,7 +1973,7 @@ namespace OpenInfraPlatform {
                             } // end case COSINECURVE
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CUBICPARABOLA):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_CUBICPARABOLA):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1961,7 +1987,7 @@ namespace OpenInfraPlatform {
                             } // end case CUBICPARABOLA
                             break;
 
-                            case(typename IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_SINECURVE):
+                            case(IfcEntityTypesT::IfcTransitionCurveType::ENUM::ENUM_SINECURVE):
                             {
                                 fctPosition =
                                     [](const double distAlong, const double horizSegLength, const double radius,
@@ -1997,7 +2023,7 @@ namespace OpenInfraPlatform {
                                 // - step a bit backwards & forwards
                                 // - calculate the coordinates
                                 // - get the tangent from these points
-                                double delta = GeomSettings()->getPrecision();
+                                double delta = this->GeomSettings()->getPrecision();
                                 double xMinus, xPlus, yMinus, yPlus;
 
                                 fctPosition(distAlong - delta, horizSegLength, radius, xMinus, yMinus);

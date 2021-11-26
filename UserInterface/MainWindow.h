@@ -49,6 +49,7 @@
 //#include "OpenInfraPlatform/UserInterface/Tools/CreateArcClothoidClothoidArcDialog.h"
 //#include "OpenInfraPlatform/UserInterface/CreateAccidentReportDialog.h"
 //#include "OpenInfraPlatform/UserInterface/OSMImportDialog.h"
+#include "../Core/src/SplineInterpretation/SplineInterpretation.h"
 
 #include "qsimpleupdater.h"
 
@@ -122,6 +123,7 @@ namespace OpenInfraPlatform
 			//void on_actionCreate_Line_Clothoid_Clothoid_Line_triggered();
 			//void on_actionCreate_Line_Clothoid_triggered();
 			//void on_actionCreateClothoid_triggered();
+			void on_actionStroke_To_Alignment_triggered();
 			//void on_actionCurvature_triggered();
 			//void on_actionShow_IFC_tree_triggered();
 			void on_actionExit_triggered();
@@ -171,7 +173,7 @@ namespace OpenInfraPlatform
 			//void on_actionShow_Cross_Section_triggered(bool checked);
 			//void on_actionShow_Design_Cross_Section_triggered(bool checked);
 			void on_actionShow_Help_triggered();
-			void on_actionShow_Log_File_triggered();
+			//void on_actionShow_Log_File_triggered();
 			//void on_actionTerrain_Create_Terrain_from_Heightmap_triggered();
 			//void on_actionTerrain_Generate_Random_Terrain_triggered();
 			//void on_actionTerrain_Gradient_Ramp_triggered(bool checked);

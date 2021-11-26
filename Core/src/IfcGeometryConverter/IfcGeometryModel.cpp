@@ -62,7 +62,7 @@ oip::BBox OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::getExtent()
 
 oip::GeorefMetadata OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::getGeorefMetadata() const
 {
-	throw oip::UnhandledException("IfcGeometryModel::getGeorefMetadata()");
+	return georefMeta_;
 }
 
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::transformAllPoints(

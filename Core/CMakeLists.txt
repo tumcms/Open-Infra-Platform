@@ -28,6 +28,7 @@ file(GLOB Core_DataManagement_General_Source 		src/DataManagement/General/*.*)
 file(GLOB Core_IfcGeometryConverter_Source			src/IfcGeometryConverter/*.*)
 file(GLOB Core_OffConverter_Source					src/OffConverter/*.*)
 file(GLOB Core_Exception_Source						src/Exception/*.*)
+file(GLOB Core_SplineInterpretation_Source			src/SplineInterpretation/*.*)
 
 source_group(Core								FILES $Core_Source})
 source_group(Core\\DataManagement				FILES ${Core_DataManagement_Source})
@@ -35,6 +36,7 @@ source_group(Core\\DataManagement\\General		FILES ${Core_DataManagement_General_
 source_group(Core\\IfcGeometryConverter			FILES ${Core_IfcGeometryConverter_Source})
 source_group(Core\\OffConverter					FILES ${Core_OffConverter_Source})
 source_group(Core\\Exception					FILES ${Core_Exception_Source})
+source_group(Core\\SplineInterpretation			FILES ${Core_SplineInterpretation_Source})
 
 add_library(OpenInfraPlatform.Core STATIC
 	${Core_Source}
@@ -43,6 +45,7 @@ add_library(OpenInfraPlatform.Core STATIC
 	${Core_IfcGeometryConverter_Source}
 	${Core_OffConverter_Source}
 	${Core_Exception_Source}
+	${Core_SplineInterpretation_Source}
 )
 
 
@@ -68,7 +71,7 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
 
 target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.Base)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.PointCloudProcessing)
 	message(STATUS "Linking OpenInfraPlatform.Core against OpenInfraPlatform.PointCloudProcessing")

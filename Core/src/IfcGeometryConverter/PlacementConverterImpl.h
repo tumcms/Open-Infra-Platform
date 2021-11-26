@@ -31,11 +31,20 @@ namespace OpenInfraPlatform {
                 const EXPRESSReference<emt::IFC4X1EntityTypes::IfcLinearPlacement>& linearPlacement
 			) const;
 		#endif
+			// IFC 4x3_RC1 specifics
+		#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC1
+			template <>
+			EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcBoundedCurve> PlacementConverterT<emt::IFC4X3_RC1EntityTypes>::getCurveOfPlacement(
+				const EXPRESSReference<emt::IFC4X3_RC1EntityTypes::IfcLinearPlacement>& linearPlacement
+			) const;
+		#endif
 
             /*! \brief Gets the \c IfcCurve attribute from \c IfcLinearPlacement.
 
             There was a change moving from IFC4x1 to IFC4x2 in the naming of the attribute to \c IfcCurve.
             In IFC4x1, the attribute was named \c PlacementRelTo, starting in IFC4x2 it is named \c PlacementMeasuredAlong.
+
+			There was a change in IFC4x3_RC4 - the curve is not an attribute of the linear placement anymore, but rather of the point.
 
             \param[in]	linearPlacement		\c IfcLinearPlacement entity that has the curve reference.
 
@@ -50,10 +59,18 @@ namespace OpenInfraPlatform {
 				if (linearPlacement.expired())
 					throw oip::ReferenceExpiredException(linearPlacement);
 				// check if correct type
-				if (!linearPlacement->PlacementMeasuredAlong.template isOfType<typename IfcEntityTypesT::IfcBoundedCurve>())
+				if (!linearPlacement
+					->RelativePlacement
+					->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>()
+					->BasisCurve.template isOfType<typename IfcEntityTypesT::IfcBoundedCurve>()
+					)
 					throw oip::InconsistentModellingException(linearPlacement, "Only IfcBoundedCurve can be a base curve for IfcLinearPlacement.");
 				// return the curve
-                return linearPlacement->PlacementMeasuredAlong.template as<typename IfcEntityTypesT::IfcBoundedCurve>();
+                return linearPlacement
+					->RelativePlacement
+					->Location.template as<typename IfcEntityTypesT::IfcPointByDistanceExpression>()
+					->BasisCurve.template as<typename IfcEntityTypesT::IfcBoundedCurve>()
+					;
             };
 
         }

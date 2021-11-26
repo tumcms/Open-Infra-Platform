@@ -25,7 +25,13 @@
 //#include <Windows.h>
 #include <algorithm>
 #include <cassert>
+
+#if _MSVC_LANG < 201700L
 #include <experimental/filesystem>
+#else
+#include <filesystem>
+#endif
+
 #include <fstream>
 #include <map>
 #include <set>
@@ -43,7 +49,12 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
+
+#if _MSVC_LANG < 201700L
 namespace fs = std::experimental::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
 
 
 std::string license =
@@ -2192,7 +2203,8 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 
 	linebreak(file);
 	writeLine(file, "// initialize cross-references");
-	writeLine(file, "#pragma omp parallel for shared(model, lines)");
+	writeLine(file, "std::vector<std::string> errors;");
+	writeLine(file, "#pragma omp parallel for shared(model, lines, errors)");
 	writeLine(file, "for(long i = 0; i < lines.size(); i++) {"); // begin for read file
 	writeLine(file, "auto line = lines[i];");
 	writeLine(file, "if(line == \"\") continue;");
@@ -2201,6 +2213,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "const size_t id = std::stoull(line.substr(1, line.find_first_of('=') - 1));");
 	writeLine(file, "const std::string entityType = line.substr(line.find_first_of('=') + 1, line.find_first_of('(') - line.find_first_of('=') - 1);");
 	//writeLine(file, "std::string parameters = line.substr(line.find_first_of('('), line.find_last_of(')') - line.find_first_of('(') + 1);");
+	writeLine(file, "try {");
 	for (size_t idx = 0; idx < schema.getEntityCount(); idx++) {
 		auto entity = schema.getEntityByIndex(idx);
 		if (!schema.isAbstract(entity)) {
@@ -2211,8 +2224,19 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 			writeLine(file, "}");
 		}
 	}
-	writeLine(file, "}"); //end if line[0] == '#'
-	writeLine(file, "}"); //end for read file
+	writeLine(file, "}"); //end try 
+	writeLine(file, "catch (const std::exception& ex) {"); // begin catch
+	writeLine(file, "#pragma omp critical");
+	writeLine(file, "errors.push_back(std::string(ex.what()));");
+	writeLine(file, "}"); //end catch 
+	writeLine(file, "} // end if line[0] == '#'");
+	writeLine(file, "} // end for read file");
+	writeLine(file, "if (errors.size() != 0)	{");
+	writeLine(file, "std::string all = \"\";");
+	writeLine(file, "std::for_each(errors.begin(), errors.end(), [&all](const std::string& el) {all += el + \"\\n\"; });");
+	writeLine(file, "all.pop_back();");
+	writeLine(file, "throw std::exception(all.c_str());");
+	writeLine(file, "}");
 	linebreak(file);
 	writeLine(file, "// Initialize inverse parameters");
 	writeLine(file, "size_t numEntities = model->entities.size();");
@@ -2221,16 +2245,16 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "auto it = model->entities.begin();");
 	writeLine(file, "std::advance(it, i);");
 	writeLine(file, "it->second->linkInverse(model);");
-	writeLine(file, "}"); // end for each entity
+	writeLine(file, "} // end for each entity"); 
 	linebreak(file);
 	writeLine(file, "return model;");
 	writeLine(file, "}"); //end try 
-	writeLine(file, "catch(std::exception e) {"); // begin catch
-	writeLine(file, "std::cout << e.what() << std::endl;");
+	writeLine(file, "catch(const std::exception& ex) {"); // begin catch
+	writeLine(file, "throw ex;");
 	writeLine(file, "}"); //end catch 
 	writeLine(file, "}");
 	writeLine(file, "else {");
-	writeLine(file, "throw std::exception(\"Could not open file.\");");
+	writeLine(file, "throw std::exception(\"Could not open IFC file.\");");
 	writeLine(file, "}"); // end else if(file.is_open())
 	writeLine(file, "return nullptr;");
 	writeLine(file, "};"); // end function FromFile
@@ -3125,9 +3149,15 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		writeLine(out, "boost::to_upper(classname);");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
 		for (int i = 0; i < attributes.size() - 1; i++) {
-			writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
+			if( entity.hasQualifiedAttribute(attributes[i].getName()) )
+				writeLine(out, "stepLine += \"*,\"; // " + attributes[i].getName() + " is a qualified attribute of " + name);
+			else
+				writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
 		}
-		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
+		if( entity.hasQualifiedAttribute(attributes.back().getName() ) )
+			writeLine(out, "stepLine += \"*);\"; // " + attributes.back().getName() + " is a qualified attribute of " + name);
+		else
+			writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
 		linebreak(out);
