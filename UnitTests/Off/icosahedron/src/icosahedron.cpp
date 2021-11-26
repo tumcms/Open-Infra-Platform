@@ -106,12 +106,12 @@ TEST_F(Icosahedron, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    //buw::storeImage(testPath("icosahedron_front.png").string(), image_front);
-    //buw::storeImage(testPath("icosahedron_top.png").string(), image_top);
-    //buw::storeImage(testPath("icosahedron_bottom.png").string(), image_bottom);
-    //buw::storeImage(testPath("icosahedron_left.png").string(), image_left);
-    //buw::storeImage(testPath("icosahedron_right.png").string(), image_right);
-    //buw::storeImage(testPath("icosahedron_back.png").string(), image_back);
+    buw::storeImage(testPath("icosahedron_front.png").string(), image_front);
+    buw::storeImage(testPath("icosahedron_top.png").string(), image_top);
+    buw::storeImage(testPath("icosahedron_bottom.png").string(), image_bottom);
+    buw::storeImage(testPath("icosahedron_left.png").string(), image_left);
+    buw::storeImage(testPath("icosahedron_right.png").string(), image_right);
+    buw::storeImage(testPath("icosahedron_back.png").string(), image_back);
 
 
 	// Assert
@@ -162,14 +162,14 @@ TEST_F(Icosahedron, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	
-   // buw::storeImage(testPath("icosahedron_front_left_bottom.png").string(), image_front_left_bottom);
-   // buw::storeImage(testPath("icosahedron_front_right_bottom.png").string(), image_front_right_bottom);
-   // buw::storeImage(testPath("icosahedron_top_left_front.png").string(), image_top_left_front);
-   // buw::storeImage(testPath("icosahedron_top_front_right.png").string(), image_top_front_right);
-   // buw::storeImage(testPath("icosahedron_top_left_back.png").string(), image_top_left_back);
-   // buw::storeImage(testPath("icosahedron_top_right_back.png").string(), image_top_right_back);
-   // buw::storeImage(testPath("icosahedron_back_left_bottom.png").string(), image_back_left_bottom);
-   // buw::storeImage(testPath("icosahedron_right_bottom_back.png").string(), image_right_bottom_back);
+    buw::storeImage(testPath("icosahedron_front_left_bottom.png").string(), image_front_left_bottom);
+    buw::storeImage(testPath("icosahedron_front_right_bottom.png").string(), image_front_right_bottom);
+    buw::storeImage(testPath("icosahedron_top_left_front.png").string(), image_top_left_front);
+    buw::storeImage(testPath("icosahedron_top_front_right.png").string(), image_top_front_right);
+    buw::storeImage(testPath("icosahedron_top_left_back.png").string(), image_top_left_back);
+    buw::storeImage(testPath("icosahedron_top_right_back.png").string(), image_top_right_back);
+    buw::storeImage(testPath("icosahedron_back_left_bottom.png").string(), image_back_left_bottom);
+    buw::storeImage(testPath("icosahedron_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert
