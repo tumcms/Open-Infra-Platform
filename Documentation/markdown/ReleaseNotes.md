@@ -15,7 +15,7 @@
 
   * Major refactoring of SolidModelConverter, SplineConverter, GeometrySettings, GeomUtils and more
 
-  * Reading .off files enable (`#271 <https://github.com/tumcms/Open-Infra-Platform/pull/294>`_)
+  * Reading .off files enabled (`#271 <https://github.com/tumcms/Open-Infra-Platform/pull/294>`_)
 
   * First implementation of georeferencing IfcModels (`#396 <https://github.com/tumcms/Open-Infra-Platform/pull/396>`_)
 
@@ -27,6 +27,8 @@
   * Supporting IfcPlanarBox (`#475 <https://github.com/tumcms/Open-Infra-Platform/pull/475>`_)
 
   * Supporting IfcFixedReferenceSweptAreaSolid (`#406 <https://github.com/tumcms/Open-Infra-Platform/pull/406>`_)
+
+  * Supporting IfcClothoid (`#482 <https://github.com/tumcms/Open-Infra-Platform/pull/482>`)
 
   * Added various unit tests
 
