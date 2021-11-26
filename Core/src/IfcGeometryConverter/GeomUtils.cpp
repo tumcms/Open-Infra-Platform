@@ -1264,11 +1264,292 @@ bool GeomUtils::checkMeshSet( const carve::mesh::MeshSet<3>* mesh_set,
 	}
 #endif
 
-	if( err.tellp() > 0 )
+	if (err.tellp() > 0)
 	{
 		throw oip::InconsistentModellingException("GeomUtils::checkMeshSet(): MeshSet of resulting mesh has problems: " + err.str());
 	}
 	return true;
 }
+
+	/**********************************************************************************************/
+
+	/*!Calculate recursive multiplication for calculation Taylor series
+	* \param[in]  value                  value of Taylor series
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d 
+	* \param[in]  myArray                matrix with 1xn number of iteration points
+	* \param[in]  i_n                    actual iteration point
+	* \param[in]  n                      number of iteration points
+	*
+	* \return
+	*/
+	void GeomUtils::recursiveMultiplicationTaylor(
+			const double	value,
+			const std::vector<double>& polynomialConstants,
+			std::vector<double>& myArray,
+		    size_t myArrayParentIndex,
+			const int	i_n,
+			const int	n
+		)
+	{
+		if (!value) throw oip::InconsistentGeometryException("Invalid polynomial constants!");//to add
+		if (i_n < n - 1) {
+			if(polynomialConstants.size() == 0 || polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+			for (int i = 1; i < polynomialConstants.size(); i++) {
+				if (polynomialConstants[i]) {
+					GeomUtils::recursiveMultiplicationTaylor(
+						value * polynomialConstants[i],
+						polynomialConstants,
+						myArray,
+						myArrayParentIndex + i,
+						i_n + 1, n
+					);
+				}
+			}
+		}
+		else {
+			if (i_n != n - 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+			for (int i = 1; i < polynomialConstants.size(); i++) {
+				if (polynomialConstants[i]) {
+					if(myArrayParentIndex + i < n && myArrayParentIndex + i >= polynomialConstants.size()* n + 1) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+					myArray[myArrayParentIndex + i] += value * polynomialConstants[i];
+				}
+			}
+		}
+	}
+
+	/**********************************************************************************************/
+
+	/*!Calculate the Taylor series 
+	* \param[in]  n                      number of iteration points
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      the length of the curve between two points 
+	*
+	* \return
+	*/
+	double	GeomUtils::computeIntegralTaylorSeriesExpansionElement(
+		const int	n,
+		const std::vector<double>& polynomialConstants,
+		const double	s
+	)
+	{
+		//
+		//	pC = polynomialConstants
+		//	c = polynomialConstants.size()
+		// 	x =  indeterminate
+		// 	   =>	pC[c-1] * x^(c-1) + pC[c-2] * x^(c-2) + ... + pC[1] * x^(1) + pC[0] * x^(0) where pC[0] == 0
+		//
+		if(polynomialConstants.size() && polynomialConstants[0] != 0.) throw oip::InconsistentGeometryException("Invalid polynomial constants!");
+
+		if (n) {
+			//create a matrix whith 1xn size
+			std::vector<double> myArray(polynomialConstants.size() * n + 1);
+			GeomUtils::recursiveMultiplicationTaylor(
+				1.,
+				polynomialConstants,
+				myArray,
+				0,
+				0, n
+			);
+
+			double	value = 0., factor = 1.;
+			for (int k = 0; k < polynomialConstants.size() * n + 1; k++)
+			{
+				factor *= s;
+				value += myArray[k] * factor / (k + 1);
+			}
+
+			int	tB = n;
+			while (tB > 1)
+			{
+				value /= (double)tB;
+				tB--;
+			}
+
+			//delete[] myArray;
+
+			return	value;
+		}
+		else {
+			return	s;
+		}
+	}
+	/**********************************************************************************************/
+
+	/*!Calculate i-value of cosine in the Taylor Series, namely negative or positiv value
+	* \param[in]  i                      i-integral step
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      the length of the curve between two points 
+	*
+	* \return                            the value of cosine
+	*/
+	double	GeomUtils::integralTaylorSeriesCosExpansion( 
+		const int	i,
+		const std::vector<double>& polynomialConstants,
+		const double	s
+	)
+	{
+		double	value =
+			computeIntegralTaylorSeriesExpansionElement(
+				i * 2,
+				polynomialConstants,
+				s
+			);
+
+		if (i % 2) {
+			return	-value;
+		}
+		else {
+			return	value;
+		}
+	}
+	/**********************************************************************************************/
+
+	/*!Calculate i-value of sine in the Taylor Series, namely negative or positiv value
+	* \param[in]  i                      i-integral step
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      the length of the curve between two points
+	*
+	* \return                            the value of sine
+	*/
+	double	GeomUtils::integralTaylorSeriesSinExpansion(
+		const int	i,
+		const std::vector<double>& polynomialConstants,
+		const double	s
+	)
+	{
+		double	value =
+			computeIntegralTaylorSeriesExpansionElement(
+				i * 2 + 1,
+				polynomialConstants,
+				s
+			);
+
+		if (i % 2) {
+			return	-value;
+		}
+		else {
+			return	value;
+		}
+	}
+	/**********************************************************************************************/
+
+	/*!Calculate cosinus for X in th Taylor Series
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      curve length between two points
+	*
+	* \return                            the value of cosine
+	*/
+	double	GeomUtils::integralTaylorSeriesCos(
+		const std::vector<double>& polynomialConstants,
+		const double	s
+	)
+	{
+		int	minSteps = (polynomialConstants.size() > 7) ? 4 : 6, maxSteps = 8;
+		double	borderValue = 0.000001;
+
+		//
+		// SUM [0 .. inf]
+		//
+		double value = 0.;
+
+		int i = 0;
+		for (; i < minSteps; i++) {
+			value +=
+				GeomUtils::integralTaylorSeriesCosExpansion(
+					i,
+					polynomialConstants,
+					s
+				);
+		}
+
+		if (polynomialConstants.size() > 7) {
+			return	value;
+		}
+
+		for (; i < maxSteps; i++) {
+			double	deviation =
+				GeomUtils::integralTaylorSeriesCosExpansion(
+					i,
+					polynomialConstants,
+					s
+				);
+			value += deviation;
+
+			if (std::fabs(deviation) < borderValue) {
+				return value;
+			}
+		}
+
+		value +=
+			GeomUtils::integralTaylorSeriesCosExpansion(
+				i,
+				polynomialConstants,
+				s
+			);
+
+		if(i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
+		return value;
+	}
+	/**********************************************************************************************/
+
+	/*!Calculate sine for Y in th Taylor Series
+	* \param[in]  polynomialConstants    polynomial constants for a polynomial term - a,b,c,d
+	* \param[in]  s                      curve length between two points
+	*
+	* \return                            the value of sine
+	*/
+	double	GeomUtils::integralTaylorSeriesSin(
+		const std::vector<double>& polynomialConstants,
+		const double	s
+	)
+	{
+		int	minSteps = (polynomialConstants.size() > 7) ? 4 : 6, maxSteps = 8;
+		double	borderValue = 0.0000001;
+
+		//
+		// SUM [0 .. inf]
+		//
+		double value = 0.;
+
+		int i = 0;
+		for (; i < minSteps; i++) {
+			value +=
+				GeomUtils::integralTaylorSeriesSinExpansion(
+					i,
+					polynomialConstants,
+					s
+				);
+		}
+
+		if (polynomialConstants.size() > 7) {
+			return	value;
+		}
+
+		for (; i < maxSteps; i++) {
+			double	deviation =
+				GeomUtils::integralTaylorSeriesSinExpansion(
+					i,
+					polynomialConstants,
+					s
+				);
+			value += deviation;
+
+			if (std::fabs(deviation) < borderValue) {
+				return value;
+			}
+		}
+
+		value +=
+			GeomUtils::integralTaylorSeriesSinExpansion(
+				i,
+				polynomialConstants,
+				s
+			);
+
+		if(i != maxSteps) throw oip::InconsistentGeometryException("Incorrect integral implementation");
+		return value;
+	}
+
+
 
 /**********************************************************************************************/

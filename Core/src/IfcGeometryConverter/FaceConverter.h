@@ -1488,6 +1488,104 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPlanarExtent to a triangulated vector.
+				*
+				* \param[in] planarExtent				A pointer to data from \c IfcPlanarExtent.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)
+					const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcpresentationdefinitionresource/lexical/ifcplanarextent.htm
+					//	ENTITY IfcPlanarExtent
+					//		SUPERTYPE OF(IfcPlanarBox)
+					//		SUBTYPE OF(IfcGeometricRepresentationItem);
+					//			SizeInX: IfcLengthMeasure;
+					//			SizeInY: IfcLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					if (planarExtent.expired())
+						throw oip::ReferenceExpiredException(planarExtent);
+
+					if (planarExtent.template isOfType<typename IfcEntityTypesT::IfcPlanarBox>())
+					{
+						return convertIfcPlanarBox(planarExtent.template as<typename IfcEntityTypesT::IfcPlanarBox>(),
+							pos, itemData);
+					} // end IfcPlanarBox
+
+					throw oip::UnhandledException(planarExtent);
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPlanarBox to a triangulated vector.
+				*
+				* \param[in] planarBox					A pointer to data from \c IfcPlanarBox.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcPlanarBox(EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) 
+					const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcpresentationdefinitionresource/lexical/ifcplanarbox.htm
+					//	ENTITY IfcPlanarBox
+					//		SUBTYPE OF(IfcPlanarExtent);
+					//		Placement: IfcAxis2Placement;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					if (planarBox.expired())
+						throw oip::ReferenceExpiredException(planarBox);
+
+					//Get Planar Box location 
+					carve::math::Matrix positionMatrix = pos * placementConverter->convertIfcAxis2Placement(planarBox->Placement);
+
+					double 	extentInX = planarBox->SizeInX;
+					double 	extentInY = planarBox->SizeInY;
+
+					//  3-----2
+					//  ^     |
+					//  |y    |  
+					//  |     |
+					//  0---->1
+					//     x
+
+					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
+
+					polylineData->beginPolyline();
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
+
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
+
+					polylineData->addPolylineIndex(0);
+					polylineData->addPolylineIndex(1);
+					polylineData->addPolylineIndex(2);
+					polylineData->addPolylineIndex(3);
+
+					polyhedronData->addFace(0, 1, 2);
+					polyhedronData->addFace(2, 3, 0);
+
+					itemData->polylines.push_back(polylineData);
+					itemData->open_polyhedrons.push_back(polyhedronData);
+				}
+
 				protected:
 
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;

@@ -431,6 +431,36 @@ namespace OpenInfraPlatform {
 						return;
 					}
 
+					// (12/*) IfcPlanarExtent SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcPlanarExtent>())
+					{
+						faceConverter->convertIfcPlanarExtent(
+							geomItem.as<typename IfcEntityTypesT::IfcPlanarExtent>(),
+							pos, itemData);
+						return;
+					}
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+					// (13/*) IfcSegment SUBTYPE OF IfcGeometricRepresentationItem
+					if (geomItem.isOfType<typename IfcEntityTypesT::IfcSegment>())
+					{
+						std::vector<carve::geom::vector<3>> loops;
+						std::vector<carve::geom::vector<3>> segment_start_points;
+						curveConverter->convertIfcSegment(
+							geomItem.as<typename IfcEntityTypesT::IfcSegment>(),
+							loops, segment_start_points);
+
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						polylineData->beginPolyline();
+						for (int i = 0; i < loops.size(); ++i) {
+							polylineData->addVertex(pos * loops.at(i));
+							polylineData->addPolylineIndex(i);
+						}
+						itemData->polylines.push_back(polylineData);
+						return;
+					}
+#endif
+
 					throw oip::UnhandledException(geomItem);
 				}
 

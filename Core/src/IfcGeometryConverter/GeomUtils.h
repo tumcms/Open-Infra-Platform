@@ -373,6 +373,39 @@ namespace OpenInfraPlatform
 				static bool checkMeshSet(const carve::mesh::MeshSet<3>* mesh_set,
 					std::stringstream& err_poly, int entity_id);
 
+				static void recursiveMultiplicationTaylor(
+					const double	value,
+					const std::vector<double>& polynomialConstants,
+					std::vector<double>& myArray,
+					size_t myArrayParentIndex,
+					const int	i_n,
+					const int	n
+				);
+				static double computeIntegralTaylorSeriesExpansionElement(
+					const int	n,
+					const std::vector<double>& polynomialConstants,
+					const double	s
+				);
+				static double integralTaylorSeriesCosExpansion(
+					const int	i,
+					const std::vector<double>& polynomialConstants,
+					const double	s
+				);
+				static double integralTaylorSeriesSinExpansion(
+					const int	i,
+					const std::vector<double>& polynomialConstants,
+					const double	s
+				);
+				static double integralTaylorSeriesCos( 
+					const std::vector<double>& polynomialConstants,
+					const double	s
+				);
+				static double integralTaylorSeriesSin(
+					const std::vector<double>& polynomialConstants,
+					const double	s
+				);
+
+
 			};
 		}
 	}

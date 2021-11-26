@@ -5,7 +5,6 @@
 | Name                          | Role                              | Affiliation                       |
 |-------------------------------|-----------------------------------|-----------------------------------|
 | Štefan Jaud                   | Product owner & Project manager   | Technical University of Munich    |
-| Helge Hecht                   | Lead developer & Project manager  | Masaryk University                |
 | Jonas Schlenger               | Project manager   				| Technical University of Munich    |
 | Cara Coetzee                  | Developer                         | Technical University of Munich    |
 | Samuils Rulovs                | Developer                         | Technical University of Munich    |
@@ -36,6 +35,7 @@ Listed alphabetically.
 | Fabian Ritter                 | Project manager                   |
 | Rebecca Schill                | Developer                         |
 | Fabian Schoettl               | Lead developer                    |
+| Helge Hecht                   | Lead developer & Project manager  |
 | Michael Sedlmair              | Developer                         |
 | Dominic Singer                | Project manager                   |
 | Max Werner                    | Developer                         |
