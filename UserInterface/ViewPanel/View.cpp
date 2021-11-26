@@ -25,7 +25,10 @@
 #include "BlueFramework/Rasterizer/util.h"
 
 
-QIcon homeIcon, ghostSelectedIcon, ghostUnselectedIcon, snowSelectedIcon, snowUnselectedIcon;
+QIcon homeIcon, 
+	ghostSelectedIcon, ghostUnselectedIcon, 
+	snowSelectedIcon, snowUnselectedIcon, 
+	playIcon, pauseIcon;
 
 OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	viewport_(nullptr)
@@ -77,6 +80,9 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
     snowSelectedIcon = QIcon("UserInterface/Data/snow_selected.ico");
     snowUnselectedIcon = QIcon("UserInterface/Data/snow_unselected.ico");
 
+	playIcon = QIcon("UserInterface/Data/play.ico");
+	pauseIcon = QIcon("UserInterface/Data/pause.ico");
+
 	if (homeIcon.isNull() || ghostSelectedIcon.isNull() || ghostUnselectedIcon.isNull())
 	{
 		BLUE_LOG(warning) << "Could not load icon from.";
@@ -89,6 +95,10 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	cameraGhostModeAction_ = new QAction("", nullptr);
 	cameraGhostModeAction_->setShortcut(QKeySequence(Qt::Key_T));
 
+	playAction_ = new QAction("", nullptr);
+	playAction_->setShortcut(QKeySequence(Qt::Key_P));
+	playAction_->setIcon(playIcon);
+
     snowAction_ = new QAction("", nullptr);
     snowAction_->setIcon(snowUnselectedIcon);
 
@@ -96,6 +106,7 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	rightBar->setObjectName("transparent");
 
 	rightBar->addAction(homeAction_);
+	rightBar->addAction(playAction_);
 	rightBar->addAction(cameraGhostModeAction_);
 
 #if _DEBUG
@@ -117,6 +128,7 @@ OpenInfraPlatform::UserInterface::View::View() : QDockWidget(), // no parent
 	QObject::connect(homeAction_, &QAction::triggered, this, &View::on_home);
 	QObject::connect(cameraGhostModeAction_, &QAction::triggered, this, &View::on_actionToggleCameraGhostMode);
     QObject::connect(snowAction_, &QAction::triggered, this, &View::on_actionToggleSnow);
+	QObject::connect(playAction_, &QAction::triggered, this, &View::on_actionTogglePlay);
 
 	setFeatures(DockWidgetFeature::NoDockWidgetFeatures);
 
@@ -574,6 +586,15 @@ void OpenInfraPlatform::UserInterface::View::on_actionToggleSnow()
         snowAction_->setIcon(snowUnselectedIcon);
 }
 
+
+void OpenInfraPlatform::UserInterface::View::on_actionTogglePlay()
+{
+	if (playIcon.isDetached())
+		playAction_->setIcon(playIcon);
+	else
+		playAction_->setIcon(pauseIcon);
+	viewport_->toggleRotation();
+}
 
 void OpenInfraPlatform::UserInterface::View::cameraControlModeChanged()
 {
