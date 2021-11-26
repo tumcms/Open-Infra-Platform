@@ -1,4 +1,4 @@
----
+﻿---
 title: 'TUM Open Infra Platform: an open source package for simultaneous viewing and analysis of digital models in the civil engineering domain'
 tags:
   - building information modelling (BIM)
@@ -46,6 +46,7 @@ OIP supports reading, visualization, navigating, and handling of:
 
 Multiple models can be loaded at once and compared between each other (see Figure \ref{fig:ifcpcd}).
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
+Allowing direct comparison between IFC and point cloud data is especially valuable in the context of ScanVsBIM approaches.
 
 Additionally, OIP incorporates its own EXPRESS parser,
  that consumes and evaluates data models (like IFC) specified with a schema following the @iso1030311 (see Figure \ref{fig:express}).
@@ -69,7 +70,7 @@ During the development of the IFC standard, a clear need for an independent soft
  capable of consuming and producing IFC files according to the newly developed schemas was determined.
 Additionally, an interface to other infrastructure data model standards
  like OKSTRA and LandInfra was needed [@Amann:2015:OIP; @Amann:2015:ICCBEI; @okstra; @landinfra].
-OIP fulfils this role by being open source, using CMake as a build system generator to support various platforms,
+OIP fulfils this role by being open source, using CMake as a build system generator,
  and being based on well known libraries (like Qt, Eigen, Carve and Boost).
 Additionally, the EXPRESS parser provided proved useful for automatically producing
  source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
@@ -83,7 +84,7 @@ On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus prim
 They provide an API to implement against (in various programming languages) together with a viewer. 
 However, they focus mainly on the stable versions of the IFC standard (like IFC2x3 and IFC4),
  while OIP focuses primarily on the newer developments.
-Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of BlueFramework library.
+Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of BlueFramework open-source library that serves as a basis for the rendering engine.
 
 On the other hand, *ParaView*, *Point Cloud Library* and *CloudCompare* focus on handling PCD [@paraview; @pcl; @CloudCompare].
 These provide more functionality for PCD analysis than OIP, however cannot handle BIM models.
@@ -120,7 +121,7 @@ The development of the software has been supported through many projects founded
 - buildingSMART International Ltd.;
 - Federal Ministry for Transport and Digital Infrastructure, Germany (Bundesministerium für Verkehr und digitale Infrastruktur);
 - Federal Highway Research Institute, Germany (Bundesanstalt für Straßenwesen);
-- German research Foundation, Germany (Deutsche Forschungsgesellschaft);
+- German Research Foundation, Germany (Deutsche Forschungsgesellschaft);
 - Leonhard Obermeyer Center, Germany;
 - Technical University of Munich, Germany.
 

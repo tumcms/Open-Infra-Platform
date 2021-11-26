@@ -77,7 +77,7 @@ namespace OpenInfraPlatform
 				*
 				* \return							True, if the absolute difference is smaller than the precision. False otherwise
 				*/
-				static bool GeomUtils::areEqual(const double first, 
+				static bool areEqual(const double first, 
 					const double second, const double precision);
 
 				/**********************************************************************************************/
@@ -155,7 +155,7 @@ namespace OpenInfraPlatform
 				*
 				* \return							Returns true, if lines are intersecting with each other. False otherwise.
 				*/
-				static bool GeomUtils::LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
+				static bool LineToLineIntersection(const carve::geom::vector<2>& initialPointSeg1,
 					const carve::geom::vector<2>& terminalPointSeg1,
 					const carve::geom::vector<2>& initialPointSeg2,
 					const carve::geom::vector<2>& terminalPointSeg2,
@@ -173,7 +173,7 @@ namespace OpenInfraPlatform
 				*
 				* \return							Returns true, if lines are intersecting with each other. False otherwise.
 				*/
-				static bool GeomUtils::LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
+				static bool LineToLineIntersectionHelper(const carve::geom::vector<2>& initialPointSeg1,
 					const carve::geom::vector<2>& terminalPointSeg1,
 					const carve::geom::vector<2>& initialPointSeg2,
 					const carve::geom::vector<2>& terminalPointSeg2,
@@ -298,7 +298,7 @@ namespace OpenInfraPlatform
 				*
 				* return							List of several sets of points with correct winding. 			
 				*/
-				static std::vector<std::vector<carve::geom2d::P2>> GeomUtils::correctWinding(
+				static std::vector<std::vector<carve::geom2d::P2>> correctWinding(
 					const std::vector<std::vector<carve::geom::vector<2>>> & face_loops_input, 
 					carve::geom::vector<3>& normal_first_loop);
 

@@ -27,6 +27,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <stdexcept>
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EARLYBINDING_BEGIN
 

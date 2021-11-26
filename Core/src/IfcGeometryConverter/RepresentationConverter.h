@@ -133,7 +133,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentation>& representation,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// **************************************************************************************************************************
 					// IfcRepresentation
@@ -235,7 +235,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcRepresentationItem>& reprItem,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// *************************************************************************************************************************************************************//
 					//	IfcRepresentationItem	
@@ -318,7 +318,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricRepresentationItem>& geomItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// *********************************************************************************************************************************************************************//
 					//	IfcGeometricRepresentationItem	 
@@ -475,7 +475,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcMappedItem>& mapped_item,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>& inputData
-				) const throw(...)
+				) const  noexcept(false)
 				{
 					// *********************************************************************************************************************************************************************//
 					//  https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC1/HTML/link/ifcmappeditem.htm
@@ -502,7 +502,7 @@ namespace OpenInfraPlatform {
 					
 					// get the position
 					carve::math::Matrix map_matrix_target(carve::math::Matrix::IDENT());
-					PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(mapped_item->MappingTarget.lock(), map_matrix_target, UnitConvert()->getLengthInMeterFactor());
+					PlacementConverterT<IfcEntityTypesT>::convertTransformationOperator(mapped_item->MappingTarget.lock(), map_matrix_target, this->UnitConvert()->getLengthInMeterFactor());
 					carve::math::Matrix map_matrix_origin = placementConverter->convertIfcAxis2Placement(map_source->MappingOrigin);
 					carve::math::Matrix mapped_pos((map_matrix_origin * objectPlacement) * map_matrix_target);
 
@@ -521,7 +521,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
 					const carve::math::Matrix& objectPlacement,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// IfcTopologicalRepresentationItem 
 					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
@@ -554,7 +554,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcGeometricSet>& geomSet,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					// loop over the elements
 					for (auto& it_set_elements : geomSet->Elements) {
@@ -600,7 +600,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcPoint>& ifcpoint,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					carve::geom::vector<3> point = placementConverter->convertIfcPoint(ifcpoint);
 					// draw a 3D cross at the point
@@ -633,7 +633,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSectionedSpine>& spine,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					/*
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCompositeCurve> spine_curve = spine->SpineCurve;
@@ -681,7 +681,7 @@ namespace OpenInfraPlatform {
 				void convertIfcStyledItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcStyledItem>& styledItem, 
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					throw oip::UnhandledException( styledItem );
 
@@ -707,7 +707,7 @@ namespace OpenInfraPlatform {
 						return;
 					}
 					const int product_id = ifcElement->getId();
-					const double length_factor = UnitConvert()->getLengthInMeterFactor();
+					const double length_factor = this->UnitConvert()->getLengthInMeterFactor();
 					
 					// convert opening representation
 					for ( auto rel_voids : ifcElement->HasOpenings )
