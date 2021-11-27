@@ -1,6 +1,6 @@
 # Git Process
 
-This short guide shows you how to use Git processes for better structuring a group project, like the OpenInfraPlatform.
+This short guide shows you how to use Git processes for better structuring a group project, like the Open Infra Platform.
 
 ## Content 
 
@@ -61,7 +61,7 @@ Before you can proceed to work with `Git`, there are several steps, which have t
 
 ## <a name="Workflow"></a> Git Workflow
 
-Here you will find description about Git Workflow you need when working with OpenInfraPlatform. 
+Here you will find description about Git Workflow you need when working with Open Infra Platform. 
 
 ![](../images/Git_Workflow.png)
 
