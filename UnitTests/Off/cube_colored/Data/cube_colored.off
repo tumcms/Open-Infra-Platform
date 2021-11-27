@@ -1,0 +1,20 @@
+# Source:
+# This OFF model was downloaded from http://www.holmes3d.net/graphics/offfiles/
+# and was not created by the developers of the Open Infra Platform.
+
+OFF
+8 6 24
+0 0 0
+0 0 1
+0 1 0
+0 1 1
+1 0 0
+1 0 1
+1 1 0
+1 1 1
+4 0 1 3 2 128 0 255 # lila
+4 2 3 7 6 255 255 0 # yellow
+4 4 6 7 5 0 0 0 # black
+4 0 4 5 1 255 20 147 # deep pink
+4 1 5 7 3 128 255 0 # ligth green
+4 0 2 6 4 0 255 255 # cyan

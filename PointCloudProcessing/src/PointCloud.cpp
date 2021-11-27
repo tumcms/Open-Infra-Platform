@@ -28,7 +28,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <ccScalarField.h>
 #include <AutoSegmentationTools.h>
 
-#include <liblas/liblas.hpp>
+//#include <liblas/liblas.hpp>
 
 #include <algorithm>
 
@@ -66,8 +66,10 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 	if (filter) {
 		CC_FILE_ERROR err;
 		// Load the point cloud from file and store it temporarily.
-		std::shared_ptr<ccHObject> ccTempObject =
-		  std::shared_ptr<ccHObject>(FileIOFilter::LoadFromFile(QString(filename), FileIOFilter::LoadParameters(), FileIOFilter::FindBestFilterForExtension("BIN"), err));
+		const QString file(filename);
+		//FileIOFilter::LoadFromFile()
+		auto tmp = FileIOFilter::LoadParameters();
+		const ccHObject* ccTempObject = FileIOFilter::LoadFromFile(file, tmp, FileIOFilter::FindBestFilterForExtension("BIN"), err);
 		if (err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
 			BLUE_LOG(trace) << "Number of child objects:" << QString::number(ccTempObject->getChildrenNumber()).toStdString() << ".";
 			for (size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {
@@ -100,52 +102,55 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 		BLUE_LOG(trace) << "Finished processing child objects. Total size:" << QString::number(pointCloud->size()).toStdString() << ".";
 
 		// Delete our temporary parrent object.
+		delete ccTempObject;
 		ccTempObject = nullptr;
 	} else {
-		if (extension == "LAS") {
-			// see http://www.liblas.org/tutorial/cpp.html
-			std::ifstream ifs;
+		//if (extension == "LAS") {
+		//	// see http://www.liblas.org/tutorial/cpp.html
+		//	std::ifstream ifs;
 
-			ifs.open(filename, std::ios::in | std::ios::binary);
+		//	ifs.open(filename, std::ios::in | std::ios::binary);
 
-			liblas::ReaderFactory f;
-			liblas::Reader reader = f.CreateWithStream(ifs);
+		//	liblas::ReaderFactory f;
+		//	liblas::Reader reader = f.CreateWithStream(ifs);
 
-			liblas::Header const &header = reader.GetHeader();
+		//	liblas::Header const &header = reader.GetHeader();
 
-			BLUE_LOG(info) << "Compressed: " << ((header.Compressed() == true) ? "true" : "false");
-			BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
-			BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
+		//	BLUE_LOG(info) << "Compressed: " << ((header.Compressed() == true) ? "true" : "false");
+		//	BLUE_LOG(info) << "Signature: " << header.GetFileSignature();
+		//	BLUE_LOG(info) << "Points count: " << header.GetPointRecordsCount();
 
-			auto const & srs = header.GetSRS();
-			oip::GeorefMetadata metaTemp;
-			metaTemp.WKT = srs.GetWKT(liblas::SpatialReference::eCompoundOK, true);
+		//	auto const & srs = header.GetSRS();
+		//	oip::GeorefMetadata metaTemp;
+		//	metaTemp.WKT = srs.GetWKT(liblas::SpatialReference::eCompoundOK, true);
 
-			buw::Vector3d minv(0, 0, 0);
-			buw::Vector3d maxv(0, 0, 0);
+		//	buw::Vector3d minv(0, 0, 0);
+		//	buw::Vector3d maxv(0, 0, 0);
 
-			pointCloud->clear();
+		//	pointCloud->clear();
 
-			// Reserve the points.
-			pointCloud->reserve(header.GetPointRecordsCount());
-			pointCloud->reserveTheRGBTable();
+		//	// Reserve the points.
+		//	pointCloud->reserve(header.GetPointRecordsCount());
+		//	pointCloud->reserveTheRGBTable();
 
-			bool first = true;
-			CCVector3d scale = CCVector3d(header.GetScaleX(), header.GetScaleY(), header.GetScaleZ());
-			for (size_t i = 0; i < header.GetPointRecordsCount(); i++) {
-				if (reader.ReadNextPoint()) {
-					liblas::Point const &p = reader.GetPoint();
-					float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
+		//	bool first = true;
+		//	CCVector3d scale = CCVector3d(header.GetScaleX(), header.GetScaleY(), header.GetScaleZ());
+		//	for (size_t i = 0; i < header.GetPointRecordsCount(); i++) {
+		//		if (reader.ReadNextPoint()) {
+		//			liblas::Point const &p = reader.GetPoint();
+		//			float colorRange = std::numeric_limits<liblas::Color::value_type>::max();
 
-					int32_t posLiblas[3] = {p.GetRawX(), p.GetRawY(), p.GetRawZ()};
-					liblas::Color colLiblas = p.GetColor();
-					const ccColor::Rgb *color =
-					  new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
-					pointCloud->addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
-					pointCloud->addRGBColor(*color);
-				}
-			}
-		} else {
+		//			int32_t posLiblas[3] = {p.GetRawX(), p.GetRawY(), p.GetRawZ()};
+		//			liblas::Color colLiblas = p.GetColor();
+		//			const ccColor::Rgb *color =
+		//			  new ccColor::Rgb(ccColor::FromRgbf(ccColor::Rgbf(colLiblas.GetRed() / colorRange, colLiblas.GetGreen() / colorRange, colLiblas.GetBlue() / colorRange)).rgb);
+		//			pointCloud->addPoint(CCVector3(posLiblas[0] * scale.x, posLiblas[1] * scale.y, posLiblas[2] * scale.z));
+		//			pointCloud->addRGBColor(*color);
+		//		}
+		//	}
+		//} 
+	//else 
+		{
 			BLUE_LOG(warning) << "PCD format \"." << extension.toStdString() << "\" not supported.";
 			
 			BLUE_LOG(info) << "Supported extensions: " << GetSupportedExtensions().join(", ").toStdString() << ".";
@@ -582,7 +587,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 
 	if(false) {
 		for(int i = 1; i < grid.size(); i++) {
-			auto &start = grid.begin();
+			auto start = grid.begin();
 			advance(start, i - 1);
 
 			auto axis = std::get<2>(grid_[*start]);
@@ -592,7 +597,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 
 #pragma omp parallel for
 			for(long ii = i; ii < grid.size(); ii++) {
-				auto &pair = grid.begin();
+				auto pair = grid.begin();
 				advance(pair, ii);
 
 				auto pos = std::get<1>(grid_[*pair]) - center;
@@ -682,7 +687,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeChainageGridBas
 	for(int i = 0; i < grid.size(); i++) {
 
 		// Move to the correct position in the container
-		auto &cell = grid.begin();
+		auto cell = grid.begin();
 		advance(cell, i);
 
 		// Get the indices of all points in the cell
@@ -940,7 +945,7 @@ void OpenInfraPlatform::PointCloudProcessing::PointCloud::computeGrid(buw::GridC
 		for(int i = 0; i < grid_.size(); i++) {
 
 			// Move the iterator to the cell processed by this thread.
-			auto &cell = grid_.begin();
+			auto cell = grid_.begin();
 			advance(cell, i);
 
 			//Number of points in the cell.

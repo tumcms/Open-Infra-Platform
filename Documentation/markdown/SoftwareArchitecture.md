@@ -125,13 +125,13 @@ Keywords of the EXPRESS schema language that are not supported are:
 * DERIVE
 
 ### <a name="Commands"></a> Commands
-The commands are helper functionen to be directly started from Visual Studio.
+The commands are helper functions to be directly started from Visual Studio.
 In this section, the selected EXPRESS file is read, and then according to the schema, 
 the C++ classes are generated. 
-It is currently not possible to link various IFC versions simultaneously 
-since they have overlapping classes with various differences that are not yet adressed. 
+A current limitation of OIP is that simultaneously linking various IFC versions is not possible
+since they have overlapping classes with various differences that are not yet addressed. 
 Therefore one needs to select the desired IFC version for the build process, 
-as described in the [CMake Options Documentation](Documentation/markdown/CMakeOptions.md). 
+as described in the [CMake Options Documentation](Documentation/markdown/CMakeOptions.md). Every time the IFC Version is changed, the solution needs to be rebuilt. 
 
 The supported IFC versions are:
 * IFC2x3_TC1
@@ -140,6 +140,14 @@ The supported IFC versions are:
 * IFC4x1_RC3
 * IFC4x2 (BIMROAD and DRAFT_1)
 * IFC4x3 (RC1 and RC4)
+
+It is relatively easy to introduce more recent IFC versions to OIP. 
+All that is needed is the new schema definition in the form of the EXPRESS file. 
+With this, the early binding generator creates C++ classes for all entities accordingly. 
+Similar to the already implemented IFC versions, the OIP functionalities can then be modified 
+based on the changes introduced through the new IFC version. 
+With this, it is also possible to develop future IFC extensions 
+and test their behaviour with low implementation effort.
 
 ### <a name="Early_binding_lib"></a> Early Binding Library
 
