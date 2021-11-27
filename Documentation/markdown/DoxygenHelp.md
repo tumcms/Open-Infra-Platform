@@ -1,10 +1,10 @@
-# Doxygen for OpenInfraPlatform 
+# Doxygen for Open Infra Platform 
 
-The TUM OpenInfraPlatform uses doxygen to document its code.
+The TUM Open Infra Platform uses doxygen to document its code.
 
 ## Style 
 
-OpenInfraPlatform follows this style: 
+Open Infra Platform follows this style: 
 1. start a comment block with `/*!`, 
 1. start every line with `*` and 
 1. end it with `*/`.

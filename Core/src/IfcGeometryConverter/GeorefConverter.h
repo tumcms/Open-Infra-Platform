@@ -331,7 +331,7 @@ private:
 				georefMeta->addDataEntry( "Map Zone", projectedCRS->MapZone.get());
 			if (projectedCRS->MapUnit)
 			{
-				double factor = UnitConvert()->convertUnit(projectedCRS->MapUnit);
+				double factor = this->UnitConvert()->convertUnit(projectedCRS->MapUnit);
 				georefMeta->scaleX *= factor;
 				georefMeta->scaleY *= factor;
 				georefMeta->scaleZ *= factor;
