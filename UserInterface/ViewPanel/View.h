@@ -20,8 +20,9 @@
 #define OpenInfraPlatform_UserInterface_View_05741137_3101_4ec4_bf4b_61206b15ebce_h
 
 #include "Viewport.h"
-//#include "buw.BlueApplication.h"
 #include "DataManagement/General/Data.h"
+
+#include "buw.Rasterizer.h"
 
 #include <QMenuBar>
 #include <QDockWidget>
@@ -140,6 +141,7 @@ namespace OpenInfraPlatform
 			void on_home();
 			void on_actionToggleCameraGhostMode();
             void on_actionToggleSnow();
+			void on_actionTogglePlay();
 
 		private:
 			QMenu* menuView_;
@@ -160,6 +162,7 @@ namespace OpenInfraPlatform
 
 			QAction* cameraGhostModeAction_;
 			QAction* homeAction_;
+			QAction* playAction_;
             QAction* snowAction_;
 
 			Viewport*	viewport_;

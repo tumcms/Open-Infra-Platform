@@ -172,7 +172,7 @@ namespace OpenInfraPlatform
 			//void on_actionShow_Cross_Section_triggered(bool checked);
 			//void on_actionShow_Design_Cross_Section_triggered(bool checked);
 			void on_actionShow_Help_triggered();
-			void on_actionShow_Log_File_triggered();
+			//void on_actionShow_Log_File_triggered();
 			//void on_actionTerrain_Create_Terrain_from_Heightmap_triggered();
 			//void on_actionTerrain_Generate_Random_Terrain_triggered();
 			//void on_actionTerrain_Gradient_Ramp_triggered(bool checked);
