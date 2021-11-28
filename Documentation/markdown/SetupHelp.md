@@ -73,7 +73,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 
 7. **PROJ**
 
-	*	Download OSGeo4W Installer - find [here](download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe).
+	*	Download OSGeo4W Installer using the OSGeo4W Network Installer link - find [here](https://trac.osgeo.org/osgeo4w/).
 	*	In installer, select *Advanced Install*.
 	*	Choose to install from Internet.
 	*	Select directory, where PROJ will be installed.
