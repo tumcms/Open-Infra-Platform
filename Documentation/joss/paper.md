@@ -57,7 +57,7 @@ This is achieved by a carefully designed schema-agnostic template library.
 
 Let it be stated here that OIP serves as a prototypical playground for developments.
 The software architecture, features, and functionalities have been changed, added or removed as required along the way.
-Nowadays, OIP uses the IFC schema and CloudCompare's model as independent internal data models [@Hecht:2019:FBI].
+Nowadays, OIP uses the IFC schema and CloudCompare's model as independent internal data models -- explained in detail by @Hecht:2019:FBI.
 Major elements from previous developments were already realigned, while some (previously available) functionality is still considered as work-in-progress.
 
 ![A PCD model together with an IFC model loaded in OIP. (PCD model courtesy of Grega Indof, IFC model courtesy of Laurens Oostwegel.)\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
@@ -80,7 +80,7 @@ For a matter of fact, the geometry handling of IFC content has been taken and im
 Note that this is not an exhaustive list -- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
 
 On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus primarily
- on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @xbim].
+ on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @Lockley2017].
 They provide an API to implement against (in various programming languages) together with a viewer. 
 However, they focus mainly on the stable versions of the IFC standard (like IFC2x3 and IFC4),
  while OIP focuses primarily on the newer developments.
@@ -93,9 +93,10 @@ With the emergence of Scan2BIM and ScanVsBIM research field (deriving from or me
 @Valero:2020:ISARC selected OIP among many other software solutions as best suitable for the development of a Scan+BIM platform.
 
 Recently, Blender received a *BlenderBIM Add-on* and can now support
- both IFC and PCD models, using IfcOpenShell and ParaView as supporting libraries, respectively [blender].
-The add-on currently supports only IFC4 version, which is a major drawback
+ both IFC and PCD models, using *IfcOpenShell* and *ParaView*as supporting libraries, respectively [@blender].
+The add-on currently supports only the IFC4 version of the IFC data model, which is a major drawback
  if one wishes to compare PCD and IFC data of infrastructure objects.
+OIP bridges this gap by providing a viewer for both recent IFC versions and PCD [@Valero:2020:ISARC].
 
 # Research Projects
 

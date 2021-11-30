@@ -4,6 +4,8 @@ Guide on how to compile the project TUM Open Infra Platform (OIP) from scratch.
 
 *NOTE:* Additional information about known errors and warnings is provided in [FAQ](./FAQ.md).
 
+*NOTE 2:* Although the system is set up to function cross-platform (CMake), we are currently only developing actively for Windows platform. No guarantees for Linux (although it should theoretically function).
+
 ## Content 
 
 1. [Prerequisites](#Prerequisites)

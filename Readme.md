@@ -7,8 +7,14 @@
 `TUM Open Infra Platform` (OIP in short) is a software for checking and viewing IFC data. 
 It comes with its own `EXPRESS` parser and `C++` classes generator.
 
+The whole software underwent major overhaul as described by [Hecht & Jaud (2019)](./Documentation/2019_Hecht_Jaud_FBI.pdf).
+As a consequence, OIP can be used in two ways:
+
+1. Using the installer which corresponds to the frozen state of the `master` branch from 2018:
 
 ![Beta1_5_Windows8_1.png](./Documentation/images/Beta1_5_Windows8_1.png)
+
+2. Compiling the newest developments yourself on the `development` branch - see below for instructions.
 
 ## News
 
