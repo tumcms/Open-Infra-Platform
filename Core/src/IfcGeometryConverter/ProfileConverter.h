@@ -25,12 +25,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "ConverterBase.h"
 
-#include "CurveConverter.h"
 #include "GeomUtils.h"
 #include "GeometryInputData.h"
 #include "PlacementConverter.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
+#include "CurveConverter.h"
 
 
 /**********************************************************************************************/
@@ -71,7 +71,7 @@ namespace OpenInfraPlatform {
 			}
 
 			void convertIfcProfileDef(EXPRESSReference<typename IfcEntityTypesT::IfcProfileDef>& profileDef,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(...){
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const noexcept(false){
 
 				// (1/6) IfcArbitraryClosedProfileDef SUBTYPE OF IfcProfileDef
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>()) {
@@ -144,8 +144,8 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> curve_polygon;
 				std::vector<carve::geom::vector<2>> segment_start_points;
 
-				CurveConverterT<IfcEntityTypesT> c_conv(GeomSettings(), UnitConvert(), placementConverter);
-				c_conv.convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
+				auto curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+				curveConverter->convertIfcCurve2D(outer_curve, curve_polygon, segment_start_points);
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcArbitraryClosedProfileDef.OuterCurve IfcCurve #" << outer_curve->getId();
 #endif
@@ -162,7 +162,7 @@ namespace OpenInfraPlatform {
 						std::vector<carve::geom::vector<2>> inner_curve_polygon;
 						std::vector<carve::geom::vector<2>> segment_start_points;
 
-						c_conv.convertIfcCurve2D(it, inner_curve_polygon, segment_start_points);
+						curveConverter->convertIfcCurve2D(it, inner_curve_polygon, segment_start_points);
 						deleteLastPointIfEqualToFirst(inner_curve_polygon);
 						addAvoidingDuplicates(inner_curve_polygon, paths);
 					}
@@ -183,10 +183,10 @@ namespace OpenInfraPlatform {
 				const carve::geom::vector<3>& next_abscissa) const noexcept(false)
 			{
 
-				if (profileDef.expired())
-					throw oip::ReferenceExpiredException(profileDef);
+				if (profile.expired())
+					throw oip::ReferenceExpiredException(profile);
 
-				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
+				const double lengthFactor = this->UnitConvert()->getLengthInMeterFactor();
 
 				auto outer_curve = profile->OuterCurve;
 
@@ -285,15 +285,15 @@ namespace OpenInfraPlatform {
 					throw oip::ReferenceExpiredException(profileDef);
 
 				oip::EXPRESSReference<typename IfcEntityTypesT::IfcCurve> ifc_curve = profileDef->Curve.template as<typename IfcEntityTypesT::IfcCurve>();
-				CurveConverterT<IfcEntityTypesT> c_converter(GeomSettings(), UnitConvert(), placementConverter);
+				auto curveConverter = std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
 
 				if (profileDef.isOfType<typename IfcEntityTypesT::IfcCenterLineProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCenterLineProfileDef> center_line_profile_def = profileDef.as<typename IfcEntityTypesT::IfcCenterLineProfileDef>();
 					if (center_line_profile_def->Thickness) {
-						const double thickness = center_line_profile_def->Thickness * UnitConvert()->getLengthInMeterFactor();
+						const double thickness = center_line_profile_def->Thickness * this->UnitConvert()->getLengthInMeterFactor();
 						std::vector<carve::geom::vector<3>> segment_start_points;
 						std::vector<carve::geom::vector<3>> basis_curve_points;
-						c_converter.convertIfcCurve(ifc_curve, basis_curve_points, segment_start_points);
+						curveConverter->convertIfcCurve(ifc_curve, basis_curve_points, segment_start_points);
 
 						int num_base_points = basis_curve_points.size();
 						if (num_base_points < 2) {
@@ -340,7 +340,7 @@ namespace OpenInfraPlatform {
 							local_z.x = 0;
 							local_z.y = 0;
 							local_z.z = -1;
-							GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z, matrix_sweep);
+							matrix_sweep = GeomUtils::convertPlane2Matrix(bisecting_normal, vertex_current, local_z);
 
 							left_points.push_back(matrix_sweep * point_left);
 							right_points.push_back(matrix_sweep * point_right);
@@ -362,7 +362,7 @@ namespace OpenInfraPlatform {
 				else {
 					std::vector<carve::geom::vector<2>> polygon;
 					std::vector<carve::geom::vector<2>> segment_start_points;
-					c_converter.convertIfcCurve2D(ifc_curve, polygon, segment_start_points);
+					curveConverter->convertIfcCurve2D(ifc_curve, polygon, segment_start_points);
 					addAvoidingDuplicates(polygon, paths);
 				}
 #ifdef _DEBUG
@@ -395,14 +395,14 @@ namespace OpenInfraPlatform {
 				if (profileDef.expired())
 					throw oip::ReferenceExpiredException(profileDef);
 
-				ProfileConverterT<IfcEntityTypesT> temp_profiler(GeomSettings(), UnitConvert(), placementConverter);
+				ProfileConverterT<IfcEntityTypesT> temp_profiler(this->GeomSettings(), this->UnitConvert(), placementConverter);
 				temp_profiler.computeProfile(profileDef->ParentProfile);
 				const std::vector<std::vector<carve::geom::vector<2>>>& parent_paths = temp_profiler.getCoordinates();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcCartesianTransformationOperator2D> transf_op_2D = profileDef->Operator.lock();
 
 				carve::math::Matrix transform(carve::math::Matrix::IDENT());
-				placementConverter->convertTransformationOperator(transf_op_2D, transform, UnitConvert()->getLengthInMeterFactor());
+				placementConverter->convertTransformationOperator(transf_op_2D, transform, this->UnitConvert()->getLengthInMeterFactor());
 				for (int i = 0; i < parent_paths.size(); ++i) {
 					const std::vector<carve::geom::vector<2>>& loop_parent = parent_paths[i];
 					std::vector<carve::geom::vector<2>> loop;
@@ -445,8 +445,8 @@ namespace OpenInfraPlatform {
 				for (int i = 0; i < profileDef->Widths.size(); i++) {
 					outer_loop.push_back(carve::geom::VECTOR(TagX, TagY));
 					std::tie(x, y) = CalculateXYFromPolar(profileDef->HorizontalWidths,
-						profileDef->Widths[i] * UnitConvert()->getLengthInMeterFactor(), 
-						profileDef->Slopes[i] * UnitConvert()->getAngleInRadianFactor());
+						profileDef->Widths[i] * this->UnitConvert()->getLengthInMeterFactor(), 
+						profileDef->Slopes[i] * this->UnitConvert()->getAngleInRadianFactor());
 					TagX = TagX + x;
 					TagY = TagY + y;
 				}
@@ -462,7 +462,7 @@ namespace OpenInfraPlatform {
 			* \return X and Y coordinates of the vector's end. 
 			* beginning of the vector lie in (0,0).
 			*/
-			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const throw(...) {
+			std::tuple<double,double> CalculateXYFromPolar(const bool& horizontal, const double& width, const double& slope) const noexcept(false) {
 				if (horizontal) {
 					if (slope == M_PI_2) {
 						throw oip::InconsistentGeometryException("slope can not be 90 degree");
@@ -623,14 +623,14 @@ namespace OpenInfraPlatform {
 				//		(OuterFilletRadius <= (SELF\IfcRectangleProfileDef.YDim / 2.)));
 				//	END_ENTITY;
 				//	**************************************************************************************************************************
-				double x = hollow->XDim * UnitConvert()->getLengthInMeterFactor();
-				double y = hollow->YDim * UnitConvert()->getLengthInMeterFactor();
+				double x = hollow->XDim * this->UnitConvert()->getLengthInMeterFactor();
+				double y = hollow->YDim * this->UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
 				std::vector<carve::geom::vector<2>> inner_loop;
 				if (hollow->WallThickness) {
-					double t = hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-					double r1 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-					double r2 = hollow->InnerFilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double t = hollow->WallThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double r1 = hollow->InnerFilletRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+					double r2 = hollow->InnerFilletRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
 					// Outer
 					AddRectangleCoordinates(outer_loop, r1, x, y);
 
@@ -661,11 +661,11 @@ namespace OpenInfraPlatform {
 				//		(RoundingRadius <= (SELF\IfcRectangleProfileDef.YDim / 2.)));
 				//	END_ENTITY;
 				//	**************************************************************************************************************************
-				double x = rounded_rectangle->XDim * UnitConvert()->getLengthInMeterFactor();
-				double y = rounded_rectangle->YDim * UnitConvert()->getLengthInMeterFactor();
+				double x = rounded_rectangle->XDim * this->UnitConvert()->getLengthInMeterFactor();
+				double y = rounded_rectangle->YDim * this->UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (rounded_rectangle->RoundingRadius) {
-					AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * UnitConvert()->getLengthInMeterFactor(), x, y);
+					AddRectangleCoordinates(outer_loop, rounded_rectangle->RoundingRadius * this->UnitConvert()->getLengthInMeterFactor(), x, y);
 					paths.push_back(outer_loop);
 				}
 				return;
@@ -677,8 +677,8 @@ namespace OpenInfraPlatform {
 			void convertIfcStandardRectangleProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangleProfileDef>& rectangle_profile, 
 				std::vector<std::vector<carve::geom::vector<2>>>& paths) const {
 				
-				double x = rectangle_profile->XDim * UnitConvert()->getLengthInMeterFactor();
-				double y = rectangle_profile->YDim * UnitConvert()->getLengthInMeterFactor();
+				double x = rectangle_profile->XDim * this->UnitConvert()->getLengthInMeterFactor();
+				double y = rectangle_profile->YDim * this->UnitConvert()->getLengthInMeterFactor();
 				std::vector<carve::geom::vector<2>> outer_loop;
 				AddRectangleCoordinates(outer_loop, 0.0, x, y);
 				paths.push_back(outer_loop);
@@ -703,10 +703,10 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (trapezium->BottomXDim && trapezium->TopXDim && trapezium->TopXOffset && trapezium->YDim) {
-					double xBottom = trapezium->BottomXDim * UnitConvert()->getLengthInMeterFactor();
-					double xTop = trapezium->TopXDim * UnitConvert()->getLengthInMeterFactor();
-					double xOffset = trapezium->TopXOffset * UnitConvert()->getLengthInMeterFactor();
-					double y = trapezium->YDim * UnitConvert()->getLengthInMeterFactor();
+					double xBottom = trapezium->BottomXDim * this->UnitConvert()->getLengthInMeterFactor();
+					double xTop = trapezium->TopXDim * this->UnitConvert()->getLengthInMeterFactor();
+					double xOffset = trapezium->TopXOffset * this->UnitConvert()->getLengthInMeterFactor();
+					double y = trapezium->YDim * this->UnitConvert()->getLengthInMeterFactor();
 
 					AddTrapeziumCoordinates(outer_loop, xBottom, xOffset, xTop, y);
 					paths.push_back(outer_loop);
@@ -730,12 +730,12 @@ namespace OpenInfraPlatform {
 				// END_ENTITY;
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
-				double radius = circle_profile_def->Radius * UnitConvert()->getLengthInMeterFactor();
-				if (radius < GeomSettings()->getPrecision()) {
+				double radius = circle_profile_def->Radius * this->UnitConvert()->getLengthInMeterFactor();
+				if (radius < this->GeomSettings()->getPrecision()) {
 					return;
 				}
-				int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radius);
-				double d_angle = GeomSettings()->getAngleLength(radius);
+				int num_segments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius);
+				double d_angle = this->GeomSettings()->getAngleLength(radius);
 
 				addArc(outer_loop, radius, 0.0, d_angle, 0.0, 0.0, num_segments);
 				paths.push_back(outer_loop);
@@ -744,9 +744,9 @@ namespace OpenInfraPlatform {
 				if (circle_profile_def.isOfType<typename IfcEntityTypesT::IfcCircleHollowProfileDef>()) {
 					EXPRESSReference<typename IfcEntityTypesT::IfcCircleHollowProfileDef> hollow = circle_profile_def.as<typename IfcEntityTypesT::IfcCircleHollowProfileDef>();
 					std::vector<carve::geom::vector<2>> inner_loop;
-					double radius2 = radius - hollow->WallThickness * UnitConvert()->getLengthInMeterFactor();
-					int num_segments2 = GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
-					double d_angle2 = GeomSettings()->getAngleLength(radius2);
+					double radius2 = radius - hollow->WallThickness * this->UnitConvert()->getLengthInMeterFactor();
+					int num_segments2 = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius2);
+					double d_angle2 = this->GeomSettings()->getAngleLength(radius2);
 
 					addArc(inner_loop, radius2, 0.0, d_angle2, 0.0, 0.0, num_segments2);
 					paths.push_back(inner_loop);
@@ -772,11 +772,11 @@ namespace OpenInfraPlatform {
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (ellipse_profile_def->SemiAxis1) {
 					if (ellipse_profile_def->SemiAxis2) {
-						double xRadius = ellipse_profile_def->SemiAxis1 * UnitConvert()->getLengthInMeterFactor();
-						double yRadius = ellipse_profile_def->SemiAxis2 * UnitConvert()->getLengthInMeterFactor();
+						double xRadius = ellipse_profile_def->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+						double yRadius = ellipse_profile_def->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
 						double radiusMax = std::max(xRadius, yRadius);
-						int num_segments = GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
-						double d_angle = GeomSettings()->getAngleLength(radiusMax);
+						int num_segments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radiusMax);
+						double d_angle = this->GeomSettings()->getAngleLength(radiusMax);
 						double angle = 0.0;
 
 						for (int i = 0; i < num_segments; ++i) {
@@ -816,11 +816,11 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (i_shape->OverallDepth && i_shape->OverallWidth && i_shape->WebThickness && i_shape->FlangeThickness) {
-					double h = i_shape->OverallDepth * UnitConvert()->getLengthInMeterFactor();
-					double b = i_shape->OverallWidth * UnitConvert()->getLengthInMeterFactor();
-					double tw = i_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
-					double tf = i_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
-					double r = i_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double h = i_shape->OverallDepth * this->UnitConvert()->getLengthInMeterFactor();
+					double b = i_shape->OverallWidth * this->UnitConvert()->getLengthInMeterFactor();
+					double tw = i_shape->WebThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double tf = i_shape->FlangeThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double r = i_shape->FilletRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
 
 					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
 					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, (-h * 0.5 + tf)));
@@ -832,9 +832,9 @@ namespace OpenInfraPlatform {
 						auto asym_I_profile = i_shape.as<typename IfcEntityTypesT::IfcAsymmetricIShapeProfileDef>();
 
 						if (asym_I_profile->TopFlangeWidth) {
-							double bTop = asym_I_profile->TopFlangeWidth * UnitConvert()->getLengthInMeterFactor();
-							double tfTop = asym_I_profile->TopFlangeThickness.value_or(i_shape->FlangeThickness) * UnitConvert()->getLengthInMeterFactor();
-							double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(i_shape->FilletRadius.value_or(0.0)) * UnitConvert()->getLengthInMeterFactor();
+							double bTop = asym_I_profile->TopFlangeWidth * this->UnitConvert()->getLengthInMeterFactor();
+							double tfTop = asym_I_profile->TopFlangeThickness.value_or(i_shape->FlangeThickness) * this->UnitConvert()->getLengthInMeterFactor();
+							double rTop = asym_I_profile->TopFlangeFilletRadius.value_or(i_shape->FilletRadius.value_or(0.0)) * this->UnitConvert()->getLengthInMeterFactor();
 							
 							addArc_or_push_back(outer_loop, rTop, M_PI, -M_PI_2, (tw * 0.5 + rTop), (h * 0.5 - tfTop - rTop), (tw * 0.5), (h * 0.5 - tfTop));
 
@@ -877,12 +877,12 @@ namespace OpenInfraPlatform {
 				//	END_ENTITY;
 				// **************************************************************************************************************************
 				if (l_shape->Depth && l_shape->Thickness) {
-					double h = l_shape->Depth * UnitConvert()->getLengthInMeterFactor();
-					double b = l_shape->Width.value_or(l_shape->Depth) * UnitConvert()->getLengthInMeterFactor();
+					double h = l_shape->Depth * this->UnitConvert()->getLengthInMeterFactor();
+					double b = l_shape->Width.value_or(l_shape->Depth) * this->UnitConvert()->getLengthInMeterFactor();
 					double t = l_shape->Thickness;
-					double r1 = l_shape->FilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
-					double r2 = l_shape->EdgeRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
-					double ls = l_shape->LegSlope.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double r1 = l_shape->FilletRadius.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
+					double r2 = l_shape->EdgeRadius.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
+					double ls = l_shape->LegSlope.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
 
 					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
@@ -927,13 +927,13 @@ namespace OpenInfraPlatform {
 				// **************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (u_shape->Depth && u_shape->FlangeWidth && u_shape->WebThickness && u_shape->FlangeThickness) {
-					double h = u_shape->Depth * UnitConvert()->getLengthInMeterFactor();
-					double b = u_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
-					double tw = u_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
-					double tf = u_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
-					double r1 = u_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-					double r2 = u_shape->EdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-					double fs = u_shape->FlangeSlope.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
+					double h = u_shape->Depth * this->UnitConvert()->getLengthInMeterFactor();
+					double b = u_shape->FlangeWidth * this->UnitConvert()->getLengthInMeterFactor();
+					double tw = u_shape->WebThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double tf = u_shape->FlangeThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double r1 = u_shape->FilletRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+					double r2 = u_shape->EdgeRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+					double fs = u_shape->FlangeSlope.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
 
 					outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, -h * 0.5));
 					outer_loop.push_back(carve::geom::VECTOR(b * 0.5, -h * 0.5));
@@ -975,11 +975,11 @@ namespace OpenInfraPlatform {
 				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (c_shape->Depth && c_shape->Width && c_shape->Girth && c_shape->WallThickness) {
-					double h = c_shape->Depth * UnitConvert()->getLengthInMeterFactor();
-					double b = c_shape->Width * UnitConvert()->getLengthInMeterFactor();
-					double g = c_shape->Girth * UnitConvert()->getLengthInMeterFactor();
-					double t = c_shape->WallThickness * UnitConvert()->getLengthInMeterFactor();
-					double r1 = c_shape->InternalFilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double h = c_shape->Depth * this->UnitConvert()->getLengthInMeterFactor();
+					double b = c_shape->Width * this->UnitConvert()->getLengthInMeterFactor();
+					double g = c_shape->Girth * this->UnitConvert()->getLengthInMeterFactor();
+					double t = c_shape->WallThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double r1 = c_shape->InternalFilletRadius.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
 
 					addArc_or_push_back(outer_loop, (r1 + t), M_PI, M_PI_2, (-b * 0.5 + t + r1), (-h * 0.5 + t + r1), (-b * 0.5), (-h * 0.5));
 					addArc_or_push_back(outer_loop, (r1 + t), 3 * M_PI_2, M_PI_2, (b * 0.5 - t - r1), (-h * 0.5 + t + r1), (b * 0.5), (-h * 0.5));
@@ -1019,12 +1019,12 @@ namespace OpenInfraPlatform {
 				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
 				if (z_shape->Depth && z_shape->FlangeWidth && z_shape->WebThickness && z_shape->FlangeThickness) {
-					double h = z_shape->Depth * UnitConvert()->getLengthInMeterFactor();
-					double b = z_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
-					double tw = z_shape->WebThickness * UnitConvert()->getLengthInMeterFactor();
-					double tf = z_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
-					double r1 = z_shape->FilletRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
-					double r2 = z_shape->EdgeRadius.value_or(0.) * UnitConvert()->getLengthInMeterFactor();
+					double h = z_shape->Depth * this->UnitConvert()->getLengthInMeterFactor();
+					double b = z_shape->FlangeWidth * this->UnitConvert()->getLengthInMeterFactor();
+					double tw = z_shape->WebThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double tf = z_shape->FlangeThickness * this->UnitConvert()->getLengthInMeterFactor();
+					double r1 = z_shape->FilletRadius.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
+					double r2 = z_shape->EdgeRadius.value_or(0.) * this->UnitConvert()->getLengthInMeterFactor();
 
 					outer_loop.push_back(carve::geom::VECTOR((-tw * 0.5), -h * 0.5));
 					outer_loop.push_back(carve::geom::VECTOR((b - tw * 0.5), -h * 0.5));
@@ -1064,15 +1064,15 @@ namespace OpenInfraPlatform {
 				//	END_ENTITY;
 				//	**************************************************************************************************************************
 				std::vector<carve::geom::vector<2>> outer_loop;
-				const double h = t_shape->Depth * UnitConvert()->getLengthInMeterFactor();
-				const double b = t_shape->FlangeWidth * UnitConvert()->getLengthInMeterFactor();
-				const double tw = t_shape->WebThickness * UnitConvert()->getLengthInMeterFactor() * 0.5;
-				const double tf = t_shape->FlangeThickness * UnitConvert()->getLengthInMeterFactor();
-				double r1 = t_shape->FilletRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-				double r2 = r2 = t_shape->FlangeEdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-				double r3 = t_shape->WebEdgeRadius.value_or(0.0) * UnitConvert()->getLengthInMeterFactor();
-				double fs = t_shape->FlangeSlope.value_or(0.0) * UnitConvert()->getAngleInRadianFactor();
-				double ws = t_shape->WebSlope.value_or(0.0) * UnitConvert()->getAngleInRadianFactor();
+				const double h = t_shape->Depth * this->UnitConvert()->getLengthInMeterFactor();
+				const double b = t_shape->FlangeWidth * this->UnitConvert()->getLengthInMeterFactor();
+				const double tw = t_shape->WebThickness * this->UnitConvert()->getLengthInMeterFactor() * 0.5;
+				const double tf = t_shape->FlangeThickness * this->UnitConvert()->getLengthInMeterFactor();
+				double r1 = t_shape->FilletRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+				double r2 = r2 = t_shape->FlangeEdgeRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+				double r3 = t_shape->WebEdgeRadius.value_or(0.0) * this->UnitConvert()->getLengthInMeterFactor();
+				double fs = t_shape->FlangeSlope.value_or(0.0) * this->UnitConvert()->getAngleInRadianFactor();
+				double ws = t_shape->WebSlope.value_or(0.0) * this->UnitConvert()->getAngleInRadianFactor();
 
 				outer_loop.push_back(carve::geom::VECTOR(-b * 0.5, h * 0.5));
 
@@ -1187,7 +1187,7 @@ namespace OpenInfraPlatform {
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processing IfcArbitraryProfileDefWithVoids #" << profile_with_voids->getId();
 #endif
-				const double lengthFactor = UnitConvert()->getLengthInMeterFactor();
+				const double lengthFactor = this->UnitConvert()->getLengthInMeterFactor();
 
 				std::shared_ptr<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef> outer_curve =
 					std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcArbitraryClosedProfileDef>(profile_with_voids);
@@ -1304,7 +1304,7 @@ namespace OpenInfraPlatform {
 			void addArc(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM, int numSegments = -1) const
 			{
 				if(numSegments < 0) {
-					numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
+					numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 				}
 
 				if(numSegments > 100) {
@@ -1322,7 +1322,7 @@ namespace OpenInfraPlatform {
 			// Function 2: Add arc with end point 
 			void addArcWithEndPoint(std::vector<carve::geom::vector<2>>& coords, double radius, double startAngle, double openingAngle, double xM, double yM) const
 			{
-				int numSegments = GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
+				int numSegments = this->GeomSettings()->getNumberOfSegmentsForTessellation(radius, abs(openingAngle));
 
 				if(numSegments > 100) {
 					numSegments = 100;
@@ -1552,7 +1552,7 @@ namespace OpenInfraPlatform {
 			*/
 			void ApplyPosition(const EXPRESSReference<typename IfcEntityTypesT::IfcParameterizedProfileDef>& profileDef,
 				std::vector<std::vector<carve::geom::vector<2>>> temp_paths,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const throw(...){
+				std::vector<std::vector<carve::geom::vector<2>>>& paths) const noexcept(false){
 
 				if (profileDef->Position) {
 					carve::math::Matrix transform = placementConverter->convertIfcAxis2Placement2D(profileDef->Position.get());
@@ -1645,9 +1645,9 @@ namespace OpenInfraPlatform {
 			* \param[in] polygon A pointer to the polygon, where to search existing vertex.
 			* \param[out] index value to fill in the faceIndices.
 			*/
-			void SearchExistingVertex(const std::string & ID, const uint32_t & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> & polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
+			void SearchExistingVertex(const std::string & ID, uint32_t & index, carve::geom::vector<3> position, std::map<std::string, uint32_t> & polygonIndices, std::shared_ptr<carve::input::PolyhedronData> polygon) const
 			{
-				auto itFound = polygonIndices.find(ID);
+				std::map<std::string, uint32_t>::iterator itFound = polygonIndices.find(ID);
 				if (itFound != polygonIndices.end()) {
 					index = itFound->second;
 				}

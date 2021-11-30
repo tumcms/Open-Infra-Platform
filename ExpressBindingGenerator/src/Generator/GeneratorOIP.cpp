@@ -25,7 +25,13 @@
 //#include <Windows.h>
 #include <algorithm>
 #include <cassert>
+
+#if _MSVC_LANG < 201700L
 #include <experimental/filesystem>
+#else
+#include <filesystem>
+#endif
+
 #include <fstream>
 #include <map>
 #include <set>
@@ -43,7 +49,12 @@
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_EXPRESSBINDINGGENERATOR_BEGIN
 
+
+#if _MSVC_LANG < 201700L
 namespace fs = std::experimental::filesystem;
+#else
+namespace fs = std::filesystem;
+#endif
 
 
 std::string license =
@@ -3138,9 +3149,15 @@ void GeneratorOIP::generateEntitySourceFileREFACTORED(const Schema & schema, con
 		writeLine(out, "boost::to_upper(classname);");
 		writeLine(out, "std::string stepLine = this->getStepParameter() + \"=\" + classname + \"(\";");
 		for (int i = 0; i < attributes.size() - 1; i++) {
-			writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
+			if( entity.hasQualifiedAttribute(attributes[i].getName()) )
+				writeLine(out, "stepLine += \"*,\"; // " + attributes[i].getName() + " is a qualified attribute of " + name);
+			else
+				writeLine(out, "stepLine += " + attributes[i].getName() + ".getStepParameter() + \",\";");
 		}
-		writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
+		if( entity.hasQualifiedAttribute(attributes.back().getName() ) )
+			writeLine(out, "stepLine += \"*);\"; // " + attributes.back().getName() + " is a qualified attribute of " + name);
+		else
+			writeLine(out, "stepLine += " + attributes.back().getName() + ".getStepParameter() + \");\";");
 		writeLine(out, "return stepLine;");
 		writeLine(out, "}");
 		linebreak(out);

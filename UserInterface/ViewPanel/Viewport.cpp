@@ -35,8 +35,6 @@
 #endif
 
 
-
-
 #include <buw.Engine.h>
 #include <buw.Rasterizer.h>
 #include <QHBoxLayout>
@@ -205,8 +203,8 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 Viewport::~Viewport() {
 
     disconnect(timer_, SIGNAL(timeout()), this, SLOT(tick()));
-    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
-    OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
+    //OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Change.disconnect(boost::bind(&Viewport::onChange, this));
+    //OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().Clear.disconnect(boost::bind(&Viewport::onClear, this));
 
     buw::Singleton<oip::RenderResources>::instance().release();
     activeEffects_.clear();
@@ -541,6 +539,58 @@ void Viewport::leaveEvent(QEvent* event) {
 
 	// To avoid continuous rendering.
 	repaint();
+}
+
+const std::vector<double> angles = {-4. * M_TWOPI, -3. * M_PI_4, -M_PI_4, M_PI_4, 3. * M_PI_4 };
+
+void Viewport::toggleRotation()
+{
+	if( rotating_ > 0 )
+	{
+		disconnect(timer_, SIGNAL(timeout()), this, SLOT(rotate()));
+		rotating_ = 0;
+	}
+	else
+	{
+		float yaw = camera_->transformation().yaw();
+		// get the next angle
+		yaw += 0.01; // increase a bit
+		while (yaw < -M_PI)
+			yaw += M_TWOPI;
+		while (yaw > M_PI)
+			yaw -= M_TWOPI;
+		while (yaw > angles[rotating_])
+			rotating_++;
+		connect(timer_, SIGNAL(timeout()), this, SLOT(rotate()));
+	}
+}
+
+const std::vector< buw::eViewDirection > sequence = { 
+	buw::eViewDirection::TopFrontRight, 
+	buw::eViewDirection::TopRightBack, 
+	buw::eViewDirection::TopLeftBack, 
+	buw::eViewDirection::TopLeftFront 
+};
+
+void Viewport::rotate()
+{
+	if (cameraController_->isCameraMoving())
+	{
+		return;
+	}
+	else
+	{
+		// get the current pitch & yaw
+		float pitch = camera_->transformation().pitch();
+		float yaw = camera_->transformation().yaw();
+		//BLUE_LOG(trace) << "yaw = " << yaw << "  pitch = " << pitch;
+		//BLUE_LOG(trace) << "i = " << rotating_ << " angle = " << angles[rotating_ % 4 + 1];
+		// calculate the new direction
+		buw::Vector3f newDir( sin(angles[rotating_ % 4 + 1]) * cos(pitch), sin(pitch) , cos(angles[rotating_ % 4 + 1]) * cos(pitch));
+		rotating_++;
+		// fire the next movement
+		cameraController_->setViewDirection(newDir, 1.5f); //cameraController_->getViewDirectionVector(sequence[rotating_++ % 4])
+	}
 }
 
 void Viewport::toggleCameraMode() {

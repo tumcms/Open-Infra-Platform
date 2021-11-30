@@ -26,7 +26,7 @@
 #include "Dialogues/resource.h"
 #include "Dialogues/VectorTableModel.h"
 
-#include "ui_mainwindow.h"
+#include <ui_MainWindow.h>
 
 #include <BlueFramework/ImageProcessing/Image.h>
 #include <BlueFramework/ImageProcessing/io.h>
@@ -46,6 +46,7 @@
 #include <codecvt>
 #include <shlobj.h>
 #include <stdlib.h>
+#include <tchar.h>
 
 #include <Resources/RenderResources.h>
 
@@ -408,8 +409,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		updateRecentFileActions();
 
 		// window title update
-		boost::filesystem::path p(data.getLastModel()->getSource());
-		updateWindowTitle(p.filename().string());
+		const boost::filesystem::path modelPath(data.getLastModel()->getSource());
+		updateWindowTitle(modelPath.filename().string());
 
 		// small helper functions
 		auto addVector3D = []( QTreeWidgetItem* parent, const buw::Vector3d& vct, const std::string& propName) -> QTreeWidgetItem* {
@@ -475,8 +476,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 		// loop through the models
 		for (auto& model : data.getModels())
 		{
-			boost::filesystem::path p(model->getSource());
-			auto filename = QString::fromStdString(p.filename().string());
+			boost::filesystem::path modelPath(model->getSource());
+			auto filename = QString::fromStdString(modelPath.filename().string());
 
 			// only add if not yet present
 			auto found = modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1);
@@ -515,7 +516,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				// 2.  - source : filepath
 				auto itemSource = new QTreeWidgetItem(itemModel); 
 				itemSource->setText(0, "Filepath");
-				itemSource->setText(1, QString::fromStdString(p.string()));
+				itemSource->setText(1, QString::fromStdString(modelPath.string()));
 
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
@@ -1385,7 +1386,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_pushButtonComputePairs_cli
 		desc.clusterHeightRange = ui_->doubleSpinBoxClusterHeightRange->value();
 		desc.clusterHeightTreshold = ui_->doubleSpinBoxClusterHeightThreshold->value();
 
-		pointCloud->computePairs(desc, std::vector<std::pair<size_t, size_t>>(), callback_);
+		std::vector<std::pair<size_t, size_t>> pairVector;
+		pointCloud->computePairs(desc, pairVector, callback_);
 		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().pushChange(OpenInfraPlatform::Core::DataManagement::ChangeFlag::PointCloud);
 	}
 	else {
@@ -1764,26 +1766,22 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Help_triggered(
 	HelpBrowser::showPage("index.html");
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
-	wchar_t* localAppData = 0;
-	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
-
-	std::wstringstream ss;
-	ss << localAppData << L"/OpenInfraPlatform/";
-
-	CoTaskMemFree(static_cast<void*>(localAppData));
-	// setup converter
-	std::wstring_convert<convert_type, wchar_t> converter;
-
-	// use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
-	std::wstring filename = L"log.txt";
-
-#ifndef _DEBUG
-	filename = ss.str().append(L"log.txt");
-#endif
-
-	ShellExecute(0, 0, filename.c_str(), 0, 0, SW_SHOW);
-}
+//void OpenInfraPlatform::UserInterface::MainWindow::on_actionShow_Log_File_triggered() {
+//#ifndef _DEBUG
+//	wchar_t* localAppData = 0;
+//	SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &localAppData);
+//
+//	std::wstringstream ss;
+//	ss << localAppData << _T("/OpenInfraPlatform/") << _T("log.txt");
+//
+//	CoTaskMemFree(static_cast<void*>(localAppData));
+//
+//	ShellExecute(0, 0, ss.str().c_str(), 0, 0, SW_SHOW);
+//#else
+//	ShellExecute(0, 0, _T("log.txt"), 0, 0, SW_SHOW);
+//#endif
+//
+//}
 
 
 void OpenInfraPlatform::UserInterface::MainWindow::updateActionUndo(unsigned int numberOfUndoActions) {

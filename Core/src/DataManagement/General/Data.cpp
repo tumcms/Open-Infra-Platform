@@ -43,10 +43,10 @@
 	#include "EarlyBinding\IFC4X3_RC1\src\IFC4X3_RC1.h"
 #endif
 
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-	#include "EarlyBinding\IFC4X3_RC3\src\reader/IFC4X3_RC3Reader.h"
-	#include "EarlyBinding\IFC4X3_RC3\src\EMTIFC4X3_RC3EntityTypes.h"
-	#include "EarlyBinding\IFC4X3_RC3\src\IFC4X3_RC3.h"
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+	#include "EarlyBinding\IFC4X3_RC4\src\reader\IFC4X3_RC4Reader.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\EMTIFC4X3_RC4EntityTypes.h"
+	#include "EarlyBinding\IFC4X3_RC4\src\IFC4X3_RC4.h"
 #endif
 
 #include "IfcGeometryConverter\GeometryInputData.h"
@@ -62,6 +62,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/bind/placeholders.hpp>
 
 #include "AsyncJob.h"
 
@@ -86,7 +87,11 @@ bShowReferenceCoordinateSystem(true)
 {
 	latestChangeFlag_ = ChangeFlag::All;
 
-	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
+	AsyncJob::getInstance().jobFinished.connect(boost::bind(
+		&OpenInfraPlatform::Core::DataManagement::Data::jobFinished,
+		this, 
+		boost::placeholders::_1, 
+		boost::placeholders::_2));
 
 }
 
@@ -182,13 +187,13 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC1
 		}
 
-		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC3) {
-#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-			ParseExpressAndGeometryModel<emt::IFC4X3_RC3EntityTypes, OpenInfraPlatform::IFC4X3_RC3::IFC4X3_RC3Reader>(filename);
+		if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3_RC4) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			ParseExpressAndGeometryModel<emt::IFC4X3_RC4EntityTypes, OpenInfraPlatform::IFC4X3_RC4::IFC4X3_RC4Reader>(filename);
 			return;
-#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC3
-			IFCVersionNotCompiled("IFC4X3_RC3");
-#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC3
+#else // OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+			IFCVersionNotCompiled("IFC4X3_RC4");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC4
 		}
 
 		IFCVersionNotCompiled(strSchema);

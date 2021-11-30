@@ -34,7 +34,7 @@ namespace OpenInfraPlatform
 				virtual ~IfcPeekStepReader();
 
 				//TODO: Have this amended by cmake configure file
-				enum class IfcSchema : short { IFC2X3, IFC4, IFC4X1, IFC4X3_RC1, IFC4X3_RC3 };
+				enum class IfcSchema : short { IFC2X3, IFC4, IFC4X1, IFC4X3_RC1, IFC4X3_RC4 };
 				static std::pair<std::string, IfcSchema> parseIfcHeader(const std::string& filename);
 			};
 		}

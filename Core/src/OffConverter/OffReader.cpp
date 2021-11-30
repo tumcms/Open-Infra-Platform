@@ -52,7 +52,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		while (std::getline(offFile, line) && line != "OFF");
 
 		//read number of elements
-		getline(offFile, line);
+		line = OffReader::getNextUncommentedLine(offFile, line);
 		std::vector<int>	lineData;
 		std::stringstream	lineStream(line);
 
@@ -81,7 +81,7 @@ std::shared_ptr<OffModel> OffReader::readFile(const std::string& filename)
 		for (int i = 0; i < nrOfFaces; i++)
 		{
 			//which type of face (triangle, quad, ...)
-			std::getline(offFile, line);
+			line = OffReader::getNextUncommentedLine(offFile, line);
 			std::vector<uint32_t> faceVector;
 			std::stringstream lineStream(line);
 
@@ -130,7 +130,7 @@ std::vector<buw::Vector3f> OffReader::readVertices(const int nrOfVertices,
 	std::vector<buw::Vector3f> allVertices;
 	for (int i = 0; i < nrOfVertices; i++)
 	{
-		std::getline(offFile, line);
+		line = OffReader::getNextUncommentedLine(offFile, line);
 		buw::Vector3f position;
 		std::stringstream lineStream(line);
 
@@ -163,7 +163,7 @@ void OffReader::readTriangleFace(std::stringstream& lineStream,
 	buw::Vector3f normal = calcNormal(vector1, vector2, vector3);
 
 	//read color
-	buw::Vector3f color(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	buw::Vector3f color = OffReader::readColorsFromFace(lineStream);
 
 	//create vertices with position, color and normal and add to list of all vertices
 	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal));
@@ -202,20 +202,19 @@ void OffReader::readQuadFace(std::stringstream& lineStream,
 	buw::Vector3f normal1 = calcNormal(vector1, vector2, vector3);
 	buw::Vector3f normal2 = calcNormal(vector3, vector4, vector1);
 
-	//read color
-	buw::Vector3f color1(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
-	buw::Vector3f color2(0.0f, 0.0f, 1.0f); //default color; to be changed later on 
+	//read colors
+	buw::Vector3f color = OffReader::readColorsFromFace(lineStream);
 
 	//create vertices with position, color and normal and add to list of all vertices
 	//first triangle
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color1, normal1));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color1, normal1));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color1, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector2, color, normal1));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal1));
 
 	//second triangle
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color2, normal2));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color2, normal2));
-	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color2, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector3, color, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector4, color, normal2));
+	vertices.push_back(buw::VertexPosition3Color3Normal3(vector1, color, normal2));
 }
 
 buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
@@ -238,8 +237,39 @@ buw::Vector3f OffReader::calcNormal(const buw::Vector3f& vertex1,
 	carve::geom::vector<3> normal = carve::geom::cross(vector1 - vector2, vector2 - vector3);
 	normal.normalize();
 
-	return buw::Vector3f(normal.x, normal.y, normal.z);
+	return buw::Vector3f(normal.x, normal.y, normal.z);	
+}
+buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream)
+{
+	carve::geom::vector<3> colorVector;
+	// copy lineStream into string 
+	std::string value = lineStream.str();
+	// check actual reading position 
+	lineStream.seekg(0, lineStream.cur);
+	int pos = lineStream.tellg();
+	lineStream.seekg(0, lineStream.beg);
+	// set reading position from begin to actual position
+	lineStream.seekg(pos);
+
+	if (pos != value.size() && value[pos + 1] != '#')
+	{
+		lineStream >> colorVector[0] >> colorVector[1] >> colorVector[2];
+		return buw::Vector3f(colorVector.x / 255.0f, colorVector.y / 255.0f, colorVector.z / 255.0f);
+	}
+	else
+		return buw::Vector3f(0.0f, 101 / 255.0f, 189 / 255.0f); // default color - TUM blue
 }
 
+std::string OffReader::getNextUncommentedLine(std::ifstream& offFile, std::string& line)
+{
+	while (std::getline(offFile, line))
+	{
+		if (line[0] != '#')
+		{
+			return line;
+		}
+	}
+	throw oip::OffReaderException("Error in Off file.");
+}
 
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END

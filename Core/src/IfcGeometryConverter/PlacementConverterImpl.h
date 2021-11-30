@@ -44,7 +44,7 @@ namespace OpenInfraPlatform {
             There was a change moving from IFC4x1 to IFC4x2 in the naming of the attribute to \c IfcCurve.
             In IFC4x1, the attribute was named \c PlacementRelTo, starting in IFC4x2 it is named \c PlacementMeasuredAlong.
 
-			There was a change in IFC4x3_RC3 - the curve is not an attribute of the linear placement anymore, but rather of the point.
+			There was a change in IFC4x3_RC4 - the curve is not an attribute of the linear placement anymore, but rather of the point.
 
             \param[in]	linearPlacement		\c IfcLinearPlacement entity that has the curve reference.
 
