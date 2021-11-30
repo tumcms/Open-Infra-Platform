@@ -71,7 +71,7 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
 
 target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.Base)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.PointCloudProcessing)
 	message(STATUS "Linking OpenInfraPlatform.Core against OpenInfraPlatform.PointCloudProcessing")

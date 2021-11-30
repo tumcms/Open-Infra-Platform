@@ -16,13 +16,13 @@
 #
 
 # Updated to 3.13 in revision 531
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.19)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0074 NEW)
-cmake_policy(SET CMP0071 OLD)
+#cmake_policy(SET CMP0071 OLD)
 
-project(OpenInfraPlatform)
+project(OpenInfraPlatform CXX)
 
 message(STATUS "Please refer to ./Documentation/markdown/CMakeOptions.md for documentation on all options that can be selected in the configuration.")
 
@@ -34,7 +34,6 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH})
 set(CMAKE_AUTOMOC ON)
 
 # Changed C++ standard to 14 in revision 534
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_DEBUG_POSTFIX "d")
 include(ProjectVersion)
 find_package(Git REQUIRED)
@@ -69,14 +68,12 @@ endif()
 # Some checks to ensure that the prerequisites are ok
 #------------------------------------------------------------------------------
 
-if(MSVC_VERSION EQUAL 1900)
-	set(MSVC_VERSION_STRING "vs2015")
-	set(MSVC_VERSION_YEAR "2015")
-elseif(MSVC_VERSION GREATER_EQUAL 1910 AND MSVC_VERSION LESS_EQUAL 1919)
-	set(MSVC_VERSION_STRING "vs2017")
-	set(MSVC_VERSION_YEAR "2017")
+if(MSVC_VERSION GREATER_EQUAL 1920 AND MSVC_VERSION LESS_EQUAL 1929)
+	set(MSVC_VERSION_STRING "vs2019")
+	set(MSVC_VERSION_YEAR "2019")
+	set(CMAKE_CXX_STANDARD 20)
 else()
-	message("Please switch to Visual Studio 14 2015 or Visual Studio 15 2017.")
+	message("Please switch to Visual Studio 16 2019")
 	return()
 endif()
 
@@ -104,10 +101,13 @@ option(OIP_USE_PREDEFINED_THIRDPARTY_PATH "Set to ON to find boost, Eigen and Qt
 if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	# Try to find Boost, Eigen3, Qt5 and other dependencies without user input
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
-		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_65_1"
-		"C:\\thirdparty\\boost_1_65_1")
-	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.12.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
-	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W64\\apps\\proj-dev\\share\\cmake\\proj4\\proj")
+		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_75_0"
+		"C:\\thirdparty\\boost_1_75_0")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.15.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
+	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W\\share\\cmake\\proj4\\proj")
+	SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${OIP_Boost_DIR})
+    SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${OIP_Boost_DIR}\\lib")
+
 endif()
 
 #------------------------------------------------------------------------------
@@ -123,9 +123,11 @@ set(CMAKE_PDB_OUTPUT_DIRECTORY_RELEASE       ${CMAKE_BINARY_DIR}/Release)
 # Add preprocessor directives and compiler flags.
 #------------------------------------------------------------------------------
 
-add_definitions(-D_UNICODE 			# Unicode rules
-				#-DQT_NO_KEYWORDS 	# No qt keywords
-				-D_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+add_compile_definitions(
+	_UNICODE 			# Unicode rules
+	UNICODE
+	_VARIADIC_MAX=10 	# Visual Studio 2012 set VARIDAIC_MAX default to 5 which is not enough for googletest to build
+	 EIGEN_MPL2_ONLY # Use only MP2 licenced code of Eigen
 ) # -DNOMINMAX does not work because GDI+ needs these macros
 
 if (WIN32)
@@ -139,9 +141,9 @@ endif (WIN32)
 
 set(Boost_USE_STATIC_LIBS ON)
 
-# As of revision 530, boost 1.65.1 required.
+# As of 2021-01-22, boost 1.75.0 required.
 set(BOOST_ROOT ${OIP_Boost_DIR})
-find_package(Boost 1.65.1 COMPONENTS signals system filesystem REQUIRED)
+find_package(Boost 1.75.0 COMPONENTS system filesystem REQUIRED)
 
 if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
@@ -149,16 +151,15 @@ endif()
 
 FetchContent_Declare(
 	eigen
-	GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
-	GIT_TAG 3.3.7
+	GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+	GIT_TAG 3.3.9
 )
-  
-FetchContent_GetProperties(eigen)
-if(NOT eigen_POPULATED)
-	FetchContent_Populate(eigen)
-	add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
 
+# overwrite inclusion of Eigen tests in the solution
+set(BUILD_TESTING FALSE CACHE INTERNAL "Build the testing tree." FORCE)
+mark_as_advanced(FORCE BUILD_TESTING)
+  
+FetchContent_MakeAvailable(eigen)
 
 FetchContent_Declare(
 	tclap
@@ -170,7 +171,6 @@ FetchContent_GetProperties(tclap)
 if(NOT tclap_POPULATED)
 	FetchContent_Populate(tclap)
 endif()
-
 
 FetchContent_Declare(
 	visit_struct
@@ -217,7 +217,7 @@ set(QT5_COMPONENTS
 )
 set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 
-find_package( Qt5 5.12.1 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
+find_package( Qt5 5.14.2 COMPONENTS ${QT5_COMPONENTS} REQUIRED)
 
 # Get deploy target to automatically deploy Qt5 dlls in the binary directory
 if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
@@ -246,7 +246,7 @@ endif()
 FetchContent_Declare(
 	blue_framework
 	GIT_REPOSITORY https://github.com/tumcms/Blue-Framework.git
-	GIT_TAG a0.0.9
+	GIT_TAG a0.0.11
 )
   
 FetchContent_GetProperties(blue_framework)
@@ -321,12 +321,12 @@ endforeach()
 #------------------------------------------------------------------------------
 # DOXYGEN. 
 #------------------------------------------------------------------------------
-Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlatform." ON)
+Option(DOXYGEN_GENERATE_DOCUMENTATION "Build documentation for TUM OpenInfraPlatform." OFF)
 
 if(DOXYGEN_GENERATE_DOCUMENTATION)
 
 	find_file(DOXYGEN_EXECUTABLE NAMES doxygen.exe HINTS
-		"C:/thirdparty/doxygen"
+		"C:/thirdparty/doxygen/bin"
 	)
 
 	find_file(DOXYGEN_DOT_EXECUTABLE NAMES dot.exe HINTS
@@ -348,9 +348,9 @@ endif(DOXYGEN_GENERATE_DOCUMENTATION)
 # (1/7) Point Cloud Processing ("pcp_module")
 #----------------------------------------------------------
 
-Option(MODULES_POINT_CLOUD_PROCESSING OFF)
+Option(OIP_WITH_POINT_CLOUD_PROCESSING OFF)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	set(CMAKE_PREFIX_PATH ${OIP_QT_DIR})
 	add_definitions(-DOIP_WITH_POINT_CLOUD_PROCESSING)
 	add_subdirectory(PointCloudProcessing)
@@ -392,7 +392,7 @@ file(GLOB OpenInfraPlatform_UserInterface_Resources_Source 			UserInterface/Reso
 # Currently not included.
 #file(GLOB OpenInfraPlatform_UserInterface_Tools_Source				UserInterface/other/Tools/*.*)
 #file(GLOB OpenInfraPlatform_UserInterface_View2DWindow			 	UserInterface/other/View2DWindow/*.*)
-# file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
+#file(GLOB OpenInfraPlatform_UserInterface_Data_Source 				UserInterface/Data/*.*)
 
 
 # Does currently not work. 
@@ -458,7 +458,7 @@ source_group(UserInterface\\UnitTesting  		FILES ${OpenInfraPlatform_UserInterfa
 # Currently not included.
 #source_group(UserInterface\\Tools			FILES ${OpenInfraPlatform_UserInterface_Tools_Source})
 #source_group(UserInterface\\View2DWindow		FILES ${OpenInfraPlatform_UserInterface_View2DWindow})
-# source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
+#source_group(UserInterface\\Data				FILES ${OpenInfraPlatform_UserInterface_Data_Source})
 
 #------------------------------------------------------------------------------
 # Set source group properties
@@ -546,7 +546,7 @@ target_link_libraries( OpenInfraPlatform.UI
 
 set(QT_WINDEPLOY_FLAGS -xml -concurrent)
 
-if(MODULES_POINT_CLOUD_PROCESSING)
+if(OIP_WITH_POINT_CLOUD_PROCESSING)
 	list(APPEND QT_WINDEPLOY_FLAGS -opengl)
 endif()
 
@@ -697,8 +697,13 @@ set_target_properties(OpenInfraPlatform.Rendering						PROPERTIES FOLDER "OpenIn
 set_target_properties(OpenInfraPlatform.ExpressBindingGenerator			PROPERTIES FOLDER "OpenInfraPlatform/ExpressBindingGenerator")
 
 # clean up the solution a bit
-set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty")
-set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
+set_target_properties(glew_s PROPERTIES FOLDER "ThirdParty/glew")
+set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty/tinyxml")
+set_target_properties(StackWalker PROPERTIES FOLDER "ThirdParty/StackWalker")
+set_target_properties(StackWalker_test PROPERTIES FOLDER "ThirdParty/StackWalker")
+set_target_properties(tinyformat_test PROPERTIES FOLDER "ThirdParty/TinyFormat")
+set_target_properties(testall PROPERTIES FOLDER "ThirdParty/TinyFormat")
+set_target_properties(uninstall PROPERTIES FOLDER "ThirdParty/eigen")
 
 # Currently not included. 
 #set_target_properties(OpenInfraPlatform.CommandLineUtilities		PROPERTIES FOLDER "OpenInfraPlatform")
@@ -710,69 +715,6 @@ set_target_properties(tinyxml2 PROPERTIES FOLDER "ThirdParty")
 # Switched to static gtest on 28.11.2018 / Revision 388+
 #set_target_properties(GTestCopyBinaries							PROPERTIES FOLDER "Copy")
 
-#----------------------------------------------------------
-# MODULES
-#----------------------------------------------------------
-
-# Group of entries below. 
-# Select all modules with necessary thirdparty libraries to be built. 
-# Otherwise only core project is built.
-
-
-
-#----------------------------------------------------------
-# (2/7) Digital Elevation Model 
-#----------------------------------------------------------
-Option(MODULES_DIGITAL_ELEVATION_MODEL ON)
-
-if(MODULES_DIGITAL_ELEVATION_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (3/7) Girder 
-#----------------------------------------------------------
-Option(MODULES_GIRDER ON)
-
-if(MODULES_GIRDER)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (4/7) Proxy Model 
-#----------------------------------------------------------
-Option(MODULES_PROXY_MODEL ON)
-
-if(MODULES_PROXY_MODEL)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (5/7) Railway 
-#----------------------------------------------------------
-Option(MODULES_RAILWAY ON)
-
-if(MODULES_RAILWAY)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (6/7) Slabfield 
-#----------------------------------------------------------
-Option(MODULES_SLABFIELD ON)
-
-if(MODULES_SLABFIELD)
-
-ENDIF()
-
-#----------------------------------------------------------
-# (7/7) Tesselation 
-#----------------------------------------------------------
-Option(MODULES_TESSELATION ON)
-
-if(MODULES_TESSELATION)
-
-ENDIF()
 
 #-------------------------------------------------------------------------------------
 # Deployment & Installation.
