@@ -888,10 +888,61 @@ namespace OpenInfraPlatform {
 
 						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
 						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
+						if (!checkBoundaryIsPartOfSurface(inputDataFaceSurface, faceBoundLoops))
+						{
+							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is to tight. Geometry could be wrong!";
+						}
 
 						// append surface-faces to target polyhedron
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
 					}
+				}
+
+				bool checkBoundaryIsPartOfSurface(
+					const std::shared_ptr<ItemData>& itemDataSurface,
+					const std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops
+				) const noexcept(true)
+				{
+					const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& surfacePolyhedronsCollection{
+						itemDataSurface->closed_polyhedrons,
+						itemDataSurface->open_polyhedrons,
+						itemDataSurface->open_or_closed_polyhedrons };
+
+					// for each point
+					for (const auto& faceBoundLoop : faceBoundLoops) {
+						for (const carve::geom::vector<3>& pointLoop : faceBoundLoop)
+						{
+							bool found = false;
+
+							// search through polyhedrons
+							for (const auto& surfacePolyhedrons : surfacePolyhedronsCollection) {
+								for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : surfacePolyhedrons)
+								{
+									// search through points of polyhedron
+									for (const auto& pointSurface : surfacePolyhedron->points)
+									{
+										if (this->GeomSettings()->areEqual(pointLoop, pointSurface))
+										{
+											found = true;
+											goto skipToNextPoint;
+										}
+									}
+								}
+							}
+
+							// exit if loop point is not found (= not part of surface)
+							if (found == false)
+							{
+								return false;
+							}
+
+						// label of goto
+						skipToNextPoint:;
+						}
+					}
+
+					// return true only if no previous exit happend (-> all loop points are part of the surface)
+					return true;
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
