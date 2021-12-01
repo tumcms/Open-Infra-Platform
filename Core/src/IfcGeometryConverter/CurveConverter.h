@@ -2374,7 +2374,8 @@ namespace OpenInfraPlatform
 							return points[1];
 						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED) == typeid(trimmingPreference))
 							return points[0];
-						else:
+						else
+						{
 							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
 						}
 					}
