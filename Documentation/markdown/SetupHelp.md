@@ -4,6 +4,8 @@ Guide on how to compile the project TUM Open Infra Platform (OIP) from scratch.
 
 *NOTE:* Additional information about known errors and warnings is provided in [FAQ](./FAQ.md).
 
+*NOTE 2:* Although the system is set up to function cross-platform (CMake), we are currently only developing actively for Windows platform. No guarantees for Linux (although it should theoretically function).
+
 ## Content 
 
 1. [Prerequisites](#Prerequisites)
@@ -73,7 +75,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 
 7. **PROJ**
 
-	*	Download OSGeo4W Installer - find [here](download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe).
+	*	Download OSGeo4W Installer using the OSGeo4W Network Installer link - find [here](https://trac.osgeo.org/osgeo4w/).
 	*	In installer, select *Advanced Install*.
 	*	Choose to install from Internet.
 	*	Select directory, where PROJ will be installed.
