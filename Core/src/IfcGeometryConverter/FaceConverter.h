@@ -752,14 +752,13 @@ namespace OpenInfraPlatform {
 					itemData->open_or_closed_polyhedrons.push_back(polyhedron);
 				}
 
-				/*! \brief  Converts \c IfcFace to a vector of face vertices.
-				\param	face \c IfcFace entity to be interpreted.
-				\param	pos
-				\param	polyhedron
-				\param	polyhedronIndices
+				/*! \brief  Converts \c IfcFace or sub-entity to a vector of face vertices, respectively the mesh of a polyhedron.
+				\param[in]		face				\c IfcFace entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
+				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
 				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
 				*/
-
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
@@ -797,11 +796,17 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief  Converts \c IfcFaceSurface or sub-entity to the mesh of a polyhedron.
+				\param[in]		faceSurface			\c IfcFaceSurface entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
+				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				*/
 				void convertIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
-					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices
 				)  const noexcept(false)
 				{
 					if (faceSurface.expired()) {
@@ -818,11 +823,17 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief  Converts \c IfcAdvancedFace to the mesh of a polyhedron.
+				\param[in]		advancedFace		\c IfcAdvancedFace entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
+				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				*/
 				void convertIfcAdvancedFace(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
-					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices
 				)  const noexcept(false)
 				{
 					if (advancedFace.expired()) {
@@ -851,11 +862,17 @@ namespace OpenInfraPlatform {
 					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices);
 				}
 
+				/*! \brief Computes the surface and boundary loop of an \c IfcFaceSurface (or sub-type), and puts them into one polyhedron.
+				\param[in]		ifcFaceSurface		\c IfcFaceSurface entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
+				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				*/
 				void computeIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron, //Carve polyhedron of the converted face
-					std::map<std::string, uint32_t>& polyhedronIndices // Contains polyhedron indices of vertices (x,y,z converted to string)
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices
 				) const noexcept(false)
 				{
 					if (ifcFaceSurface.expired()) {
@@ -898,6 +915,12 @@ namespace OpenInfraPlatform {
 					}
 				}
 
+				/*! \brief Checks whether all points of the \c faceBoundLoops exist coincident in the surface geometry of \c itemDataSurface.
+				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the loop points should exist.
+				\param		faceBoundLoops		Loop points which should be checked to be part in the surface geometry.
+				\return		True, if all loop points are part in the surface geometry; otherwise, false.
+				\note		This function calls its sub-function \c checkPointIsPartOfSurface.
+				*/
 				bool checkBoundaryIsPartOfSurface(
 					const std::shared_ptr<ItemData>& itemDataSurface,
 					const std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops
@@ -911,6 +934,11 @@ namespace OpenInfraPlatform {
 					});
 				}
 
+				/*! \brief Checks whether one point exists coincident in the surface geometry of \c itemDataSurface.
+				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the point should exist.
+				\param		pointLoop			Point which should be checked to be part in the surface geometry.
+				\return		True, if the point is part in the surface geometry; otherwise, false.
+				*/
 				bool checkPointIsPartOfSurface(
 					const std::shared_ptr<ItemData>& itemDataSurface,
 					const carve::geom::vector<3>& pointLoop
@@ -930,6 +958,7 @@ namespace OpenInfraPlatform {
 							{
 								if (this->GeomSettings()->areEqual(pointLoop, pointSurface))
 								{
+									// if point found: early exit
 									return true;
 								}
 							}
@@ -995,7 +1024,7 @@ namespace OpenInfraPlatform {
 
 				/*! \brief  Converts a \c IfcFaceBound (or \c IfcFaceOuterBound) entity to a boundary loop of geometry points.
 				 * \param[in]	bound	\c IfcFaceBound entity to be converted.
-				 * \param[in]	pos				The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[in]	pos		The relative location of the origin of the representation's coordinate system within the geometric context.
 				 * \return		List of geometry points which describe the boundary loop.
 				 */
 				std::vector<carve::geom::vector<3>> convertIfcFaceBound(

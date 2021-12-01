@@ -235,8 +235,12 @@ public:
 		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
 
+	/*! \brief Called as member function of an \c ItemData instance; topological merge of all polyhedrons from the instance into the \c targetPolyhedron.
+	\param[in,out]	targetPolyhedron	Carve polyhedron into which the merged geometry should be.
+	\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string), should match with the geometry in \c targetPolyhedron.
+	*/
 	void mergePolyhedronsIntoOnePolyhedron(
-		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron, //Carve polygon of the converted face
+		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron,
 		std::map<std::string, uint32_t>& polyhedronIndices
 	)  const noexcept(false)
 	{
