@@ -80,7 +80,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& surface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -123,7 +123,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcBoundedSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData)  const throw(...)
+					std::shared_ptr<ItemData>& itemData)  const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -175,9 +175,11 @@ namespace OpenInfraPlatform {
 					\note		The \c IfcElementarySurface subtypes are \c IfcCylindricalSurface, \c IfcPlane, \c IfcSphericalSurface and \c IfcToroidalSurface.
 					*/
 
-				void convertIfcElementarySurface(const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
+				void convertIfcElementarySurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcElementarySurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData)  const throw(...)
+					std::shared_ptr<ItemData>& itemData
+				) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -231,7 +233,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcSweptSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSweptSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData)  const throw(...)
+					std::shared_ptr<ItemData>& itemData)  const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -270,7 +272,7 @@ namespace OpenInfraPlatform {
 				void convertIfcBSplineSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -292,7 +294,7 @@ namespace OpenInfraPlatform {
 					if (surface.isOfType<typename IfcEntityTypesT::IfcBSplineSurfaceWithKnots>())
 					{
 						// create an instance of SplineConverter
-						SplineConverterT<IfcEntityTypesT> splineConverter(GeomSettings(), UnitConvert(), placementConverter);
+						SplineConverterT<IfcEntityTypesT> splineConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
 						
 						// call of SplineConverter;
 						// curvePoints are actually the surface points without a connecting line
@@ -402,7 +404,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcCurveBoundedPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedPlane>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -461,7 +463,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcCurveBoundedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCurveBoundedSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -499,7 +501,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcRectangularTrimmedSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcRectangularTrimmedSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -535,7 +537,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcCylindricalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcCylindricalSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -560,7 +562,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcPlane>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData)  const throw(...)
+					std::shared_ptr<ItemData>& itemData)  const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -610,7 +612,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcSphericalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcSphericalSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -635,7 +637,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcToroidalSurface(const EXPRESSReference<typename IfcEntityTypesT::IfcToroidalSurface>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -661,7 +663,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcSurfaceOfLinearExtrusion(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfLinearExtrusion>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -708,7 +710,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcSurfaceOfRevolution(const EXPRESSReference<typename IfcEntityTypesT::IfcSurfaceOfRevolution>& surface,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData>& itemData) const throw(...)
+					std::shared_ptr<ItemData>& itemData) const noexcept(false)
 				{
 					if (surface.expired()) {
 						throw oip::ReferenceExpiredException(surface);
@@ -739,7 +741,7 @@ namespace OpenInfraPlatform {
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<ItemData> itemData)  const throw(...) 
+					std::shared_ptr<ItemData> itemData)  const noexcept(false) 
 				{
 					// Carve polygon of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
@@ -778,7 +780,7 @@ namespace OpenInfraPlatform {
 				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
+					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false) 
 				{
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
@@ -960,7 +962,7 @@ namespace OpenInfraPlatform {
 					ProjectionPlane& plane,
 					std::vector<carve::geom2d::P2>& loopVertices2D,
 					std::vector<carve::geom::vector<3>>& loopVertices3D,
-					bool& faceLoopReversed)  const throw(...)
+					bool& faceLoopReversed)  const noexcept(false)
 				{
 					// Compute normal of polygon
 					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
@@ -1050,7 +1052,7 @@ namespace OpenInfraPlatform {
 					const std::vector<carve::geom::vector<3>>& faceVertices3D,
 					const bool faceLoopReversed,
 					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const throw(...) 
+					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false) 
 					{
 
 					// indices after carve triangulation of merged vertices
@@ -1118,7 +1120,7 @@ namespace OpenInfraPlatform {
 				\returns			The two-dimensional array of \c carve points.
 				*/
 				std::vector<std::vector<carve::geom::vector<3>>> convertIfcCartesianPointVectorVector(
-					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points)  const throw(...)
+					const EXPRESSContainer<EXPRESSContainer<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>>>& points)  const noexcept(false)
 				{
 					// initialise the target vector, reserve space
 					std::vector<std::vector<carve::geom::vector<3>>> loop = std::vector<std::vector<carve::geom::vector<3>>>();
@@ -1137,7 +1139,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBasedSurfaceModel>& surface_model,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+				) const noexcept(false)
 				{
 					auto& vec_face_sets = surface_model->FbsmFaces;
 
@@ -1159,7 +1161,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcShellBasedSurfaceModel>& surface_model,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...) 
+				) const noexcept(false) 
 				{
 					//auto vec_shells = shell_based_surface_model->SbsmBoundary;
 					for (auto& it_shells : surface_model->SbsmBoundary) 
@@ -1199,7 +1201,7 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTessellatedItem>& tessItem,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData>& itemData
-				) const throw(...)
+					) const noexcept(false) 
 				{
 					if (tessItem.as<typename IfcEntityTypesT::IfcTriangulatedFaceSet>())
 					{
@@ -1237,7 +1239,7 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3> vertex =
 							carve::geom::VECTOR(point[0],
 								point[1],
-								point[2]) * UnitConvert()->getLengthInMeterFactor();
+								point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 						// apply transformation
 						vertex = pos * vertex;
@@ -1350,7 +1352,7 @@ namespace OpenInfraPlatform {
 						carve::geom::vector<3> vertex = //placementConverter->convertIfcPoint(point);
 							carve::geom::VECTOR(point[0],
 								point[1],
-								point[2]) * UnitConvert()->getLengthInMeterFactor();
+								point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 						// apply transformation
 						vertex = pos * vertex;
@@ -1405,7 +1407,7 @@ namespace OpenInfraPlatform {
 						const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
 						carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
 							point[1],
-							point[2]) * UnitConvert()->getLengthInMeterFactor();
+							point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 						outerLoop.push_back(vertex);
 						outerIndexLoop.push_back(outerLoopPointIndex);
@@ -1422,7 +1424,7 @@ namespace OpenInfraPlatform {
 							const auto point = faceSet->Coordinates->CoordList[outerLoopPointIndex - 1];
 							carve::geom::vector<3> vertex = carve::geom::VECTOR(point[0],
 								point[1],
-								point[2]) * UnitConvert()->getLengthInMeterFactor();
+								point[2]) * this->UnitConvert()->getLengthInMeterFactor();
 
 							IndexLoop.push_back(outerLoopPointIndex);
 							loop.push_back(vertex);
@@ -1484,6 +1486,104 @@ namespace OpenInfraPlatform {
 							indexLoops[pathAllLoops[triang.c].first][pathAllLoops[triang.c].second] - 1
 						);
 					}
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPlanarExtent to a triangulated vector.
+				*
+				* \param[in] planarExtent				A pointer to data from \c IfcPlanarExtent.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcPlanarExtent(const EXPRESSReference<typename IfcEntityTypesT::IfcPlanarExtent> planarExtent,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData)
+					const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcpresentationdefinitionresource/lexical/ifcplanarextent.htm
+					//	ENTITY IfcPlanarExtent
+					//		SUPERTYPE OF(IfcPlanarBox)
+					//		SUBTYPE OF(IfcGeometricRepresentationItem);
+					//			SizeInX: IfcLengthMeasure;
+					//			SizeInY: IfcLengthMeasure;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					if (planarExtent.expired())
+						throw oip::ReferenceExpiredException(planarExtent);
+
+					if (planarExtent.template isOfType<typename IfcEntityTypesT::IfcPlanarBox>())
+					{
+						return convertIfcPlanarBox(planarExtent.template as<typename IfcEntityTypesT::IfcPlanarBox>(),
+							pos, itemData);
+					} // end IfcPlanarBox
+
+					throw oip::UnhandledException(planarExtent);
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcPlanarBox to a triangulated vector.
+				*
+				* \param[in] planarBox					A pointer to data from \c IfcPlanarBox.
+				* \param[in] pos						A position matrix, which should be applied to the points.
+				*
+				* \param[out] itemData					A pointer to be filled with the relevant data.
+				*/
+				void convertIfcPlanarBox(EXPRESSReference<typename IfcEntityTypesT::IfcPlanarBox> planarBox,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<ItemData>& itemData) 
+					const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/schema/ifcpresentationdefinitionresource/lexical/ifcplanarbox.htm
+					//	ENTITY IfcPlanarBox
+					//		SUBTYPE OF(IfcPlanarExtent);
+					//		Placement: IfcAxis2Placement;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					if (planarBox.expired())
+						throw oip::ReferenceExpiredException(planarBox);
+
+					//Get Planar Box location 
+					carve::math::Matrix positionMatrix = pos * placementConverter->convertIfcAxis2Placement(planarBox->Placement);
+
+					double 	extentInX = planarBox->SizeInX;
+					double 	extentInY = planarBox->SizeInY;
+
+					//  3-----2
+					//  ^     |
+					//  |y    |  
+					//  |     |
+					//  0---->1
+					//     x
+
+					std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+					std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
+
+					polylineData->beginPolyline();
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polylineData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
+
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, 0.0, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(extentInX, extentInY, 0.0));
+					polyhedronData->addVertex(positionMatrix * carve::geom::VECTOR(0.0, extentInY, 0.0));
+
+					polylineData->addPolylineIndex(0);
+					polylineData->addPolylineIndex(1);
+					polylineData->addPolylineIndex(2);
+					polylineData->addPolylineIndex(3);
+
+					polyhedronData->addFace(0, 1, 2);
+					polyhedronData->addFace(2, 3, 0);
+
+					itemData->polylines.push_back(polylineData);
+					itemData->open_polyhedrons.push_back(polyhedronData);
 				}
 
 				protected:

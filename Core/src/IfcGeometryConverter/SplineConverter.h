@@ -29,8 +29,8 @@
 #include "GeomUtils.h"
 
 #include "ConverterBase.h"
-#include "PlacementConverter.h"
 #include "CurveConverter.h"
+#include "PlacementConverter.h"
 
 #include "SplineUtilities.h"
 
@@ -55,9 +55,13 @@ namespace OpenInfraPlatform
 						:
 						ConverterBaseT<IfcEntityTypesT>(geomSettings, unitConverter),
 						placementConverter(pc)
-					{}
+					{
+					}
 
-					virtual ~SplineConverterT() {}
+					virtual ~SplineConverterT()
+					{
+						placementConverter.reset();
+					}
 
 					/*! \brief Converts \c IfcBSplineCurve subtypes to an array of curve points, which can be rendered in a viewport.
 					 *
@@ -70,7 +74,7 @@ namespace OpenInfraPlatform
 					 */
 					void convertIfcBSplineCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve,
-						std::vector<carve::geom::vector<3>>& loops) const throw(...)
+						std::vector<carve::geom::vector<3>>& loops) const noexcept(false)
 					{
 						const int degree = splineCurve->Degree;
 						const int order = degree + 1;
@@ -195,10 +199,12 @@ namespace OpenInfraPlatform
 					 * \return	  A vector with the B-Spline control points
 					 */
 					std::vector<carve::geom::vector<3>> loadControlPoints(
-						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const throw(...)
+						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurve>& splineCurve) const noexcept(false)
 					{
-						CurveConverterT<IfcEntityTypesT> curveConverter(GeomSettings(), UnitConvert(), placementConverter);
-						return curveConverter.convertIfcCartesianPointVector(splineCurve->ControlPointsList);
+						std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter
+							= std::make_shared<CurveConverterT<IfcEntityTypesT>>(this->GeomSettings(), this->UnitConvert(), placementConverter);
+						//CurveConverterT<IfcEntityTypesT> curveConverter(this->GeomSettings(), this->UnitConvert(), placementConverter);
+						return curveConverter->convertIfcCartesianPointVector(splineCurve->ControlPointsList);
 					}
 
 					/*! \brief Loads the knot array from an \c IfcBSplineCurveWithKnots.
@@ -210,7 +216,7 @@ namespace OpenInfraPlatform
 					 */
 					std::vector<double> loadKnotArrayCurve(
 						const EXPRESSReference<typename IfcEntityTypesT::IfcBSplineCurveWithKnots>& bspline,
-						const int& numKnotsArray) const throw(...)
+						const int& numKnotsArray) const noexcept(false)
 					{
 						// check whether data in ifc matches the definition in documentation
 						if (bspline->KnotMultiplicities.size() != bspline->Knots.size())
@@ -359,7 +365,7 @@ namespace OpenInfraPlatform
 					{
 						// at the end, subtract current knot value with this to avoid zero-vectors (since last knot value is excluded by definition)
 						//const double accuracy = 0.0000001;
-						return GeomSettings()->getPrecision();
+						return this->GeomSettings()->getPrecision();
 					}
 
 					/*! \brief Gives the number of curve points.

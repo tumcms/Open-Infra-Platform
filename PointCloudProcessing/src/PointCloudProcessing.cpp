@@ -18,7 +18,7 @@
 #include "PointCloudProcessing.h"
 
 
-#include <liblas/liblas.hpp>
+//#include <liblas/liblas.hpp>
 #include <BlueFramework/Core/Diagnostics/log.h>
 
 #include <FileIOFilter.h>
@@ -295,7 +295,7 @@
 }
 */
 
-std::array<double, 4> OpenInfraPlatform::PointCloudProcessing::fitHarmonicOscilation(const std::vector<double>& x, const std::vector<double>& y)
-{
-	return std::array<double, 4>();
-}
+//std::array<double, 4> OpenInfraPlatform::PointCloudProcessing::fitHarmonicOscilation(const std::vector<double>& x, const std::vector<double>& y)
+//{
+//	return std::array<double, 4>();
+//}

@@ -62,6 +62,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/bind/placeholders.hpp>
 
 #include "AsyncJob.h"
 
@@ -86,7 +87,11 @@ bShowReferenceCoordinateSystem(true)
 {
 	latestChangeFlag_ = ChangeFlag::All;
 
-	AsyncJob::getInstance().jobFinished.connect(boost::bind(&OpenInfraPlatform::Core::DataManagement::Data::jobFinished, this, _1, _2));
+	AsyncJob::getInstance().jobFinished.connect(boost::bind(
+		&OpenInfraPlatform::Core::DataManagement::Data::jobFinished,
+		this, 
+		boost::placeholders::_1, 
+		boost::placeholders::_2));
 
 }
 

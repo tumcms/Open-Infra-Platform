@@ -19,7 +19,7 @@ for incidental consequential damages in connection with the furnishing, performa
 of the material. The information contained in this document is subject to change without notice.
 
 Issue date:
-09 June 2021
+25 July 2021
 
 *)
 
@@ -575,11 +575,11 @@ TYPE IfcAlarmTypeEnum = ENUMERATION OF
 END_TYPE;
 
 TYPE IfcAlignmentCantSegmentTypeEnum = ENUMERATION OF
-	(CONSTANTCANT
-	,LINEARTRANSITION
-	,HELMERTCURVE
-	,BLOSSCURVE
+	(BLOSSCURVE
+	,CONSTANTCANT
 	,COSINECURVE
+	,HELMERTCURVE
+	,LINEARTRANSITION
 	,SINECURVE
 	,VIENNESEBEND);
 END_TYPE;
@@ -591,7 +591,6 @@ TYPE IfcAlignmentHorizontalSegmentTypeEnum = ENUMERATION OF
 	,CUBIC
 	,HELMERTCURVE
 	,BLOSSCURVE
-	,CUBICSPIRAL
 	,COSINECURVE
 	,SINECURVE
 	,VIENNESEBEND);
@@ -665,7 +664,8 @@ TYPE IfcAudioVisualApplianceTypeEnum = ENUMERATION OF
 	,SWITCHER
 	,TELEPHONE
 	,TUNER
-	,RAILWAY_COMMUNICATION_TERMINAL
+	,COMMUNICATIONTERMINAL
+	,RECORDINGEQUIPMENT
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -951,14 +951,17 @@ TYPE IfcCommunicationsApplianceTypeEnum = ENUMERATION OF
 	,ROUTER
 	,SCANNER
 	,AUTOMATON
-	,INTELLIGENT_PERIPHERAL
-	,IP_NETWORK_EQUIPMENT
-	,OPTICAL_NETWORK_UNIT
+	,INTELLIGENTPERIPHERAL
+	,IPNETWORKEQUIPMENT
+	,OPTICALNETWORKUNIT
 	,TELECOMMAND
 	,TELEPHONYEXCHANGE
 	,TRANSITIONCOMPONENT
 	,TRANSPONDER
 	,TRANSPORTEQUIPMENT
+	,OPTICALLINETERMINAL
+	,LINESIDEELECTRONICUNIT
+	,RADIOBLOCKCENTER
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -1261,6 +1264,7 @@ TYPE IfcDistributionBoardTypeEnum = ENUMERATION OF
 	,MOTORCONTROLCENTRE
 	,DISTRIBUTIONFRAME
 	,DISTRIBUTIONBOARD
+	,DISPATCHINGBOARD
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -1334,6 +1338,10 @@ TYPE IfcDistributionSystemEnum = ENUMERATION OF
 	,CATENARY_SYSTEM
 	,OVERHEAD_CONTACTLINE_SYSTEM
 	,RETURN_CIRCUIT
+	,FIXEDTRANSMISSIONNETWORK
+	,OPERATIONALTELEPHONYSYSTEM
+	,MOBILENETWORK
+	,MONITORINGSYSTEM
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -2102,12 +2110,18 @@ END_TYPE;
 
 TYPE IfcMobileTelecommunicationsApplianceTypeEnum = ENUMERATION OF
 	(E_UTRAN_NODE_B
-	,REMOTE_RADIO_UNIT
+	,REMOTERADIOUNIT
 	,ACCESSPOINT
 	,BASETRANSCEIVERSTATION
 	,REMOTEUNIT
 	,BASEBANDUNIT
 	,MASTERUNIT
+	,GATEWAY_GPRS_SUPPORT_NODE
+	,SUBSCRIBERSERVER
+	,MOBILESWITCHINGCENTER
+	,MSCSERVER
+	,PACKETCONTROLUNIT
+	,SERVICE_GPRS_SUPPORT_NODE
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -2447,12 +2461,12 @@ TYPE IfcReferentTypeEnum = ENUMERATION OF
 	,MILEPOINT
 	,STATION
 	,REFERENCEMARKER
-	,USERDEFINED
-	,NOTDEFINED
 	,LANDMARK
 	,BOUNDARY
 	,INTERSECTION
-	,POSITION);
+	,POSITION
+	,USERDEFINED
+	,NOTDEFINED);
 END_TYPE;
 
 TYPE IfcReflectanceMethodEnum = ENUMERATION OF
@@ -2800,6 +2814,7 @@ TYPE IfcSpatialZoneTypeEnum = ENUMERATION OF
 	,TRANSPORT
 	,VENTILATION
 	,RESERVATION
+	,INTERFERENCE
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -3132,6 +3147,7 @@ TYPE IfcUnitaryControlElementTypeEnum = ENUMERATION OF
 	,THERMOSTAT
 	,WEATHERSTATION
 	,COMBINED
+	,BASESTATIONCONTROLLER
 	,USERDEFINED
 	,NOTDEFINED);
 END_TYPE;
@@ -4002,7 +4018,7 @@ END_ENTITY;
 ENTITY IfcAlignmentCantSegment
  SUBTYPE OF (IfcAlignmentParameterSegment);
 	StartDistAlong : IfcLengthMeasure;
-	HorizontalLength : IfcPositiveLengthMeasure;
+	HorizontalLength : IfcNonNegativeLengthMeasure;
 	StartCantLeft : IfcLengthMeasure;
 	EndCantLeft : OPTIONAL IfcLengthMeasure;
 	StartCantRight : IfcLengthMeasure;
@@ -4046,11 +4062,11 @@ END_ENTITY;
 ENTITY IfcAlignmentVerticalSegment
  SUBTYPE OF (IfcAlignmentParameterSegment);
 	StartDistAlong : IfcLengthMeasure;
-	HorizontalLength : IfcPositiveLengthMeasure;
+	HorizontalLength : IfcNonNegativeLengthMeasure;
 	StartHeight : IfcLengthMeasure;
 	StartGradient : IfcRatioMeasure;
 	EndGradient : IfcRatioMeasure;
-	RadiusOfCurvature : OPTIONAL IfcPositiveLengthMeasure;
+	RadiusOfCurvature : OPTIONAL IfcLengthMeasure;
 	PredefinedType : IfcAlignmentVerticalSegmentTypeEnum;
 END_ENTITY;
 
@@ -5499,7 +5515,7 @@ END_ENTITY;
 ENTITY IfcCosine
  SUBTYPE OF (IfcSpiral);
 	CosineTerm : IfcLengthMeasure;
-	ConstantTerm : IfcReal;
+	ConstantTerm : OPTIONAL IfcLengthMeasure;
 END_ENTITY;
 
 ENTITY IfcCostItem
@@ -5803,15 +5819,6 @@ END_ENTITY;
 
 ENTITY IfcDirectrixDerivedReferenceSweptAreaSolid
  SUBTYPE OF (IfcFixedReferenceSweptAreaSolid);
-END_ENTITY;
-
-ENTITY IfcDirectrixDistanceSweptAreaSolid
- ABSTRACT SUPERTYPE OF (ONEOF
-    (IfcInclinedReferenceSweptAreaSolid))
- SUBTYPE OF (IfcSweptAreaSolid);
-	Directrix : IfcCurve;
-	StartDistance : OPTIONAL IfcPointByDistanceExpression;
-	EndDistance : OPTIONAL IfcPointByDistanceExpression;
 END_ENTITY;
 
 ENTITY IfcDiscreteAccessory
@@ -6386,6 +6393,7 @@ ENTITY IfcElement
 	ConnectedFrom : SET [0:?] OF IfcRelConnectsElements FOR RelatedElement;
 	ContainedInStructure : SET [0:1] OF IfcRelContainedInSpatialStructure FOR RelatedElements;
 	HasCoverings : SET [0:?] OF IfcRelCoversBldgElements FOR RelatingBuildingElement;
+	HasSurfaceFeatures : SET [0:?] OF IfcRelAdheresToElement FOR RelatingElement;
 END_ENTITY;
 
 ENTITY IfcElementAssembly
@@ -7487,11 +7495,6 @@ OR
 (PredefinedType = IfcVibrationIsolatorTypeEnum.USERDEFINED))
 AND
 EXISTS(SELF\IfcObject.ObjectType));
-END_ENTITY;
-
-ENTITY IfcInclinedReferenceSweptAreaSolid
- SUBTYPE OF (IfcDirectrixDistanceSweptAreaSolid);
-	FixedAxisVertical : OPTIONAL IfcBoolean;
 END_ENTITY;
 
 ENTITY IfcIndexedColourMap
@@ -9661,6 +9664,12 @@ ENTITY IfcReinforcingMeshType
 	BendingShapeCodeProvided : NOT EXISTS(BendingParameters) OR EXISTS(BendingShapeCode);
 END_ENTITY;
 
+ENTITY IfcRelAdheresToElement
+ SUBTYPE OF (IfcRelDecomposes);
+	RelatingElement : IfcElement;
+	RelatedSurfaceFeatures : SET [1:?] OF IfcSurfaceFeature;
+END_ENTITY;
+
 ENTITY IfcRelAggregates
  SUBTYPE OF (IfcRelDecomposes);
 	RelatingObject : IfcObjectDefinition;
@@ -9924,7 +9933,8 @@ END_ENTITY;
 
 ENTITY IfcRelDecomposes
  ABSTRACT SUPERTYPE OF (ONEOF
-    (IfcRelAggregates
+    (IfcRelAdheresToElement
+    ,IfcRelAggregates
     ,IfcRelNests
     ,IfcRelProjectsElement
     ,IfcRelVoidsElement))
@@ -9983,6 +9993,7 @@ ENTITY IfcRelInterferesElements
 	RelatingElement : IfcInterferenceSelect;
 	RelatedElement : IfcInterferenceSelect;
 	InterferenceGeometry : OPTIONAL IfcConnectionGeometry;
+	InterferenceSpace : OPTIONAL IfcSpatialZone;
 	InterferenceType : OPTIONAL IfcIdentifier;
 	ImpliedOrder : IfcLogical;
  WHERE
@@ -10328,7 +10339,7 @@ ENTITY IfcSecondOrderPolynomialSpiral
  SUBTYPE OF (IfcSpiral);
 	QuadraticTerm : IfcLengthMeasure;
 	LinearTerm : OPTIONAL IfcLengthMeasure;
-	ConstantTerm : OPTIONAL IfcReal;
+	ConstantTerm : OPTIONAL IfcLengthMeasure;
 END_ENTITY;
 
 ENTITY IfcSectionProperties
@@ -10434,7 +10445,7 @@ ENTITY IfcSeventhOrderPolynomialSpiral
 	CubicTerm : OPTIONAL IfcLengthMeasure;
 	QuadraticTerm : OPTIONAL IfcLengthMeasure;
 	LinearTerm : OPTIONAL IfcLengthMeasure;
-	ConstantTerm : OPTIONAL IfcReal;
+	ConstantTerm : OPTIONAL IfcLengthMeasure;
 END_ENTITY;
 
 ENTITY IfcShadingDevice
@@ -10567,7 +10578,8 @@ END_ENTITY;
 ENTITY IfcSine
  SUBTYPE OF (IfcSpiral);
 	SineTerm : IfcLengthMeasure;
-	LinearTerm : IfcLengthMeasure;
+	LinearTerm : OPTIONAL IfcLengthMeasure;
+	ConstantTerm : OPTIONAL IfcLengthMeasure;
 END_ENTITY;
 
 ENTITY IfcSite
@@ -11245,6 +11257,8 @@ END_ENTITY;
 ENTITY IfcSurfaceFeature
  SUBTYPE OF (IfcFeatureElement);
 	PredefinedType : OPTIONAL IfcSurfaceFeatureTypeEnum;
+ INVERSE
+	AdheresToElement : IfcRelAdheresToElement FOR RelatedSurfaceFeatures;
  WHERE
 	HasObjectType : NOT EXISTS(PredefinedType) OR (PredefinedType <> IfcSurfaceFeatureTypeEnum.USERDEFINED) OR EXISTS(SELF\IfcObject.ObjectType);
 END_ENTITY;
@@ -11371,7 +11385,6 @@ END_ENTITY;
 ENTITY IfcSweptAreaSolid
  ABSTRACT SUPERTYPE OF (ONEOF
     (IfcDirectrixCurveSweptAreaSolid
-    ,IfcDirectrixDistanceSweptAreaSolid
     ,IfcExtrudedAreaSolid
     ,IfcRevolvedAreaSolid))
  SUBTYPE OF (IfcSolidModel);
@@ -11769,10 +11782,10 @@ END_ENTITY;
 
 ENTITY IfcThirdOrderPolynomialSpiral
  SUBTYPE OF (IfcSpiral);
-	QubicTerm : IfcLengthMeasure;
+	CubicTerm : IfcLengthMeasure;
 	QuadraticTerm : OPTIONAL IfcLengthMeasure;
 	LinearTerm : OPTIONAL IfcLengthMeasure;
-	ConstantTerm : OPTIONAL IfcReal;
+	ConstantTerm : OPTIONAL IfcLengthMeasure;
 END_ENTITY;
 
 ENTITY IfcTimePeriod;

@@ -397,7 +397,7 @@ namespace carve {
         while ((*iter).second.size() == 2) {
           prev = *std::find_if((*iter).second.begin(),
                                (*iter).second.end(),
-                               std::bind2nd(std::not_equal_to<const vertex_t *>(), next));
+                               std::bind(std::not_equal_to<const vertex_t *>(), std::placeholders::_1, next));
           next = vert;
           vert = prev;
           iter = edge_graph.find(vert);
@@ -427,7 +427,7 @@ namespace carve {
         while (vert != init && (*iter).second.size() == 2) {
           next = *std::find_if((*iter).second.begin(),
                                (*iter).second.end(),
-                               std::bind2nd(std::not_equal_to<const vertex_t *>(), prev));
+                               std::bind(std::not_equal_to<const vertex_t *>(), std::placeholders::_1, prev));
 
           edgeiter = complex_edges.find(vpair_t(vert, next));
           if ((*edgeiter).second.size() != efwd.size()) goto done;
