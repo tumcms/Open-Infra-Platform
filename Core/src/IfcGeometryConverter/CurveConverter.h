@@ -306,7 +306,7 @@ namespace OpenInfraPlatform
 //					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
 //					const bool senseAgreement,
 //					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
-//				) const throw(...)
+//				) const noexcept(false)
 //				{
 //					throw oip::UnhandledException(blossCurve);
 //				}
@@ -498,9 +498,13 @@ namespace OpenInfraPlatform
 					for (auto &segment : compositeCurve->Segments) 
 					{
 						std::vector<carve::geom::vector<3>> segment_vec;
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
+						convertIfcCurve(segment->ParentCurve, segment_vec, segmentStartPoints);
+#else
 						convertIfcSegment(segment, segment_vec, segmentStartPoints);
-						if (!segment_vec.empty()) 
-						{
+#endif
+						if (!segment_vec.empty()) {
 							GeomUtils::appendPointsToCurve(segment_vec, targetVec);
 						}
 					}
@@ -1420,7 +1424,7 @@ namespace OpenInfraPlatform
 //					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
 //					const bool senseAgreement,
 //					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
-//				) const throw(...)
+//				) const noexcept(false)
 //				{
 //					throw oip::UnhandledException(seriesParameterCurve);
 //				}
@@ -1482,7 +1486,7 @@ namespace OpenInfraPlatform
 				void convertIfcSegment(const EXPRESSReference<typename IfcEntityTypesT::IfcSegment>& segment,
 					std::vector<carve::geom::vector<3>>& targetVec,
 					std::vector<carve::geom::vector<3>>& segmentStartPoints
-				) const throw(...)
+				) const noexcept(false)
 				{
 					//throw oip::UnhandledException(segment);
 					
@@ -2119,7 +2123,7 @@ namespace OpenInfraPlatform
 									*itVerticalSegment, "Could not determine tesselation values.");
 							}
 
-							dVerticalRadius *= UnitConvert()->getLengthInMeterFactor();
+							dVerticalRadius *= this->UnitConvert()->getLengthInMeterFactor();
 
 							// determine tesselation density
 							int nVerFragments = this->GeomSettings()->getNumberOfSegmentsForTessellation(dVerticalRadius);
@@ -2395,7 +2399,7 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
+					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const noexcept(false)
 				{
 					switch (trimming.which())
 					{
@@ -2414,10 +2418,11 @@ namespace OpenInfraPlatform
 					}
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const throw(...)
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const noexcept(false)
 				{
 					switch (trimming.which())
 					{
@@ -2435,6 +2440,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
+#endif
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
@@ -2446,7 +2452,7 @@ namespace OpenInfraPlatform
 				*/ 
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const throw(...)
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint) const noexcept(false)
 				{
 					return placementConverter->convertIfcCartesianPoint(cartesianPoint);
 				}
@@ -2459,7 +2465,7 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
-					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint)const throw (...)
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint>& cartesianPoint)const noexcept(false)
 				{
 					carve::geom::vector<3> trimmingPoint = placementConverter->convertIfcCartesianPoint(cartesianPoint);
 					EXPRESSReference<typename IfcEntityTypesT::IfcVector> lineVector = line->Dir;
@@ -2488,14 +2494,14 @@ namespace OpenInfraPlatform
 				*/
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
 
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
-					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
@@ -2509,7 +2515,7 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
@@ -2530,7 +2536,7 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					double angle = parameter * this->UnitConvert()->getAngleInRadianFactor();
@@ -2552,7 +2558,7 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcLine>& line,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter)const throw (...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter)const noexcept(false)
 				{
 					return placementConverter->convertIfcCartesianPoint(line->Pnt) +
 						placementConverter->convertIfcVector(line->Dir) * parameter;
@@ -2569,18 +2575,18 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// Get Clothoid Constant
@@ -2608,7 +2614,7 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const throw(...)
+					const typename IfcEntityTypesT::IfcTrimmingSelect & trimming) const noexcept(false)
 				{
 					switch (trimming.which())
 					{
@@ -2630,7 +2636,7 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const throw(...)
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const noexcept(false)
 				{
 					switch (trimming.which())
 					{
@@ -2659,21 +2665,21 @@ namespace OpenInfraPlatform
 				*/
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
-					const typename IfcEntityTypesT::IfcCartesianPoint & point) const throw(...)
+					const typename IfcEntityTypesT::IfcCartesianPoint & point) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
 
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
 
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve> & curve,
-					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
@@ -2686,19 +2692,19 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
 				{
 					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				template <>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const throw(...)
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const double& parameter) const throw(...)
+					const double& parameter) const noexcept(false)
 				{
 					//get clothoid constant -> linear term
 					double A = clothoid->ClothoidConstant * this->UnitConvert()->getLengthInMeterFactor();
