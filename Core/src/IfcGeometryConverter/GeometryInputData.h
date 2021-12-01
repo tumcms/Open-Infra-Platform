@@ -236,8 +236,8 @@ public:
 	}
 
 	void mergePolyhedronsIntoOnePolyhedron(
-		//const std::shared_ptr<ItemData> other,
-		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron //Carve polygon of the converted face
+		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron, //Carve polygon of the converted face
+		std::map<std::string, uint32_t>& polyhedronIndices
 	)  const noexcept(false)
 	{
 		const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& inputPolyhedronsCollection{
@@ -249,22 +249,48 @@ public:
 		{
 			for (const std::shared_ptr<carve::input::PolyhedronData>& inputPolyhedron : inputPolyhedrons)
 			{
-				// number of existing vertices in target
-				const size_t indexOffset = targetPolyhedron->getVertexCount();
+				// mapping from old to new vertex indices: newIndex = indexMapping[oldIndex]
+				std::vector<size_t> indexMapping;
+				indexMapping.reserve(inputPolyhedron->getVertexCount());
 
 				// --- add points ---
 				for (const auto& inputPoint : inputPolyhedron->points)
 				{
-					targetPolyhedron->addVertex(inputPoint);
+					// construct a string of x, y, z coordinates for the current point
+					std::stringstream vertexString;
+					vertexString << inputPoint.x << " " << inputPoint.y << " " << inputPoint.z;
+
+					// search for existing point
+					auto itFound = polyhedronIndices.find(vertexString.str());
+
+					// point index inside the targetPolyhedron, respectivly inside polyhedronIndices
+					uint32_t index = 0;
+
+					if (itFound != polyhedronIndices.end())
+					{
+						// point exists, get its index
+						index = itFound->second;
+					}
+					else
+					{
+						// add point to targetPolyhedron and polyhedronIndices
+						index = targetPolyhedron->addVertex(inputPoint);
+						polyhedronIndices[vertexString.str()] = index;
+					}
+
+					// store index mapping oldIndex > newIndex
+					indexMapping.push_back(index);
 				}
 
 				// --- add faces ---
-				// iterator indicates position in vector inputPolyhedron
+				// iterator indicates position in vector inputPolyhedron->faceIndices
 				size_t iterator = 0;
-				// the indices of each face will be stored temporal in the vector indicesTemp
+				// the new indices of each face will be stored temporal in the vector indicesTemp
 				std::vector<size_t> indicesTemp;
-				// loop over faces: numberOfFaces = inputPolyhedron->getFaceCount()
-				for (size_t i = 0; i < inputPolyhedron->getFaceCount(); i++)
+				
+				const size_t numberOfFaces = inputPolyhedron->getFaceCount();
+				// loop over faces: 
+				for (size_t i = 0; i < numberOfFaces; i++)
 				{
 					// get number of indices which describe one face
 					const size_t nIndicesOfFace = inputPolyhedron->faceIndices[iterator];
@@ -273,8 +299,8 @@ public:
 					indicesTemp.reserve(nIndicesOfFace);
 					for (size_t j = iterator; j < iterator + nIndicesOfFace; j++)
 					{
-						// index shift by number of exiting vertices, store in temporal vector
-						indicesTemp.push_back(inputPolyhedron->faceIndices[j] + indexOffset);
+						// get old index from inputPolyhedron, mapping to new index, store new index in vector
+						indicesTemp.push_back(indexMapping[inputPolyhedron->faceIndices[j]]);
 					}
 
 					// add face into target

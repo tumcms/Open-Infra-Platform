@@ -890,7 +890,7 @@ namespace OpenInfraPlatform {
 						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
 
 						// append surface-faces to target polyhedron
-						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron);
+						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
 					}
 				}
 				
