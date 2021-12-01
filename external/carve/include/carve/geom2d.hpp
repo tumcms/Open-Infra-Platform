@@ -28,6 +28,10 @@
 
 #include <math.h>
 
+#if _MSVC_LANG > 201700L
+#include <algorithm>
+#endif
+
 #if defined(CARVE_DEBUG)
 #  include <iostream>
 #endif

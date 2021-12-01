@@ -11,7 +11,7 @@ string(APPEND Qt5_ROOT ${Qt5_ROOT_SUFFIX})
 message(STATUS ${Qt5_ROOT})
 
 # Set path to MinGW bin folder containing gcc executable
-set(MinGW_DIR ${Qt5_ROOT}/Tools/mingw730_64/bin)
+set(MinGW_DIR ${Qt5_ROOT}/Tools/mingw810_64/bin)
 
 # Get Python and MinGW directories in native path format to add them to %PATH% variable
 file(TO_NATIVE_PATH ${MinGW_DIR} MinGW_DIR)

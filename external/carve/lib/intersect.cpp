@@ -1311,11 +1311,11 @@ void carve::csg::CSG::calc(meshset_t *a,
 
 #if defined(CARVE_DEBUG_WRITE_PLY_DATA)
   {
-    std::auto_ptr<carve::mesh::MeshSet<3> > poly(faceLoopsToPolyhedron(a_face_loops));
+    std::shared_ptr<carve::mesh::MeshSet<3> > poly(faceLoopsToPolyhedron(a_face_loops));
     writePLY("/tmp/a_split.ply", poly.get(), false);
   }
   {
-    std::auto_ptr<carve::mesh::MeshSet<3> > poly(faceLoopsToPolyhedron(b_face_loops));
+    std::shared_ptr<carve::mesh::MeshSet<3> > poly(faceLoopsToPolyhedron(b_face_loops));
     writePLY("/tmp/b_split.ply", poly.get(), false);
   }
 #endif
@@ -1422,8 +1422,8 @@ carve::mesh::MeshSet<3> *carve::csg::CSG::compute(meshset_t *a,
   size_t a_edge_count;
   size_t b_edge_count;
 
-  std::auto_ptr<face_rtree_t> a_rtree(face_rtree_t::construct_STR(a->faceBegin(), a->faceEnd(), 4, 4));
-  std::auto_ptr<face_rtree_t> b_rtree(face_rtree_t::construct_STR(b->faceBegin(), b->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> a_rtree(face_rtree_t::construct_STR(a->faceBegin(), a->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> b_rtree(face_rtree_t::construct_STR(b->faceBegin(), b->faceEnd(), 4, 4));
 
   {
     static carve::TimingName FUNC_NAME("CSG::compute - calc()");
@@ -1589,8 +1589,8 @@ bool carve::csg::CSG::sliceAndClassify(meshset_t *closed,
   size_t a_edge_count;
   size_t b_edge_count;
 
-  std::auto_ptr<face_rtree_t> closed_rtree(face_rtree_t::construct_STR(closed->faceBegin(), closed->faceEnd(), 4, 4));
-  std::auto_ptr<face_rtree_t> open_rtree(face_rtree_t::construct_STR(open->faceBegin(), open->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> closed_rtree(face_rtree_t::construct_STR(closed->faceBegin(), closed->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> open_rtree(face_rtree_t::construct_STR(open->faceBegin(), open->faceEnd(), 4, 4));
 
   calc(closed, closed_rtree.get(), open, open_rtree.get(), vclass, eclass,a_face_loops, b_face_loops, a_edge_count, b_edge_count);
 
@@ -1658,8 +1658,8 @@ void carve::csg::CSG::slice(meshset_t *a,
   size_t a_edge_count;
   size_t b_edge_count;
 
-  std::auto_ptr<face_rtree_t> a_rtree(face_rtree_t::construct_STR(a->faceBegin(), a->faceEnd(), 4, 4));
-  std::auto_ptr<face_rtree_t> b_rtree(face_rtree_t::construct_STR(b->faceBegin(), b->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> a_rtree(face_rtree_t::construct_STR(a->faceBegin(), a->faceEnd(), 4, 4));
+  std::shared_ptr<face_rtree_t> b_rtree(face_rtree_t::construct_STR(b->faceBegin(), b->faceEnd(), 4, 4));
 
   calc(a, a_rtree.get(), b, b_rtree.get(), vclass, eclass,a_face_loops, b_face_loops, a_edge_count, b_edge_count);
 
