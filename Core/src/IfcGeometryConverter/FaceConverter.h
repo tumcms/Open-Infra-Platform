@@ -903,46 +903,41 @@ namespace OpenInfraPlatform {
 					const std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops
 				) const noexcept(true)
 				{
+					// for each point (via std::all_of), check if it is part of the surface;
+					// returns true, if all are part, otherwise false
+					return std::all_of(faceBoundLoops.begin(), faceBoundLoops.end(), [&, this](const auto& faceBoundLoop) {
+						return std::all_of(faceBoundLoop.begin(), faceBoundLoop.end(), [&, this](const auto& pointLoop) {
+							return checkPointIsPartOfSurface(itemDataSurface, pointLoop); });
+					});
+				}
+
+				bool checkPointIsPartOfSurface(
+					const std::shared_ptr<ItemData>& itemDataSurface,
+					const carve::geom::vector<3>& pointLoop
+				) const noexcept(true)
+				{
 					const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& surfacePolyhedronsCollection{
 						itemDataSurface->closed_polyhedrons,
 						itemDataSurface->open_polyhedrons,
 						itemDataSurface->open_or_closed_polyhedrons };
 
-					// for each point
-					for (const auto& faceBoundLoop : faceBoundLoops) {
-						for (const carve::geom::vector<3>& pointLoop : faceBoundLoop)
+					// search through polyhedrons
+					for (const auto& surfacePolyhedrons : surfacePolyhedronsCollection) {
+						for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : surfacePolyhedrons)
 						{
-							bool found = false;
-
-							// search through polyhedrons
-							for (const auto& surfacePolyhedrons : surfacePolyhedronsCollection) {
-								for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : surfacePolyhedrons)
+							// search through points of polyhedron
+							for (const auto& pointSurface : surfacePolyhedron->points)
+							{
+								if (this->GeomSettings()->areEqual(pointLoop, pointSurface))
 								{
-									// search through points of polyhedron
-									for (const auto& pointSurface : surfacePolyhedron->points)
-									{
-										if (this->GeomSettings()->areEqual(pointLoop, pointSurface))
-										{
-											found = true;
-											goto skipToNextPoint;
-										}
-									}
+									return true;
 								}
 							}
-
-							// exit if loop point is not found (= not part of surface)
-							if (found == false)
-							{
-								return false;
-							}
-
-						// label of goto
-						skipToNextPoint:;
 						}
 					}
 
-					// return true only if no previous exit happend (-> all loop points are part of the surface)
-					return true;
+					// if loop point is not found (= not part of surface)
+					return false;
 				}
 				
 				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
