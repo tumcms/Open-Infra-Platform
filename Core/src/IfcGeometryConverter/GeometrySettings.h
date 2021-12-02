@@ -184,6 +184,23 @@ namespace OpenInfraPlatform
 						   
 				carve::csg::CSG::CLASSIFY_TYPE getCSGtype();
 
+				/*! Calculates the number of segments when tessellating an curve
+
+				\param[in] length		The length "l" of the lenght
+
+				\return The number of segments 
+				*/
+				int getNumberOfTessellationSegmentsByLength(const double length)
+				{
+					// if length is smaller then the precision of the model, it is a straight (curvature -> infinity)
+					if (length < getPrecision())
+						return 1;
+					// calculate number of segments points
+					double newSegmentsOfLength = length / getPrecision();
+					
+					return (ceil(newSegmentsOfLength)-1);
+				}
+
 			private:
 				int	num_vertices_per_circle;
 				int min_num_vertices_per_arc;
