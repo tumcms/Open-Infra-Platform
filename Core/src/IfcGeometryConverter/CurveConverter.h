@@ -2603,6 +2603,7 @@ namespace OpenInfraPlatform
 
 					return carve::geom::VECTOR(x, y, 0.);
 				}
+#endif
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
@@ -2632,7 +2633,8 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
-				
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
@@ -2654,6 +2656,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
+#endif
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
@@ -2682,8 +2685,93 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
+
 				}
 
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcCartesianPoint to a length parameter and passes it to getDirectionOfCurve.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
+				* \return							The Angle in radians.
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
+				{
+					throw oip::UnhandledException(circle);
+					//return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+
+				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+
+				/*! \brief Calculates an angle of the circle.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const double& parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(circle);
+				}
+
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcCartesianPoint to a length parameter and passes it to getDirectionOfCurve.
+				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
+				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
+				* \return							The Angle in radians.
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
+				{
+					throw oip::UnhandledException(ellipse);
+					//return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+
+				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
+				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+
+				/*! \brief Calculates an angle of the ellipse.
+				* \param[in] ellipse			    A pointer to data from \c IfcEllipse.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const double& parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(ellipse);
+				}
+
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Calculates an angle of the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				The length.
@@ -2721,7 +2809,6 @@ namespace OpenInfraPlatform
 
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
-
 #endif
 
 
