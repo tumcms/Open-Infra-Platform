@@ -2688,6 +2688,13 @@ namespace OpenInfraPlatform
 
 				}
 
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
+					const double& parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+
+				}
 
 				/**********************************************************************************************/
 				/*! \brief Converts \c IfcCartesianPoint to a length parameter and passes it to getDirectionOfCurve.
@@ -2699,8 +2706,8 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
 				{
-					throw oip::UnhandledException(circle);
 					//return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getLengthInMeterFactor());
+					throw oip::UnhandledException(circle);
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
@@ -2740,8 +2747,8 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
 				{
-					throw oip::UnhandledException(ellipse);
 					//return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getLengthInMeterFactor());
+					throw oip::UnhandledException(ellipse);
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
@@ -2790,7 +2797,7 @@ namespace OpenInfraPlatform
 				{
 					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
-				
+				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
 					const double& parameter) const noexcept(false)
 				{
