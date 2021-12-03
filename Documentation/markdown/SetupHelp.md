@@ -88,7 +88,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 		
     * Open *Libs*
     * Find *proj-devel* package 
-    * Click on *skip* to refresh the line and select version 8.1.1-1.
+    * Click on *skip* to refresh the line and select version 8.2.0-2.
     * Select binary (*Bin*) package (the left column).
 		
 ![](../images/PROJ_Installation_settings.png)
