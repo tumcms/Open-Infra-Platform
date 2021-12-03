@@ -30,7 +30,7 @@ These steps need to be completed before you can proceed even to think to compile
 You will need to install:
 
 1. **Visual Studio 2019** - find [here](https://visualstudio.microsoft.com/de/downloads/).
-2. **CMake 3.20.5** - find [here](https://cmake.org/files/PreviousRelease/cmake-3.20.5-windows-x86_64.msi).
+2. **CMake 3.20.5** - find [here](https://cmake.org/files/v3.20/cmake-3.20.5-windows-x86_64.msi).
 3. **git** - find [here](https://git-scm.com/downloads).
 
 ### <a name="Source_code"></a> Download source code 
