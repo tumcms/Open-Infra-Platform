@@ -2697,7 +2697,7 @@ namespace OpenInfraPlatform
 				}
 
 				/**********************************************************************************************/
-				/*! \brief Converts \c IfcCartesianPoint to a length parameter and passes it to getDirectionOfCurve.
+				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
 				* \return							The Angle in radians.
@@ -2710,7 +2710,7 @@ namespace OpenInfraPlatform
 					throw oip::UnhandledException(circle);
 				}
 
-				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
+				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The Angle in radians.
@@ -2725,7 +2725,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Calculates an angle of the circle.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
-				* \param[in] parameter				The length.
+				* \param[in] parameter				The angle.
 				* \return							The Angle in radians.
 				* \note
 				*/
@@ -2738,7 +2738,7 @@ namespace OpenInfraPlatform
 
 
 				/**********************************************************************************************/
-				/*! \brief Converts \c IfcCartesianPoint to a length parameter and passes it to getDirectionOfCurve.
+				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
 				* \return							The Angle in radians.
@@ -2751,7 +2751,7 @@ namespace OpenInfraPlatform
 					throw oip::UnhandledException(ellipse);
 				}
 
-				/*! \brief Converts \c IfcParameterValue to a length parameter and passes it to getDirectionOfCurve.
+				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The Angle in radians.
@@ -2766,7 +2766,7 @@ namespace OpenInfraPlatform
 
 				/*! \brief Calculates an angle of the ellipse.
 				* \param[in] ellipse			    A pointer to data from \c IfcEllipse.
-				* \param[in] parameter				The length.
+				* \param[in] parameter				The angle.
 				* \return							The Angle in radians.
 				* \note
 				*/
