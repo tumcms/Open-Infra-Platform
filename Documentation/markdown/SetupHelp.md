@@ -30,7 +30,7 @@ These steps need to be completed before you can proceed even to think to compile
 You will need to install:
 
 1. **Visual Studio 2019** - find [here](https://visualstudio.microsoft.com/de/downloads/).
-2. **CMake 3.20.5** - find [here](https://cmake.org/files/PreviousRelease/cmake-3.20.5-windows-x86_64.msi).
+2. **CMake 3.20.5** - find [here](https://cmake.org/files/v3.20/cmake-3.20.5-windows-x86_64.msi).
 3. **git** - find [here](https://git-scm.com/downloads).
 
 ### <a name="Source_code"></a> Download source code 
@@ -88,7 +88,7 @@ Fork & clone [Open-Infra-Platform repository](https://www.github.com/tumcms/Open
 		
     * Open *Libs*
     * Find *proj-devel* package 
-    * Click on *skip* to refresh the line and select version 8.1.1-1.
+    * Click on *skip* to refresh the line and select version 8.2.0-2.
     * Select binary (*Bin*) package (the left column).
 		
 ![](../images/PROJ_Installation_settings.png)
