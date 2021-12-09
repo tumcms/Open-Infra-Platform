@@ -1134,10 +1134,14 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
 					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
+
+					//double startAngle = getDirectionOfCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
 					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
-					
+					//double startAngle = getDirectionOfCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
+
+
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
@@ -2605,6 +2609,51 @@ namespace OpenInfraPlatform
 				}
 #endif
 
+
+				/**********************************************************************************************/
+				/*! \brief Calculates a direction of the curve.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
+				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
+				* \return							The direction of the curve. 
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVec,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					std::vector<carve::geom::vector<3>> points;
+
+					for (int i = 0; i < trimmingVec.size(); i++) {
+						carve::geom::vector<3> point = getDirectionOfCurve<TCurve>(curve, *trimmingVec[i]);
+						points.push_back(point);
+					}
+					if (trimmingVec.size() == 1) {
+						return points[0];
+					}
+					else if (trimmingVec.size() == 2)
+					{
+						if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER) == typeid(trimmingPreference))
+							return points[0];
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN) == typeid(trimmingPreference))
+							return points[1];
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED) == typeid(trimmingPreference))
+							return points[0];
+						else
+						{
+							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
+						}
+					}
+					else
+					{
+						throw oip::InconsistentModellingException("Trimming point can be specified only with one or two parameters");
+					}
+				}
+
+
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
 				* \tparam TCurve					A type of the curve.
@@ -2720,20 +2769,28 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
 				{
-					return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getLengthInMeterFactor());
+					return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getAngleInRadianFactor());
 				}
 
 				/*! \brief Calculates an angle of the circle.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
-				* \param[in] parameter				The angle.
+				* \param[in] angle					The angle.
 				* \return							The Angle in radians.
 				* \note
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					const double& parameter) const noexcept(false)
+					const double& angle) const noexcept(false)
 				{
-					throw oip::UnhandledException(circle);
+					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
+
+					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
+
+					// Calculate point + apply position
+					carve::geom::vector<3> point = conicPositionMatrix * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
+
+					return getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 				}
 
 
