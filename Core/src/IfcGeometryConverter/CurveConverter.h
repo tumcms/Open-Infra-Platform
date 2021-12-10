@@ -2749,7 +2749,7 @@ namespace OpenInfraPlatform
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
-					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
+					const typename IfcEntityTypesT::IfcCartesianPoint& cartesianPoint) const noexcept(false)
 				{
 					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
 					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
