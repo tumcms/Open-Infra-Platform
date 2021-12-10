@@ -1134,13 +1134,9 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
 					double startAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
 					
-
-					//double startAngle = getDirectionOfCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim1Vec, trimmingPreference);
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
 					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
-					//double startAngle = getDirectionOfCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
-
 
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
@@ -2755,8 +2751,12 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
 				{
-					//return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getLengthInMeterFactor());
-					throw oip::UnhandledException(circle);
+					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
+					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.)
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
@@ -2782,15 +2782,9 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
 					const double& angle) const noexcept(false)
 				{
-					carve::math::Matrix conicPositionMatrix = placementConverter->convertIfcAxis2Placement(circle->Position);
-					carve::math::Matrix inverseConicPositionMatrix = GeomUtils::computeInverse(conicPositionMatrix);
-
-					double circleRadius = circle->Radius * this->UnitConvert()->getLengthInMeterFactor();
-
-					// Calculate point + apply position
-					carve::geom::vector<3> point = conicPositionMatrix * carve::geom::VECTOR(circleRadius * cos(angle), circleRadius * sin(angle), 0.);
-
-					return getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
+					// https://math.stackexchange.com/questions/2680855/find-direction-of-tangent-vector-based-on-trajectory-along-circle
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a) 
+					return carve::geom::VECTOR(-sin(angle), cos(angle), 0.);
 				}
 
 
@@ -2802,10 +2796,14 @@ namespace OpenInfraPlatform
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const typename IfcEntityTypesT::IfcCartesianPoint& point) const noexcept(false)
+					const typename IfcEntityTypesT::IfcCartesianPoint& cartesianPoint) const noexcept(false)
 				{
-					//return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getLengthInMeterFactor());
-					throw oip::UnhandledException(ellipse);
+					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
+					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.)
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
@@ -2818,20 +2816,24 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
 				{
-					return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getLengthInMeterFactor());
+					return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getAngleInRadianFactor());
 				}
 
 				/*! \brief Calculates an angle of the ellipse.
 				* \param[in] ellipse			    A pointer to data from \c IfcEllipse.
-				* \param[in] parameter				The angle.
+				* \param[in] angle					The angle.
 				* \return							The Angle in radians.
 				* \note
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
-					const double& parameter) const noexcept(false)
+					const double& angle) const noexcept(false)
 				{
-					throw oip::UnhandledException(ellipse);
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a) 
+					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
+					carve::geom::vector<3> direction = carve::geom::VECTOR(yRadius * -sin(angle), xRadius * cos(angle), 0.);
+					return direction.normalize();
 				}
 
 
