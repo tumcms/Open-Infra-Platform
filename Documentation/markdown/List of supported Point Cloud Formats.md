@@ -37,15 +37,18 @@ Meaning of columns:
 | LAZ                                   |                      |                      |       |
 | LSPROJ                                |                      |                      |       |
 | LWO                                   |                      |                      |       |
-| OBJ                                   |                      | :x:                  | #500  |
-| PLY                                   |                      | :x:                  | #505  |
+| OBJ                                   | :heavy_check_mark:   | :x:                  | #500  |
+| PLY                                   | :heavy_check_mark:   | :x:                  | #505  |
 | PTS                                   |                      |                      |       |
 | PTX                                   | :x:                  | :x:                  | #503  |
 | PTZ                                   |                      |                      |       |
 | RCP/RCS                               |                      |                      |       |
 | RSP                                   |                      |                      |       |
+| SBF   (not found)                     | :clock9:             | :clock9:             |       |
+| STL                                   | :heavy_check_mark:   | :x:                  | #510  |
 | SHP                                   |                      |                      |       |
 | TXT                                   |                      |                      |       |
+| VTK                                   | :heavy_check_mark:   | :x:                  | #509  |
 | XYZ                                   | :x:                  |                      | #501  |
 | ZFS                                   |                      |                      |       |
 | 3DD                                   |                      |                      |       |
