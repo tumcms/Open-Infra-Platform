@@ -23,6 +23,7 @@ Meaning of columns:
 
 | Format                                | supported            | working properly     | Issue |
 |---------------------------------------|----------------------|----------------------|-------|
+| ASC                                   | :heavy_check_mark:   | :x:                  | #508  |
 | BIN                                   | :heavy_check_mark:   | :heavy_check_mark:   |       |
 | CLR                                   |                      |                      |       |
 | CL3                                   |                      |                      |       |
