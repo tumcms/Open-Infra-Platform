@@ -25,37 +25,37 @@ Meaning of columns:
 |---------------------------------------|----------------------|----------------------|-------|
 | ASC                                   | :heavy_check_mark:   | :x:                  | #508  |
 | BIN                                   | :heavy_check_mark:   | :heavy_check_mark:   |       |
-| CLR                                   |                      |                      |       |
-| CL3                                   |                      |                      |       |
+| CLR      (not found yet)              | :clock9:             | :clock9:             |       |
+| CL3      (not found yet)              | :clock9:             | :clock9:             |       |
 | DOT                                   | :x:                  |                      | #506  |
-| DP                                    |                      |                      |       |
+| DP       (not found yet)              | :clock9:             | :clock9:             |       |
 | E57                                   | :x:                  |                      | #504  |
-| FLS                                   |                      |                      |       |
-| FPR                                   |                      |                      |       |
-| FWS                                   |                      |                      |       |
+| FLS      (not found yet)              | :clock9:             | :clock9:             |       |
+| FPR      (not found yet)              | :clock9:             | :clock9:             |       |
+| FWS      (not found yet)              | :clock9:             | :clock9:             |       |
 | Georef   (not found yet)              | :clock9:             | :clock9:             |       |
 | LAS                                   | :x:                  |                      | #502  |
-| LAZ                                   |                      |                      |       |
-| LSPROJ                                |                      |                      |       |
-| LWO                                   |                      |                      |       |
+| LAZ      (not found yet)              | :clock9:             | :clock9:             |       |
+| LSPROJ   (not found yet)              | :clock9:             | :clock9:             |       |
+| LWO      (not found yet)              | :clock9:             | :clock9:             |       |
 | MA                                    | :x:                  |                      | #512  |
 | OBJ                                   | :heavy_check_mark:   | :heavy_check_mark:   | #500  |
 | OFF                                   | :heavy_check_mark:   | :heavy_check_mark:   |       |
 | PLY                                   | :heavy_check_mark:   | :x:                  | #505  |
 | PNG                                   | :heavy_check_mark:   | :x:                  | #511  |
-| PTS                                   |                      |                      |       |
+| PTS      (not found yet)              | :clock9:             | :clock9:             |       |
 | PTX                                   | :heavy_check_mark:   | :heavy_check_mark:   | #503  |
-| PTZ                                   |                      |                      |       |
-| RCP/RCS                               |                      |                      |       |
-| RSP                                   |                      |                      |       |
-| SBF   (not found)                     | :clock9:             | :clock9:             |       |
+| PTZ      (not found yet)              | :clock9:             | :clock9:             |       |
+| RCP/RCS  (not found yet)              | :clock9:             | :clock9:             |       |
+| RSP      (not found yet)              | :clock9:             | :clock9:             |       |
+| SBF      (not found yet)              | :clock9:             | :clock9:             |       |
 | STL                                   | :heavy_check_mark:   | :heavy_check_mark:   | #510  |
-| SHP                                   |                      |                      |       |
-| TXT   (not found yet)                 | :clock9:             | :clock9:             |       |
+| SHP      (not found yet)              | :clock9:             | :clock9:             |       |
+| TXT      (not found yet)              | :clock9:             | :clock9:             |       |
 | VTK                                   | :heavy_check_mark:   | :x:                  | #509  |
 | XYZ                                   | :x:                  |                      | #501  |
-| ZFS                                   |                      |                      |       |
-| 3DD                                   |                      |                      |       |
+| ZFS      (not found yet)              | :clock9:             | :clock9:             |       |
+| 3DD      (not found yet)              | :clock9:             | :clock9:             |       |
 
 
 
