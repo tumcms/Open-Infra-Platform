@@ -39,17 +39,17 @@ Meaning of columns:
 | LSPROJ                                |                      |                      |       |
 | LWO                                   |                      |                      |       |
 | MA                                    | :x:                  |                      | #512  |
-| OBJ                                   | :heavy_check_mark:   | :x:                  | #500  |
+| OBJ                                   | :heavy_check_mark:   | :heavy_check_mark:   | #500  |
 | OFF                                   | :heavy_check_mark:   | :heavy_check_mark:   |       |
 | PLY                                   | :heavy_check_mark:   | :x:                  | #505  |
 | PNG                                   | :heavy_check_mark:   | :x:                  | #511  |
 | PTS                                   |                      |                      |       |
-| PTX                                   | :x:                  | :x:                  | #503  |
+| PTX                                   | :heavy_check_mark:   | :heavy_check_mark:   | #503  |
 | PTZ                                   |                      |                      |       |
 | RCP/RCS                               |                      |                      |       |
 | RSP                                   |                      |                      |       |
 | SBF   (not found)                     | :clock9:             | :clock9:             |       |
-| STL                                   | :heavy_check_mark:   | :x:                  | #510  |
+| STL                                   | :heavy_check_mark:   | :heavy_check_mark:   | #510  |
 | SHP                                   |                      |                      |       |
 | TXT   (not found yet)                 | :clock9:             | :clock9:             |       |
 | VTK                                   | :heavy_check_mark:   | :x:                  | #509  |
