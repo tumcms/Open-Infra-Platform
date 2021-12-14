@@ -2235,7 +2235,7 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> baseSurfacePosition;
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
 				
-				placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+				placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, this->UnitConvert()->getLengthInMeterFactor());
 				basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				
 
@@ -2359,7 +2359,7 @@ namespace OpenInfraPlatform
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
 				if (elemBaseSurface->Position)
 				{
-					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, this->UnitConvert()->getLengthInMeterFactor());
 					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				}
 
@@ -2405,7 +2405,7 @@ namespace OpenInfraPlatform
 				itemData->closed_polyhedrons.push_back(polyhedron_data);
 
 				// apply object coordinate system
-				for (auto& point : halfSpaceBoxData->points) {
+				for (auto& point : polyhedron_data->points) {
 					point = pos * point;
 				}
 			}
@@ -2454,7 +2454,7 @@ namespace OpenInfraPlatform
 				carve::math::Matrix basePositionMatrix(carve::math::Matrix::IDENT());
 				if (elemBaseSurface->Position)
 				{
-					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, UnitConvert()->getLengthInMeterFactor());
+					placementConverter->getPlane(elemBaseSurface->Position.lock(), baseSurfacePlane, baseSurfacePosition, this->UnitConvert()->getLengthInMeterFactor());
 					basePositionMatrix = placementConverter->convertIfcAxis2Placement3D(elemBaseSurface->Position);
 				}
 
@@ -2531,7 +2531,7 @@ namespace OpenInfraPlatform
 				}
 
 				// apply object coordinate system
-				for (auto& point : halfSpaceBoxData->points) 
+				for (auto& point : polyData->points)
 				{
 					point = pos * point;
 				}
