@@ -909,7 +909,7 @@ namespace OpenInfraPlatform {
 						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
 						if (!checkBoundaryIsPartOfSurface(inputDataFaceSurface, faceBoundLoops))
 						{
-							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is to tight. Geometry could be wrong!";
+							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is too tight. Geometry could be wrong!";
 						}
 
 						// append surface-faces to target polyhedron
