@@ -20,7 +20,7 @@
 FetchContent_Declare(
 	dep_gtest
 	GIT_REPOSITORY https://github.com/google/googletest.git
-	GIT_TAG release-1.10.0
+	GIT_TAG release-1.11.0
 )
  
 FetchContent_GetProperties(dep_gtest)
