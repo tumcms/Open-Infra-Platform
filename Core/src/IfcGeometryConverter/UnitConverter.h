@@ -374,21 +374,21 @@ namespace OpenInfraPlatform
 					case 0:
 					{
 						// IfcDerivedUnit
-						auto& derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>();
+						auto derivedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcDerivedUnit>>();
 
 						return convertUnit(derivedUnit); // call recursively the other overload
 					}
 					case 1:
 					{
 						// IfcMonetaryUnit
-						auto& monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>();
+						auto monetaryUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcMonetaryUnit>>();
 						BLUE_LOG(warning) << monetaryUnit->getErrorLog() << ": Not supported.";
 						break;
 					}
 					case 2:
 					{
 						// IfcNamedUnit
-						auto& namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>();
+						auto namedUnit = unit.get<EXPRESSReference<typename IfcEntityTypesT::IfcNamedUnit>>();
 
 						return convertUnit(namedUnit); // call recursively the other overload
 					}

@@ -274,7 +274,7 @@ namespace OpenInfraPlatform {
 
 			// Function 2: Convert IfcArbitraryOpenProfileDef
 			void convertIfcArbitraryOpenProfileDef(const EXPRESSReference<typename IfcEntityTypesT::IfcArbitraryOpenProfileDef>& profileDef,
-				std::vector<std::vector<carve::geom::vector<2>>>& paths) const
+				std::vector<std::vector<carve::geom::vector<2>>>& pathss) const
 			{
 				// ENTITY IfcArbitraryOpenProfileDef
 				//	SUPERTYPE OF(IfcCenterLineProfileDef)
@@ -356,14 +356,14 @@ namespace OpenInfraPlatform {
 							carve::geom::vector<3>& point3d = right_points[i2];
 							polygon.push_back(carve::geom::VECTOR(point3d.x, point3d.y));
 						}
-						addAvoidingDuplicates(polygon, paths);
+						addAvoidingDuplicates(polygon, pathss);
 					}
 				}
 				else {
 					std::vector<carve::geom::vector<2>> polygon;
 					std::vector<carve::geom::vector<2>> segment_start_points;
 					curveConverter->convertIfcCurve2D(ifc_curve, polygon, segment_start_points);
-					addAvoidingDuplicates(polygon, paths);
+					addAvoidingDuplicates(polygon, pathss);
 				}
 #ifdef _DEBUG
 				BLUE_LOG(trace) << "Processed IfcArbitraryOpenProfileDef #" << profileDef->getId();
