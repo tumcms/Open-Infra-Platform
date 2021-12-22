@@ -1544,7 +1544,7 @@ namespace OpenInfraPlatform {
 						// **************************************************************************************************************************
                         // 1. Get information.
                         // Info about the horizontal alignment.
-                        std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal>& horizontal = alignment_curve->Horizontal.lock();
+                        std::shared_ptr<typename IfcEntityTypesT::IfcAlignment2DHorizontal> horizontal = alignment_curve->Horizontal.lock();
 
                         if(!horizontal) {
                             throw oip::InconsistentModellingException( alignment_curve, "No IfcAlignment2DHorizontal!");
