@@ -1009,272 +1009,6 @@ namespace OpenInfraPlatform {
 					return loopVertices3D;
 				}
 
-				void addTriangleToPolyhedronData(
-					const std::vector<carve::geom::vector<3>>& loopVertices3D,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(true)
-				{
-					std::vector<uint32_t> triangleIndices;
-					triangleIndices.reserve(3);
-
-					for (const auto& vertex3D : loopVertices3D)
-					{
-						// set string id and search for existing vertex in polyhedron
-						std::stringstream vertexString;
-						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
-						auto itFound = polyhedronIndices.find(vertexString.str());
-
-						uint32_t index = 0;
-						if (itFound != polyhedronIndices.end())
-						{
-							index = itFound->second;
-						}
-						else
-						{
-							index = polyhedron->addVertex(vertex3D);
-							polyhedronIndices[vertexString.str()] = index;
-						}
-
-						triangleIndices.push_back(index);
-					}
-					polyhedron->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
-				}
-
-				void addArbitraryFaceToPolyhedronData(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
-					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(false)
-				{
-					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
-					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
-
-					bool faceLoopReversed = false;
-
-					// If polyhedron has more than 3 vertices, then we have to project polyhedron into 2D, so that carve can triangulate the mesh
-					ProjectionPlane plane = UNDEFINED;
-
-					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
-					int boundID = -1;
-					for (auto& loopVertices3D : faceBoundLoops)
-					{
-						boundID++;
-
-						std::vector<carve::geom2d::P2> loopVertices2D;
-
-						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed))
-						{
-							throw oip::InconsistentGeometryException(face, "loop could not be projected");
-						}
-
-						if (loopVertices2D.size() < 3)
-						{
-							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
-						}
-
-						// push back vertices to all faceVertices
-						faceVertices2D.push_back(loopVertices2D);
-						faceVertices3D.push_back(loopVertices3D);
-					}
-
-					// If no faceVertices were collected, no carve operations are required
-					if (faceVertices2D.empty())
-					{
-						throw oip::InconsistentGeometryException(face, "no faceVertices were collected");
-					}
-
-					// Result after incorporating holes in polygons if defined
-					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
-
-					// merged vertices after incorporating of holes
-					std::vector<carve::geom2d::P2> mergedVertices2D;
-					std::vector<carve::geom::vector<3>> mergedVertices3D;
-
-					try
-					{
-						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
-
-						for (const auto& incorpIndex : incorporatedIndices)
-						{
-							size_t loopIndex = incorpIndex.first;
-							size_t vertexIndex = incorpIndex.second;
-
-							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
-							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
-
-							// add vertices to merged results
-							mergedVertices2D.push_back(point2D);
-							mergedVertices3D.push_back(point3D);
-						}
-
-					}
-					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
-					{
-						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
-					}
-
-					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polyhedron, polyhedronIndices);
-				}
-
-				/*! \brief  Converts 3D points to 2D.
-				\param	boundID
-				\param	plane The projection plane
-				\param	loopvertices2D
-				\param	loopVertices3D
-				\param faceLoopReversed
-				\return
-				\note
-				*/
-
-				bool convert3DPointsTo2D(const int boundID,
-					ProjectionPlane& plane,
-					std::vector<carve::geom2d::P2>& loopVertices2D,
-					std::vector<carve::geom::vector<3>>& loopVertices3D,
-					bool& faceLoopReversed)  const noexcept(false)
-				{
-					// Compute normal of polygon
-					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
-
-					if (boundID == 0) 
-					{
-						const double nx = std::abs(normal.x);
-						const double ny = std::abs(normal.y);
-						const double nz = std::abs(normal.z);
-
-						const double nMax = std::max(std::max(nx, ny), nz);
-
-						if (nMax == nx) 
-						{
-							plane = ProjectionPlane::YZ_PLANE;
-						}
-						else if (nMax == ny) 
-						{
-							plane = ProjectionPlane::XZ_PLANE;
-						}
-						else if (nMax == nz) 
-						{
-							plane = ProjectionPlane::XY_PLANE;
-						}
-						else 
-						{
-							throw oip::InconsistentGeometryException( "It is not possible to define plane in other dimension");
-						}
-					}
-
-					// Now collect all vertices in 2D
-					for (const auto& vertex : loopVertices3D) 
-					{
-						if (plane == ProjectionPlane::YZ_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.y, vertex.z));
-						}
-
-						else if (plane == ProjectionPlane::XZ_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.z));
-						}
-
-						else if (plane == ProjectionPlane::XY_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.y));
-						}
-						else 
-						{
-							throw oip::InconsistentGeometryException("plane is undefined");
-						}
-					}
-
-					// Check winding order of 2D polygon
-					carve::geom3d::Vector normal2D = GeomUtils::computePolygon2DNormal(loopVertices2D);
-
-					if (boundID == 0) 
-					{
-						if (normal2D.z < 0) 
-						{
-							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-							faceLoopReversed = true;
-						}
-					}
-					else 
-					{
-						if (normal2D.z > 0) 
-						{
-							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-							// faceLoopReversed = true;
-						}
-					}
-					return true;
-				}
-
-				/*! \brief Triangulates merged 2D and 3D vertices to faces.
-				\param	faceVertices2D to be triangulated using carve
-				\param	faceVertices3D to be added to the triangulation
-				\param	faceLoopReversed to adapt order of adding vertices of a new face
-				\return	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
-				\param	polygonIndices
-				*/
-
-				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
-					const std::vector<carve::geom::vector<3>>& faceVertices3D,
-					const bool faceLoopReversed,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false) 
-					{
-
-					// indices after carve triangulation of merged vertices
-					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
-					std::map<uint32_t, uint32_t> mergedIndices;
-
-					// triangulate 2D polygon and improve triangulation by carve
-					carve::triangulate::triangulate(faceVertices2D, triangulatedIndices);
-					carve::triangulate::improve(faceVertices2D, triangulatedIndices);
-
-					// add new vertices to polygon or get index of existing vertex
-					for (uint32_t i = 0; i < faceVertices3D.size(); ++i) 
-					{
-						const carve::geom::vector<3>& v = faceVertices3D[i];
-
-						// set string id and search for existing vertex in polygon
-						std::stringstream vertexString;
-						vertexString << v.x << " " << v.y << " " << v.z;
-
-						auto itFound = polygonIndices.find(vertexString.str());
-						uint32_t index = 0;
-
-						if (itFound != polygonIndices.end()) 
-						{
-							index = itFound->second;
-						}
-						else 
-						{
-							index = polygon->addVertex(v);
-							polygonIndices[vertexString.str()] = index;
-						}
-						mergedIndices[i] = index;
-					}
-
-					// go through triangulated result and add new faces to polygon
-					for (const auto& triangle : triangulatedIndices) 
-					{
-						const uint32_t i0 = triangle.a;
-						const uint32_t i1 = triangle.b;
-						const uint32_t i2 = triangle.c;
-
-						const uint32_t v0 = mergedIndices[i0];
-						const uint32_t v1 = mergedIndices[i1];
-						const uint32_t v2 = mergedIndices[i2];
-
-						if (faceLoopReversed)
-							polygon->addFace(v0, v2, v1);
-						else
-							polygon->addFace(v0, v1, v2);
-					}
-
-				}
-
 				/*! \brief Typename definition (alias) of \c EXPRESSContainer for a easier use of \c OpenInfraPlatform::EarlyBinding::EXPRESSContainer.
 				\c OpenInfraPlatform::EarlyBinding::EXPRESSContainer is defined in EXPRESSContainer.h.
 				The alias is defined for use in the function parameter of \c convertIfcCartesianPointVectorVector.
@@ -1810,6 +1544,283 @@ namespace OpenInfraPlatform {
 
 						// append surface-faces to target polyhedron
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
+					}
+				}
+
+				/*! \brief  Adds one triangle to the polyhedron.
+				\param	loopVertices3D
+				\param	polyhedron
+				\param	polyhedronIndices
+				\note	ToDo: pending refactoring
+				*/
+				void addTriangleToPolyhedronData(
+					const std::vector<carve::geom::vector<3>>& loopVertices3D,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(true)
+				{
+					std::vector<uint32_t> triangleIndices;
+					triangleIndices.reserve(3);
+
+					for (const auto& vertex3D : loopVertices3D)
+					{
+						// set string id and search for existing vertex in polyhedron
+						std::stringstream vertexString;
+						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
+						auto itFound = polyhedronIndices.find(vertexString.str());
+
+						uint32_t index = 0;
+						if (itFound != polyhedronIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polyhedron->addVertex(vertex3D);
+							polyhedronIndices[vertexString.str()] = index;
+						}
+
+						triangleIndices.push_back(index);
+					}
+					polyhedron->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+				}
+
+				/*! \brief  Triangulates an arbitrary face and adds it to the polyhedron.
+				\param	face
+				\param	faceBoundLoops
+				\param	polyhedron
+				\param	polyhedronIndices
+				\note	ToDo: pending refactoring
+				*/
+				void addArbitraryFaceToPolyhedronData(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(false)
+				{
+					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
+					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
+
+					bool faceLoopReversed = false;
+
+					// If polyhedron has more than 3 vertices, then we have to project polyhedron into 2D, so that carve can triangulate the mesh
+					ProjectionPlane plane = UNDEFINED;
+
+					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
+					int boundID = -1;
+					for (auto& loopVertices3D : faceBoundLoops)
+					{
+						boundID++;
+
+						std::vector<carve::geom2d::P2> loopVertices2D;
+
+						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed))
+						{
+							throw oip::InconsistentGeometryException(face, "loop could not be projected");
+						}
+
+						if (loopVertices2D.size() < 3)
+						{
+							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
+						}
+
+						// push back vertices to all faceVertices
+						faceVertices2D.push_back(loopVertices2D);
+						faceVertices3D.push_back(loopVertices3D);
+					}
+
+					// If no faceVertices were collected, no carve operations are required
+					if (faceVertices2D.empty())
+					{
+						throw oip::InconsistentGeometryException(face, "no faceVertices were collected");
+					}
+
+					// Result after incorporating holes in polygons if defined
+					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
+
+					// merged vertices after incorporating of holes
+					std::vector<carve::geom2d::P2> mergedVertices2D;
+					std::vector<carve::geom::vector<3>> mergedVertices3D;
+
+					try
+					{
+						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
+
+						for (const auto& incorpIndex : incorporatedIndices)
+						{
+							size_t loopIndex = incorpIndex.first;
+							size_t vertexIndex = incorpIndex.second;
+
+							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
+							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
+
+							// add vertices to merged results
+							mergedVertices2D.push_back(point2D);
+							mergedVertices3D.push_back(point3D);
+						}
+
+					}
+					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
+					{
+						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
+					}
+
+					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polyhedron, polyhedronIndices);
+				}
+
+				/*! \brief  Converts 3D points to 2D.
+				\param	boundID
+				\param	plane				The projection plane
+				\param	loopvertices2D
+				\param	loopVertices3D
+				\param	faceLoopReversed
+				\return	boolean indicates an error
+				\note	ToDo: pending refactoring
+				*/
+				bool convert3DPointsTo2D(const int boundID,
+					ProjectionPlane& plane,
+					std::vector<carve::geom2d::P2>& loopVertices2D,
+					std::vector<carve::geom::vector<3>>& loopVertices3D,
+					bool& faceLoopReversed)  const noexcept(false)
+				{
+					// Compute normal of polygon
+					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
+
+					if (boundID == 0)
+					{
+						const double nx = std::abs(normal.x);
+						const double ny = std::abs(normal.y);
+						const double nz = std::abs(normal.z);
+
+						const double nMax = std::max(std::max(nx, ny), nz);
+
+						if (nMax == nx)
+						{
+							plane = ProjectionPlane::YZ_PLANE;
+						}
+						else if (nMax == ny)
+						{
+							plane = ProjectionPlane::XZ_PLANE;
+						}
+						else if (nMax == nz)
+						{
+							plane = ProjectionPlane::XY_PLANE;
+						}
+						else
+						{
+							throw oip::InconsistentGeometryException("It is not possible to define plane in other dimension");
+						}
+					}
+
+					// Now collect all vertices in 2D
+					for (const auto& vertex : loopVertices3D)
+					{
+						if (plane == ProjectionPlane::YZ_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.y, vertex.z));
+						}
+
+						else if (plane == ProjectionPlane::XZ_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.z));
+						}
+
+						else if (plane == ProjectionPlane::XY_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.y));
+						}
+						else
+						{
+							throw oip::InconsistentGeometryException("plane is undefined");
+						}
+					}
+
+					// Check winding order of 2D polygon
+					carve::geom3d::Vector normal2D = GeomUtils::computePolygon2DNormal(loopVertices2D);
+
+					if (boundID == 0)
+					{
+						if (normal2D.z < 0)
+						{
+							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
+							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+							faceLoopReversed = true;
+						}
+					}
+					else
+					{
+						if (normal2D.z > 0)
+						{
+							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
+							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+							// faceLoopReversed = true;
+						}
+					}
+					return true;
+				}
+
+				/*! \brief Triangulates merged 2D and 3D vertices to faces.
+				\param	faceVertices2D to be triangulated using carve
+				\param	faceVertices3D to be added to the triangulation
+				\param	faceLoopReversed to adapt order of adding vertices of a new face
+				\param	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
+				\param	polygonIndices
+				\note ToDo: pending refactoring
+				*/
+				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
+					const std::vector<carve::geom::vector<3>>& faceVertices3D,
+					const bool faceLoopReversed,
+					std::shared_ptr<carve::input::PolyhedronData> polygon,
+					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false)
+				{
+
+					// indices after carve triangulation of merged vertices
+					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
+					std::map<uint32_t, uint32_t> mergedIndices;
+
+					// triangulate 2D polygon and improve triangulation by carve
+					carve::triangulate::triangulate(faceVertices2D, triangulatedIndices);
+					carve::triangulate::improve(faceVertices2D, triangulatedIndices);
+
+					// add new vertices to polygon or get index of existing vertex
+					for (uint32_t i = 0; i < faceVertices3D.size(); ++i)
+					{
+						const carve::geom::vector<3>& v = faceVertices3D[i];
+
+						// set string id and search for existing vertex in polygon
+						std::stringstream vertexString;
+						vertexString << v.x << " " << v.y << " " << v.z;
+
+						auto itFound = polygonIndices.find(vertexString.str());
+						uint32_t index = 0;
+
+						if (itFound != polygonIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polygon->addVertex(v);
+							polygonIndices[vertexString.str()] = index;
+						}
+						mergedIndices[i] = index;
+					}
+
+					// go through triangulated result and add new faces to polygon
+					for (const auto& triangle : triangulatedIndices)
+					{
+						const uint32_t i0 = triangle.a;
+						const uint32_t i1 = triangle.b;
+						const uint32_t i2 = triangle.c;
+
+						const uint32_t v0 = mergedIndices[i0];
+						const uint32_t v1 = mergedIndices[i1];
+						const uint32_t v2 = mergedIndices[i2];
+
+						if (faceLoopReversed)
+							polygon->addFace(v0, v2, v1);
+						else
+							polygon->addFace(v0, v1, v2);
 					}
 				}
 			};
