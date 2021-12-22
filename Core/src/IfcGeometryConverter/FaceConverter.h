@@ -941,36 +941,6 @@ namespace OpenInfraPlatform {
 					return faceBoundLoops;
 				}
 
-				/*! \brief  Swaps the \c IfcFaceOuterBound entity to the first position in the list of \c IfcFaceBound entities.
-				 * Only one boundary loop can be an \c IfcFaceOuterBound entity. But in general, it's optional. 
-				 * \param[in,out]	ifcFaceBounds	List of \c IfcFaceBound entities in which the \c IfcFaceOuterBound entity has to be swaped to the front.
-				 */
-				void swapOuterBoundaryToFront(
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds
-				) const noexcept(false)
-				{
-					// throw, if there are multiple IfcFaceOuterBound
-					if (1 < std::count_if(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& faceBound) { return faceBound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>(); })) {
-						throw oip::InconsistentModellingException("Face boundary has more than one outer boundary. Entity #" + std::to_string(ifcFaceBounds[0].getId()) + " " + ifcFaceBounds[0].classname() + " is involved.");
-					}
-
-					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
-					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
-					{
-						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
-						{
-							// swap element 'it' with first element;
-							std::iter_swap(ifcFaceBounds.begin(), it);
-
-							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
-							// "One loop is optionally distinguished as the outer loop of the face."
-							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
-							// thus, break the for-loop after THE outer boundary was found
-							return;
-						}
-					}
-				}
-
 				/*! \brief  Converts a \c IfcFaceBound (or \c IfcFaceOuterBound) entity to a boundary loop of geometry points.
 				 * \param[in]	bound	\c IfcFaceBound entity to be converted.
 				 * \param[in]	pos		The relative location of the origin of the representation's coordinate system within the geometric context.
@@ -1821,6 +1791,36 @@ namespace OpenInfraPlatform {
 							polygon->addFace(v0, v2, v1);
 						else
 							polygon->addFace(v0, v1, v2);
+					}
+				}
+
+				/*! \brief  Swaps the \c IfcFaceOuterBound entity to the first position in the list of \c IfcFaceBound entities.
+				 * Only one boundary loop can be an \c IfcFaceOuterBound entity. But in general, it's optional.
+				 * \param[in,out]	ifcFaceBounds	List of \c IfcFaceBound entities in which the \c IfcFaceOuterBound entity has to be swaped to the front.
+				 */
+				void swapOuterBoundaryToFront(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds
+				) const noexcept(false)
+				{
+					// throw, if there are multiple IfcFaceOuterBound
+					if (1 < std::count_if(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& faceBound) { return faceBound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>(); })) {
+						throw oip::InconsistentModellingException("Face boundary has more than one outer boundary. Entity #" + std::to_string(ifcFaceBounds[0].getId()) + " " + ifcFaceBounds[0].classname() + " is involved.");
+					}
+
+					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
+					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
+					{
+						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
+						{
+							// swap element 'it' with first element;
+							std::iter_swap(ifcFaceBounds.begin(), it);
+
+							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
+							// "One loop is optionally distinguished as the outer loop of the face."
+							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
+							// thus, break the for-loop after THE outer boundary was found
+							return;
+						}
 					}
 				}
 			};
