@@ -864,59 +864,6 @@ namespace OpenInfraPlatform {
 					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices);
 				}
 
-				/*! \brief Computes the surface and boundary loop of an \c IfcFaceSurface (or sub-type), and puts them into one polyhedron.
-				\param[in]		ifcFaceSurface		\c IfcFaceSurface entity to be converted.
-				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
-				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
-				*/
-				void computeIfcFaceSurface(
-					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
-					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices
-				) const noexcept(false)
-				{
-					if (ifcFaceSurface.expired()) {
-						throw oip::ReferenceExpiredException(ifcFaceSurface);
-					}
-
-					// get attribute 1:
-					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
-					// one bound loop contains a list of loop points (carve::gem::vector<3>)
-					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(ifcFaceSurface->Bounds, pos);
-
-					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
-					// ToDo: take sameSense into account by the addFace-construction
-					const bool sameSense = ifcFaceSurface->SameSense;
-
-					// get attribute 2: FaceSurface (as IfcSurface)
-					// The faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description).
-					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the faceSurface.
-					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& ifcSurface = ifcFaceSurface->FaceSurface;
-					if (ifcSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
-					{
-						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
-						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polyhedron, polyhedronIndices);
-					}
-					else
-					{
-						// get surface geometry into inputDataFaceSurface
-						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
-						convertIfcSurface(ifcSurface, pos, inputDataFaceSurface);
-
-						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
-						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
-						if (!checkBoundaryIsPartOfSurface(inputDataFaceSurface, faceBoundLoops))
-						{
-							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is too tight. Geometry could be wrong!";
-						}
-
-						// append surface-faces to target polyhedron
-						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
-					}
-				}
-
 				/*! \brief Checks whether all points of the \c faceBoundLoops exist coincident in the surface geometry of \c itemDataSurface.
 				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the loop points should exist.
 				\param		faceBoundLoops		Loop points which should be checked to be part in the surface geometry.
@@ -1813,6 +1760,58 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
 				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 
+				/*! \brief Computes the surface and boundary loop of an \c IfcFaceSurface (or sub-type), and puts them into one polyhedron.
+				\param[in]		ifcFaceSurface		\c IfcFaceSurface entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
+				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				*/
+				void computeIfcFaceSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices
+				) const noexcept(false)
+				{
+					if (ifcFaceSurface.expired()) {
+						throw oip::ReferenceExpiredException(ifcFaceSurface);
+					}
+
+					// get attribute 1:
+					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// one bound loop contains a list of loop points (carve::gem::vector<3>)
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(ifcFaceSurface->Bounds, pos);
+
+					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
+					// ToDo: take sameSense into account by the addFace-construction
+					const bool sameSense = ifcFaceSurface->SameSense;
+
+					// get attribute 2: FaceSurface (as IfcSurface)
+					// The faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description).
+					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the faceSurface.
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& ifcSurface = ifcFaceSurface->FaceSurface;
+					if (ifcSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
+					{
+						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
+						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polyhedron, polyhedronIndices);
+					}
+					else
+					{
+						// get surface geometry into inputDataFaceSurface
+						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
+						convertIfcSurface(ifcSurface, pos, inputDataFaceSurface);
+
+						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
+						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
+						if (!checkBoundaryIsPartOfSurface(inputDataFaceSurface, faceBoundLoops))
+						{
+							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is too tight. Geometry could be wrong!";
+						}
+
+						// append surface-faces to target polyhedron
+						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
+					}
+				}
 			};
 		}
 	}
