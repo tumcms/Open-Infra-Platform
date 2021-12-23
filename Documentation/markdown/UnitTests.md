@@ -9,7 +9,7 @@ In this way, specific IfcEntities can be inspected individually for correct impl
 
 Currently, the OIP unit tests are not automated and need to be run manually.
 In order to run them, make sure you selected the unit test module in the CMake configuration options
-(for more information on the CMake configuration, take a look at the CMakeOptions).
+(for more information on the CMake configuration, take a look at the [CMakeOptions](Documentation/markdown/CMakeOptions.md)).
 After you build the early binding library, the unit tests of the corresponding IFC version will show up in the solution 
 of the IDE you are using.
 
