@@ -324,7 +324,7 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 
 					// convert mesh and polyline descriptions to triangles/lines for BlueFramework
 					static void createTrianglesJob(const std::vector<std::shared_ptr<ShapeInputDataT<IfcEntityTypesT>>>& tasks,
-						int threadID, buw::ReferenceCounted<IfcModel>& ifcModel)
+						unsigned int threadID, std::shared_ptr<IfcModel> ifcModel)
 					{
 						for(const auto& shapeData : tasks) {
 							const oip::EXPRESSReference<typename IfcEntityTypesT::IfcProduct>& product = shapeData->getProduct();

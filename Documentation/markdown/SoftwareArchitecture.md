@@ -90,7 +90,7 @@ Other third-party libraries that the GUI uses are Zlib and Proj (for more detail
 The _Unit Testing_ part of OIP is based on `Google Test`. 
 Since many unit tests that are implemented in OIP use visual comparison, 
 the unit test base includes a geometry model renderer that allows rendering without the use of the _Graphical User Interface_. 
-On top of that, there are various individual unit tests for IFC, OFF, and point clouds (and also some other more general unit tests?). 
+On top of that, there are various individual unit tests for IFC, OFF, and point clouds. 
 These provide automated checking to guarantee that implemented functionalities are all still in place and working as expected. 
 For the case of the IFC format, the [List of supported IFC Representations](./SupportedIFCrepresentations.md) 
 provides information about which representations currently have at least one unit test in place.
