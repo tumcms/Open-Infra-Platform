@@ -2756,7 +2756,7 @@ namespace OpenInfraPlatform
 					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
 					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
 					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
-					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.)
+					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.);
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
@@ -2803,7 +2803,7 @@ namespace OpenInfraPlatform
 					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
 					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
 					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
-					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.)
+					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.);
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
