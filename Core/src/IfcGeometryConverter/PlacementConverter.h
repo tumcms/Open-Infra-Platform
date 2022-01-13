@@ -1454,10 +1454,7 @@ namespace OpenInfraPlatform {
                 {
                     carve::math::Matrix placement = convertIfcPlacement(axis2placement3d);
                     carve::geom::vector<3>  location(carve::geom::VECTOR(placement._41, placement._42, placement._43));
-                    //carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
-                    //carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
                     carve::geom::vector<3>  local_z(carve::geom::VECTOR(placement._31, placement._32, placement._33));
-                    //carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
                     carve::geom::plane<3> p(local_z, location);
                     plane.d = p.d;
