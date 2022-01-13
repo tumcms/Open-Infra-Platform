@@ -1448,57 +1448,21 @@ namespace OpenInfraPlatform {
 
                 // Function 6: Get Plane. 
 				// \internal TODO refactoring
-				static void getPlane(const std::shared_ptr<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
+                void getPlane(const EXPRESSReference<typename IfcEntityTypesT::IfcAxis2Placement3D> axis2placement3d,
                     carve::geom::plane<3>& plane,
-                    carve::geom::vector<3>& translate,
-                    double length_factor)
+                    carve::geom::vector<3>& translate)
                 {
-                        carve::geom::vector<3>  location(carve::geom::VECTOR(0.0, 0.0, 0.0));
-                        carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
-                        carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
-                        carve::geom::vector<3>  local_z(carve::geom::VECTOR(0.0, 0.0, 1.0));
-                        carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
+                    carve::math::Matrix placement = convertIfcPlacement(axis2placement3d);
+                    carve::geom::vector<3>  location(carve::geom::VECTOR(placement._41, placement._42, placement._43));
+                    //carve::geom::vector<3>  local_x(carve::geom::VECTOR(1.0, 0.0, 0.0));
+                    //carve::geom::vector<3>  local_y(carve::geom::VECTOR(0.0, 1.0, 0.0));
+                    carve::geom::vector<3>  local_z(carve::geom::VECTOR(placement._31, placement._32, placement._33));
+                    //carve::geom::vector<3>  ref_direction(carve::geom::VECTOR(1.0, 0.0, 0.0));
 
-                        // Location type IfcCartesianPoint 
-                        if(axis2placement3d->Location) {
-                            auto coords = axis2placement3d->Location->Coordinates;
-                            //coords.reserve(axis2placement3d->Location->Coordinates.size());
-                            //std::transform(
-                            //	axis2placement3d->Location->Coordinates.begin(),
-                            //	axis2placement3d->Location->Coordinates.end(),
-                            //	coords.begin(),
-                            //	[](auto &point) {
-                            //	carve::geom::vector<3> carve_point;
-                            //	carve_point.x = point[0];
-                            //	carve_point.y = point[1];
-                            //	carve_point.z = point[2];
-                            //	return carve_point;
-                            //	}
-                            //);
-
-                            if(coords.size() > 2) {
-                                location = carve::geom::VECTOR(coords[0] * length_factor, coords[1] * length_factor, coords[2] * length_factor);
-                            }
-                            else if(coords.size() > 1) {
-                                location = carve::geom::VECTOR(coords[0] * length_factor, coords[1] * length_factor, 0.0);
-                            }
-                        }
-
-                        // Axis type IfcDirection
-                        if(axis2placement3d->Axis) {
-                            auto axis = axis2placement3d->Axis->DirectionRatios;	// local z-axis
-
-                            if(axis.size() > 2) {
-                                local_z = carve::geom::VECTOR(axis[0], axis[1], axis[2]);
-                            }
-                        }
-
-                        local_z.normalize();
-
-                        carve::geom::plane<3> p(local_z, location);
-                        plane.d = p.d;
-                        plane.N = local_z;
-                        translate = location;
+                    carve::geom::plane<3> p(local_z, location);
+                    plane.d = p.d;
+                    plane.N = local_z;
+                    translate = location;
                 }
 
                 /*! \brief Calculates a point and the tangent at the point along a \c IfcCurve.
