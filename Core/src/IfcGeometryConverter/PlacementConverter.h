@@ -1452,7 +1452,7 @@ namespace OpenInfraPlatform {
                     carve::geom::plane<3>& plane,
                     carve::geom::vector<3>& translate)
                 {
-                    carve::math::Matrix placement = convertIfcPlacement(axis2placement3d);
+                    carve::math::Matrix placement = convertIfcAxis2Placement3D(axis2placement3d);
                     carve::geom::vector<3>  location(carve::geom::VECTOR(placement._41, placement._42, placement._43));
                     carve::geom::vector<3>  local_z(carve::geom::VECTOR(placement._31, placement._32, placement._33));
 
