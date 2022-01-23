@@ -2800,10 +2800,16 @@ namespace OpenInfraPlatform
 				{
 					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
 					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+
+					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
+					
 					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
-					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point;
+					//https://www.algebra.com/algebra/homework/Quadratic-relations-and-conic-sections/Tangent-lines-to-an-ellipse.lesson
 					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
-					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.);
+					carve::geom::vector<3> direction = carve::geom::VECTOR(-directionFromCenterToPoint.y / (yRadius * yRadius), directionFromCenterToPoint.x / (xRadius * xRadius), 0.);
+					return direction.normalize();
 				}
 
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
@@ -2832,6 +2838,10 @@ namespace OpenInfraPlatform
 					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a) 
 					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
 					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
+					double xPoint = xRadius * cos(angle);
+					double yPoint = yRadius * sin(angle);
+
+
 					carve::geom::vector<3> direction = carve::geom::VECTOR(yRadius * -sin(angle), xRadius * cos(angle), 0.);
 					return direction.normalize();
 				}
