@@ -2675,7 +2675,7 @@ namespace OpenInfraPlatform
 						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect  is wrong!");
+						throw oip::InconsistentGeometryException(curve, "IfcTrimmingSelect is wrong!");
 					}
 				}
 
