@@ -2621,23 +2621,23 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
 				) const noexcept(false)
 				{
-					std::vector<carve::geom::vector<3>> points;
+					std::vector<carve::geom::vector<3>> directions;
 
 					for (int i = 0; i < trimmingVec.size(); i++) {
-						carve::geom::vector<3> point = getDirectionOfCurve<TCurve>(curve, *trimmingVec[i]);
-						points.push_back(point);
+						carve::geom::vector<3> direction = getDirectionOfCurve<TCurve>(curve, *trimmingVec[i]);
+						directions.push_back(direction);
 					}
 					if (trimmingVec.size() == 1) {
-						return points[0];
+						return directions[0];
 					}
 					else if (trimmingVec.size() == 2)
 					{
 						if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER) == typeid(trimmingPreference))
-							return points[0];
+							return directions[0];
 						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN) == typeid(trimmingPreference))
-							return points[1];
+							return directions[1];
 						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED) == typeid(trimmingPreference))
-							return points[0];
+							return directions[0];
 						else
 						{
 							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
@@ -2675,7 +2675,7 @@ namespace OpenInfraPlatform
 						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect  is wrong!");
 					}
 				}
 
@@ -2683,22 +2683,22 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const noexcept(false)
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & measureSelect) const noexcept(false)
 				{
 					switch (trimming.which())
 					{
 					case 0:
 					{
 						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
-						return getDirectionOfCurve<TCurve>(curve, trimming.get<0>());
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<0>());
 					}
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect is wrong!");
 					}
 				}
 #endif
@@ -2745,7 +2745,7 @@ namespace OpenInfraPlatform
 				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
@@ -2754,7 +2754,7 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
 					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
 					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
-					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point - carve::geom::VECTOR(0., 0., 0.);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point; //-carve::geom::VECTOR(0., 0., 0.)
 					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
 					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.);
 				}
@@ -2762,7 +2762,7 @@ namespace OpenInfraPlatform
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				* \note
 				*/
 				template<>
@@ -2772,10 +2772,10 @@ namespace OpenInfraPlatform
 					return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getAngleInRadianFactor());
 				}
 
-				/*! \brief Calculates an angle of the circle.
+				/*! \brief Calculates a direciton of the tangent on the circle border.
 				* \param[in] circle					A pointer to data from \c IfcCircle.
 				* \param[in] angle					The angle.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				* \note
 				*/
 				template<>
@@ -2792,7 +2792,7 @@ namespace OpenInfraPlatform
 				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				*/
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
@@ -2809,7 +2809,7 @@ namespace OpenInfraPlatform
 				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
 				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				* \note
 				*/
 				template<>
@@ -2819,10 +2819,10 @@ namespace OpenInfraPlatform
 					return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getAngleInRadianFactor());
 				}
 
-				/*! \brief Calculates an angle of the ellipse.
+				/*! \brief Calculates a direciton of the tangent on the ellipse border.
 				* \param[in] ellipse			    A pointer to data from \c IfcEllipse.
 				* \param[in] angle					The angle.
-				* \return							The Angle in radians.
+				* \return							The direction of the tangent.
 				* \note
 				*/
 				template<>
