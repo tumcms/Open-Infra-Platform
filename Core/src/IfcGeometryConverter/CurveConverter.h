@@ -2807,8 +2807,10 @@ namespace OpenInfraPlatform
 					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
 					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point;
 					//https://www.algebra.com/algebra/homework/Quadratic-relations-and-conic-sections/Tangent-lines-to-an-ellipse.lesson
-					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
-					carve::geom::vector<3> direction = carve::geom::VECTOR(-directionFromCenterToPoint.y / (yRadius * yRadius), directionFromCenterToPoint.x / (xRadius * xRadius), 0.);
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b/yRadius^2 ,a/xRadius^2)
+					carve::geom::vector<3> direction = carve::geom::VECTOR(-directionFromCenterToPoint.y / (yRadius * yRadius), 
+																			directionFromCenterToPoint.x / (xRadius * xRadius), 
+																			0.);
 					return direction.normalize();
 				}
 
@@ -2835,14 +2837,14 @@ namespace OpenInfraPlatform
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
 					const double& angle) const noexcept(false)
 				{
-					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a) 
 					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
 					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
-					double xPoint = xRadius * cos(angle);
-					double yPoint = yRadius * sin(angle);
 
-
-					carve::geom::vector<3> direction = carve::geom::VECTOR(yRadius * -sin(angle), xRadius * cos(angle), 0.);
+					carve::geom::vector<3> point = carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b/yRadius^2 ,a/xRadius^2)					
+					carve::geom::vector<3> direction = carve::geom::VECTOR(-point.y / (yRadius * yRadius),
+																			point.x / (xRadius * xRadius),
+																			0.);
 					return direction.normalize();
 				}
 
