@@ -2799,14 +2799,8 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcCartesianPoint& cartesianPoint) const noexcept(false)
 				{
 					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
-					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
 
-					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
-					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
-					
-					double angleFromX = std::acos(point.x / xRadius);
-					double angleFromY = std::asin(point.y / yRadius);
-					double angle = (angleFromX + angleFromY) * 0.5;
+					double angle = std::atan(point.y/point.x)
 
 					return getDirectionOfCurve(ellipse, angle);
 				}
