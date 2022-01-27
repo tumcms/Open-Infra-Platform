@@ -61,12 +61,16 @@ protected:
 TEST_F(Cubic, AllEntitiesAreRead) {
 	EXPECT_THAT(express_model->entities.size(), Eq(78));
 }
-/*
+
 TEST_F(Cubic, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCCURVESEGMENT"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTAL"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTALSEGMENT"; });
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
 }
-*/
+
 TEST_F(Cubic, ImageIsSaved)
 {
 	// Arrange
@@ -84,7 +88,7 @@ TEST_F(Cubic, PlaneSurfaceViews)
 	// Arrange
 	const auto expected_front = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_front.png").string());
 	const auto expected_top = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath(cubic_100.0_300_1000_1_Meter_bottom.png").string());
+	const auto expected_bottom = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_bottom.png").string());
 	const auto expected_left = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_left.png").string());
 	const auto expected_right = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_right.png").string());
 	const auto expected_back = buw::loadImage4b(dataPath("cubic_100.0_300_1000_1_Meter_back.png").string());
@@ -110,7 +114,7 @@ TEST_F(Cubic, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 	/*
-	buw::storeImage(testPath("cubic_100.0_300_1000_1_Meter_front.png").string(), image_front);
+	buw:storeImage(testPath("cubic_100.0_300_1000_1_Meter_front.png").string(), image_front);
 	buw::storeImage(testPath("cubic_100.0_300_1000_1_Meter_top.png").string(), image_top);
 	buw::storeImage(testPath("cubic_100.0_300_1000_1_Meter_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("cubic_100.0_300_1000_1_Meter_left.png").string(), image_left);

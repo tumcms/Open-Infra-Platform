@@ -59,14 +59,18 @@ protected:
 };
 
 TEST_F(HelmertCurve, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(94));
+	EXPECT_THAT(express_model->entities.size(), Eq(86));
 }
-/*
+
 TEST_F(HelmertCurve, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCCURVESEGMENT"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTAL"; });
+	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTALSEGMENT"; });
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
+	EXPECT_NE(result3, express_model->entities.end());
 }
-*/
+
 TEST_F(HelmertCurve, ImageIsSaved)
 {
 	// Arrange

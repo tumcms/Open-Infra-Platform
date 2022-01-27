@@ -59,14 +59,16 @@ protected:
 };
 
 TEST_F(Clothoid, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(80));
+	EXPECT_THAT(express_model->entities.size(), Eq(72));
 }
-/*
+
 TEST_F(Clothoid, IFCHasAnEssentialEntity) {
-	auto result = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCTRIANGULATEDFACESET"; });
-	EXPECT_NE(result, express_model->entities.end());
+	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCURVESEGMENT"; });
+	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto &pair) -> bool { return pair.second->classname() == "IFCCLOTHOID"; });
+	EXPECT_NE(result1, express_model->entities.end());
+	EXPECT_NE(result2, express_model->entities.end());
 }
-*/
+
 TEST_F(Clothoid, ImageIsSaved)
 {
 	// Arrange
@@ -88,7 +90,7 @@ TEST_F(Clothoid, PlaneSurfaceViews)
 	const auto expected_left = buw::loadImage4b(dataPath("clothoid_100.0_300_1000_1_Meter_left.png").string());
 	const auto expected_right = buw::loadImage4b(dataPath("clothoid_100.0_300_1000_1_Meter_right.png").string());
 	const auto expected_back = buw::loadImage4b(dataPath("clothoid_100.0_300_1000_1_Meter_back.png").string());
-
+	
 	// Act (Front)
 	rendererIfc->setViewDirection(buw::eViewDirection::Front);
 	buw::Image4b image_front = CaptureImage();
@@ -109,14 +111,14 @@ TEST_F(Clothoid, PlaneSurfaceViews)
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_front.png").string(), image_front);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_top.png").string(), image_top);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_bottom.png").string(), image_bottom);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_left.png").string(), image_left);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_right.png").string(), image_right);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_back.png").string(), image_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front, expected_front);
@@ -165,7 +167,7 @@ TEST_F(Clothoid, VertexViews)
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	
+	/*
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_front_left_bottom.png").string(), image_front_left_bottom);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_front_right_bottom.png").string(), image_front_right_bottom);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_top_left_front.png").string(), image_top_left_front);
@@ -174,7 +176,7 @@ TEST_F(Clothoid, VertexViews)
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_top_right_back.png").string(), image_top_right_back);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_back_left_bottom.png").string(), image_back_left_bottom);
 	buw::storeImage(testPath("clothoid_100.0_300_1000_1_Meter_right_bottom_back.png").string(), image_right_bottom_back);
-	
+	*/
 
 	// Assert
 	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
