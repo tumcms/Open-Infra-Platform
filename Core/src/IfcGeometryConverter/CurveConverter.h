@@ -2800,7 +2800,7 @@ namespace OpenInfraPlatform
 				{
 					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
 
-					double angle = std::atan(point.y/point.x)
+					double angle = std::atan(point.y / point.x);
 
 					return getDirectionOfCurve(ellipse, angle);
 				}
