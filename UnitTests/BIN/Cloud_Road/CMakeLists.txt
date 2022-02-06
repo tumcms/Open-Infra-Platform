@@ -18,5 +18,5 @@
 
 include(CreateUnitTests)
 
-CreateBINFileVisualUnitTest(boxcube)
+CreateOffFileVisualUnitTest(boxcube)
 
