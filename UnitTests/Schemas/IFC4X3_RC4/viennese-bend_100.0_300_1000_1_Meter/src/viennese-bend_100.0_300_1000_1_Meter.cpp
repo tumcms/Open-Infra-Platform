@@ -59,18 +59,16 @@ protected:
 };
 
 TEST_F(VienneseBend, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(163));
+	EXPECT_THAT(express_model->entities.size(), Eq(153));
 }
 
 TEST_F(VienneseBend, IFCHasAnEssentialEntity) {
 	auto result1 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCCURVESEGMENT"; });
 	auto result2 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTAL"; });
 	auto result3 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCALIGNMENTHORIZONTALSEGMENT"; });
-	auto result4 = std::find_if(express_model->entities.begin(), express_model->entities.end(), [](auto& pair) -> bool { return pair.second->classname() == "IFCLINE"; });
 	EXPECT_NE(result1, express_model->entities.end());
 	EXPECT_NE(result2, express_model->entities.end());
 	EXPECT_NE(result3, express_model->entities.end());
-	EXPECT_NE(result4, express_model->entities.end());
 }
 
 TEST_F(VienneseBend, ImageIsSaved)
@@ -88,107 +86,15 @@ TEST_F(VienneseBend, ImageIsSaved)
 TEST_F(VienneseBend, PlaneSurfaceViews)
 {
 	// Arrange
-	const auto expected_front = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_front.png").string());
 	const auto expected_top = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_top.png").string());
-	const auto expected_bottom = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_bottom.png").string());
-	const auto expected_left = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_left.png").string());
-	const auto expected_right = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_right.png").string());
-	const auto expected_back = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_back.png").string());
 
-	// Act (Front)
-	rendererIfc->setViewDirection(buw::eViewDirection::Front);
-	buw::Image4b image_front = CaptureImage();
 	// Act (Top)
 	rendererIfc->setViewDirection(buw::eViewDirection::Top);
 	buw::Image4b image_top = CaptureImage();
-	// Act (Bottom)
-	rendererIfc->setViewDirection(buw::eViewDirection::Bottom);
-	buw::Image4b image_bottom = CaptureImage();
-	// Act (Left)
-	rendererIfc->setViewDirection(buw::eViewDirection::Left);
-	buw::Image4b image_left = CaptureImage();
-	// Act (Right)
-	rendererIfc->setViewDirection(buw::eViewDirection::Right);
-	buw::Image4b image_right = CaptureImage();
-	// Act (Back)
-	rendererIfc->setViewDirection(buw::eViewDirection::Back);
-	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	/*
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_front.png").string(), image_front);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top.png").string(), image_top);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_bottom.png").string(), image_bottom);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_left.png").string(), image_left);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_right.png").string(), image_right);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_back.png").string(), image_back);
-	
-*/
+	//buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top.png").string(), image_top);
+
 	// Assert
-	EXPECT_EQ(image_front, expected_front);
 	EXPECT_EQ(image_top, expected_top);
-	EXPECT_EQ(image_bottom, expected_bottom);
-	EXPECT_EQ(image_left, expected_left);
-	EXPECT_EQ(image_right, expected_right);
-	EXPECT_EQ(image_back, expected_back);
-}
-
-TEST_F(VienneseBend, VertexViews)
-{
-	// Arrange
-	const auto expected_front_left_bottom = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_front_left_bottom.png").string());
-	const auto expected_front_right_bottom = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_front_right_bottom.png").string());
-	const auto expected_top_left_front = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_top_left_front.png").string());
-	const auto expected_top_front_right = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_top_front_right.png").string());
-	const auto expected_top_left_back = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_top_left_back.png").string());
-	const auto expected_top_right_back = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_top_right_back.png").string());
-	const auto expected_back_left_bottom = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_back_left_bottom.png").string());
-	const auto expected_right_bottom_back = buw::loadImage4b(dataPath("viennese-bend_100.0_300_1000_1_Meter_right_bottom_back.png").string());
-
-	// Act (FrontLeftBottom)
-	rendererIfc->setViewDirection(buw::eViewDirection::FrontLeftBottom);
-	buw::Image4b image_front_left_bottom = CaptureImage();
-	// Act (FrontRightBottom)
-	rendererIfc->setViewDirection(buw::eViewDirection::FrontRightBottom);
-	buw::Image4b image_front_right_bottom = CaptureImage();
-	// Act (TopLeftFront)
-	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftFront);
-	buw::Image4b image_top_left_front = CaptureImage();
-	// Act (TopFrontRight)
-	rendererIfc->setViewDirection(buw::eViewDirection::TopFrontRight);
-	buw::Image4b image_top_front_right = CaptureImage();
-	// Act (TopLeftBack)
-	rendererIfc->setViewDirection(buw::eViewDirection::TopLeftBack);
-	buw::Image4b image_top_left_back = CaptureImage();
-	// Act (TopRightBack)
-	rendererIfc->setViewDirection(buw::eViewDirection::TopRightBack);
-	buw::Image4b image_top_right_back = CaptureImage();
-	// Act (BackLeftBottom)
-	rendererIfc->setViewDirection(buw::eViewDirection::BackLeftBottom);
-	buw::Image4b image_back_left_bottom = CaptureImage();
-	// Act (RightBottomBack)
-	rendererIfc->setViewDirection(buw::eViewDirection::RightBottomBack);
-	buw::Image4b image_right_bottom_back = CaptureImage();
-
-	// uncomment following lines to also save the screen shot
-	/*
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_front_left_bottom.png").string(), image_front_left_bottom);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_front_right_bottom.png").string(), image_front_right_bottom);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top_left_front.png").string(), image_top_left_front);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top_front_right.png").string(), image_top_front_right);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top_left_back.png").string(), image_top_left_back);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_top_right_back.png").string(), image_top_right_back);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_back_left_bottom.png").string(), image_back_left_bottom);
-	buw::storeImage(testPath("viennese-bend_100.0_300_1000_1_Meter_right_bottom_back.png").string(), image_right_bottom_back);
-	*/
-
-	// Assert
-	EXPECT_EQ(image_front_left_bottom, expected_front_left_bottom);
-	EXPECT_EQ(image_front_right_bottom, expected_front_right_bottom);
-	EXPECT_EQ(image_top_left_front, expected_top_left_front);
-	EXPECT_EQ(image_top_front_right, expected_top_front_right);
-	EXPECT_EQ(image_top_left_back, expected_top_left_back);
-	EXPECT_EQ(image_top_right_back, expected_top_right_back);
-	EXPECT_EQ(image_back_left_bottom, expected_back_left_bottom);
-	EXPECT_EQ(image_right_bottom_back, expected_right_bottom_back);
 }

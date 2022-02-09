@@ -93,7 +93,7 @@ TEST_F(HelmertCurve, PlaneSurfaceViews)
 	buw::Image4b image_top = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
-	buw::storeImage(testPath("helmert-curve_100.0_300_1000_1_Meter_top.png").string(), image_top);
+	//buw::storeImage(testPath("helmert-curve_100.0_300_1000_1_Meter_top.png").string(), image_top);
 
 	// Assert
 	EXPECT_EQ(image_top, expected_top);
