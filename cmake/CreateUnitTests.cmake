@@ -119,6 +119,56 @@ function(CreateOffFileVisualUnitTest test_name)
 
 endfunction(CreateOffFileVisualUnitTest)
 
+function(CreatePointCloudVisualUnitTestForFileType test_name file_type)
+
+    file(GLOB OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}	    src/*.cpp)
+    file(GLOB OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}_h	src/*.h)
+
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}})
+    source_group(UnitTests\\${test_name}   	FILES ${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}_h})
+    source_group(UnitTests                  FILES ${OpenInfraPlatform_UnitTests_Source})
+
+    set(UnitTest_Executable_Name ${file_type})
+
+    add_executable(${UnitTest_Executable_Name}
+        ${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}}
+        #${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}_h}
+        ${OpenInfraPlatform_UnitTests_Source}
+    )
+
+    get_directory_property(PARENT_DIR DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PARENT_DIRECTORY)
+
+    target_include_directories(${UnitTest_Executable_Name}
+        PUBLIC
+            ${blue_framework_SOURCE_DIR}/include
+        PRIVATE
+            ${PARENT_DIR}
+    )
+
+    target_link_libraries(${UnitTest_Executable_Name}
+        PUBLIC
+            OpenInfraPlatform.Rendering 
+            OpenInfraPlatform.GeometryModelRenderer
+            BlueFramework.Engine
+            gmock
+            gtest
+            gtest_main
+			Boost::filesystem
+    )
+
+    gtest_discover_tests(${UnitTest_Executable_Name})
+
+    set_target_properties(${UnitTest_Executable_Name} PROPERTIES FOLDER "OpenInfraPlatform/UnitTests/PointCloud/${file_type}")
+    set(UnitTest_Data_Rel_Path UnitTests/PointCloud/${file_type}/${test_name}/Data)
+
+    add_custom_command(TARGET ${UnitTest_Executable_Name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copying resources from '${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}' to '${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}'"
+        COMMAND	${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path}
+        COMMAND	${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${UnitTest_Data_Rel_Path} ${CMAKE_BINARY_DIR}/$<CONFIG>/${UnitTest_Data_Rel_Path}
+    )
+
+endfunction(CreatePointCloudVisualUnitTestForFileType)
+
 function(CreateGeneratorUnitTest schema)
 
     set(UnitTest_Executable_Name UnitTest.${schema})

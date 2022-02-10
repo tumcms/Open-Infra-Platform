@@ -18,5 +18,5 @@
 
 include(CreateUnitTests)
 
-CreateOffFileVisualUnitTest(boxcube)
+CreatePointCloudVisualUnitTestForFileType(Cloud_Road BIN)
 
