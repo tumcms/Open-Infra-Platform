@@ -740,7 +740,7 @@ namespace OpenInfraPlatform {
 					// Carve polyhedron of the converted face list
 					std::shared_ptr<carve::input::PolyhedronData> polyhedron(new carve::input::PolyhedronData());
 
-					// Contains polyhedron indices of vertices (x,y,z converted to string)
+					// Contains coordinates and indices of polyhedron vertices (x,y,z converted to string)
 					std::map<std::string, uint32_t> polyhedronIndices;
 
 					// Loop through all faces
@@ -757,8 +757,25 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcFace or sub-entity to a vector of face vertices, respectively the mesh of a polyhedron.
 				\param[in]		face				\c IfcFace entity to be converted.
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
-				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+
+
+				<b>About \c polyhedron and \c polyhedronIndices</b> \n
+				The parameters \c polyhedron and \c polyhedronIndices are associated to each other.
+				At first, they have to be declared as empty variables; for example one declaration would be in the function convertIfcFaceList().
+				They will contain the geometry information of the converted faces, which is filled and used by the function \c convertIfcFace and its subfunctions.
+				There is no need to interact with this content manually. In case of the call via convertIfcFaceList(), the variable \c polyhedron will be added automatically to the target \c itemData; 
+				otherwise by not using convertIfcFaceList() that's the only thing which has to be done in the calling function. The variable \c polyhedronIndices will be discarded when the converting is finished. \n
+				The parameter \c polyhedron is an instance of carve \c PolyhedronData; instances of that class are used often throughout the project.
+				Beside the information about the topology of the triangles, it stores a vector with all vertices (described by x, y and z coordinates in separate variables). \n
+				The parameter \c polyhedronIndices is an instance of \c std::map. Each entity in \c polyhedronIndices represents one vertex of \c polyhedorn.
+				The key (first value) is a string which contains the x, y and z coordinates, separated by one white space.
+				The second value is an integer which contains the id (or index) of this vertex inside the variable \c polyhedron.
+				Basically, this information is a duplicate of the vertices in the variable \c polyhedron, but formatted in another kind of representation. 
+				It's used to get advantage of the \c find -function of the \c std::map -class. If a face should be added to \c polyhedron, 
+				the subfunctions of \c convertIfcFace search for the face vertices by their coordinates (converted as string) inside of \c polyhedronIndices.
+				If a vertex with this already exists, its index will be used by the added face. With this process, the topological merge of the polyhedron triangles will be ensured.
 				*/
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
@@ -800,8 +817,11 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcFaceSurface or sub-entity to the mesh of a polyhedron.
 				\param[in]		faceSurface			\c IfcFaceSurface entity to be converted.
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
-				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
 				*/
 				void convertIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
@@ -827,8 +847,11 @@ namespace OpenInfraPlatform {
 				/*! \brief  Converts \c IfcAdvancedFace to the mesh of a polyhedron.
 				\param[in]		advancedFace		\c IfcAdvancedFace entity to be converted.
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
-				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
 				*/
 				void convertIfcAdvancedFace(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
@@ -1466,8 +1489,11 @@ namespace OpenInfraPlatform {
 				/*! \brief Computes the surface and boundary loop of an \c IfcFaceSurface (or sub-type), and puts them into one polyhedron.
 				\param[in]		ifcFaceSurface		\c IfcFaceSurface entity to be converted.
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
-				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
-				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
 				*/
 				void computeIfcFaceSurface(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
