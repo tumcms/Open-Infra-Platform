@@ -17,14 +17,14 @@
 //#include <namespace.h>
 
 #include <VisualTest.h>
-#include <OffGeometryModelRenderer.h>
+#include <GeometryModelRenderer.h>
 
 using namespace testing;
 
-class OffVisualTest : public VisualTest
+class BinVisualTest : public VisualTest
 {
 protected:
-	buw::ReferenceCounted<OffGeometryModelRenderer> rendererOff = nullptr;
+	buw::ReferenceCounted<GeometryModelRenderer> renderer = nullptr;
 
 	virtual void SetUp() override;
 

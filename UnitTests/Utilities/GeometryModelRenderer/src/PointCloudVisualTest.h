@@ -14,35 +14,26 @@
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+//#include <namespace.h>
 
-#include <BinVisualTest.h>
-#include <boost/filesystem.hpp>
+#include <VisualTest.h>
+#include <OffGeometryModelRenderer.h>
 
 using namespace testing;
 
-void BinVisualTest::SetUp()
+class PointCloudVisualTest : public VisualTest
 {
-	rendererOff = buw::makeReferenceCounted<OffGeometryModelRenderer>(renderSystem_);
+protected:
+	buw::ReferenceCounted<OffGeometryModelRenderer> rendererOff = nullptr;
 
-	// make a Test directory for test-specific data
-	boost::filesystem::create_directory(filePath("Test"));
-}
+	virtual void SetUp() override;
 
-void BinVisualTest::TearDown()
-{
-	rendererOff.reset();
-}
+	virtual void TearDown() override;
 
-buw::Image4b BinVisualTest::CaptureImage()
-{
-	return rendererOff->captureImage();
-}
+public:
+	virtual buw::Image4b CaptureImage() override;
 
-boost::filesystem::path BinVisualTest::filePath(const std::string& relPath) const
-{
-	return executablePath()
-		.concat("\\UnitTests\\PointCloud\\BIN")
-		.concat(TestName())
-		.concat("\\")
-		.concat(relPath);
-}
+	virtual std::string TestName() const = 0;
+
+	virtual boost::filesystem::path filePath(const std::string& relPath) const override;
+};

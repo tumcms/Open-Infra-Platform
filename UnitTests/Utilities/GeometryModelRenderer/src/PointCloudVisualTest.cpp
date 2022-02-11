@@ -15,12 +15,12 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <BinVisualTest.h>
+#include <PointCloudVisualTest.h>
 #include <boost/filesystem.hpp>
 
 using namespace testing;
 
-void BinVisualTest::SetUp()
+void PointCloudVisualTest::SetUp()
 {
 	rendererOff = buw::makeReferenceCounted<OffGeometryModelRenderer>(renderSystem_);
 
@@ -28,20 +28,20 @@ void BinVisualTest::SetUp()
 	boost::filesystem::create_directory(filePath("Test"));
 }
 
-void BinVisualTest::TearDown()
+void PointCloudVisualTest::TearDown()
 {
 	rendererOff.reset();
 }
 
-buw::Image4b BinVisualTest::CaptureImage()
+buw::Image4b PointCloudVisualTest::CaptureImage()
 {
 	return rendererOff->captureImage();
 }
 
-boost::filesystem::path BinVisualTest::filePath(const std::string& relPath) const
+boost::filesystem::path PointCloudVisualTest::filePath(const std::string& relPath) const
 {
 	return executablePath()
-		.concat("\\UnitTests\\PointCloud\\BIN")
+		.concat("\\UnitTests\\PointCloud\\")
 		.concat(TestName())
 		.concat("\\")
 		.concat(relPath);
