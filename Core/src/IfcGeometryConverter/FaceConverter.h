@@ -759,7 +759,6 @@ namespace OpenInfraPlatform {
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
 				\param[in,out]	polyhedron			Carve polyhedron of the converted face.
 				\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string).
-				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
 				*/
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
