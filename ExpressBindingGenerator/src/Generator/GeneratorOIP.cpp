@@ -2227,7 +2227,7 @@ void GeneratorOIP::generateReaderFiles(const Schema & schema)
 	writeLine(file, "}"); //end try 
 	writeLine(file, "catch (const std::exception& ex) {"); // begin catch
 	writeLine(file, "#pragma omp critical");
-	writeLine(file, "errors.push_back(std::string(ex.what()));");
+	writeLine(file, "errors.push_back(std::string(\"error in \")+line+std::string(\": \")+std::string(ex.what()));");
 	writeLine(file, "}"); //end catch 
 	writeLine(file, "} // end if line[0] == '#'");
 	writeLine(file, "} // end for read file");
