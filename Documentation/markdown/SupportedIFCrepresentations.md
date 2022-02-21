@@ -26,9 +26,9 @@ Meaning of columns:
 
 | Entity                                | Covered              | Converter                  | Unit test             | Issue |
 |---------------------------------------|----------------------|----------------------------|-----------------------|-------|
-| `IfcAdvancedBrep`                     | :x:                  | `SolidModelConverter`      | -                     | -     |
+| `IfcAdvancedBrep`                     | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcAdvancedBrepWithVoids`            | :x:                  | `SolidModelConverter`      | -                     | -     |
-| `IfcAdvancedFace`                     | :x:                  | `SolidModelConverter`      | -                     | -     |
+| `IfcAdvancedFace`                     | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcAlignmentCurve`                   | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcAnnotationFillArea`               | :x:                  | -                          | -                     | -     |
 | `IfcAxis1Placement`                   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    | -     |
@@ -72,8 +72,8 @@ Meaning of columns:
 | `IfcExtrudedAreaSolidTapered`         | :x:                  | -                          | -                     | -     |
 | `IfcFace`                             | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcFaceBasedSurfaceModel`            | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
-| `IfcFaceBound`                        | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
-| `IfcFaceSurface`                      | :x:                  | -                          | -                     | -     |
+| `IfcFaceBound`                        | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
+| `IfcFaceSurface`                      | :heavy_check_mark:   | -                          | -                     | -     |
 | `IfcFacetedBrep`                      | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcFacetedBrepWithVoids`             | :x:                  | `SolidModelConverter`      | -                     | [#143](https://github.com/tumcms/Open-Infra-Platform/issues/143) |
 | `IfcFaceOuterBound`                   | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
