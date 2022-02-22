@@ -59,7 +59,7 @@ protected:
 };
 
 TEST_F(Face, AllEntitiesAreRead) {
-	EXPECT_THAT(express_model->entities.size(), Eq(99));
+	EXPECT_THAT(express_model->entities.size(), Eq(89));
 }
 
 TEST_F(Face, IFCHasAnEssentialEntity) {
