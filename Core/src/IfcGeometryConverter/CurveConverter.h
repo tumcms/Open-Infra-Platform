@@ -2685,7 +2685,7 @@ namespace OpenInfraPlatform
 					const EXPRESSReference<TCurve>& curve,
 					const typename IfcEntityTypesT::IfcCurveMeasureSelect & measureSelect) const noexcept(false)
 				{
-					switch (trimming.which())
+					switch (measureSelect.which())
 					{
 					case 0:
 					{
