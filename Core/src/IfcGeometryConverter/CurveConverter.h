@@ -1706,7 +1706,6 @@ namespace OpenInfraPlatform
 				std::vector<carve::geom::vector<3>> convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop
 				) const noexcept(false)
 				{
-					// ToDo: maybe, variable definition of 'loop' has to be moved to correct place
 					std::vector<carve::geom::vector<3>> loop;
 
 					for (auto &orientedEdge : edgeLoop->EdgeList) {
@@ -1756,7 +1755,6 @@ namespace OpenInfraPlatform
 						}
 					}
 
-					// ToDo: maybe, return has to be moved to correct place
 					return loop;
 				}
 
