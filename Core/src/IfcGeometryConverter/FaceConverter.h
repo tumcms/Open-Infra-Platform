@@ -900,19 +900,19 @@ namespace OpenInfraPlatform {
 					// for each point (via std::all_of), check if it is part of the surface;
 					// returns true, if all are part, otherwise false
 					return std::all_of(faceBoundLoops.begin(), faceBoundLoops.end(), [&, this](const auto& faceBoundLoop) {
-						return std::all_of(faceBoundLoop.begin(), faceBoundLoop.end(), [&, this](const auto& pointLoop) {
-							return checkPointIsPartOfSurface(itemDataSurface, pointLoop); });
+						return std::all_of(faceBoundLoop.begin(), faceBoundLoop.end(), [&, this](const auto& pointOfLoop) {
+							return checkPointIsPartOfSurface(itemDataSurface, pointOfLoop); });
 					});
 				}
 
 				/*! \brief Checks whether one point exists coincident in the surface geometry of \c itemDataSurface.
 				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the point should exist.
-				\param		pointLoop			Point which should be checked to be part in the surface geometry.
+				\param		pointOfLoop			Point which should be checked to be part in the surface geometry.
 				\return		True, if the point is part in the surface geometry; otherwise, false.
 				*/
 				bool checkPointIsPartOfSurface(
 					const std::shared_ptr<ItemData>& itemDataSurface,
-					const carve::geom::vector<3>& pointLoop
+					const carve::geom::vector<3>& pointOfLoop
 				) const noexcept(true)
 				{
 					const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& surfacePolyhedronsCollection{
@@ -927,7 +927,7 @@ namespace OpenInfraPlatform {
 							// search through points of polyhedron
 							for (const auto& pointSurface : surfacePolyhedron->points)
 							{
-								if (this->GeomSettings()->areEqual(pointLoop, pointSurface))
+								if (this->GeomSettings()->areEqual(pointOfLoop, pointSurface))
 								{
 									// if point found: early exit
 									return true;
