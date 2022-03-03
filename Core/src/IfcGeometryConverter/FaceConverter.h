@@ -915,14 +915,14 @@ namespace OpenInfraPlatform {
 					const carve::geom::vector<3>& pointOfLoop
 				) const noexcept(true)
 				{
-					const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& surfacePolyhedronsCollection{
-						itemDataSurface->closed_polyhedrons,
-						itemDataSurface->open_polyhedrons,
-						itemDataSurface->open_or_closed_polyhedrons };
+					const std::vector< std::vector<std::shared_ptr<carve::input::PolyhedronData>>* > surfacePolyhedronsCollection{
+						&(itemDataSurface->closed_polyhedrons),
+						&(itemDataSurface->open_polyhedrons),
+						&(itemDataSurface->open_or_closed_polyhedrons) };
 
 					// search through polyhedrons
-					for (const auto& surfacePolyhedrons : surfacePolyhedronsCollection) {
-						for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : surfacePolyhedrons)
+					for (const auto* surfacePolyhedrons : surfacePolyhedronsCollection) {
+						for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : *surfacePolyhedrons)
 						{
 							// search through points of polyhedron
 							for (const auto& pointSurface : surfacePolyhedron->points)
