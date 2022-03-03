@@ -73,7 +73,7 @@ Meaning of columns:
 | `IfcFace`                             | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcFaceBasedSurfaceModel`            | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcFaceBound`                        | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
-| `IfcFaceSurface`                      | :heavy_check_mark:   | -                          | -                     | -     |
+| `IfcFaceSurface`                      | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcFacetedBrep`                      | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcFacetedBrepWithVoids`             | :x:                  | `SolidModelConverter`      | -                     | [#143](https://github.com/tumcms/Open-Infra-Platform/issues/143) |
 | `IfcFaceOuterBound`                   | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
