@@ -235,6 +235,91 @@ public:
 		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
 
+	/*! \brief Called as member function of an \c ItemData instance; topological merge of all polyhedrons from the instance into the \c targetPolyhedron.
+	\param[in,out]	targetPolyhedron	Carve polyhedron into which the merged geometry should be.
+	\param[in,out]	polyhedronIndices	Contains polyhedron indices of vertices (x,y,z converted to string), should match with the geometry in \c targetPolyhedron.
+	*/
+	void mergePolyhedronsIntoOnePolyhedron(
+		std::shared_ptr<carve::input::PolyhedronData>& targetPolyhedron,
+		std::map<std::string, uint32_t>& polyhedronIndices
+	)  const noexcept(false)
+	{
+		const std::vector<std::vector<std::shared_ptr<carve::input::PolyhedronData>>>& inputPolyhedronsCollection{
+			closed_polyhedrons,
+			open_polyhedrons,
+			open_or_closed_polyhedrons };
+
+		for (const auto& inputPolyhedrons : inputPolyhedronsCollection)
+		{
+			for (const std::shared_ptr<carve::input::PolyhedronData>& inputPolyhedron : inputPolyhedrons)
+			{
+				// mapping from old to new vertex indices: newIndex = indexMapping[oldIndex]
+				std::vector<size_t> indexMapping;
+				indexMapping.reserve(inputPolyhedron->getVertexCount());
+
+				// --- add points ---
+				for (const auto& inputPoint : inputPolyhedron->points)
+				{
+					// construct a string of x, y, z coordinates for the current point
+					std::stringstream vertexString;
+					vertexString << inputPoint.x << " " << inputPoint.y << " " << inputPoint.z;
+
+					// search for existing point
+					auto itFound = polyhedronIndices.find(vertexString.str());
+
+					// point index inside the targetPolyhedron, respectivly inside polyhedronIndices
+					uint32_t index = 0;
+
+					if (itFound != polyhedronIndices.end())
+					{
+						// point exists, get its index
+						index = itFound->second;
+					}
+					else
+					{
+						// add point to targetPolyhedron and polyhedronIndices
+						index = targetPolyhedron->addVertex(inputPoint);
+						polyhedronIndices[vertexString.str()] = index;
+					}
+
+					// store index mapping oldIndex > newIndex
+					indexMapping.push_back(index);
+				}
+
+				// --- add faces ---
+				// iterator indicates position in vector inputPolyhedron->faceIndices
+				size_t iterator = 0;
+				// the new indices of each face will be stored temporal in the vector indicesTemp
+				std::vector<size_t> indicesTemp;
+				
+				const size_t numberOfFaces = inputPolyhedron->getFaceCount();
+				// loop over faces: 
+				for (size_t i = 0; i < numberOfFaces; i++)
+				{
+					// get number of indices which describe one face
+					const size_t nIndicesOfFace = inputPolyhedron->faceIndices[iterator];
+					iterator++;
+
+					indicesTemp.reserve(nIndicesOfFace);
+					for (size_t j = iterator; j < iterator + nIndicesOfFace; j++)
+					{
+						// get old index from inputPolyhedron, mapping to new index, store new index in vector
+						indicesTemp.push_back(indexMapping[inputPolyhedron->faceIndices[j]]);
+					}
+
+					// add face into target
+					targetPolyhedron->addFace(indicesTemp.begin(), indicesTemp.end());
+					indicesTemp.clear();
+
+					// set iterator to start of next face
+					iterator += nIndicesOfFace;
+				}
+			}
+		}
+	}
+
+
+
 	bool empty() const { 
 		return closed_polyhedrons.empty()
 			&& open_polyhedrons.empty()

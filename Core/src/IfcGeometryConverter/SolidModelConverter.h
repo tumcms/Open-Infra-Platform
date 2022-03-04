@@ -253,13 +253,32 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(manifoldSolidBrep);
 			}
 
+			/*! \brief Converts \c IfcAdvancedBrep to meshes.
+			 *
+			 * \param[in] advancedBrep			The \c IfcAdvancedBrep to be converted.
+			 * \param[in] pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData				A pointer to be filled with the relevant data.
+			 */
 			void convertIfcAdvancedBrep(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedBrep> &advancedBrep,
 				const carve::math::Matrix& pos,
 				std::shared_ptr<ItemData> itemData
 			) const noexcept(false)
 			{
-				throw oip::UnhandledException(advancedBrep);
+				if (advancedBrep.expired())
+					throw oip::ReferenceExpiredException(advancedBrep);
+
+				// get attribute 1
+				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell>& outerShell = advancedBrep->Outer;
+				
+				// IfcAdvancedBrepWithVoids SUBTYPE of IfcAdvancedBrep
+				if (advancedBrep.isOfType<typename IfcEntityTypesT::IfcAdvancedBrepWithVoids>()) {
+					throw oip::UnhandledException(advancedBrep);
+				}
+				
+				// get itemData from IfcClosedShell
+				convertIfcClosedShell(outerShell, pos, itemData);
+				return;
 			}
 
 			void convertIfcFacetedBrep(
@@ -293,6 +312,12 @@ namespace OpenInfraPlatform
 				throw oip::UnhandledException(facetedBrepWithVoids);
 			}
 
+			/*! \brief Converts \c IfcClosedShell to meshes.
+			 *
+			 * \param[in] outerShell			The \c IfcClosedShell to be converted.
+			 * \param[in] pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+			 * \param[out] itemData				A pointer to be filled with the relevant data.
+			 */
             void convertIfcClosedShell(
 				const EXPRESSReference<typename IfcEntityTypesT::IfcClosedShell> &outerShell, 
 				const carve::math::Matrix& pos, 
@@ -302,10 +327,13 @@ namespace OpenInfraPlatform
 				if (outerShell.expired())
 					throw oip::ReferenceExpiredException(outerShell);
 
+				// Temporal target of the mesh data.
                 std::shared_ptr<ItemData> inputDataOuterShell(new ItemData());
 
+				// get mesh data into inputDataOuterShell by convertIfcFaceList
                 faceConverter->convertIfcFaceList(outerShell->CfsFaces, pos, inputDataOuterShell);
 
+				// move mesh data from 'open or closed' to 'closed' (because the behaviour of convertIfcFaceList)
                 std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
                             inputDataOuterShell->open_or_closed_polyhedrons.end(),
                             std::back_inserter(itemData->closed_polyhedrons));
