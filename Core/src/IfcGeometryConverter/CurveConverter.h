@@ -1648,34 +1648,39 @@ namespace OpenInfraPlatform
 #endif
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
-				* \param[in] ifcloop				The \c IfcLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \param[in] ifcLoop				The \c IfcLoop to be converted.
+				* \return							The series of points.
 				*/
-				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcloop,
-					std::vector<carve::geom::vector<3>>& loop
+				std::vector<carve::geom::vector<3>> convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcLoop
 				) const noexcept(false)
 				{
-					if (ifcloop.template isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
+					if (ifcLoop.expired()) {
+						throw oip::ReferenceExpiredException(ifcLoop);
+					}
+
+					if (ifcLoop.template isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						return convertIfcPolyLoop(ifcloop.template as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
+						return convertIfcPolyLoop(ifcLoop.template as<typename IfcEntityTypesT::IfcPolyLoop>());
 					} // end if polyloop
 
-					else if (ifcloop.template isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
+					else if (ifcLoop.template isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						return convertIfcEdgeLoop(ifcloop.template as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
+						return convertIfcEdgeLoop(ifcLoop.template as<typename IfcEntityTypesT::IfcEdgeLoop>());
 					} // end if edge loop
 
-					throw oip::UnhandledException(ifcloop);
+					throw oip::UnhandledException(ifcLoop);
+					
 				} // end convertIfcLoop
 
 				/*! \brief Converts \c IfcPolyLoop to a series of points.
 				* \param[in] polyLoop				The \c IfcPolyLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*/
-				void convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop,
-					std::vector<carve::geom::vector<3>>& loop) const noexcept(false)
+				std::vector<carve::geom::vector<3>> convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop
+				) const noexcept(false)
 				{
-					convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon, loop);
+					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon);
+
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
@@ -1685,24 +1690,25 @@ namespace OpenInfraPlatform
 							continue;
 						}
 						
-						break;
+						return loop;
 					}
 				}
 
 				/*! \brief Converts \c IfcEdgeLoop to a series of points.
 				* \param[in] edgeLoop				The \c IfcEdgeLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*
 				* \note The function disregards topological relationships.
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
-					std::vector<carve::geom::vector<3>>& loop) const noexcept(false)
+				std::vector<carve::geom::vector<3>> convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop
+				) const noexcept(false)
 				{
-					for (auto &orientedEdge : edgeLoop->EdgeList) 
-					{
+					std::vector<carve::geom::vector<3>> loop;
+
+					for (auto &orientedEdge : edgeLoop->EdgeList) {
 						// which are described by the type of its edge element object
 						EXPRESSReference<typename IfcEntityTypesT::IfcEdge> edgeElement = orientedEdge->EdgeElement;
 
@@ -1748,6 +1754,8 @@ namespace OpenInfraPlatform
 							}
 						}
 					}
+
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcEdge and adds it to the plolyline. 
@@ -1808,18 +1816,19 @@ namespace OpenInfraPlatform
 				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
 				*
 				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
-				* \param[out] loop				The series of points.
+				* \return				The series of points.
 				*
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcCartesianPointVectorSkipDuplicates(
-					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
-					std::vector<carve::geom::vector<3> >& loop
+				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVectorSkipDuplicates(
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints
 				) const noexcept(false)
 				{
-					carve::geom::vector<3> vertex_previous;
+					std::vector<carve::geom::vector<3>> loop;
+
+					carve::geom::vector<3>  vertex_previous;
 					bool first = true;
 
 					for ( auto& it_cp : ifcPoints) 
@@ -1846,6 +1855,8 @@ namespace OpenInfraPlatform
 						loop.push_back(vertex);
 						vertex_previous = vertex;
 					}
+
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcCartesianPointList to a series of points.
@@ -2685,7 +2696,7 @@ namespace OpenInfraPlatform
 					const EXPRESSReference<TCurve>& curve,
 					const typename IfcEntityTypesT::IfcCurveMeasureSelect & measureSelect) const noexcept(false)
 				{
-					switch (trimming.which())
+					switch (measureSelect.which())
 					{
 					case 0:
 					{
