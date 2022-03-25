@@ -19,6 +19,7 @@
 #include "IfcGeometryModel.h"
 #include "Exception\UnhandledException.h"
 
+
 void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::reset() 
 { 
 	for( auto geom : geometries_ ) 
@@ -35,6 +36,11 @@ void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::addGeometry(std::s
 
 	// free the access to the lists
 	geometryMutex_.unlock();
+}
+
+void OpenInfraPlatform::Core::IfcGeometryConverter::IfcModel::setExpressModel(std::shared_ptr<OpenInfraPlatform::EarlyBinding::EXPRESSModel> expressModel)
+{
+	expressModel_ = expressModel;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
