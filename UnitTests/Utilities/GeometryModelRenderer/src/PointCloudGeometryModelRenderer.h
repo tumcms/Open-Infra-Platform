@@ -16,18 +16,18 @@
 */
 
 #pragma once
-#ifndef OFFGEOMETRYMODELRENDERER_H
-#define OFFGEOMETRYMODELRENDERER_H
+#ifndef POINTCLOUDGEOMETRYMODELRENDERER_H
+#define POINTCLOUDGEOMETRYMODELRENDERER_H
 
 #include <buw.Engine.h>
 
 #include "GeometryModelRenderer.h"
-#include "OffConverter/OffReader.h"
+#include "PointCloudConverter/PointCloudReader.h" //Find PointCloudreader
 
-#include <Effects/OffGeometryEffect.h>
+#include <Effects/PointCloudEffect.h>
 
 /*!
- * \brief Utility class to render \c OffGeometryModel data without UI for automated unit tests.
+ * \brief Utility class to render \c PointCloudGeometryModelRenderer data without UI for automated unit tests.
  *
  */
 class PointCloudGeometryModelRenderer : public GeometryModelRenderer
@@ -50,7 +50,7 @@ public:
 	 * \param model
 	 * \note This also moves the camera to it's default position.
 	 */
-	void setModel(const std::shared_ptr<oip::OffModel>& model);
+	void setModel(const std::shared_ptr<oip::PointCloud>& model);
 
 protected:
 	/*!
@@ -64,8 +64,8 @@ protected:
 	virtual void render() override;
 
 private:
-	buw::ReferenceCounted<oip::OffModel> model_ = nullptr;
-	buw::ReferenceCounted<OpenInfraPlatform::Rendering::OffGeometryEffect> offGeometryEffect_ = nullptr;
+	buw::ReferenceCounted<oip::PointCloudModel> model_ = nullptr;
+	buw::ReferenceCounted<OpenInfraPlatform::Rendering::PointCloudEffect> offGeometryEffect_ = nullptr;
 };
 
-#endif // OFFGEOMETRYMODELRENDERER_H
+#endif // POINTCLOUDGEOMETRYMODELRENDERER_H

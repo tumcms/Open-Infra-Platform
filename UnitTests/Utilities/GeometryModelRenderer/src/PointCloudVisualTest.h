@@ -17,7 +17,7 @@
 //#include <namespace.h>
 
 #include <VisualTest.h>
-#include <OffGeometryModelRenderer.h>
+#include <PointCloudGeometryModelRenderer.h>
 
 using namespace testing;
 

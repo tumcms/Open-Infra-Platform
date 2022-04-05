@@ -20,24 +20,24 @@
 PointCloudGeometryModelRenderer::PointCloudGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem)
 	: GeometryModelRenderer::GeometryModelRenderer(renderSystem)
 {
-	offGeometryEffect_ = buw::makeReferenceCounted<oip::OffGeometryEffect>(
+	pointCloudGeometryEffect_ = buw::makeReferenceCounted<oip::PointCloudGeometryEffect>(
 		renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
-	offGeometryEffect_->init();
+	pointCloudGeometryEffect_->init();
 }
 
 PointCloudGeometryModelRenderer::~PointCloudGeometryModelRenderer()
 {
 	model_.reset();
-	offGeometryEffect_.reset();
+	pointCloudGeometryEffect_.reset();
 }
 
 void PointCloudGeometryModelRenderer::setModel(const std::shared_ptr<oip::OffModel>& model)
 {
 	model_.reset();
 	model_ = model;
-	offGeometryEffect_->setOffModel(model);
+	pointCloudGeometryEffect_->setOffModel(model);
 
-	offGeometryEffect_->setOffset(-model->getExtent().center());
+	pointCloudGeometryEffect_->setOffset(-model->getExtent().center());
 
 	fitViewToModel();
 }
@@ -49,5 +49,5 @@ oip::BBox PointCloudGeometryModelRenderer::getExtent() const
 
 void PointCloudGeometryModelRenderer::render()
 {
-	offGeometryEffect_->render();
+	pointCloudGeometryEffect_->render();
 }
