@@ -307,10 +307,8 @@ namespace OpenInfraPlatform {
 						const size_t numCurvePointsV = curvePoints[0].size();
 
 
-						// CONVERTION FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
+						// SURFACE FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
 
-						// declaration of result variable for polylines
-						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 						// declaration of result variable for polyhedrons (surface)
 						std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
@@ -336,16 +334,11 @@ namespace OpenInfraPlatform {
 								// storage for the 4 point ids of the surface rectangle
 								size_t indices[4];
 
-								// construct a poly line in polylineData:
+								// construction of triangulated polyhedron square:
 								// D<---C    v
 								//      ^    ^
 								//      |    |
 								// A--->B    0-->u
-								//
-								// there is no closing line from D to 
-
-								// start a new poly line
-								polylineData->beginPolyline();
 
 								// loop over the 4 conter points
 								for (size_t k = 0; k < 4; ++k)
@@ -365,17 +358,12 @@ namespace OpenInfraPlatform {
 									else
 									{
 										// point doesn't exist;
-										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
-										indices[k] = polylineData->addVertex(facePoints[k]);
-										// store face-point k in polyhedronData; vertex id is identical to vertices of polyline 
-										polyhedronData->addVertex(facePoints[k]);
+										// store face-point k in polyhedronData; addVertex() returns its id, which is stored in indices[k] 
+										indices[k] = polyhedronData->addVertex(facePoints[k]);
 
 										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
 										vertexMap[key.str()] = indices[k];
 									}
-
-									// add obtaind index to polyline
-									polylineData->addPolylineIndex(indices[k]);
 								}
 
 								// add triangle-faces to polyhedron
@@ -384,8 +372,30 @@ namespace OpenInfraPlatform {
 							}
 						}
 
+
+						// MESH_GRID_LINES FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
+
+						// ToDo: rewrite algorithm to generate straight polylines (instead of u-shaped somethings)
+						
+						// declaration of result variable for polylines
+						//std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+
+						// start a new poly line
+						//polylineData->beginPolyline();
+
+						//foreach triangulated square
+						//    // store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
+						//    indices[k] = polylineData->addVertex(facePoints[k]);
+
+
+						// add obtaind index to polyline
+						//polylineData->addPolylineIndex(indices[k]);
+
+
+						// ASSEMBLE RESULT
+						
 						// add polylines (= meshGridLines) to itemData (= return parameter)
-						itemData->polylines.push_back(polylineData);
+						//itemData->polylines.push_back(polylineData);
 
 						// add polyhedrons to itemData (= return parameter)
 						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
