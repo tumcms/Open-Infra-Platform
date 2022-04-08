@@ -263,6 +263,11 @@ namespace OpenInfraPlatform {
 				//--------------------------------------------------------------------------------------------
 
 					/*! \brief  Converts \c IfcBSplineSurface to a triangualted surface of \c PolyhedronData to be displayed.
+					
+					The triangulated surface is stored in \c itemData->open_or_closed_polyhedrons.
+					The mesh grid lines of the surface are stored in \c itemData->polylines.
+					They visualize the uv-evaluation grid of the surface.
+
 					\param[in]	surface		\c IfcBSplineSurface entity to be interpreted.
 					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
 					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
