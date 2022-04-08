@@ -24,7 +24,7 @@ using namespace testing;
 class PointCloudVisualTest : public VisualTest
 {
 protected:
-	buw::ReferenceCounted<OffGeometryModelRenderer> rendererOff = nullptr;
+	buw::ReferenceCounted<PointCloudGeometryModelRenderer> rendererPointCloud = nullptr;
 
 	virtual void SetUp() override;
 

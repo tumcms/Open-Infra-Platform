@@ -22,9 +22,8 @@
 #include <buw.Engine.h>
 
 #include "GeometryModelRenderer.h"
-#include "PointCloudConverter/PointCloudReader.h" //Find PointCloudreader
 
-#include <Effects/PointCloudEffect.h>
+#include <Effects/PointCloudProcessing/PointCloudEffect.h>
 
 /*!
  * \brief Utility class to render \c PointCloudGeometryModelRenderer data without UI for automated unit tests.
@@ -64,8 +63,8 @@ protected:
 	virtual void render() override;
 
 private:
-	buw::ReferenceCounted<oip::PointCloudModel> model_ = nullptr;
-	buw::ReferenceCounted<OpenInfraPlatform::Rendering::PointCloudEffect> offGeometryEffect_ = nullptr;
+	buw::ReferenceCounted<oip::PointCloud> model_ = nullptr;
+	buw::ReferenceCounted<OpenInfraPlatform::Rendering::PointCloudEffect> pointCloudGeometryEffect_ = nullptr;
 };
 
 #endif // POINTCLOUDGEOMETRYMODELRENDERER_H

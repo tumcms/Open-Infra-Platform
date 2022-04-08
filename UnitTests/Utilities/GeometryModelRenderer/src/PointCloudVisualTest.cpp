@@ -22,7 +22,7 @@ using namespace testing;
 
 void PointCloudVisualTest::SetUp()
 {
-	rendererOff = buw::makeReferenceCounted<OffGeometryModelRenderer>(renderSystem_);
+	rendererPointCloud = buw::makeReferenceCounted<PointCloudGeometryModelRenderer>(renderSystem_);
 
 	// make a Test directory for test-specific data
 	boost::filesystem::create_directory(filePath("Test"));
@@ -30,12 +30,12 @@ void PointCloudVisualTest::SetUp()
 
 void PointCloudVisualTest::TearDown()
 {
-	rendererOff.reset();
+	rendererPointCloud.reset();
 }
 
 buw::Image4b PointCloudVisualTest::CaptureImage()
 {
-	return rendererOff->captureImage();
+	return rendererPointCloud->captureImage();
 }
 
 boost::filesystem::path PointCloudVisualTest::filePath(const std::string& relPath) const
