@@ -17,15 +17,15 @@
 
 #include <namespace.h>
 
-#include <OffVisualTest.h>
+#include <PointCloudVisualTest.h>
 
-#include <OffConverter/OffReader.h>
+//#include <PointCloudProcessing\src\PointCloud.h>
 
 
 using namespace testing;
 
 
-class Boxcube : public OffVisualTest
+class CloudRoad : public PointCloudVisualTest
 {
 protected:
 
@@ -33,85 +33,86 @@ protected:
 	buw::Image4b _background = buw::Image4b(0, 0);
 
 	virtual void SetUp() override {
-		OffVisualTest::SetUp();
+		PointCloudVisualTest::SetUp();
+		std::string str = filename.string();
+		const char* c = str.c_str();
+		auto model = buw::PointCloud::FromFile(c, true);
 
-		model = oip::OffReader::readFile(filename.string());
 
-		_background = rendererOff->captureImage();
-                rendererOff->setModel(model);
+		_background = rendererPointCloud->captureImage();
+			rendererPointCloud->setModel(model);
 	}
 
 	virtual void TearDown() override {
 		model.reset();
-		OffVisualTest::TearDown();
+		PointCloudVisualTest::TearDown();
 	}
 
-	virtual std::string TestName() const { return "boxcube"; }
+	virtual std::string TestName() const { return "Cloud_Road"; }
 
-	const boost::filesystem::path filename = dataPath("boxcube.off");
-
-	buw::ReferenceCounted<oip::OffModel> model = buw::makeReferenceCounted<oip::OffModel>();
+	const boost::filesystem::path filename = dataPath("Cloud_Road.bin");
+	buw::ReferenceCounted<oip::PointCloud> model = buw::makeReferenceCounted<oip::PointCloud>();
 };
 
-TEST_F(Boxcube, AllEdgesAndFacesRed)
-{
-	// check for the number of vertices 
-	// does not coincide with the number of vertices mentioned in the off file since some vertices are
-	// stored once for every triangle they are part of
-	EXPECT_THAT(model->geometry().vertices.size(), Eq(324));
-	// check for the number of indices (see comment for vertices)
-	EXPECT_THAT(model->geometry().indices.size(), Eq(324));
-}
+//TEST_F(CloudRoad, AllEdgesAndFacesRed)
+//{
+//	// check for the number of vertices 
+//	// does not coincide with the number of vertices mentioned in the off file since some vertices are
+//	// stored once for every triangle they are part of
+//	EXPECT_THAT(model->geometry().vertices.size(), Eq(324));
+//	// check for the number of indices (see comment for vertices)
+//	EXPECT_THAT(model->geometry().indices.size(), Eq(324));
+//}
 
-TEST_F(Boxcube, ImageIsSaved)
+TEST_F(CloudRoad, ImageIsSaved)
 {
 	// Arrange
-	buw::Image4b image = rendererOff->captureImage();
+	buw::Image4b image = rendererPointCloud->captureImage();
 
 	// Act
-    buw::storeImage(testPath("boxcube.png").string(), image);
+    buw::storeImage(testPath("Cloud_Road.png").string(), image);
 
 	// Assert
-    EXPECT_NO_THROW(buw::loadImage4b(testPath("boxcube.png").string()));
+    EXPECT_NO_THROW(buw::loadImage4b(testPath("Cloud_Road.png").string()));
 }
 
-TEST_F(Boxcube, PlaneSurfaceViews)
+TEST_F(CloudRoad, PlaneSurfaceViews)
 {
 	// Arrange
-    const auto expected_front = buw::loadImage4b(dataPath("boxcube_front.png").string());
-    const auto expected_top = buw::loadImage4b(dataPath("boxcube_top.png").string());
-    const auto expected_bottom = buw::loadImage4b(dataPath("boxcube_bottom.png").string());
-    const auto expected_left = buw::loadImage4b(dataPath("boxcube_left.png").string());
-    const auto expected_right = buw::loadImage4b(dataPath("boxcube_right.png").string());
-    const auto expected_back = buw::loadImage4b(dataPath("boxcube_back.png").string());
+    const auto expected_front = buw::loadImage4b(dataPath("Cloud_Road_front.png").string());
+    const auto expected_top = buw::loadImage4b(dataPath("Cloud_Road_top.png").string());
+    const auto expected_bottom = buw::loadImage4b(dataPath("Cloud_Road_bottom.png").string());
+    const auto expected_left = buw::loadImage4b(dataPath("Cloud_Road_left.png").string());
+    const auto expected_right = buw::loadImage4b(dataPath("Cloud_Road_right.png").string());
+    const auto expected_back = buw::loadImage4b(dataPath("Cloud_Road_back.png").string());
 
 	// Act (Front)
-	rendererOff->setViewDirection(buw::eViewDirection::Front);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Front);
 	buw::Image4b image_front = CaptureImage();
 	// Act (Top)
-	rendererOff->setViewDirection(buw::eViewDirection::Top);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Top);
 	buw::Image4b image_top = CaptureImage();
 	// Act (Bottom)
-	rendererOff->setViewDirection(buw::eViewDirection::Bottom);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Bottom);
 	buw::Image4b image_bottom = CaptureImage();
 	// Act (Left)
-	rendererOff->setViewDirection(buw::eViewDirection::Left);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Left);
 	buw::Image4b image_left = CaptureImage();
 	// Act (Right)
-	rendererOff->setViewDirection(buw::eViewDirection::Right);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Right);
 	buw::Image4b image_right = CaptureImage();
 	// Act (Back)
-	rendererOff->setViewDirection(buw::eViewDirection::Back);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::Back);
 	buw::Image4b image_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
 
-    //buw::storeImage(testPath("boxcube_front.png").string(), image_front);
-    //buw::storeImage(testPath("boxcube_top.png").string(), image_top);
-    //buw::storeImage(testPath("boxcube_bottom.png").string(), image_bottom);
-    //buw::storeImage(testPath("boxcube_left.png").string(), image_left);
-    //buw::storeImage(testPath("boxcube_right.png").string(), image_right);
-    //buw::storeImage(testPath("boxcube_back.png").string(), image_back);
+    //buw::storeImage(testPath("Cloud_Road_front.png").string(), image_front);
+    //buw::storeImage(testPath("Cloud_Road_top.png").string(), image_top);
+    //buw::storeImage(testPath("Cloud_Road_bottom.png").string(), image_bottom);
+    //buw::storeImage(testPath("Cloud_Road_left.png").string(), image_left);
+    //buw::storeImage(testPath("Cloud_Road_right.png").string(), image_right);
+    //buw::storeImage(testPath("Cloud_Road_back.png").string(), image_back);
 
 
 	// Assert
@@ -123,53 +124,53 @@ TEST_F(Boxcube, PlaneSurfaceViews)
 	EXPECT_EQ(image_back, expected_back);
 }
 
-TEST_F(Boxcube, VertexViews)
+TEST_F(CloudRoad, VertexViews)
 {
 	// Arrange
-    const auto expected_front_left_bottom = buw::loadImage4b(dataPath("boxcube_front_left_bottom.png").string());
-    const auto expected_front_right_bottom = buw::loadImage4b(dataPath("boxcube_front_right_bottom.png").string());
-    const auto expected_top_left_front = buw::loadImage4b(dataPath("boxcube_top_left_front.png").string());
-    const auto expected_top_front_right = buw::loadImage4b(dataPath("boxcube_top_front_right.png").string());
-    const auto expected_top_left_back = buw::loadImage4b(dataPath("boxcube_top_left_back.png").string());
-    const auto expected_top_right_back = buw::loadImage4b(dataPath("boxcube_top_right_back.png").string());
-    const auto expected_back_left_bottom = buw::loadImage4b(dataPath("boxcube_back_left_bottom.png").string());
-    const auto expected_right_bottom_back = buw::loadImage4b(dataPath("boxcube_right_bottom_back.png").string());
+    const auto expected_front_left_bottom = buw::loadImage4b(dataPath("Cloud_Road_front_left_bottom.png").string());
+    const auto expected_front_right_bottom = buw::loadImage4b(dataPath("Cloud_Road_front_right_bottom.png").string());
+    const auto expected_top_left_front = buw::loadImage4b(dataPath("Cloud_Road_top_left_front.png").string());
+    const auto expected_top_front_right = buw::loadImage4b(dataPath("Cloud_Road_top_front_right.png").string());
+    const auto expected_top_left_back = buw::loadImage4b(dataPath("Cloud_Road_top_left_back.png").string());
+    const auto expected_top_right_back = buw::loadImage4b(dataPath("Cloud_Road_top_right_back.png").string());
+    const auto expected_back_left_bottom = buw::loadImage4b(dataPath("Cloud_Road_back_left_bottom.png").string());
+    const auto expected_right_bottom_back = buw::loadImage4b(dataPath("Cloud_Road_right_bottom_back.png").string());
 
 	// Act (FrontLeftBottom)
-	rendererOff->setViewDirection(buw::eViewDirection::FrontLeftBottom);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::FrontLeftBottom);
 	buw::Image4b image_front_left_bottom = CaptureImage();
 	// Act (FrontRightBottom)
-	rendererOff->setViewDirection(buw::eViewDirection::FrontRightBottom);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::FrontRightBottom);
 	buw::Image4b image_front_right_bottom = CaptureImage();
 	// Act (TopLeftFront)
-	rendererOff->setViewDirection(buw::eViewDirection::TopLeftFront);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::TopLeftFront);
 	buw::Image4b image_top_left_front = CaptureImage();
 	// Act (TopFrontRight)
-	rendererOff->setViewDirection(buw::eViewDirection::TopFrontRight);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::TopFrontRight);
 	buw::Image4b image_top_front_right = CaptureImage();
 	// Act (TopLeftBack)
-	rendererOff->setViewDirection(buw::eViewDirection::TopLeftBack);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::TopLeftBack);
 	buw::Image4b image_top_left_back = CaptureImage();
 	// Act (TopRightBack)
-	rendererOff->setViewDirection(buw::eViewDirection::TopRightBack);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::TopRightBack);
 	buw::Image4b image_top_right_back = CaptureImage();
 	// Act (BackLeftBottom)
-	rendererOff->setViewDirection(buw::eViewDirection::BackLeftBottom);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::BackLeftBottom);
 	buw::Image4b image_back_left_bottom = CaptureImage();
 	// Act (RightBottomBack)
-	rendererOff->setViewDirection(buw::eViewDirection::RightBottomBack);
+	rendererPointCloud->setViewDirection(buw::eViewDirection::RightBottomBack);
 	buw::Image4b image_right_bottom_back = CaptureImage();
 
 	// uncomment following lines to also save the screen shot
 	
-   // buw::storeImage(testPath("boxcube_front_left_bottom.png").string(), image_front_left_bottom);
-   // buw::storeImage(testPath("boxcube_front_right_bottom.png").string(), image_front_right_bottom);
-   // buw::storeImage(testPath("boxcube_top_left_front.png").string(), image_top_left_front);
-   // buw::storeImage(testPath("boxcube_top_front_right.png").string(), image_top_front_right);
-   // buw::storeImage(testPath("boxcube_top_left_back.png").string(), image_top_left_back);
-   // buw::storeImage(testPath("boxcube_top_right_back.png").string(), image_top_right_back);
-   // buw::storeImage(testPath("boxcube_back_left_bottom.png").string(), image_back_left_bottom);
-   // buw::storeImage(testPath("boxcube_right_bottom_back.png").string(), image_right_bottom_back);
+   // buw::storeImage(testPath("Cloud_Road_front_left_bottom.png").string(), image_front_left_bottom);
+   // buw::storeImage(testPath("Cloud_Road_front_right_bottom.png").string(), image_front_right_bottom);
+   // buw::storeImage(testPath("Cloud_Road_top_left_front.png").string(), image_top_left_front);
+   // buw::storeImage(testPath("Cloud_Road_top_front_right.png").string(), image_top_front_right);
+   // buw::storeImage(testPath("Cloud_Road_top_left_back.png").string(), image_top_left_back);
+   // buw::storeImage(testPath("Cloud_Road_top_right_back.png").string(), image_top_right_back);
+   // buw::storeImage(testPath("Cloud_Road_back_left_bottom.png").string(), image_back_left_bottom);
+   // buw::storeImage(testPath("Cloud_Road_right_bottom_back.png").string(), image_right_bottom_back);
 
 
 	// Assert
