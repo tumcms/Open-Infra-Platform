@@ -374,28 +374,46 @@ namespace OpenInfraPlatform {
 
 
 						// MESH_GRID_LINES FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
-
-						// ToDo: rewrite algorithm to generate straight polylines (instead of u-shaped somethings)
 						
 						// declaration of result variable for polylines
-						//std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 
-						// start a new poly line
-						//polylineData->beginPolyline();
+						// vertex index of polylineData
+						size_t index = 0;
 
-						//foreach triangulated square
-						//    // store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
-						//    indices[k] = polylineData->addVertex(facePoints[k]);
+						// meshGridLines in u-direction
+						for (size_t v = 0; v < numCurvePointsV; v++)
+						{
+							// start a new polyline
+							polylineData->beginPolyline();
 
+							for (size_t u = 0; u < numCurvePointsU; u++)
+							{
+								// all vertices are new in polylineData, thus use addVertex()
+								polylineData->addVertex(curvePoints[u][v]);
+								polylineData->addPolylineIndex(index);
+								index++;
+							}
+						}
 
-						// add obtaind index to polyline
-						//polylineData->addPolylineIndex(indices[k]);
+						// meshGridLines in v-direction
+						for (size_t u = 0; u < numCurvePointsU; u++)
+						{
+							//start a new polyline
+							polylineData->beginPolyline();
+
+							for (size_t v = 0; v < numCurvePointsV; v++)
+							{
+								// all vertices are already in polyineData, thus just calculate their indices
+								polylineData->addPolylineIndex(v * numCurvePointsU + u);
+							}
+						}
 
 
 						// ASSEMBLE RESULT
 						
 						// add polylines (= meshGridLines) to itemData (= return parameter)
-						//itemData->polylines.push_back(polylineData);
+						itemData->polylines.push_back(polylineData);
 
 						// add polyhedrons to itemData (= return parameter)
 						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
