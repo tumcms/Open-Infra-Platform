@@ -384,9 +384,12 @@ namespace OpenInfraPlatform {
 							}
 						}
 
-						// add polylines and polyhedrons to itemData (= return parameter)
+						// add polylines (= meshGridLines) to itemData (= return parameter)
 						itemData->polylines.push_back(polylineData);
+
+						// add polyhedrons to itemData (= return parameter)
 						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
+
 						return;
 					} // end if IfcBSplineSurfaceWithKnots
 
