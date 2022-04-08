@@ -393,9 +393,7 @@ namespace OpenInfraPlatform {
 						return;
 					} // end if IfcBSplineSurfaceWithKnots
 
-					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
-
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
