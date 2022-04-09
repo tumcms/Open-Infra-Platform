@@ -108,12 +108,12 @@ TEST_F(CloudRoad, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    buw::storeImage(testPath("cloud_road_front.png").string(), image_front);
-    buw::storeImage(testPath("cloud_road_top.png").string(), image_top);
-    buw::storeImage(testPath("cloud_road_bottom.png").string(), image_bottom);
-    buw::storeImage(testPath("cloud_road_left.png").string(), image_left);
-    buw::storeImage(testPath("cloud_road_right.png").string(), image_right);
-    buw::storeImage(testPath("cloud_road_back.png").string(), image_back);
+    buw::storeImage(testPath("Cloud_Road_front.png").string(), image_front);
+    buw::storeImage(testPath("Cloud_Road_top.png").string(), image_top);
+    buw::storeImage(testPath("Cloud_Road_bottom.png").string(), image_bottom);
+    buw::storeImage(testPath("Cloud_Road_left.png").string(), image_left);
+    buw::storeImage(testPath("Cloud_Road_right.png").string(), image_right);
+    buw::storeImage(testPath("Cloud_Road_back.png").string(), image_back);
 
 
 	// Assert
