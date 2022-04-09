@@ -49,6 +49,7 @@ protected:
 	}
 
 	virtual std::string TestName() const { return "Cloud_Road"; }
+	virtual std::string FileType() const { return "BIN"; }
 
 	const boost::filesystem::path filename = dataPath("Cloud_Road.bin");
 	buw::ReferenceCounted<oip::PointCloud> model = buw::makeReferenceCounted<oip::PointCloud>();

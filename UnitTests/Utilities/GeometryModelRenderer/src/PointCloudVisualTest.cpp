@@ -42,6 +42,8 @@ boost::filesystem::path PointCloudVisualTest::filePath(const std::string& relPat
 {
 	return executablePath()
 		.concat("\\UnitTests\\PointCloud\\")
+		.concat(FileType())
+		.concat("\\")
 		.concat(TestName())
 		.concat("\\")
 		.concat(relPath);

@@ -34,6 +34,7 @@ public:
 	virtual buw::Image4b CaptureImage() override;
 
 	virtual std::string TestName() const = 0;
+	virtual std::string FileType() const = 0;
 
 	virtual boost::filesystem::path filePath(const std::string& relPath) const override;
 };

@@ -20,8 +20,13 @@
 PointCloudGeometryModelRenderer::PointCloudGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem)
 	: GeometryModelRenderer::GeometryModelRenderer(renderSystem)
 {
+	buw::constantBufferDescription cbd0;
+	cbd0.sizeInBytes = sizeof(viewport_);
+	cbd0.data = nullptr;
+	viewportBuffer_ = renderSystem_->createConstantBuffer(cbd0);
+
 	pointCloudGeometryEffect_ = buw::makeReferenceCounted<oip::PointCloudEffect>(
-		renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer);
+		renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
 	pointCloudGeometryEffect_->init();
 }
 

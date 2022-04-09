@@ -65,6 +65,7 @@ protected:
 private:
 	buw::ReferenceCounted<oip::PointCloud> model_ = nullptr;
 	buw::ReferenceCounted<OpenInfraPlatform::Rendering::PointCloudEffect> pointCloudGeometryEffect_ = nullptr;
+	buw::ReferenceCounted<BlueFramework::Rasterizer::IConstantBuffer> viewportBuffer_ = nullptr;
 };
 
 #endif // POINTCLOUDGEOMETRYMODELRENDERER_H
