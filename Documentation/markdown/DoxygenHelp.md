@@ -30,16 +30,16 @@ If `DOXYGEN_GENERATE_DOCUMENTATION` is checked in the CMake GUI (default = OFF),
 Additionally, the following options can be selected:
 - `DOXYGEN_INCLUDE_COMMENTED_ONLY` (default = ON): If selected, only the documentation for explicitly commented entities will be generated. Otherwise, doxygen will assume that all entities are documented, even if there is no documentation available. 
 - `DOXYGEN_INCLUDE_INTERNAL` (default = OFF): If selected, this will include all comments preceded by "\internal". These are comments intended for developers only. So if the generated documentation is intended for external users, this option should not be selected.
-- DOXYGEN_INCLUDE_EARLYBINDING (default = OFF): If selected (... and already built), this will include the selected IFC schemas in the documentation. Otherwise, the schemas will not be included in the documentation, but this does not influence the selection of IFC schemas (see EARLYBINDING_ tags in CMake GUI).
-- DOXYGEN_AUTO_OPEN_DOCUMENTATION (default = ON): If selected, the landing page of the documentation will automatically open. If not selected, you will have to find and open the generated documentation manually (see section below on building the documentation). 
+- `DOXYGEN_INCLUDE_EARLYBINDING` (default = OFF): If selected (... and already built), this will include the selected IFC schemas in the documentation. Otherwise, the schemas will not be included in the documentation, but this does not influence the selection of IFC schemas (see EARLYBINDING_ tags in CMake GUI).
+- `DOXYGEN_AUTO_OPEN_DOCUMENTATION` (default = ON): If selected, the landing page of the documentation will automatically open. If not selected, you will have to find and open the generated documentation manually (see section below on building the documentation). 
 
 ### ConfigureDoxygen.cmake
-If DOXYGEN_GENERATE_DOCUMENTATION is selected in CMake, CMake will include ConfigureDoxygen.cmake. This file includes all settings for the generation of doxygen documentation for the Open Infra Platform project. Changes to documentation settings should be made here. doxygen_add_docs() creates the GenerateDocumentation target. The up-to-date version of the file can be found here:
+If `DOXYGEN_GENERATE_DOCUMENTATION` is selected in CMake, CMake will include ConfigureDoxygen.cmake. This file includes all settings for the generation of doxygen documentation for the Open Infra Platform project. Changes to documentation settings should be made here. doxygen_add_docs() creates the GenerateDocumentation target. The up-to-date version of the file can be found here:
 
 See [file](../../cmake/ConfigureDoxygen.cmake)
 
 #### ToDos.
-The DOXYGEN_EXCLUDE_PATTERNS tag used in ConfigureDoxygen.cmake is one that is more likely to be required to change.
+The `DOXYGEN_EXCLUDE_PATTERNS` tag used in ConfigureDoxygen.cmake is one that is more likely to be required to change.
 It excludes certain source code directories or files from the documentation. In this project, the following directories including the following patterns are currently excluded:
 - CurrentlyExcluded
 - cmake
