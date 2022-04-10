@@ -54,7 +54,7 @@ http://www.doxygen.nl/manual/index.html
 Important: when adding settings in CMake, always use DOXYGEN_ before the standard doxygen tag, e.g. the doxygen tag "PROJECT_BRIEF" has to be "DOXYGEN_PROJECT_BRIEF" in the ConfigureDoxygen.cmake file.
 
 ## Building the documentation
-In Visual studio, build "OpenInfraPlatform.GenerateDocumentation". This target can be found in Visual Studio under OpenInfraPlatform/Commands.
+In Visual Studio, build "OpenInfraPlatform.GenerateDocumentation". This target can be found in Visual Studio under OpenInfraPlatform/Commands.
 If "DOXYGEN_OPTIONAL_AUTO_OPEN_DOCUMENTATION" was selected in the CMake GUI, the landing pages of the documentation will be opened automatically if the build succeeded.
 Otherwise, the documentation has to be opened manually. In your build directory under Doxymentation/html you will find something called “index.html”. Clicking on this file will open the landing page of the HTML documentation browser. 
 
