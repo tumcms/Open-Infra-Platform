@@ -19,6 +19,10 @@ Refer to the [doxygen manual](http://www.doxygen.nl/manual) for everything else.
 
 ## Doxygen settings in CMake
 
+By default, doxygen is disabled. 
+To enable doxygen, search for the `DOXYGEN_GENERATE_DOCUMENTATION` option in CMake and set the check box. 
+After *Generate* in CMake, the Visual Studio Solution Explorer includes the project "OpenInfraPlatform.GenerateDocumentation".
+
 ### Top-level CMakelists.txt
 
 If `DOXYGEN_GENERATE_DOCUMENTATION` is checked in the CMake GUI (default = OFF), CMake will try to find the doxygen and dot executables in `C/thirdparty`. Additionally, a command that builds the documentation will be added to the solution.
