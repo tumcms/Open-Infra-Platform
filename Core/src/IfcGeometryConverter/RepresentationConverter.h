@@ -547,13 +547,8 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						// Contains polygon indices of vertices (x,y,z converted to string)
 						std::map<std::string, uint32_t> polygonIndices;
-						// Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface
-						std::vector<std::shared_ptr<carve::input::PolylineSetData>> meshGridLines;
-						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices, meshGridLines);
+						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices, itemData->meshGridLines);
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
-						// append meshGridLines to polylines (copies shared pointers)
-						// ToDo: Distinguish meshGridLines from actual polylines inside an ItemData object
-						std::copy(meshGridLines.begin(), meshGridLines.end(), std::back_inserter(itemData->polylines));
 						return;
 					}
 

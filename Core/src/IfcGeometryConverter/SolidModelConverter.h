@@ -338,10 +338,9 @@ namespace OpenInfraPlatform
                             inputDataOuterShell->open_or_closed_polyhedrons.end(),
                             std::back_inserter(itemData->closed_polyhedrons));
 
-				// move polylines from temporal inputDataOuterShell into target itemData
-				// ToDo: Distinguish meshGridLines from actual polylines inside an ItemData object
-				std::copy(inputDataOuterShell->polylines.begin(), inputDataOuterShell->polylines.end(),
-							std::back_inserter(itemData->polylines));
+				// move meshGridLines from temporal inputDataOuterShell into target itemData
+				std::copy(inputDataOuterShell->meshGridLines.begin(), inputDataOuterShell->meshGridLines.end(), 
+							std::back_inserter(itemData->meshGridLines));
             }
 
 			/*! \brief Converts \c IfcSectionedSolid to meshes.

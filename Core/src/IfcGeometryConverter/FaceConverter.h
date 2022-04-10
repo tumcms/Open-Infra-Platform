@@ -380,23 +380,23 @@ namespace OpenInfraPlatform {
 
 						// MESH_GRID_LINES FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
 						
-						// declaration of result variable for polylines
-						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
+						// declaration of result variable for meshGridLines (source code like polylines)
+						std::shared_ptr<carve::input::PolylineSetData> meshGridLineData = std::make_shared<carve::input::PolylineSetData>();
 
-						// vertex index of polylineData
+						// vertex index of meshGridLineData
 						size_t index = 0;
 
 						// meshGridLines in u-direction
 						for (size_t v = 0; v < numCurvePointsV; v++)
 						{
 							// start a new polyline
-							polylineData->beginPolyline();
+							meshGridLineData->beginPolyline();
 
 							for (size_t u = 0; u < numCurvePointsU; u++)
 							{
-								// all vertices are new in polylineData, thus use addVertex()
-								polylineData->addVertex(curvePoints[u][v]);
-								polylineData->addPolylineIndex(index);
+								// all vertices are new in meshGridLineData, thus use addVertex()
+								meshGridLineData->addVertex(curvePoints[u][v]);
+								meshGridLineData->addPolylineIndex(index);
 								index++;
 							}
 						}
@@ -405,20 +405,20 @@ namespace OpenInfraPlatform {
 						for (size_t u = 0; u < numCurvePointsU; u++)
 						{
 							//start a new polyline
-							polylineData->beginPolyline();
+							meshGridLineData->beginPolyline();
 
 							for (size_t v = 0; v < numCurvePointsV; v++)
 							{
-								// all vertices are already in polyineData, thus just calculate their indices
-								polylineData->addPolylineIndex(v * numCurvePointsU + u);
+								// all vertices are already in meshGridLineData, thus just calculate their indices
+								meshGridLineData->addPolylineIndex(v * numCurvePointsU + u);
 							}
 						}
 
 
 						// ASSEMBLE RESULT
 						
-						// add polylines (= meshGridLines) to itemData (= return parameter)
-						itemData->polylines.push_back(polylineData);
+						// add meshGridLines to itemData (= return parameter)
+						itemData->meshGridLines.push_back(meshGridLineData);
 
 						// add polyhedrons to itemData (= return parameter)
 						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
@@ -777,22 +777,15 @@ namespace OpenInfraPlatform {
 					// Contains coordinates and indices of polyhedron vertices (x,y,z converted to string)
 					std::map<std::string, uint32_t> polyhedronIndices;
 
-					// Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface
-					std::vector<std::shared_ptr<carve::input::PolylineSetData>> meshGridLines;
-
 					// Loop through all faces
 					for (const auto& face : faces) 
 					{
-						// get mesh data into polyhedron and polyhedronIndices
-						convertIfcFace(face, pos, polyhedron, polyhedronIndices, meshGridLines);
+						// get mesh data into polyhedron, polyhedronIndices and meshGridLines
+						convertIfcFace(face, pos, polyhedron, polyhedronIndices, itemData->meshGridLines);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
 					itemData->open_or_closed_polyhedrons.push_back(polyhedron);
-
-					// append meshGridLines to polylines (copies shared pointers)
-					// ToDo: Distinguish meshGridLines from actual polylines inside an ItemData object
-					std::copy(meshGridLines.begin(), meshGridLines.end(), std::back_inserter(itemData->polylines));
 				}
 
 				/*! \brief  Converts \c IfcFace or sub-entity to a vector of face vertices, respectively the mesh of a polyhedron.
@@ -1590,8 +1583,8 @@ namespace OpenInfraPlatform {
 						// append surface-faces to target polyhedron
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
 
-						// append polylines from temporal inputDataFaceSurface to meshGridLines (copies shared pointers)
-						std::copy(inputDataFaceSurface->polylines.begin(), inputDataFaceSurface->polylines.end(), std::back_inserter(meshGridLines));
+						// append meshGridLine from temporal inputDataFaceSurface to meshGridLines (copies shared pointers)
+						std::copy(inputDataFaceSurface->meshGridLines.begin(), inputDataFaceSurface->meshGridLines.end(), std::back_inserter(meshGridLines));
 					}
 				}
 
