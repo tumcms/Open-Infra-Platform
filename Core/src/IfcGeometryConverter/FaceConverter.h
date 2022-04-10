@@ -777,15 +777,22 @@ namespace OpenInfraPlatform {
 					// Contains coordinates and indices of polyhedron vertices (x,y,z converted to string)
 					std::map<std::string, uint32_t> polyhedronIndices;
 
+					// Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>> meshGridLines;
+
 					// Loop through all faces
 					for (const auto& face : faces) 
 					{
 						// get mesh data into polyhedron and polyhedronIndices
-						convertIfcFace(face, pos, polyhedron, polyhedronIndices);
+						convertIfcFace(face, pos, polyhedron, polyhedronIndices, meshGridLines);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
 					itemData->open_or_closed_polyhedrons.push_back(polyhedron);
+
+					// append meshGridLines to polylines (copies shared pointers)
+					// ToDo: Distinguish meshGridLines from actual polylines inside an ItemData object
+					std::copy(meshGridLines.begin(), meshGridLines.end(), std::back_inserter(itemData->polylines));
 				}
 
 				/*! \brief  Converts \c IfcFace or sub-entity to a vector of face vertices, respectively the mesh of a polyhedron.
@@ -793,6 +800,7 @@ namespace OpenInfraPlatform {
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
 				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
 				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
 
 
 				<b>About \c polyhedron and \c polyhedronIndices</b> \n
@@ -814,7 +822,9 @@ namespace OpenInfraPlatform {
 				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices)  const noexcept(false)
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
+				)  const noexcept(false)
 				{
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
@@ -822,7 +832,7 @@ namespace OpenInfraPlatform {
 
 					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), pos, polyhedron, polyhedronIndices);
+						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), pos, polyhedron, polyhedronIndices, meshGridLines);
 					}
 					else
 					{
@@ -853,6 +863,7 @@ namespace OpenInfraPlatform {
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
 				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
 				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
 
 				\see
 				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
@@ -861,7 +872,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
 				)  const noexcept(false)
 				{
 					if (faceSurface.expired()) {
@@ -870,11 +882,11 @@ namespace OpenInfraPlatform {
 
 					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
 					{
-						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), pos, polyhedron, polyhedronIndices);
+						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), pos, polyhedron, polyhedronIndices, meshGridLines);
 					}
 					else
 					{
-						computeIfcFaceSurface(faceSurface, pos, polyhedron, polyhedronIndices);
+						computeIfcFaceSurface(faceSurface, pos, polyhedron, polyhedronIndices, meshGridLines);
 					}
 				}
 
@@ -883,6 +895,7 @@ namespace OpenInfraPlatform {
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
 				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
 				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
 
 				\see
 				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
@@ -891,7 +904,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
 				)  const noexcept(false)
 				{
 					if (advancedFace.expired()) {
@@ -917,7 +931,7 @@ namespace OpenInfraPlatform {
 						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
 					}
 
-					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices);
+					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices, meshGridLines);
 				}
 
 				/*! \brief Checks whether all points of the \c faceBoundLoops exist coincident in the surface geometry of \c itemDataSurface.
@@ -1525,6 +1539,7 @@ namespace OpenInfraPlatform {
 				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
 				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
 				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
 
 				\see
 				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
@@ -1533,7 +1548,8 @@ namespace OpenInfraPlatform {
 					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
-					std::map<std::string, uint32_t>& polyhedronIndices
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
 				) const noexcept(false)
 				{
 					if (ifcFaceSurface.expired()) {
@@ -1573,6 +1589,9 @@ namespace OpenInfraPlatform {
 
 						// append surface-faces to target polyhedron
 						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
+
+						// append polylines from temporal inputDataFaceSurface to meshGridLines (copies shared pointers)
+						std::copy(inputDataFaceSurface->polylines.begin(), inputDataFaceSurface->polylines.end(), std::back_inserter(meshGridLines));
 					}
 				}
 
