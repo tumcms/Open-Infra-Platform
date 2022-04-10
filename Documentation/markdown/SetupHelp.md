@@ -177,6 +177,7 @@ Build the project **OpenInfraPlatform.GenerateDocumentation** within *Commands* 
 *NOTE:* This step may take quite some time.
 
 Read more about Doxygen in our [guidelines](./DoxygenHelp.md).
+*NOTE:* Doxygen is disabled by default. See the guidelines for a description how to enable Doxygen.
 
 Please consult our [CMake options documentation](./CMakeOptions.md) for different options available for customizing the doxygeneration.
 
