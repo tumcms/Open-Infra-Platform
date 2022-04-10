@@ -21,7 +21,7 @@ Refer to the [doxygen manual](http://www.doxygen.nl/manual) for everything else.
 
 ### Top-level CMakelists.txt
 
-If `DOXYGEN_GENERATE_DOCUMENTATION` is checked in the CMake GUI (default = ON), CMake will try to find the doxygen and dot executables in `C/thirdparty`. Additionally, a command that builds the documentation will be added to the solution.
+If `DOXYGEN_GENERATE_DOCUMENTATION` is checked in the CMake GUI (default = OFF), CMake will try to find the doxygen and dot executables in `C/thirdparty`. Additionally, a command that builds the documentation will be added to the solution.
 
 Additionally, the following options can be selected:
 - `DOXYGEN_INCLUDE_COMMENTED_ONLY` (default = ON): If selected, only the documentation for explicitly commented entities will be generated. Otherwise, doxygen will assume that all entities are documented, even if there is no documentation available. 
