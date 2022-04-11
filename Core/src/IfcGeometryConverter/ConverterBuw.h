@@ -340,9 +340,12 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 										geometry->meshDescription.vertices, geometry->meshDescription.indices);
 								}
 
-								// append meshGridLines to polylines (temporal, both are handled similar in further treatment)
-								// ToDo: meshGridLines should be handled separately in order to enable / disable their visibility in the viewport
-								std::copy(itemData->meshGridLines.begin(), itemData->meshGridLines.end(), std::back_inserter(itemData->polylines));
+								// data for meshGridLines
+								// ToDo: meshGridLines should be handled in a way to enable / disable their visibility in the viewport
+								for (const auto& meshGridLine : itemData->meshGridLines) {
+									ConverterBuwT<IfcEntityTypesT>::insertPolylineIntoBuffers(meshGridLine,
+										geometry->polylineDescription.vertices, geometry->polylineDescription.indices);
+								}
 
 								// data for polylines
 								for(const auto& polyline : itemData->polylines) {
