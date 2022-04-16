@@ -1593,6 +1593,11 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcPolynomialCurve>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcPolynomialCurve>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcPolynomialCurve>(), runningLength);
+						}
 						segmentPoints.push_back(point);
 						segmentDirections.push_back(direction);
 						// determine next length
@@ -1618,6 +1623,7 @@ namespace OpenInfraPlatform
 
 					if (!segmentPoints.empty())
 					{
+						//TODO: implement different rotations around y and z axis
 						//get the local coordinate system
 						carve::geom::vector<3> tangent = segmentDirections[0].normalize();
 						tangent.y = -tangent.y;
@@ -2893,6 +2899,189 @@ namespace OpenInfraPlatform
 					//double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstants, polynomialConstants.size(), parameter);
 
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the polynomial curve.
+				* \param[in] polynomialCurve		A pointer to data from \c IfcPolynomialCurve.
+				* \param[in] parameter				The length.
+				* \return							The direction of the curve.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(polynomialCurve, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(polynomialCurve, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const double& parameter) const noexcept(false)
+				{				
+					//std::vector<typename IfcEntityTypesT::IfcReal> coefficientX, coefficientY, coefficientZ;
+					//std::vector<double> polynomialConstantX, polynomialConstantY, polynomialConstantZ;
+					int polynomialConstantCntX, polynomialConstantCntY, polynomialConstantCntZ;
+					double angleX, angleY, angleZ;
+					//get coefficients
+					if (polynomialCurve->CoefficientsX)
+					{
+						std::vector<double> polynomialConstantX;
+						std::vector<typename IfcEntityTypesT::IfcReal> coefficientX = polynomialCurve->CoefficientsX;
+						//convert to double
+						for (int i = 0; i < size(coefficientX); i++)
+						{
+							polynomialConstantX.push_back(double(coefficientX[i]));
+						}
+						polynomialConstantCntX = std::size(polynomialConstantX);
+						//calculate angle
+						angleX = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstantX, polynomialConstantCntX, parameter);
+					}
+					if (polynomialCurve->CoefficientsY)
+					{
+						std::vector<double> polynomialConstantY;
+						std::vector<typename IfcEntityTypesT::IfcReal> coefficientY = polynomialCurve->CoefficientsY;
+						//convert to double
+						for (int i = 0; i < size(coefficientY); i++)
+						{
+							polynomialConstantY.push_back(double(coefficientY[i]));
+						}
+						polynomialConstantCntY = std::size(polynomialConstantY);
+						//calculate angle
+						angleY = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstantY, polynomialConstantCntY, parameter);
+					}
+					if (polynomialCurve->CoefficientsZ)
+					{
+						std::vector<double> polynomialConstantZ;
+						std::vector<typename IfcEntityTypesT::IfcReal> coefficientZ = polynomialCurve->CoefficientsZ;
+						//convert to double
+						for (int i = 0; i < size(coefficientZ); i++)
+						{
+							polynomialConstantZ.push_back(double(coefficientZ[i]));
+						}
+						polynomialConstantCntZ = std::size(polynomialConstantZ);
+						//calculate angle
+						angleZ = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstantZ, polynomialConstantCntZ, parameter);
+					}
+					
+					// calculate angle between two polynomial curves
+					//double angle = std::atan2(angleY, angleX);
+
+					if (polynomialConstantCntX>0 && polynomialConstantCntY>0)
+					{
+						double angle = std::atan2(angleY, angleX);
+						return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+
+					}
+					// Only works if correctly rotation around y axis is in convertIfcCurveSegment 
+					else if (polynomialConstantCntX>0 && polynomialConstantCntZ>0)
+					{
+						double angle = std::atan2(angleZ, angleX);
+						return carve::geom::VECTOR(std::cos(angle), 0., -std::sin(angle));
+					}
+					// Only works if correctly rotation around x axis is in convertIfcCurveSegment 
+					else if (polynomialConstantCntY>0 && polynomialConstantCntZ>0)
+					{
+						double angle = std::atan2(angleZ, angleY);
+						return carve::geom::VECTOR(0., std::cos(angle), std::sin(angle));
+					}
+
+					//TODO: angle in 3D. At first implement additional code in convertIfcCurveSegment
+					/*else if (polynomialConstantCntX>0 && polynomialConstantCntY>0 && polynomialConstantCntZ>0)
+					{
+				
+					}*/			
+				}
+
+#endif
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates a trimming point on the polynomial curve.
+				* \param[in] polynomialCurve	    A pointer to data from \c IfcPolynomialCurve.
+				* \param[in] parameter				A pointer to data from \c IfcCurveSegment.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(polynomialCurve, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(polynomialCurve, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPolynomialCurve>& polynomialCurve,
+					const double& parameter) const noexcept(false)
+
+				{
+
+					std::vector<typename IfcEntityTypesT::IfcReal> coefficientX, coefficientY, coefficientZ;
+					typename IfcEntityTypesT::IfcReal x, y, z;
+					int polynomialConstantCntX, polynomialConstantCntY, polynomialConstantCntZ;
+
+					if (polynomialCurve->CoefficientsX)
+					{
+						// Interpret coefficients for X
+						coefficientX = polynomialCurve->CoefficientsX;
+						polynomialConstantCntX = std::size(coefficientX);
+						// Implement polynomial term for x coordinate
+						x = calculatePolynomialCurve(coefficientX, parameter);
+					}
+					if (polynomialCurve->CoefficientsY)
+					{
+						// Interpret coefficients for Y
+						coefficientY = polynomialCurve->CoefficientsY;
+						// Implement polynomial term for y coordinate
+						polynomialConstantCntY = std::size(coefficientY);
+						y = calculatePolynomialCurve(coefficientY, parameter);
+						return carve::geom::VECTOR(x, y, 0.);
+					}
+					if (polynomialCurve->CoefficientsZ)
+					{
+						// Interpret coefficients for Z
+						coefficientZ = polynomialCurve->CoefficientsZ;
+						polynomialConstantCntZ = std::size(coefficientZ);
+						// Implement polynomial term for z coordinate
+						z = calculatePolynomialCurve(coefficientZ, parameter);
+					}
+					// Impplement different cases for 2D and 3D
+					if (polynomialConstantCntX>0 && polynomialConstantCntY>0) return carve::geom::VECTOR(x, y, 0.);
+					
+					else if (polynomialConstantCntX>0 && polynomialConstantCntZ>0) return carve::geom::VECTOR(x, 0., z);
+				
+					else if (polynomialConstantCntY>0 && polynomialConstantCntZ>0) return carve::geom::VECTOR(0., y, z);
+
+					else if (polynomialConstantCntX>0 && polynomialConstantCntY>0 && polynomialConstantCntZ>0) return carve::geom::VECTOR(x, y, z);
+				}
+
+				/*! \brief Calculates a polinomial curve.
+				* \param[in] coefficient			A vector with coeffitients corresponding ordinate from \c IfcPolynomialCurve.
+				* \param[in] parameter				A length during the curve from \c IfcCurveSegment.
+				* \return							The location of the ordinate point.
+				* \note
+				*/
+				typename IfcEntityTypesT::IfcReal calculatePolynomialCurve(const std::vector<typename IfcEntityTypesT::IfcReal> coefficient, double length) const noexcept(false)
+				{
+					int n = std::size(coefficient);
+					typename IfcEntityTypesT::IfcReal sum = coefficient[0];
+					double factor = 1;
+
+					for (int i = 1; i < n; i++)
+					{
+						factor *= length;
+						sum += coefficient[i] * factor;
+					}
+					return sum;
 				}
 #endif
 
