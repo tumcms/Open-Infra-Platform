@@ -16,33 +16,37 @@
 */
 
 #include "PointCloudGeometryModelRenderer.h"
+#include "Effects/UIElementsEffect.h"
 
 PointCloudGeometryModelRenderer::PointCloudGeometryModelRenderer(const buw::ReferenceCounted<buw::IRenderSystem>& renderSystem)
 	: GeometryModelRenderer::GeometryModelRenderer(renderSystem)
 {
-	buw::constantBufferDescription cbd0;
-	cbd0.sizeInBytes = sizeof(viewport_);
-	cbd0.data = nullptr;
-	viewportBuffer_ = renderSystem_->createConstantBuffer(cbd0);
+	oip::ViewportBuffer buffer = { 640, 480 };
 
-	pointCloudGeometryEffect_ = buw::makeReferenceCounted<oip::PointCloudEffect>(
-		renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
-	pointCloudGeometryEffect_->init();
+	buw::constantBufferDescription cbd1;
+	cbd1.sizeInBytes = sizeof(oip::ViewportBuffer);
+	cbd1.data = &buffer;
+	viewportBuffer_ = renderSystem_->createConstantBuffer(cbd1);
+
+	pointCloudEffect_ = buw::makeReferenceCounted<oip::PointCloudEffect>
+		(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_, viewportBuffer_);
+	pointCloudEffect_->init();
+
 }
 
 PointCloudGeometryModelRenderer::~PointCloudGeometryModelRenderer()
 {
 	model_.reset();
-	pointCloudGeometryEffect_.reset();
+	pointCloudEffect_.reset();
 }
 
 void PointCloudGeometryModelRenderer::setModel(const std::shared_ptr<oip::PointCloud>& model)
 {
 	model_.reset();
 	model_ = model;
-	pointCloudGeometryEffect_->setPointCloud(model);
+	pointCloudEffect_->setPointCloud(model);
 
-	pointCloudGeometryEffect_->setOffset(-model->getExtent().center());
+	pointCloudEffect_->setOffset(-model->getExtent().center());
 
 	fitViewToModel();
 }
@@ -54,5 +58,5 @@ oip::BBox PointCloudGeometryModelRenderer::getExtent() const
 
 void PointCloudGeometryModelRenderer::render()
 {
-	pointCloudGeometryEffect_->render();
+	pointCloudEffect_->render();
 }
