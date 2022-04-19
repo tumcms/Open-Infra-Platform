@@ -38,9 +38,9 @@ protected:
 		const char* c = str.c_str();
 		auto model = buw::PointCloud::FromFile(c, true);
 
-
+		rendererPointCloud->setModel(model);
 		_background = rendererPointCloud->captureImage();
-			rendererPointCloud->setModel(model);
+			
 	}
 
 	virtual void TearDown() override {

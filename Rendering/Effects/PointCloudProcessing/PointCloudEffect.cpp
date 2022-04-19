@@ -386,6 +386,15 @@ void PointCloudEffect::v_init()
 
 void PointCloudEffect::v_render()
 {
+	/*std::vector<VertexTypePointCloud> vertices = std::vector<VertexTypePointCloud>(pointCloud_->size());
+	auto baseColor = ccColor::Rgbaf(0, 0, 0, 0);
+
+	buw::vertexBufferDescription vbd;
+	vbd.vertexLayout = VertexTypePointCloud::getVertexLayout();
+	vbd.vertexCount = vertices.size();
+	vbd.data = vertices.data();
+	vertexBufferPointCloud_ = renderSystem()->createVertexBuffer(vbd);*/
+
 	buw::ReferenceCounted<buw::ITexture2D> renderTarget = renderSystem()->getBackBufferTarget();
 	
 	setPipelineState(pipelineStatePointCloud_);
