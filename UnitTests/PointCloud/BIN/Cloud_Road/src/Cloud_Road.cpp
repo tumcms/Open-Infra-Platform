@@ -108,12 +108,12 @@ TEST_F(CloudRoad, PlaneSurfaceViews)
 
 	// uncomment following lines to also save the screen shot
 
-    buw::storeImage(testPath("Cloud_Road_front.png").string(), image_front);
-    buw::storeImage(testPath("Cloud_Road_top.png").string(), image_top);
-    buw::storeImage(testPath("Cloud_Road_bottom.png").string(), image_bottom);
-    buw::storeImage(testPath("Cloud_Road_left.png").string(), image_left);
-    buw::storeImage(testPath("Cloud_Road_right.png").string(), image_right);
-    buw::storeImage(testPath("Cloud_Road_back.png").string(), image_back);
+    //buw::storeImage(testPath("Cloud_Road_front.png").string(), image_front);
+    //buw::storeImage(testPath("Cloud_Road_top.png").string(), image_top);
+    //buw::storeImage(testPath("Cloud_Road_bottom.png").string(), image_bottom);
+    //buw::storeImage(testPath("Cloud_Road_left.png").string(), image_left);
+    //buw::storeImage(testPath("Cloud_Road_right.png").string(), image_right);
+    //buw::storeImage(testPath("Cloud_Road_back.png").string(), image_back);
 
 
 	// Assert
@@ -164,14 +164,14 @@ TEST_F(CloudRoad, VertexViews)
 
 	// uncomment following lines to also save the screen shot
 	
-    buw::storeImage(testPath("Cloud_Road_front_left_bottom.png").string(), image_front_left_bottom);
-    buw::storeImage(testPath("Cloud_Road_front_right_bottom.png").string(), image_front_right_bottom);
-    buw::storeImage(testPath("Cloud_Road_top_left_front.png").string(), image_top_left_front);
-    buw::storeImage(testPath("Cloud_Road_top_front_right.png").string(), image_top_front_right);
-    buw::storeImage(testPath("Cloud_Road_top_left_back.png").string(), image_top_left_back);
-    buw::storeImage(testPath("Cloud_Road_top_right_back.png").string(), image_top_right_back);
-    buw::storeImage(testPath("Cloud_Road_back_left_bottom.png").string(), image_back_left_bottom);
-    buw::storeImage(testPath("Cloud_Road_right_bottom_back.png").string(), image_right_bottom_back);
+	//buw::storeImage(testPath("Cloud_Road_front_left_bottom.png").string(), image_front_left_bottom);
+	//buw::storeImage(testPath("Cloud_Road_front_right_bottom.png").string(), image_front_right_bottom);
+	//buw::storeImage(testPath("Cloud_Road_top_left_front.png").string(), image_top_left_front);
+	//buw::storeImage(testPath("Cloud_Road_top_front_right.png").string(), image_top_front_right);
+	//buw::storeImage(testPath("Cloud_Road_top_left_back.png").string(), image_top_left_back);
+	//buw::storeImage(testPath("Cloud_Road_top_right_back.png").string(), image_top_right_back);
+	//buw::storeImage(testPath("Cloud_Road_back_left_bottom.png").string(), image_back_left_bottom);
+	//buw::storeImage(testPath("Cloud_Road_right_bottom_back.png").string(), image_right_bottom_back)
 
 
 	// Assert
