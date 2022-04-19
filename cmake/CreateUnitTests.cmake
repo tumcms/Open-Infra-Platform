@@ -132,7 +132,7 @@ function(CreatePointCloudVisualUnitTestForFileType test_name file_type)
 
     add_executable(${UnitTest_Executable_Name}
         ${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}}
-        #${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}_h}
+        ${OpenInfraPlatform_UnitTests_PointCloud_${file_type}_${test_name}_h}
         ${OpenInfraPlatform_UnitTests_Source}
     )
 

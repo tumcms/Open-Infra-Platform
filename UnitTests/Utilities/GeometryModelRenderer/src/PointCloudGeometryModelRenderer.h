@@ -53,12 +53,12 @@ public:
 
 protected:
 	/*!
-	 * \brief Returns the extent of the loaded off model.
+	 * \brief Returns the extent of the loaded point cloud model.
 	 */
 	virtual oip::BBox getExtent() const override;
 
 	/*!
-	 * \brief Renders the OffGeometryEffect.
+	 * \brief Renders the PointCloudEffect.
 	 */
 	virtual void render() override;
 

@@ -19,9 +19,6 @@
 
 #include <PointCloudVisualTest.h>
 
-//#include <PointCloudProcessing\src\PointCloud.h>
-
-
 using namespace testing;
 
 
@@ -54,16 +51,6 @@ protected:
 	const boost::filesystem::path filename = dataPath("Cloud_Road.bin");
 	buw::ReferenceCounted<oip::PointCloud> model = buw::makeReferenceCounted<oip::PointCloud>();
 };
-
-//TEST_F(CloudRoad, AllEdgesAndFacesRed)
-//{
-//	// check for the number of vertices 
-//	// does not coincide with the number of vertices mentioned in the off file since some vertices are
-//	// stored once for every triangle they are part of
-//	EXPECT_THAT(model->geometry().vertices.size(), Eq(324));
-//	// check for the number of indices (see comment for vertices)
-//	EXPECT_THAT(model->geometry().indices.size(), Eq(324));
-//}
 
 TEST_F(CloudRoad, ImageIsSaved)
 {
