@@ -27,7 +27,7 @@ bibliography: paper.bib
 # Summary
 
 The Architecture, Engineering and Construction (AEC) is in its transition from 2D design processes to 3D object-oriented modelling. 
-Building Information Modeling (BIM) is steadily gaining importance replacing the conventional Computer-Aided Design (CAD) practices
+Building Information Modeling (BIM) is steadily gaining importance, replacing the conventional Computer-Aided Design (CAD) practices
  and getting implemented in every aspect of the very complex software and stakeholder landscape [@Jaud:2019:iccce].
 As one of the main principles, BIM describes the idea of integrating all information
  relevant to the life cycle of a structure, such as a tunnel, bridge, building or road, in a digital (BIM) model.
@@ -46,19 +46,18 @@ OIP supports reading, visualization, navigating, and handling of:
 
 Multiple models can be loaded at once and compared between each other (see Figure \ref{fig:ifcpcd}).
 Their absolute position is accounted for, so the models can be checked against one another for internal differences based on location of elements.
-Allowing direct comparison between IFC and point cloud data is especially valuable in the context of ScanVsBIM approaches.
+Allowing a direct comparison between IFC and point cloud data is especially valuable in the context of ScanVsBIM approaches.
 
-Additionally, OIP incorporates its own EXPRESS parser,
- that consumes and evaluates data models (like IFC) specified with a schema following the @iso1030311 (see Figure \ref{fig:express}).
+Additionally, OIP incorporates its own EXPRESS parser that consumes and evaluates data models (like IFC) specified with a schema following the @iso1030311 standard (see Figure \ref{fig:express}).
 This enables automatic code generation for IFC early-binding library [@Amann:2018:Diss; @Hecht:2019:FBI; @Amann:2018:Programming].
-As such, complete contents of IFC files produced following the @iso1030321 can be interpreted and analysed.
-Moreover, type safety is guaranteed at compile time thus reducing the risk for bugs and errors.
+As such, complete contents of IFC files produced following @iso1030321 can be interpreted and analysed.
+Moreover, type safety is guaranteed at compile time, thus reducing the risk for bugs and errors.
 This is achieved by a carefully designed schema-agnostic template library.
 
 Let it be stated here that OIP serves as a prototypical playground for developments.
 The software architecture, features, and functionalities have been changed, added or removed as required along the way.
-Nowadays, OIP uses the IFC schema and CloudCompare's model as independent internal data models -- explained in detail by @Hecht:2019:FBI.
-Major elements from previous developments were already realigned, while some (previously available) functionality is still considered as work-in-progress.
+Nowadays, OIP uses the IFC schema and CloudCompare's model as independent internal data models --- explained in detail by @Hecht:2019:FBI.
+Major elements from previous developments were already realigned, while some (previously available) functionalities are still considered as work-in-progress.
 
 ![A PCD model together with an IFC model loaded in OIP. (PCD model courtesy of Grega Indof, IFC model courtesy of Laurens Oostwegel.)\label{fig:ifcpcd}](../images/ifc_and_pcd.png)
 
@@ -73,18 +72,18 @@ Additionally, an interface to other infrastructure data model standards
 OIP fulfils this role by being open source, using CMake as a build system generator,
  and being based on well known libraries (like Qt, Eigen, Carve and Boost).
 Additionally, the EXPRESS parser provided proved useful for automatically producing
- source code and data models from newly developed schemas as needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
+ source code and data models from newly developed schemas when needed [@vilgertshofer:2017:iwcce; @Amann:2018:Diss].
 
 There are similar open source libraries and viewers available out there.
-For a matter of fact, the geometry handling of IFC content has been taken and improved upon from the versatile *IFC++* library [@ifcplusplus].
-Note that this is not an exhaustive list -- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
+As a matter of fact, the geometry handling of IFC content has been taken and improved upon from the versatile *IFC++* library [@ifcplusplus].
+Note that this is not an exhaustive list --- a more thorough comparison has been conducted by @Hecht:2019:FBI and @Valero:2020:ISARC.
 
 On the one hand, *IfcOpenShell*, *IFC++*, *IFC.js* and *XBim toolkit* focus primarily
  on handling IFC content and geometries [@ifcopenshell; @ifcplusplus; @ifcjs; @Lockley2017].
 They provide an API to implement against (in various programming languages) together with a viewer. 
 However, they focus mainly on the stable versions of the IFC standard (like IFC2x3 and IFC4),
  while OIP focuses primarily on the newer developments.
-Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of BlueFramework open-source library that serves as a basis for the rendering engine.
+Additionally, OIP supports DirectX versions 11 and 12 simultaneously through the use of the BlueFramework open-source library that serves as a basis for the rendering engine.
 
 On the other hand, *ParaView*, *Point Cloud Library* and *CloudCompare* focus on handling PCD [@paraview; @pcl; @CloudCompare].
 These provide more functionality for PCD analysis than OIP, however cannot handle BIM models.
