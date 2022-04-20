@@ -7,7 +7,7 @@ tags:
   - EXPRESS parser
   - code generation
 authors:
-  - name: \v{S}tefan Jaud^[corresponding author]
+  - name: Štefan Jaud^[corresponding author]
     orcid: 0000-0003-0387-3440
     affiliation: 1
   - name: Helge Hecht
