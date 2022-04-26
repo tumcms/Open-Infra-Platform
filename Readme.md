@@ -1,6 +1,7 @@
 # TUM Open Infra Platform
 
 [![status](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca/status.svg)](https://joss.theoj.org/papers/ab5757cf53fc55c74f4948e8b336a7ca)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6488493.svg)](https://doi.org/10.5281/zenodo.6488493)
 
 ## Info
 
@@ -14,7 +15,7 @@ As a consequence, OIP can be used in two ways:
 
 ![Beta1_5_Windows8_1.png](./Documentation/images/Beta1_5_Windows8_1.png)
 
-2. Compiling the newest developments yourself on the `development` branch - see below for instructions.
+2. Compiling the newest developments yourself on the `development` branch - see below for instructions ([Jaud et al. 2022](./Documentation/joss/paper.md)).
 
 ## News
 
