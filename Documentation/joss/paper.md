@@ -11,6 +11,7 @@ authors:
     orcid: 0000-0003-0387-3440
     affiliation: 1
   - name: Helge Hecht
+    orcid: 0000-0001-6744-996X
     affiliation: 1
   - name: Jonas Schlenger
     orcid: 0000-0002-4875-5117
