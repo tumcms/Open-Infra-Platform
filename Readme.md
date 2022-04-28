@@ -15,7 +15,7 @@ As a consequence, OIP can be used in two ways:
 
 ![Beta1_5_Windows8_1.png](./Documentation/images/Beta1_5_Windows8_1.png)
 
-2. Compiling the newest developments yourself on the `development` branch - see below for instructions ([Jaud et al. 2022](./Documentation/joss/paper.md)).
+2. Compiling the newest developments yourself on the `development` branch - see below for instructions ([Jaud et al. 2022](./Documentation/2022_Jaud_JOSS.pdf)).
 
 ## News
 
