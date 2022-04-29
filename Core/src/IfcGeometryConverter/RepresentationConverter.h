@@ -513,9 +513,9 @@ namespace OpenInfraPlatform {
 
 				/*! \brief Converts \c IfcTopologicalRepresentationItem to meshes and polylines.
 				 *
-				 * \param[in] mapped_item The \c IfcTopologicalRepresentationItem to be converted.
-				 * \param[in] pos The relative location of the origin of the representation's coordinate system within the geometric context.
-				 * \param[out] itemData A pointer to be filled with the relevant data.
+				 * \param[in] topo_item			The \c IfcTopologicalRepresentationItem to be converted.
+				 * \param[in] objectPlacement	The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \param[out] itemData			A pointer to be filled with the relevant data.
 				 */
 				void convertIfcTopologicalRepresentationItem(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcTopologicalRepresentationItem>& topo_item,
@@ -524,7 +524,7 @@ namespace OpenInfraPlatform {
 				) const noexcept(false)
 				{
 					// IfcTopologicalRepresentationItem 
-					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace*, IfcFaceBound*, IfcLoop*, IfcPath*, IfcVertex*.
+					//  ABSTRACT SUPERTYPE OF IfcConnectedFaceSet*, IfcEdge, IfcFace, IfcFaceBound, IfcLoop, IfcPath*, IfcVertex*.
 
 					// (1/*) IfcConnectedFaceSet SUBTYPE OF IfcTopologicalRepresentationItem
 					if (topo_item.isOfType<typename IfcEntityTypesT::IfcConnectedFaceSet>()) {
@@ -536,6 +536,59 @@ namespace OpenInfraPlatform {
 					if (topo_item.isOfType<typename IfcEntityTypesT::IfcEdge>() ) {
 						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
 						curveConverter->convertIfcEdge(topo_item.as<typename IfcEntityTypesT::IfcEdge>(), objectPlacement, polyline_data);
+						itemData->polylines.push_back(polyline_data);
+						return;
+					}
+
+					// (3/*) IfcFace SUBTYPE OF IfcTopologicalRepresentationItem
+					// until now, this if-block isn't tested with an ifc-file
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcFace>()) {
+						// Carve polygon of the converted face
+						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+						// Contains polygon indices of vertices (x,y,z converted to string)
+						std::map<std::string, uint32_t> polygonIndices;
+						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices, itemData->meshGridLines);
+						itemData->open_or_closed_polyhedrons.push_back(polygon);
+						return;
+					}
+
+					// (4/*) IfcFaceBound SUBTYPE OF IfcTopologicalRepresentationItem
+					// until now, this if-block isn't tested with an ifc-file
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcFaceBound>()) {
+						// get vertices of the boundary
+						const std::vector<carve::geom::vector<3>> vertices = faceConverter->convertIfcFaceBound(
+							topo_item.as<typename IfcEntityTypesT::IfcFaceBound>(), objectPlacement);
+
+						// Carve polyline of the converted boundary
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
+						// start a new polyline
+						polyline_data->beginPolyline();
+
+						// add all vertices to polyline
+						for (const auto& v : vertices) {
+							polyline_data->addPolylineIndex(polyline_data->addVertex(v));
+						}
+
+						itemData->polylines.push_back(polyline_data);
+						return;
+					}
+
+					// (5/*) IfcLoop SUBTYPE OF IfcTopologicalRepresentationItem
+					// until now, this if-block isn't tested with an ifc-file
+					if (topo_item.isOfType<typename IfcEntityTypesT::IfcLoop>()) {
+						// get vertices of the loop
+						const std::vector<carve::geom::vector<3>> vertices = curveConverter->convertIfcLoop(topo_item.as<typename IfcEntityTypesT::IfcLoop>());
+
+						// Carve polyline of the converted loop
+						std::shared_ptr<carve::input::PolylineSetData> polyline_data(new carve::input::PolylineSetData());
+						// start a new polyline
+						polyline_data->beginPolyline();
+
+						// add all vertices to polyline
+						for (const auto& v : vertices) {
+							polyline_data->addPolylineIndex(polyline_data->addVertex(objectPlacement * v));
+						}
+
 						itemData->polylines.push_back(polyline_data);
 						return;
 					}

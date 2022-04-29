@@ -69,7 +69,7 @@ buw::ReferenceCounted<buw::PointCloud> OpenInfraPlatform::PointCloudProcessing::
 		const QString file(filename);
 		//FileIOFilter::LoadFromFile()
 		auto tmp = FileIOFilter::LoadParameters();
-		const ccHObject* ccTempObject = FileIOFilter::LoadFromFile(file, tmp, FileIOFilter::FindBestFilterForExtension("BIN"), err);
+		const ccHObject* ccTempObject = FileIOFilter::LoadFromFile(file, tmp, FileIOFilter::FindBestFilterForExtension(extension), err);
 		if (err == CC_FILE_ERROR::CC_FERR_NO_ERROR) {
 			BLUE_LOG(trace) << "Number of child objects:" << QString::number(ccTempObject->getChildrenNumber()).toStdString() << ".";
 			for (size_t i = 0; i < ccTempObject->getChildrenNumber(); i++) {

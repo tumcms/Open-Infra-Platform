@@ -1137,7 +1137,7 @@ namespace OpenInfraPlatform
 					// Calculate an angle on the circle (with circle center in (0., 0., 0.)) for trimming end.
 					point = getPointOnCurve<typename IfcEntityTypesT::IfcCircle>(circle, trim2Vec, trimmingPreference);
 					double endAngle = getAngleOnCircle(carve::geom::VECTOR(0., 0., 0.), circleRadius, inverseConicPositionMatrix * point);
-					
+
 					// Calculate an opening angle.
 					double openingAngle = calculateOpeningAngle(senseAgreement, startAngle, endAngle);
 
@@ -1648,34 +1648,39 @@ namespace OpenInfraPlatform
 #endif
 
 				/*! \brief Converts \c IfcLoop and its subtypes to a series of points.
-				* \param[in] ifcloop				The \c IfcLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \param[in] ifcLoop				The \c IfcLoop to be converted.
+				* \return							The series of points.
 				*/
-				void convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcloop,
-					std::vector<carve::geom::vector<3>>& loop
+				std::vector<carve::geom::vector<3>> convertIfcLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& ifcLoop
 				) const noexcept(false)
 				{
-					if (ifcloop.template isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
+					if (ifcLoop.expired()) {
+						throw oip::ReferenceExpiredException(ifcLoop);
+					}
+
+					if (ifcLoop.template isOfType<typename IfcEntityTypesT::IfcPolyLoop>()) 
 					{	
-						return convertIfcPolyLoop(ifcloop.template as<typename IfcEntityTypesT::IfcPolyLoop>(), loop);
+						return convertIfcPolyLoop(ifcLoop.template as<typename IfcEntityTypesT::IfcPolyLoop>());
 					} // end if polyloop
 
-					else if (ifcloop.template isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
+					else if (ifcLoop.template isOfType<typename IfcEntityTypesT::IfcEdgeLoop>())
 					{
-						return convertIfcEdgeLoop(ifcloop.template as<typename IfcEntityTypesT::IfcEdgeLoop>(), loop);
+						return convertIfcEdgeLoop(ifcLoop.template as<typename IfcEntityTypesT::IfcEdgeLoop>());
 					} // end if edge loop
 
-					throw oip::UnhandledException(ifcloop);
+					throw oip::UnhandledException(ifcLoop);
+					
 				} // end convertIfcLoop
 
 				/*! \brief Converts \c IfcPolyLoop to a series of points.
 				* \param[in] polyLoop				The \c IfcPolyLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*/
-				void convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop,
-					std::vector<carve::geom::vector<3>>& loop) const noexcept(false)
+				std::vector<carve::geom::vector<3>> convertIfcPolyLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcPolyLoop>& polyLoop
+				) const noexcept(false)
 				{
-					convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon, loop);
+					std::vector<carve::geom::vector<3>> loop = convertIfcCartesianPointVectorSkipDuplicates(polyLoop->Polygon);
+
 					// If first and last point have same coordinates, remove last point
 					while (loop.size() > 2) {
 						
@@ -1685,24 +1690,25 @@ namespace OpenInfraPlatform
 							continue;
 						}
 						
-						break;
+						return loop;
 					}
 				}
 
 				/*! \brief Converts \c IfcEdgeLoop to a series of points.
 				* \param[in] edgeLoop				The \c IfcEdgeLoop to be converted.
-				* \param[out] loop					The series of points.
+				* \return							The series of points.
 				*
 				* \note The function disregards topological relationships.
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop,
-					std::vector<carve::geom::vector<3>>& loop) const noexcept(false)
+				std::vector<carve::geom::vector<3>> convertIfcEdgeLoop(const EXPRESSReference<typename IfcEntityTypesT::IfcEdgeLoop>& edgeLoop
+				) const noexcept(false)
 				{
-					for (auto &orientedEdge : edgeLoop->EdgeList) 
-					{
+					std::vector<carve::geom::vector<3>> loop;
+
+					for (auto &orientedEdge : edgeLoop->EdgeList) {
 						// which are described by the type of its edge element object
 						EXPRESSReference<typename IfcEntityTypesT::IfcEdge> edgeElement = orientedEdge->EdgeElement;
 
@@ -1748,6 +1754,8 @@ namespace OpenInfraPlatform
 							}
 						}
 					}
+
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcEdge and adds it to the plolyline. 
@@ -1808,18 +1816,19 @@ namespace OpenInfraPlatform
 				/*! \brief Converts an array of \c IfcCartesianPoint-s to a series of points.
 				*
 				* \param[in] points				The array of \c IfcCartesianPoint-s to be converted.
-				* \param[out] loop				The series of points.
+				* \return				The series of points.
 				*
 				* \note The function is not fully implemented.
 				*
 				* \internal TODO.
 				*/
-				void convertIfcCartesianPointVectorSkipDuplicates(
-					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints,
-					std::vector<carve::geom::vector<3> >& loop
+				std::vector<carve::geom::vector<3>> convertIfcCartesianPointVectorSkipDuplicates(
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcCartesianPoint> >& ifcPoints
 				) const noexcept(false)
 				{
-					carve::geom::vector<3> vertex_previous;
+					std::vector<carve::geom::vector<3>> loop;
+
+					carve::geom::vector<3>  vertex_previous;
 					bool first = true;
 
 					for ( auto& it_cp : ifcPoints) 
@@ -1846,6 +1855,8 @@ namespace OpenInfraPlatform
 						loop.push_back(vertex);
 						vertex_previous = vertex;
 					}
+
+					return loop;
 				}
 
 				/*! \brief Converts \c IfcCartesianPointList to a series of points.
@@ -2603,6 +2614,52 @@ namespace OpenInfraPlatform
 
 					return carve::geom::VECTOR(x, y, 0.);
 				}
+#endif
+
+
+				/**********************************************************************************************/
+				/*! \brief Calculates a direction of the curve.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] trimmingVec			A vector of pointers to data form \c IfcTrimmingSelect.
+				* \param[in] trimmingPreference		Specifies the preferred way of trimming.
+				* \return							The direction of the curve. 
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trimmingVec,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					std::vector<carve::geom::vector<3>> directions;
+
+					for (int i = 0; i < trimmingVec.size(); i++) {
+						carve::geom::vector<3> direction = getDirectionOfCurve<TCurve>(curve, *trimmingVec[i]);
+						directions.push_back(direction);
+					}
+					if (trimmingVec.size() == 1) {
+						return directions[0];
+					}
+					else if (trimmingVec.size() == 2)
+					{
+						if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_PARAMETER) == typeid(trimmingPreference))
+							return directions[0];
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_CARTESIAN) == typeid(trimmingPreference))
+							return directions[1];
+						else if (typeid(IfcEntityTypesT::IfcTrimmingPreference::ENUM::ENUM_UNSPECIFIED) == typeid(trimmingPreference))
+							return directions[0];
+						else
+						{
+							throw oip::InconsistentModellingException("There is no more Enumeration for IfcTrimmingPreference");
+						}
+					}
+					else
+					{
+						throw oip::InconsistentModellingException("Trimming point can be specified only with one or two parameters");
+					}
+				}
+
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
@@ -2629,31 +2686,33 @@ namespace OpenInfraPlatform
 						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+						throw oip::InconsistentGeometryException(curve, "IfcTrimmingSelect is wrong!");
 					}
 				}
-				
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
-					const typename IfcEntityTypesT::IfcCurveMeasureSelect & trimming) const noexcept(false)
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect & measureSelect) const noexcept(false)
 				{
-					switch (trimming.which())
+					switch (measureSelect.which())
 					{
 					case 0:
 					{
 						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
-						return getDirectionOfCurve<TCurve>(curve, trimming.get<0>());
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<0>());
 					}
 					case 1:
 					{
 						// Calculate a trimming point using \c IfcParameterValue.
-						return getDirectionOfCurve<TCurve>(curve, trimming.get<1>());
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<1>());
 					}
 					default:
-						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect is wrong!");
 					}
 				}
+#endif
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
@@ -2682,8 +2741,122 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
+
 				}
 
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
+					const double& parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+
+				}
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
+				* \return							The direction of the tangent.
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcCartesianPoint& cartesianPoint) const noexcept(false)
+				{
+					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(circle->Position);
+					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point; //-carve::geom::VECTOR(0., 0., 0.)
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a)
+					return carve::geom::VECTOR(-directionFromCenterToPoint.y, directionFromCenterToPoint.x, 0.);
+				}
+
+				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The direction of the tangent.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(circle, parameter * this->UnitConvert()->getAngleInRadianFactor());
+				}
+
+				/*! \brief Calculates a direciton of the tangent on the circle border.
+				* \param[in] circle					A pointer to data from \c IfcCircle.
+				* \param[in] angle					The angle.
+				* \return							The direction of the tangent.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCircle>& circle,
+					const double& angle) const noexcept(false)
+				{
+					// https://math.stackexchange.com/questions/2680855/find-direction-of-tangent-vector-based-on-trajectory-along-circle
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b,a) 
+					return carve::geom::VECTOR(-sin(angle), cos(angle), 0.);
+				}
+
+
+				/**********************************************************************************************/
+				/*! \brief Converts \c IfcCartesianPoint to a angle parameter and passes it to getDirectionOfCurve.
+				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
+				* \param[in] point					A pointer to data from \c IfcCartesianPoint.
+				* \return							The direction of the tangent.
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcCartesianPoint& cartesianPoint) const noexcept(false)
+				{
+					carve::geom::vector<3> point = placementConverter->convertIfcCartesianPoint(cartesianPoint);
+
+					double angle = std::atan2(point.y, point.x);
+
+					return getDirectionOfCurve(ellipse, angle);
+				}
+
+				/*! \brief Converts \c IfcParameterValue to a angle parameter and passes it to getDirectionOfCurve.
+				* \param[in] ellipse				A pointer to data from \c IfcEllipse.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The direction of the tangent.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(ellipse, parameter * this->UnitConvert()->getAngleInRadianFactor());
+				}
+
+				/*! \brief Calculates a direciton of the tangent on the ellipse border.
+				* \param[in] ellipse			    A pointer to data from \c IfcEllipse.
+				* \param[in] angle					The angle.
+				* \return							The direction of the tangent.
+				* \note
+				*/
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcEllipse>& ellipse,
+					const double& angle) const noexcept(false)
+				{
+					carve::math::Matrix placement = placementConverter->convertIfcAxis2Placement(ellipse->Position);
+					carve::math::Matrix inversePlacement = GeomUtils::computeInverse(placement);
+					
+					double xRadius = ellipse->SemiAxis1 * this->UnitConvert()->getLengthInMeterFactor();
+					double yRadius = ellipse->SemiAxis2 * this->UnitConvert()->getLengthInMeterFactor();
+
+					carve::geom::vector<3> point = carve::geom::VECTOR(xRadius * cos(angle), yRadius * sin(angle), 0.);
+					carve::geom::vector<3> directionFromCenterToPoint = inversePlacement * point;
+					//https://www.algebra.com/algebra/homework/Quadratic-relations-and-conic-sections/Tangent-lines-to-an-ellipse.lesson
+					// if the radial vector from Center to a point has coordinates (a,b), then the direction vector at that point is (−b/yRadius^2 ,a/xRadius^2)					
+					carve::geom::vector<3> direction = carve::geom::VECTOR(-point.y / (yRadius * yRadius),
+																			point.x / (xRadius * xRadius),
+																			0.);
+					return direction.normalize();
+				}
+
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Calculates an angle of the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				The length.
@@ -2702,7 +2875,7 @@ namespace OpenInfraPlatform
 				{
 					return getDirectionOfCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
-				
+				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
 					const double& parameter) const noexcept(false)
 				{
@@ -2721,7 +2894,6 @@ namespace OpenInfraPlatform
 
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
-
 #endif
 
 
