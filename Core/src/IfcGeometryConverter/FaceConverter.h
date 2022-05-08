@@ -383,11 +383,17 @@ namespace OpenInfraPlatform {
 						// declaration of result variable for meshGridLines (source code like polylines)
 						std::shared_ptr<carve::input::PolylineSetData> meshGridLineData = std::make_shared<carve::input::PolylineSetData>();
 
-						// vertex index of meshGridLineData
-						size_t index = 0;
+						// number of skiped surface lines / points: with value 4, each 5th mesh line will be highlighted as polyline
+						// current temporarly default value of B-spline surface points: numKnotsArray * 10 + 1
+						// 'segments' is self-defined term, used in the loop of meshGridLines in v-direction
+						// example with numKnotArray = 1:
+						//   point id:     0 1 2 3 4 5 6 7 8 9 10
+						//   meshGridLine: |         |         |
+						//   segments:     0|    1    |     2    [end]
+						size_t nSkipedLines = 4;
 
 						// meshGridLines in u-direction
-						for (size_t v = 0; v < numCurvePointsV; v++)
+						for (size_t v = 0; v < numCurvePointsV; v += nSkipedLines + 1)
 						{
 							// start a new polyline
 							meshGridLineData->beginPolyline();
@@ -395,22 +401,48 @@ namespace OpenInfraPlatform {
 							for (size_t u = 0; u < numCurvePointsU; u++)
 							{
 								// all vertices are new in meshGridLineData, thus use addVertex()
-								meshGridLineData->addVertex(curvePoints[u][v]);
+								size_t index = meshGridLineData->addVertex(curvePoints[u][v]);
 								meshGridLineData->addPolylineIndex(index);
-								index++;
 							}
 						}
 
-						// meshGridLines in v-direction
-						for (size_t u = 0; u < numCurvePointsU; u++)
+						// meshGridLines in v-direction:
+						//   note: u jumpes from intersection to intersection
+						for (size_t u = 0; u < numCurvePointsU; u += nSkipedLines + 1)
 						{
 							//start a new polyline
 							meshGridLineData->beginPolyline();
 
-							for (size_t v = 0; v < numCurvePointsV; v++)
+							// add first point of meshGridLine, point already is in meshGridLineData
+							meshGridLineData->addPolylineIndex(u);
+
+							// foreach segment of skipedLines including one meshGridLine at the end
+							//   start with 1 because first point already is added, respectively the segments starts at the first skiped point
+							//   note: v jumpes from intersection to intersection
+							for (size_t v = 1; v < numCurvePointsV; v += nSkipedLines + 1)
 							{
-								// all vertices are already in meshGridLineData, thus just calculate their indices
-								meshGridLineData->addPolylineIndex(v * numCurvePointsU + u);
+								// add new points between u-meshGridLines
+								for (size_t k = 1; k <= nSkipedLines; k++)
+								{
+									// prevent out_of_range (in case of even subdivision is not possible)
+									if (v + k >= numCurvePointsV)
+									{
+										break;
+									}
+
+									// add new points
+									size_t index = meshGridLineData->addVertex(curvePoints[u][v + k]);
+									meshGridLineData->addPolylineIndex(index);
+								}
+
+								// prevent out_of_range (in case of even subdivision is not possible)
+								if (v + nSkipedLines >= numCurvePointsV)
+								{
+									break;
+								}
+
+								// add vertex of intersection with u-meshGridLine, reuse existing index
+								meshGridLineData->addPolylineIndex((v + nSkipedLines) / (nSkipedLines + 1) * numCurvePointsU + u);
 							}
 						}
 
