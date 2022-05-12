@@ -3139,7 +3139,7 @@ namespace OpenInfraPlatform
 				{
 					double a = 0.;
 					double b = 0.;
-					int n = 50;
+					int n = 1;// small numbers return better values
 					double value = 0.;
 
 					if (length == 0) { return b; }
@@ -3147,20 +3147,25 @@ namespace OpenInfraPlatform
 					while (value <= length)
 					{
 						value = integral(polynomialConstantX, polynomialConstantY, a, b, n);
+						if (value == length) return b;
 						b += 0.1;
 					}
+					b -= 0.2;
+					value = integral(polynomialConstantX, polynomialConstantY, a, b, n);
 					// check the error and find the apropriate value
-					double error = value / length;
-					if (error > 0.00001)
+					double error = length - value;
+					double border = 0.0001;
+					if (error > border)
 					{
 						while (value <= length)
 						{
 							value = integral(polynomialConstantX, polynomialConstantY, a, b, n);
-							b += 0.00001;
+							if (value == length) return b;
+							b += border;
 						}
 					}
-					return b;
-					
+					double parameter = b - 2 * border;
+					return parameter;
 				}
 
 				/*! \brief Calculates parameter for parametric polynomial curve
