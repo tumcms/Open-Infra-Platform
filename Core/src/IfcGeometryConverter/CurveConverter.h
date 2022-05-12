@@ -2934,7 +2934,7 @@ namespace OpenInfraPlatform
 						std::vector<double> polynomialConstantX;
 						std::vector<typename IfcEntityTypesT::IfcReal> coefficientX = polynomialCurve->CoefficientsX;
 						//convert to double
-						for (int i = 0; i < size(coefficientX); i++)
+						for (int i = 0; i < std::size(coefficientX); i++)
 						{
 							polynomialConstantX.push_back(double(coefficientX[i]));
 						}
@@ -2947,7 +2947,7 @@ namespace OpenInfraPlatform
 						std::vector<double> polynomialConstantY;
 						std::vector<typename IfcEntityTypesT::IfcReal> coefficientY = polynomialCurve->CoefficientsY;
 						//convert to double
-						for (int i = 0; i < size(coefficientY); i++)
+						for (int i = 0; i < std::size(coefficientY); i++)
 						{
 							polynomialConstantY.push_back(double(coefficientY[i]));
 						}
@@ -2960,7 +2960,7 @@ namespace OpenInfraPlatform
 						std::vector<double> polynomialConstantZ;
 						std::vector<typename IfcEntityTypesT::IfcReal> coefficientZ = polynomialCurve->CoefficientsZ;
 						//convert to double
-						for (int i = 0; i < size(coefficientZ); i++)
+						for (int i = 0; i < std::size(coefficientZ); i++)
 						{
 							polynomialConstantZ.push_back(double(coefficientZ[i]));
 						}
@@ -2974,21 +2974,22 @@ namespace OpenInfraPlatform
 
 					if (polynomialConstantCntX>0 && polynomialConstantCntY>0)
 					{
-						double angle = std::atan2(angleY, angleX);
+						double angle = std::atan2(sin(angleY), cos(angleX));
+						//double angle = 0.;
 						return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 
 					}
 					// Only works if correctly rotation around y axis is in convertIfcCurveSegment 
 					else if (polynomialConstantCntX>0 && polynomialConstantCntZ>0)
 					{
-						double angle = std::atan2(angleZ, angleX);
-						return carve::geom::VECTOR(std::cos(angle), 0., -std::sin(angle));
+						//double angle = std::atan2(angleZ, angleX);
+						return carve::geom::VECTOR(std::cos(angleX), 0., -std::sin(angleZ));
 					}
 					// Only works if correctly rotation around x axis is in convertIfcCurveSegment 
 					else if (polynomialConstantCntY>0 && polynomialConstantCntZ>0)
 					{
-						double angle = std::atan2(angleZ, angleY);
-						return carve::geom::VECTOR(0., std::cos(angle), std::sin(angle));
+						//double angle = std::atan2(angleZ, angleY);
+						return carve::geom::VECTOR(0., std::cos(angleY), std::sin(angleZ));
 					}
 
 					//TODO: angle in 3D. At first implement additional code in convertIfcCurveSegment
@@ -3026,16 +3027,26 @@ namespace OpenInfraPlatform
 				{
 
 					std::vector<typename IfcEntityTypesT::IfcReal> coefficientX, coefficientY, coefficientZ;
-					typename IfcEntityTypesT::IfcReal x, y, z;
+					//typename IfcEntityTypesT::IfcReal x, y, z;
+					double x, y, z;
 					int polynomialConstantCntX, polynomialConstantCntY, polynomialConstantCntZ;
+					std::vector<double> polynomialConstantX, polynomialConstantY, polynomialConstantZ;
 
 					if (polynomialCurve->CoefficientsX)
 					{
 						// Interpret coefficients for X
 						coefficientX = polynomialCurve->CoefficientsX;
 						polynomialConstantCntX = std::size(coefficientX);
-						// Implement polynomial term for x coordinate
-						x = calculatePolynomialCurve(coefficientX, parameter);
+						//std::vector<double> polynomialConstantX;
+						//convert to double
+						for (int i = 0; i < std::size(coefficientX); i++)
+						{
+							polynomialConstantX.push_back(double(coefficientX[i]));
+						}
+
+						//x = SpiralUtils::XbyAngleDeviationPolynomial(polynomialConstantX, polynomialConstantCntX, parameter);
+						//x = SpiralUtils::XbyAngleDeviationPolynomialByTerms( 0., 0., 0., 0., 0., 0., 1., 0., parameter);
+
 					}
 					if (polynomialCurve->CoefficientsY)
 					{
@@ -3043,19 +3054,32 @@ namespace OpenInfraPlatform
 						coefficientY = polynomialCurve->CoefficientsY;
 						// Implement polynomial term for y coordinate
 						polynomialConstantCntY = std::size(coefficientY);
-						y = calculatePolynomialCurve(coefficientY, parameter);
-						return carve::geom::VECTOR(x, y, 0.);
+						//std::vector<double> polynomialConstantY;
+						//convert to double
+						for (int i = 0; i < std::size(coefficientY); i++)
+						{
+							polynomialConstantY.push_back(double(coefficientY[i]));
+						}
+						//y = SpiralUtils::YbyAngleDeviationPolynomial(polynomialConstantY, polynomialConstantCntY, parameter);
+						//y = SpiralUtils::XbyAngleDeviationPolynomialByTerms( 0., 0., 0., 0., 0., 1., 0., 0., parameter);
+
 					}
 					if (polynomialCurve->CoefficientsZ)
 					{
 						// Interpret coefficients for Z
 						coefficientZ = polynomialCurve->CoefficientsZ;
 						polynomialConstantCntZ = std::size(coefficientZ);
-						// Implement polynomial term for z coordinate
-						z = calculatePolynomialCurve(coefficientZ, parameter);
+						// Implement polynomial term for z coordinate/ We don't have any functions for supporting z
+						z = 0.;
 					}
 					// Impplement different cases for 2D and 3D
-					if (polynomialConstantCntX>0 && polynomialConstantCntY>0) return carve::geom::VECTOR(x, y, 0.);
+					if (polynomialConstantCntX > 0 && polynomialConstantCntY > 0)
+					{
+						double t = integrateParameter(polynomialConstantX, polynomialConstantY, parameter);
+						x = calculatePolynomialCurve(polynomialConstantX, t);
+						y = calculatePolynomialCurve(polynomialConstantY, t);
+						return carve::geom::VECTOR(x, y, 0.);
+					}
 					
 					else if (polynomialConstantCntX>0 && polynomialConstantCntZ>0) return carve::geom::VECTOR(x, 0., z);
 				
@@ -3064,13 +3088,13 @@ namespace OpenInfraPlatform
 					else if (polynomialConstantCntX>0 && polynomialConstantCntY>0 && polynomialConstantCntZ>0) return carve::geom::VECTOR(x, y, z);
 				}
 
-				/*! \brief Calculates a polinomial curve.
+				/*! \brief Calculates a polinomial curve
 				* \param[in] coefficient			A vector with coeffitients corresponding ordinate from \c IfcPolynomialCurve.
 				* \param[in] parameter				A length during the curve from \c IfcCurveSegment.
 				* \return							The location of the ordinate point.
 				* \note
 				*/
-				typename IfcEntityTypesT::IfcReal calculatePolynomialCurve(const std::vector<typename IfcEntityTypesT::IfcReal> coefficient, double length) const noexcept(false)
+				typename IfcEntityTypesT::IfcReal calculatePolynomialCurve(std::vector<double> coefficient, const double parameter) const noexcept(false)
 				{
 					int n = std::size(coefficient);
 					typename IfcEntityTypesT::IfcReal sum = coefficient[0];
@@ -3078,13 +3102,91 @@ namespace OpenInfraPlatform
 
 					for (int i = 1; i < n; i++)
 					{
-						factor *= length;
+						factor *= parameter;
 						sum += coefficient[i] * factor;
 					}
 					return sum;
 				}
-#endif
 
+				/*! \brief Calculates derivative of the polynomial curve
+				* \param[in] polynomialConstant	    A vector with coeffitients corresponding ordinate from \c IfcPolynomialCurve.
+				* \param[in] b				        Parameter value from intagrateParameter
+				* \return							Derivative value.
+				* \note
+				*/
+				double calculatePolynomialDerivative(std::vector<double> polynomialConstant, double b)  const noexcept(false)
+				{
+					int polynomialConstantCnt = std::size(polynomialConstant);
+					double value = polynomialConstant[1];
+					int factor = 2;
+					// derivative of the polynomial
+					for (int i = 2; i < polynomialConstantCnt; i++)
+					{
+						value += polynomialConstant[i] * factor * b;
+						b *= b;
+						factor += 1;
+					}
+					return value;
+				}
+				/*! \brief Calculates parameter for parametric polynomial curve
+				* \param[in] polynomialConstantX	A vector with coeffitients axis X from \c IfcPolynomialCurve.
+				* \param[in] polynomialConstantY	A vector with coeffitients axis Y from \c IfcPolynomialCurve.
+				* \param[in] length				    Length of the curve cegment
+				* \return							Parameter value.
+				* \note
+				*/
+				double integrateParameter(std::vector<double> polynomialConstantX, std::vector<double> polynomialConstantY, const double length) const noexcept(false)
+				{
+					double a = 0.;
+					double b = 0.;
+					int n = 50;
+					double value = 0.;
+
+					if (length == 0) { return b; }
+					// wide steps 0.1
+					while (value <= length)
+					{
+						value = integral(polynomialConstantX, polynomialConstantY, a, b, n);
+						b += 0.1;
+					}
+					// check the error and find the apropriate value
+					double error = value / length;
+					if (error > 0.00001)
+					{
+						while (value <= length)
+						{
+							value = integral(polynomialConstantX, polynomialConstantY, a, b, n);
+							b += 0.00001;
+						}
+					}
+					return b;
+					
+				}
+
+				/*! \brief Calculates parameter for parametric polynomial curve
+				* \param[in] polynomialConstantX	A vector with coeffitients axis X from \c IfcPolynomialCurve.
+				* \param[in] polynomialConstantY	A vector with coeffitients axis Y from \c IfcPolynomialCurve.
+				* \param[in] a				        Low limit of the Integral
+				* \param[in] b				        Upper limit of the Integral
+				* \param[in] n				        Number of integral steps
+				* \return							Value of the integral.
+				* \note
+				*/
+				// source code https://helloacm.com/c-function-to-compute-numerical-integral-using-function-pointers/
+
+				double integral(std::vector<double> polynomialConstantX, std::vector<double> polynomialConstantY, double a, double b, int n) const noexcept(false)
+				{
+					double step = (b - a) / n;  // width of each small rectangle
+					double area = 0.0;  // signed area
+					for (int i = 0; i < n; i++) {
+						//source arcticle https://www.math.usm.edu/lambers/mat169/fall09/lecture31.pdf
+						area += sqrt(pow(calculatePolynomialDerivative(polynomialConstantY, (a + (i + 0.5) * step)),2)
+							+ pow(calculatePolynomialDerivative(polynomialConstantX, (a + (i + 0.5) * step)),2)) * step; // sum up each small rectangle
+					}
+					return area;
+				}
+
+#endif
 
 			protected:
 
