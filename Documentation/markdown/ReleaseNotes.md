@@ -1,13 +1,20 @@
 
 # News
 
+## Work in Progress
 
-## 4.0 Release Notes
++ **Bug fixes**
 
-*October 11th 2021*
++ **Various improvements**
 
-## Updates
--------
+
+## 4.0.0 Release Notes
+
+*April 26th 2022*
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6488493.svg)](https://doi.org/10.5281/zenodo.6488493)
+
+This work has been published with [JOSS](https://github.com/openjournals/joss-reviews/issues/3061) and archived on [Zenodo](https://zenodo.org/record/6488493#.YmeywdPP13g).
 
 + **Main changes**
 
@@ -39,8 +46,7 @@
   * Added detailed description of the software architecture ([#466](https://github.com/tumcms/Open-Infra-Platform/pull/466))
 
 
-Bug fixes
----------
++ **Bug fixes**
 
 * Fixing bug in alignment placement ([#443](https://github.com/tumcms/Open-Infra-Platform/pull/443))
 
