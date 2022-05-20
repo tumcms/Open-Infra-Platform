@@ -14,6 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 
 #include <PointCloudVisualTest.h>
 #include <boost/filesystem.hpp>
@@ -48,3 +49,4 @@ boost::filesystem::path PointCloudVisualTest::filePath(const std::string& relPat
 		.concat("\\")
 		.concat(relPath);
 }
+#endif

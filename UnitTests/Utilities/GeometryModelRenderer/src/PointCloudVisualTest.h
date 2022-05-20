@@ -15,7 +15,7 @@
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 //#include <namespace.h>
-
+#ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 #include <VisualTest.h>
 #include <PointCloudGeometryModelRenderer.h>
 
@@ -38,3 +38,5 @@ public:
 
 	virtual boost::filesystem::path filePath(const std::string& relPath) const override;
 };
+
+#endif
