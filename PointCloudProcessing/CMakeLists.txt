@@ -90,6 +90,12 @@ if(NOT dep_liblas_POPULATED)
 	set_target_properties(las_c PROPERTIES FOLDER "ThirdParty/libLAS")
 endif()]]
 
+set(libLAS_INCLUDE_DIR "C:/OSGeo4W/include")
+set(libLAS_LIBRARY "C:/OSGeo4W/lib/liblas.lib")
+find_path(libLAS_DIR NAMES liblas-config.cmake HINTS "C:\\OSGeo4W\\cmake")
+set (CMAKE_PREFIX_PATH ${libLAS_DIR})
+find_package(libLAS REQUIRED)
+
 FetchContent_Declare(
 	cc
 	GIT_REPOSITORY https://github.com/CloudCompare/CloudCompare.git
@@ -120,6 +126,7 @@ set(DEPENDENT_INCLUDE_DIRS
 	#${GeoTIFF_INCLUDE_DIR}
 	#${dep_libgeo_SOURCE_DIR}/include
 	#${dep_liblas_SOURCE_DIR}/include
+	${LAS_INCLUDE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${blue_framework_SOURCE_DIR}/include
 	${cc_SOURCE_DIR}/CC/include
@@ -140,6 +147,7 @@ target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 	    #${TIFF_LIBRARIES}
 	    #${GeoTIFF_LIBRARIES}
 		#geotiff_library
+		${LAS_LIBRARIES}
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
 		OpenInfraPlatform.Base
