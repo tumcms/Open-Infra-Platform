@@ -34,7 +34,6 @@
 #include "SplineConverter.h"
 
 #include "BlueFramework/Core/Diagnostics/log.h"
-#include <fstream>
 
 
 namespace OpenInfraPlatform 
