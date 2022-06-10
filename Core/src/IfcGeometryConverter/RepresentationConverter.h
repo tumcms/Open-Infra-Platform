@@ -547,7 +547,7 @@ namespace OpenInfraPlatform {
 						std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
 						// Contains polygon indices of vertices (x,y,z converted to string)
 						std::map<std::string, uint32_t> polygonIndices;
-						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices, itemData->meshGridLines);
+						faceConverter->convertIfcFace(topo_item.as<typename IfcEntityTypesT::IfcFace>(), objectPlacement, polygon, polygonIndices);
 						itemData->open_or_closed_polyhedrons.push_back(polygon);
 						return;
 					}

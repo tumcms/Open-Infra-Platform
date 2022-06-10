@@ -337,10 +337,6 @@ namespace OpenInfraPlatform
                 std::copy(inputDataOuterShell->open_or_closed_polyhedrons.begin(),
                             inputDataOuterShell->open_or_closed_polyhedrons.end(),
                             std::back_inserter(itemData->closed_polyhedrons));
-
-				// move meshGridLines from temporal inputDataOuterShell into target itemData
-				std::copy(inputDataOuterShell->meshGridLines.begin(), inputDataOuterShell->meshGridLines.end(), 
-							std::back_inserter(itemData->meshGridLines));
             }
 
 			/*! \brief Converts \c IfcSectionedSolid to meshes.
