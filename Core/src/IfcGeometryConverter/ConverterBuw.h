@@ -340,6 +340,13 @@ OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_IFCGEOMETRYCONVERTER_BEGIN
 										geometry->meshDescription.vertices, geometry->meshDescription.indices);
 								}
 
+								// data for meshGridLines
+								// ToDo: meshGridLines should be handled in a way to enable / disable their visibility in the viewport
+								for (const auto& meshGridLine : itemData->meshGridLines) {
+									ConverterBuwT<IfcEntityTypesT>::insertPolylineIntoBuffers(meshGridLine,
+										geometry->polylineDescription.vertices, geometry->polylineDescription.indices);
+								}
+
 								// data for polylines
 								for(const auto& polyline : itemData->polylines) {
 									ConverterBuwT<IfcEntityTypesT>::insertPolylineIntoBuffers(polyline,
