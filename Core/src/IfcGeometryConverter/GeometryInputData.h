@@ -53,6 +53,7 @@ public:
 	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_polyhedrons;
 	std::vector<std::shared_ptr<carve::input::PolyhedronData>>	open_or_closed_polyhedrons;
 	std::vector<std::shared_ptr<carve::input::PolylineSetData>> polylines;
+	std::vector<std::shared_ptr<carve::input::PolylineSetData>> meshGridLines;
 	std::vector<std::shared_ptr<carve::mesh::MeshSet<3>>>		meshsets;
 	void createMeshSetsFrom(std::vector<std::shared_ptr<carve::input::PolyhedronData>>& polyhedrons);
 	void createMeshSetsFromClosedPolyhedrons() { createMeshSetsFrom(closed_polyhedrons); }
@@ -232,6 +233,7 @@ public:
 		std::copy(other->open_polyhedrons.begin(),           other->open_polyhedrons.end(),           std::back_inserter(this->open_polyhedrons));
 		std::copy(other->open_or_closed_polyhedrons.begin(), other->open_or_closed_polyhedrons.end(), std::back_inserter(this->open_or_closed_polyhedrons));
 		std::copy(other->polylines.begin(),                  other->polylines.end(),                  std::back_inserter(this->polylines));
+		std::copy(other->meshGridLines.begin(),              other->meshGridLines.end(),              std::back_inserter(this->meshGridLines));
 		std::copy(other->meshsets.begin(),                   other->meshsets.end(),                   std::back_inserter(this->meshsets));
 	}
 
