@@ -3203,7 +3203,7 @@ namespace OpenInfraPlatform
 					int n = 1;// small numbers return better values
 					double value = 0.;
 
-					if (length == 0) { return b; }
+					if (length == 0) return b;
 					// wide steps 0.1
 					while (value <= length)
 					{
