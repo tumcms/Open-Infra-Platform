@@ -2648,7 +2648,6 @@ namespace OpenInfraPlatform
 					// cubic is default parameter
 					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
 					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
-					auto& QuadraticTerm1 = thirdOrderPolynomial->QuadraticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
@@ -2986,7 +2985,6 @@ namespace OpenInfraPlatform
 					// cubic is default parameter
 					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
 					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
-					auto& QuadraticTerm1 = thirdOrderPolynomial->QuadraticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
