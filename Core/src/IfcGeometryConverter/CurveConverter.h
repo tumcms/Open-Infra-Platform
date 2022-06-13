@@ -1593,6 +1593,11 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
+						}
 						segmentPoints.push_back(point);
 						segmentDirections.push_back(direction);
 						// determine next length
@@ -2615,6 +2620,66 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+
+				/*! \brief Calculates a trimming point on the third order polymonial spiral
+				* \param[in] thirdOrderPolynomial	A pointer to data from \c IfcThirdOrderPolynomialSpiral.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					// Get terms
+					// cubic is default parameter
+					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
+					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					auto& QuadraticTerm1 = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
+					//define variables
+					double QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (qt)
+					{
+						QuadraticTerm = qt;;
+					}
+					else QuadraticTerm = 0.;
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+
+					// Implement Taylor series for x coordinate
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					// Implement Taylor series for y coordinate
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+#endif
 
 
 				/**********************************************************************************************/
@@ -2891,6 +2956,60 @@ namespace OpenInfraPlatform
 					//std::vector<double> polynomialConstants = { 0.,0.,term };
 
 					//double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomialConstants, polynomialConstants.size(), parameter);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the third order polynomial spiral.
+				* \param[in] thirdOrderPolynomial   A pointer to data from \c IfcThirdOrderPolynomialSpiral.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// cubic is default parameter
+					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
+					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					auto& QuadraticTerm1 = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
+					//define variables
+					double QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (qt)
+					{
+						QuadraticTerm = qt;;
+					}
+					else QuadraticTerm = 0.;
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+					//calculate angle
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0.,0.,0.,0.,CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
 
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
