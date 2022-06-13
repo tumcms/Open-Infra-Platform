@@ -2623,7 +2623,7 @@ namespace OpenInfraPlatform
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the second order polymonial spiral
-				* \param[in] thirdOrderPolynomial	A pointer to data from \c IfcThirdOrderPolynomialSpiral.
+				* \param[in] secondOrderPolynomial	A pointer to data from \c IfcSecondOrderPolynomialSpiral.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note
@@ -2954,8 +2954,8 @@ namespace OpenInfraPlatform
 				}
 #endif
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
-				/*! \brief Calculates an angle of the third order polynomial spiral.
-				* \param[in] thirdOrderPolynomial   A pointer to data from \c IfcSecondOrderPolynomialSpiral.
+				/*! \brief Calculates an angle of the second order polynomial spiral.
+				* \param[in] secondOrderPolynomial  A pointer to data from \c IfcSecondOrderPolynomialSpiral.
 				* \param[in] parameter				The length.
 				* \return							The Angle in radians.
 				* \note
