@@ -2623,7 +2623,7 @@ namespace OpenInfraPlatform
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the seventh order polymonial spiral
-				* \param[in] thirdOrderPolynomial	A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
+				* \param[in] seventhOrderPolynomial	A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note
@@ -2968,9 +2968,9 @@ namespace OpenInfraPlatform
 #endif
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Calculates an angle of the seventh order polynomial spiral.
-				* \param[in] thirdOrderPolynomial   A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
-				* \param[in] parameter				The length.
-				* \return							The Angle in radians.
+				* \param[in] seventhOrderPolynomial   A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
+				* \param[in] parameter				 The length.
+				* \return							 The Angle in radians.
 				* \note
 				*/
 				template <>
