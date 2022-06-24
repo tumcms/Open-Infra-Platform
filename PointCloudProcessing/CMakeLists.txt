@@ -126,7 +126,7 @@ set(DEPENDENT_INCLUDE_DIRS
 	#${GeoTIFF_INCLUDE_DIR}
 	#${dep_libgeo_SOURCE_DIR}/include
 	#${dep_liblas_SOURCE_DIR}/include
-	${LAS_INCLUDE_DIR}/include
+	${libLAS_INCLUDE_DIR}/include
 	${CMAKE_CURRENT_BINARY_DIR} 	
 	${blue_framework_SOURCE_DIR}/include
 	${cc_SOURCE_DIR}/CC/include
@@ -147,7 +147,7 @@ target_link_libraries(OpenInfraPlatform.PointCloudProcessing PUBLIC
 	    #${TIFF_LIBRARIES}
 	    #${GeoTIFF_LIBRARIES}
 		#geotiff_library
-		${LAS_LIBRARIES}
+		${libLAS_LIBRARIES}
 		BlueFramework.ImageProcessing
 		BlueFramework.Rasterizer
 		OpenInfraPlatform.Base
