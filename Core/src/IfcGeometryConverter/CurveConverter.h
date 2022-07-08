@@ -2624,7 +2624,7 @@ namespace OpenInfraPlatform
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the sine curve.
-				* \param[in] clothoid			    A pointer to data from \c IfcSine.
+				* \param[in] sine			        A pointer to data from \c IfcSine.
 				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
 				* \return							The location of the trimming point.
 				* \note
