@@ -1593,6 +1593,11 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength);
+						}
 						segmentPoints.push_back(point);
 						segmentDirections.push_back(direction);
 						// determine next length
@@ -2616,6 +2621,62 @@ namespace OpenInfraPlatform
 				}
 #endif
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+
+				/*! \brief Calculates a trimming point on the sine curve.
+				* \param[in] clothoid			    A pointer to data from \c IfcSine.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = 100;
+					sineTerm /= factor;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = sine->ConstantTerm;
+
+					double linearTerm, constantTerm;
+					if (lt) linearTerm = lt/factor;
+					else linearTerm = 0.;
+					if (ct) constantTerm = ct/factor;
+					else constantTerm = 0.;
+	
+					std::vector<double> polynomial(26);
+					SpiralUtils::PopulateTaylorSeriesSine(polynomial, polynomial.size(), 2. * M_PI);
+					if (sineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= sineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (linearTerm) { polynomial[1] += linearTerm / std::fabs(linearTerm * linearTerm * linearTerm); }
+					if (std::fabs(polynomial[1]) < 0.00000000001) { polynomial[1] = 0.; }
+
+					double x = factor * SpiralUtils::XbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/ factor);
+					double y = factor * SpiralUtils::YbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/ factor);
+					
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+#endif
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a direction of the curve.
@@ -2895,7 +2956,63 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the sine.
+				* \param[in] sine			        A pointer to data from \c IfcSine.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const double& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = 100;
+					sineTerm /= factor;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = sine->ConstantTerm;
 
+					double linearTerm, constantTerm;
+					if (lt) linearTerm = lt / factor;
+					else linearTerm = 0.;
+					if (ct) constantTerm = ct / factor;
+					else constantTerm = 0.;
+
+					std::vector<double> polynomial(26);
+					SpiralUtils::PopulateTaylorSeriesSine(polynomial, polynomial.size(), 2. * M_PI);
+					if (sineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= sineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (linearTerm) { polynomial[1] += linearTerm / std::fabs(linearTerm * linearTerm * linearTerm); }
+					if (std::fabs(polynomial[1]) < 0.00000000001) { polynomial[1] = 0.; }
+
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/factor);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+
+				
 
 			protected:
 
