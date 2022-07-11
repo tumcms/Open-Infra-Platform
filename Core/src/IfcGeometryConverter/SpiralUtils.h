@@ -135,8 +135,10 @@ namespace OpenInfraPlatform
 							localPolynomialConstantCnt,
 							s
 						);
-#endif // _DEBUG
 					if (std::fabs(rValueNumericalIntegration - rValue) > 0.000001) throw oip::InconsistentGeometryException("Incorrect length implementation");
+
+#endif // _DEBUG
+					//if (std::fabs(rValueNumericalIntegration - rValue) > 0.000001) throw oip::InconsistentGeometryException("Incorrect length implementation");
 
 					//delete[] localPolynomialConstants;
 
@@ -212,9 +214,10 @@ namespace OpenInfraPlatform
 							localPolynomialConstantCnt,
 							s
 						);
+					if (std::fabs(rValueNumericalIntegration - rValue) > 0.000001) throw oip::InconsistentGeometryException("Incorrect length implementation");
 #endif // _DEBUG
 					//delete[] localPolynomialConstants;
-					if (std::fabs(rValueNumericalIntegration - rValue) > 0.000001) throw oip::InconsistentGeometryException("Incorrect length implementation");
+					//if (std::fabs(rValueNumericalIntegration - rValue) > 0.000001) throw oip::InconsistentGeometryException("Incorrect length implementation");
 					return	rValue;
 				}
 
