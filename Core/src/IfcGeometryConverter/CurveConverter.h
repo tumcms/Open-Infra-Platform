@@ -1317,9 +1317,6 @@ namespace OpenInfraPlatform
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve.
-				*
-				* \note The function is not implemented.
-				* \internal TODO.
 				*/
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offsetCurve,
@@ -1368,6 +1365,19 @@ namespace OpenInfraPlatform
 					throw oip::UnhandledException(offsetCurve);
 				}
 
+				// IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurve2D to a tesselated curve.
+				* \param[in] offsetCurve2D			A pointer to data from \c IfcOffsetCurve2D.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve2D.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcOffsetCurve2D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve2D>& offsetCurve2D,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1378,9 +1388,33 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
 				) const noexcept(false)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve2D.htm
+					//	ENTITY IfcOffsetCurve2D
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			Distance: IfcLengthMeasure;
+					//			SelfIntersect: IfcLogical;
+					//		WHERE
+					//			DimIs2D : BasisCurve.Dim = 2;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
 					throw oip::UnhandledException(offsetCurve2D);
 				}
 
+				// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurve3D to a tesselated curve.
+				* \param[in] offsetCurve3D			A pointer to data from \c IfcOffsetCurve3D.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve3D.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcOffsetCurve3D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve3D>& offsetCurve3D,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1391,9 +1425,34 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
 				) const noexcept(false)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve3D.htm
+					//	ENTITY IfcOffsetCurve3D
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			Distance: IfcLengthMeasure;
+					//			SelfIntersect: IfcLogical;
+					//			RefDirection: IfcDirection;
+					//		WHERE
+					//			DimIs2D : BasisCurve.Dim = 3;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
 					throw oip::UnhandledException(offsetCurve3D);
 				}
 
+				// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurveByDistances to a tesselated curve.
+				* \param[in] offsetCurveByDistances	A pointer to data from \c IfcOffsetCurveByDistances.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurveByDistances.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
 				void convertIfcOffsetCurveByDistances(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurveByDistances>& offsetCurveByDistances,
 					std::vector<carve::geom::vector<3>>& targetVec,
@@ -1404,6 +1463,15 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
 				) const noexcept(false)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurveByDistances.htm
+					//	ENTITY IfcOffsetCurveByDistances
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			OffsetValues: LIST[1:? ] OF IfcPointByDistanceExpression;
+					//			Tag: OPTIONAL IfcLabel;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
 					throw oip::UnhandledException(offsetCurveByDistances);
 				}
 
@@ -1430,6 +1498,17 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const noexcept(false)
 				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve2D.htm
+					//	ENTITY IfcOffsetCurve2D
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			Distance: IfcLengthMeasure;
+					//			SelfIntersect: IfcLogical;
+					//		WHERE
+					//			DimIs2D : BasisCurve.Dim = 2;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
 					throw oip::UnhandledException(pCurve);
 				}
 
