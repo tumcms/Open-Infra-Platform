@@ -1342,38 +1342,69 @@ namespace OpenInfraPlatform
 					//			BasisCurve: IfcCurve;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					throw oip::UnhandledException(offsetCurve);
-					/*
+					
 					// IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offsetCurve2D =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offsetCurve);
-					if (offsetCurve2D) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurve2D not implemented" << std::endl;
-#endif
-						return;
-					}
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurve2D>())
+					{
+						return convertIfcOffsetCurve2D(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurve2D>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurve2D
 
 					// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve3D> offsetCurve3D =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offsetCurve);
-					if (offsetCurve3D) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurve3D not implemented" << std::endl;
-#endif
-						return;
-					}
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurve3D>())
+					{
+						return convertIfcOffsetCurve3D(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurve3D>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurve3D
 
 					// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurveByDistances> offsetCurveDist =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offsetCurve);
-					if (offsetCurveDist) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurveByDistances not implemented" << std::endl;
-#endif
-						return;
-					}
-					*/
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurveByDistances>())
+					{
+						return convertIfcOffsetCurveByDistances(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurveByDistances
+
+					// the rest we do not support
+					throw oip::UnhandledException(offsetCurve);
+				}
+
+				void convertIfcOffsetCurve2D(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve2D>& offsetCurve2D,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					throw oip::UnhandledException(offsetCurve2D);
+				}
+
+				void convertIfcOffsetCurve3D(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve3D>& offsetCurve3D,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					throw oip::UnhandledException(offsetCurve3D);
+				}
+
+				void convertIfcOffsetCurveByDistances(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurveByDistances>& offsetCurveByDistances,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					throw oip::UnhandledException(offsetCurveByDistances);
 				}
 
 				// IfcPcurve SUPTYPE of IfcCurve
