@@ -1498,17 +1498,6 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcTrimmingPreference & trimmingPreference
 				) const noexcept(false)
 				{
-					// **************************************************************************************************************************
-					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve2D.htm
-					//	ENTITY IfcOffsetCurve2D
-					//		SUBTYPE OF(IfcOffsetCurve);
-					//			Distance: IfcLengthMeasure;
-					//			SelfIntersect: IfcLogical;
-					//		WHERE
-					//			DimIs2D : BasisCurve.Dim = 2;
-					//	END_ENTITY;
-					// **************************************************************************************************************************
-
 					throw oip::UnhandledException(pCurve);
 				}
 
