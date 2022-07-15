@@ -2630,12 +2630,6 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
-				{
-					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
-				}
-				template <>
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
 				{
 					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
@@ -2644,9 +2638,9 @@ namespace OpenInfraPlatform
 					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
 				{
 					// Interpret parameter
-					// cubic is default parameter
+					// SepticTerm is default parameter
 					auto SepticTerm = seventhOrderPolynomial->SepticTerm;
-					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					// SexticTerm, QuinticTerm, QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> st = seventhOrderPolynomial->SexticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quit = seventhOrderPolynomial->QuinticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quat = seventhOrderPolynomial->QuarticTerm;
@@ -2990,9 +2984,9 @@ namespace OpenInfraPlatform
 					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
-					// cubic is default parameter
+					// SepticTerm is default parameter
 					auto SepticTerm = seventhOrderPolynomial->SepticTerm;
-					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					// SexticTerm, QuinticTerm, QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> st = seventhOrderPolynomial->SexticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quit = seventhOrderPolynomial->QuinticTerm;
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quat = seventhOrderPolynomial->QuarticTerm;
