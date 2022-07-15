@@ -2686,9 +2686,7 @@ namespace OpenInfraPlatform
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
 					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
-					double factor;
-					if (length < 1)factor = 1;
-					else factor = length;
+					double factor = std::max(length, 1.0);
 					sineTerm /= factor;
 					// LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
@@ -3063,9 +3061,7 @@ namespace OpenInfraPlatform
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
 					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
-					double factor;
-					if (length < 1)factor = 1;
-					else factor = length;
+					double factor = std::max(length, 1.0);
 					sineTerm /= factor;
 					// LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
