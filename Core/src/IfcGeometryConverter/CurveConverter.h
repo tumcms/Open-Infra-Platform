@@ -2630,12 +2630,6 @@ namespace OpenInfraPlatform
 				*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
-				{
-					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
-				}
-				template <>
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
 				{
 					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
