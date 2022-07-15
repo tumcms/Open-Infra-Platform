@@ -2674,12 +2674,6 @@ namespace OpenInfraPlatform
 				* \return							The location of the trimming point.
 				* \note
 				*/
-				/*template <>
-				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
-				{
-					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
-				}*/
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
@@ -2692,7 +2686,9 @@ namespace OpenInfraPlatform
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
 					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
-					double factor = length;
+					double factor;
+					if (length < 1)factor = 1;
+					else factor = length;
 					sineTerm /= factor;
 					// LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
@@ -3067,7 +3063,9 @@ namespace OpenInfraPlatform
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
 					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
-					double factor = length;
+					double factor;
+					if (length < 1)factor = 1;
+					else factor = length;
 					sineTerm /= factor;
 					// LinearTerm, ConstantTerm are optional parameters
 					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;

@@ -37,6 +37,8 @@ This work has been published with [JOSS](https://github.com/openjournals/joss-re
 
   * Supporting IfcClothoid ([#482](https://github.com/tumcms/Open-Infra-Platform/pull/482))
 
+  * Supporting IfSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
+
   * Added various unit tests
 
   * Screen shot maker ([#446](https://github.com/tumcms/Open-Infra-Platform/pull/446))
