@@ -7,6 +7,8 @@
 
 + **Various improvements**
 
+  * Supporting IfSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
+
 
 ## 4.0.0 Release Notes
 
@@ -36,8 +38,6 @@ This work has been published with [JOSS](https://github.com/openjournals/joss-re
   * Supporting IfcFixedReferenceSweptAreaSolid ([#406](https://github.com/tumcms/Open-Infra-Platform/pull/406))
 
   * Supporting IfcClothoid ([#482](https://github.com/tumcms/Open-Infra-Platform/pull/482))
-
-  * Supporting IfSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
 
   * Added various unit tests
 
