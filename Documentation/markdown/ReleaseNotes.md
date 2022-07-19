@@ -7,6 +7,8 @@
 
 + **Various improvements**
 
+  * Adjusted the density of mesh gridlines on B-spline and NURBS surfaces ([#547](https://github.com/tumcms/Open-Infra-Platform/pull/547))
+
 
 ## 4.0.0 Release Notes
 
