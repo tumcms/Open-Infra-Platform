@@ -7,7 +7,7 @@
 
 + **Various improvements**
 
-  * Supporting IfSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
+  * Supporting IfcSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
 
 
 ## 4.0.0 Release Notes
