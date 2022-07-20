@@ -7,6 +7,8 @@
 
 + **Various improvements**
 
+  * Supporting IfcSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
+
   * Adjusted the density of mesh grid lines on B-spline and NURBS surfaces ([#547](https://github.com/tumcms/Open-Infra-Platform/pull/547))
 
 
