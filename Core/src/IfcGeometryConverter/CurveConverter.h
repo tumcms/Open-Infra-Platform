@@ -1398,8 +1398,46 @@ namespace OpenInfraPlatform
 					//			DimIs2D : BasisCurve.Dim = 2;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve2D->BasisCurve;
+					std::vector<carve::geom::vector<3>> basisCurvePoints;
+					double distance = offsetCurve2D->Distance * this->UnitConvert()->getLengthInMeterFactor();
 
-					throw oip::UnhandledException(offsetCurve2D);
+					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					std::vector<carve::geom::vector<3>> offsetCurve2DPoints;
+
+					for (int i; i < basisCurvePoints.size() - 1; i++) {
+						carve::geom::vector<3> startPoint = basisCurvePoints[i];
+						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+
+						carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
+						carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
+
+						carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+						carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+						carve::geom::vector<3> offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x, 
+																				startPoint.y + distance * orthogonal.y, 
+																				startPoint.z);
+						offsetCurve2DPoints.push_back(offsetPoint);
+					}
+
+					//Last Point (I have decided to calculate it in opposite direction, since I have no clue, how to calculate offset of the last point otherwise)
+					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size()-1];
+					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
+					carve::geom::vector<2> lastStartPoint2D = carve::geom::VECTOR(lastStartPoint.x, lastStartPoint.y);
+					carve::geom::vector<2> lastEndPoint2D = carve::geom::VECTOR(lastEndPoint.x, lastEndPoint.y);
+					carve::geom::vector<2> lastTangent = lastEndPoint2D - lastStartPoint2D;
+					carve::geom::vector<2> lastOrthogonal = carve::geom::VECTOR(-lastTangent.y, lastTangent.x);
+
+					carve::geom::vector<3> lastOffsetPoint = carve::geom::VECTOR(lastStartPoint.x - distance * lastOrthogonal.x,
+						lastStartPoint.y - distance * lastOrthogonal.y,
+						lastStartPoint.z);
+
+					offsetCurve2DPoints.push_back(lastOffsetPoint);
+					GeomUtils::appendPointsToCurve(offsetCurve2DPoints, targetVec);
+					segmentStartPoints.push_back(offsetCurve2DPoints[0]);
 				}
 
 				// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
