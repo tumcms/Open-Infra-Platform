@@ -1474,8 +1474,41 @@ namespace OpenInfraPlatform
 					//			DimIs2D : BasisCurve.Dim = 3;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve3D->BasisCurve;
+					std::vector<carve::geom::vector<3>> basisCurvePoints;
+					double distance = offsetCurve3D->Distance * this->UnitConvert()->getLengthInMeterFactor();
+					
+					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurve3D->RefDirection;
+					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetDirectionVector->Orientation);
 
-					throw oip::UnhandledException(offsetCurve3D);
+
+					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					std::vector<carve::geom::vector<3>> offsetCurve3DPoints;
+
+					for (int i; i < basisCurvePoints.size() - 1; i++) {
+						carve::geom::vector<3> startPoint = basisCurvePoints[i];
+						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+
+						carve::geom::vector<3> tangent = endPoint - startPoint;
+
+						carve::geom::vector<3> offset = carve::geom::cross(direction, tangent);
+						carve::geom::vector<3> offsetPoint = startPoint + offset;
+						offsetCurve3DPoints.push_back(offsetPoint);
+					}
+
+					//Last Point (I have decided to calculate it in opposite direction, since I have no clue, how to calculate offset of the last point otherwise)
+					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size() - 1];
+					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
+					carve::geom::vector<3> lastTangent = lastEndPoint - lastStartPoint;
+
+					carve::geom::vector<3> lastOffset = carve::geom::cross(direction, lastTangent);
+					carve::geom::vector<3> lastOffsetPoint = lastStartPoint - lastOffset;
+
+					offsetCurve3DPoints.push_back(lastOffsetPoint);
+					GeomUtils::appendPointsToCurve(offsetCurve3DPoints, targetVec);
+					segmentStartPoints.push_back(offsetCurve3DPoints[0]);
 				}
 
 				// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
