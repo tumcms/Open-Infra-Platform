@@ -1376,7 +1376,6 @@ namespace OpenInfraPlatform
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve2D.
 				*
 				* \note The function is not implemented.
-				* \internal TODO.
 				*/
 				void convertIfcOffsetCurve2D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve2D>& offsetCurve2D,
@@ -1451,7 +1450,6 @@ namespace OpenInfraPlatform
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve3D.
 				*
 				* \note The function is not implemented.
-				* \internal TODO.
 				*/
 				void convertIfcOffsetCurve3D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve3D>& offsetCurve3D,
@@ -1511,6 +1509,7 @@ namespace OpenInfraPlatform
 					segmentStartPoints.push_back(offsetCurve3DPoints[0]);
 				}
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
 				/**********************************************************************************************/
 				/*! \brief Converts an \c IfcOffsetCurveByDistances to a tesselated curve.
@@ -1543,8 +1542,23 @@ namespace OpenInfraPlatform
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 
-					throw oip::UnhandledException(offsetCurveByDistances);
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
+					std::vector<std::vector<carve::geom::vector<3>>> basisCurves;
+
+					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurveByDistances->RefDirection;
+					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetDirectionVector->Orientation);
+
+					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
+					std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
+
+					for (auto distanceExpressionOffset : OffsetValues) {
+						carve::geom::vector<3> distanceExpression = convertIfcDistanceExpressionOffsets(distanceExpressionOffset);
+					}
 				}
+#endif
 
 				// IfcPcurve SUPTYPE of IfcCurve
 				/**********************************************************************************************/
