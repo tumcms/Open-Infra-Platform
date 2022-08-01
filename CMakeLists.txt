@@ -103,7 +103,7 @@ if(OIP_USE_PREDEFINED_THIRDPARTY_PATH)
 	find_path(OIP_Boost_DIR NAMES boost/version.hpp HINTS
 		"C:\\thirdparty\\${MSVC_VERSION_STRING}\\x64\\boost_1_75_0"
 		"C:\\thirdparty\\boost_1_75_0")
-	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.15.1\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
+	find_path(OIP_QT_DIR NAMES Qt5 HINTS "C:\\Qt\\5.15.2\\msvc${MSVC_VERSION_YEAR}_64\\lib\\cmake")
 	find_path(OIP_PROJ_DIR NAMES proj-config.cmake HINTS "C:\\OSGeo4W\\share\\cmake\\proj4\\proj")
 	SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${OIP_Boost_DIR})
     SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${OIP_Boost_DIR}\\lib")

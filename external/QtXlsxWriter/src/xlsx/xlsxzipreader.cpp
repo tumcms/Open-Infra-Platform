@@ -65,6 +65,8 @@
         #include "QtGui/5.15.0/QtGui/private/qzipreader_p.h"
 	#elif (QT_VERSION == QT_VERSION_CHECK(5,15,1))
 		#include "QtGui/5.15.1/QtGui/private/qzipreader_p.h"
+	#elif (QT_VERSION == QT_VERSION_CHECK(5,15,2))
+		#include "QtGui/5.15.2/QtGui/private/qzipreader_p.h"
 	#endif
 #endif
 
