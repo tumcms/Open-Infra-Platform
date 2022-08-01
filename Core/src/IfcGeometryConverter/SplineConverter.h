@@ -380,7 +380,8 @@ namespace OpenInfraPlatform
 					uint32_t obtainNumCurvePoints(const int numKnotsArray) const throw(...)
 					{
 						// ! TEMPORARY default number of curve points
-						return numKnotsArray * 10;
+						//   with +1, the result of skiped meshGridLines looks nicer (see FaceConverter::convertIfcBSplineSurface) 
+						return numKnotsArray * 10 + 1;
 					}
 					
 				protected:
