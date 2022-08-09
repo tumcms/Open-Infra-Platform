@@ -2651,7 +2651,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
+					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// Get Clothoid Constant
@@ -2690,7 +2690,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// Get terms
