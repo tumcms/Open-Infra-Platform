@@ -10,7 +10,8 @@
   * Supporting IfcSine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
 
   * Adjusted the density of mesh grid lines on B-spline and NURBS surfaces ([#547](https://github.com/tumcms/Open-Infra-Platform/pull/547))
-
+  
+  * Supporting IfcCosine ([#553](https://github.com/tumcms/Open-Infra-Platform/pull/553))
 
 ## 4.0.0 Release Notes
 
