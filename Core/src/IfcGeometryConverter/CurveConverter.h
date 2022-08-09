@@ -2691,7 +2691,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+					const double& parameter, const double& length) const noexcept(false)
 				{
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
@@ -2746,7 +2746,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+					const double& parameter, const double& length) const noexcept(false)
 				{
 					// Interpret parameter
 					double cosineTerm = cosine->CosineTerm * this->UnitConvert()->getLengthInMeterFactor();
