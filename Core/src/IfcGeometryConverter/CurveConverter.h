@@ -2696,7 +2696,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// SepticTerm is default parameter
