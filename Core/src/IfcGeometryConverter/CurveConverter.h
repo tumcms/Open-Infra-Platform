@@ -1597,12 +1597,12 @@ namespace OpenInfraPlatform
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), runningLength);
-            }
+						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
-            }
+						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength, length);
@@ -2683,6 +2683,12 @@ namespace OpenInfraPlatform
 				* \return							The location of the trimming point.
 				* \note
 				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)

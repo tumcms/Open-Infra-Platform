@@ -135,7 +135,7 @@ Meaning of columns:
 | `IfcSectionedSpine`                   | :x:                  | `RepresentationConverter`  | -                     | -     |
 | `IfcSegmentedReferenceCurve`          | :x:                  | `CurveConverter`           | -                     | -     |
 | `IfcSeriesParameterCurve`             | :x:                  | `CurveConverter`           | -                     | -     |
-| `IfcSeventhOrderPolynomialSpiral`     | :x:                  | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
+| `IfcSeventhOrderPolynomialSpiral`     | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
 | `IfcShellBasedSurfaceModel`           | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcSine`                             | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
 | `IfcSphere`                           | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
