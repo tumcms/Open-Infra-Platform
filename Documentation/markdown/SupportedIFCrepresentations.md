@@ -150,7 +150,7 @@ Meaning of columns:
 | `IfcSweptDiskSolidPolygonal`          | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcTextLiteral`                      | :x:                  | `RepresentationConverter`  | -                     | -     |
 | `IfcTextLiteralWithExtent`            | :x:                  | -                          | -                     | -     |
-| `IfcThirdOrderPolynomialSpiral`       | :x:                  | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|                
+| `IfcThirdOrderPolynomialSpiral`       | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|                
 | `IfcToroidalSurface`                  | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150)|
 | `IfcTransitionCurveSegment2D`         | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcTriangulatedIrregularNetwork`     | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
