@@ -58,7 +58,7 @@ Meaning of columns:
 | `IfcCompositeCurveOnSurface`          | :x:                  | -                          | -                     | -     |
 | `IfcCompositeCurveSegment`            | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
 | `IfcConnectedFaceSet`                 | :x:                  | 'RepresentationConverter'  | -                     | -     |
-| `IfcCosine`                           | :x:                  | `CurveConverter`           | :x:                   |[#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|  
+| `IfcCosine`                           | :heavy_check_mark:   | `CurveConverter`           | :x:                   |[#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|  
 | `IfcCsgSolid`                         | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcCurveBoundedPlane`                | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcCurveBoundedSurface`              | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150) |
