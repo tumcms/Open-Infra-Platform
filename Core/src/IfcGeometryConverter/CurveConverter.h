@@ -2735,7 +2735,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 
-
+#endif
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the seventh order polymonial spiral
