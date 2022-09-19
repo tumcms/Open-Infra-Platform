@@ -1593,6 +1593,26 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCircle>(), runningLength);
 						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), runningLength);
+						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
+						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength, length);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength, length);
+						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCosine>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
+						}
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), runningLength);
@@ -1620,7 +1640,6 @@ namespace OpenInfraPlatform
 							throw oip::InconsistentGeometryException(curveSegment, "Could not determine SegmentStart!");
 						}
 					}
-
 					if (!segmentPoints.empty())
 					{
 						//get the local coordinate system
@@ -2456,6 +2475,28 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect& trimming,
+				    const double& length) const noexcept(false)
+				{
+					switch (trimming.which())
+					{
+					case 0:
+					{
+						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
+						return getPointOnCurve<TCurve>(curve, trimming.get<0>(), length);
+					}
+					case 1:
+					{
+						// Calculate a trimming point using \c IfcParameterValue.
+						return getPointOnCurve<TCurve>(curve, trimming.get<1>(), length);
+					}
+					default:
+						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
+					}
+				}
 #endif
 
 				/**********************************************************************************************/
@@ -2518,6 +2559,28 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve> & curve,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure & parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+				}
+				/**********************************************************************************************/
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \param[in] length  				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				template <typename TCurve>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 				}
@@ -2602,7 +2665,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(clothoid, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcClothoid>& clothoid,
-					const typename IfcEntityTypesT::IfcParameterValue & parameter) const noexcept(false)
+					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// Get Clothoid Constant
@@ -2641,7 +2704,7 @@ namespace OpenInfraPlatform
 					return getPointOnCurve(secondOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
-					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+					const double& parameter) const noexcept(false)
 				{
 					// Interpret parameter
 					// QuadraticTerm is default parameter
@@ -2662,8 +2725,6 @@ namespace OpenInfraPlatform
 						ConstantTerm = ct;
 					}
 					else ConstantTerm = 0.;
-					//calculate angle
-					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
 
 					// Implement Taylor series for x coordinate
 					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., QuadraticTerm, LinearTerm, ConstantTerm, parameter);
@@ -2673,6 +2734,242 @@ namespace OpenInfraPlatform
 
 					return carve::geom::VECTOR(x, y, 0.);
 				}
+
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+
+				/*! \brief Calculates a trimming point on the seventh order polymonial spiral
+				* \param[in] seventhOrderPolynomial	A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					// SepticTerm is default parameter
+					auto SepticTerm = seventhOrderPolynomial->SepticTerm;
+					// SexticTerm, QuinticTerm, QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> st = seventhOrderPolynomial->SexticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quit = seventhOrderPolynomial->QuinticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quat = seventhOrderPolynomial->QuarticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> cut = seventhOrderPolynomial->CubicTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = seventhOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = seventhOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = seventhOrderPolynomial->ConstantTerm;
+					//define variables
+					double SexticTerm, QuinticTerm, QuarticTerm, CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (st) SexticTerm = st;
+					else SexticTerm = 0.;
+
+					if (quit) QuinticTerm = quit;
+					else QuinticTerm = 0.;
+
+					if (quat) QuarticTerm = quat;
+					else QuarticTerm = 0.;
+
+					if (cut) CubicTerm = cut;
+					else CubicTerm = 0.;
+					
+					if (qt) QuadraticTerm = qt;
+					else QuadraticTerm = 0.;
+					
+					if (lt) LinearTerm = lt;
+					else LinearTerm = 0.;
+
+					if (ct) ConstantTerm = ct;
+					else ConstantTerm = 0.;
+
+					// Implement Taylor series for x coordinate
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(SepticTerm, SexticTerm, QuinticTerm, QuarticTerm, CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					// Implement Taylor series for y coordinate
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(SepticTerm, SexticTerm, QuinticTerm, QuarticTerm, CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+
+				/*! \brief Calculates a trimming point on the third order polymonial spiral
+				* \param[in] thirdOrderPolynomial	A pointer to data from \c IfcThirdOrderPolynomialSpiral.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+        		template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					// Get terms
+					// cubic is default parameter
+					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
+					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
+					//define variables
+					double QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (qt)
+					{
+						QuadraticTerm = qt;;
+					}
+					else QuadraticTerm = 0.;
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+
+					// Implement Taylor series for x coordinate
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					// Implement Taylor series for y coordinate
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+
+				/*! \brief Calculates a trimming point on the sine curve.
+				* \param[in] sine			        A pointer to data from \c IfcSine.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \param[in] length 				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const double& parameter, const double& length) const noexcept(false)
+				{
+					// Interpret parameter
+					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = std::max(length, 1.0);
+					sineTerm /= factor;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = sine->ConstantTerm;
+
+					double linearTerm, constantTerm;
+					if (lt) linearTerm = lt/factor;
+					else linearTerm = 0.;
+					if (ct) constantTerm = ct/factor;
+					else constantTerm = 0.;
+	
+					std::vector<double> polynomial(26);
+					SpiralUtils::PopulateTaylorSeriesSine(polynomial, polynomial.size(), 2. * M_PI);
+					if (sineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= sineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (linearTerm) { polynomial[1] += linearTerm / std::fabs(linearTerm * linearTerm * linearTerm); }
+					if (std::fabs(polynomial[1]) < 0.00000000001) { polynomial[1] = 0.; }
+
+					double x = factor * SpiralUtils::XbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/ factor);
+					double y = factor * SpiralUtils::YbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/ factor);
+					
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+
+				/*! \brief Calculates a trimming point on the cosine curve.
+				* \param[in] cosine			        A pointer to data from \c IfcCosine.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \param[in] length 				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const double& parameter, const double& length) const noexcept(false)
+				{
+					// Interpret parameter
+					double cosineTerm = cosine->CosineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = std::max(length, 1.);
+					cosineTerm /= factor;
+					// ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = cosine->ConstantTerm;
+
+					double constantTerm;
+					if (ct) constantTerm = ct / factor;
+					else constantTerm = 0.;
+
+					std::vector<double> polynomial(23);
+					SpiralUtils::PopulateTaylorSerieCosine(polynomial, polynomial.size(), M_PI);
+					if (cosineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= cosineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (std::fabs(polynomial[0]) < 0.00000000001) { polynomial[0] = 0.; }
+
+					double x = factor * SpiralUtils::XbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter / factor);
+					double y = factor * SpiralUtils::YbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter / factor);
+					
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+				
 #endif
 
 				/**********************************************************************************************/
@@ -2770,6 +3067,28 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect is wrong!");
 					}
 				}
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(
+					const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcCurveMeasureSelect& measureSelect,
+				    const double& length) const noexcept(false)
+				{
+					switch (measureSelect.which())
+					{
+					case 0:
+					{
+						// Calculate a trimming point using \c IfcNonNegativeLengthMeasure. 
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<0>(), length);
+					}
+					case 1:
+					{
+						// Calculate a trimming point using \c IfcParameterValue.
+						return getDirectionOfCurve<TCurve>(curve, measureSelect.get<1>(),length);
+					}
+					default:
+						throw oip::InconsistentGeometryException(curve, "IfcCurveMeasureSelect is wrong!");
+					}
+				}
 #endif
 
 				/**********************************************************************************************/
@@ -2805,6 +3124,36 @@ namespace OpenInfraPlatform
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
 					const double& parameter) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+
+				}
+
+				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
+				* \tparam TCurve					A type of the curve.
+				* \param[in] curve					A pointer to data from the curve.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue or \c IfcNonNegativeLengthMeasure.
+				* \param[in] length 				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The location of the trimming point.
+				* \note								The position is not applied.All calculations are made based on center in(0., 0., 0.).
+				*/
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+				}
+
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					throw oip::UnhandledException(curve);
+
+				}
+				template <typename TCurve>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<TCurve>& curve,
+					const double& parameter, const double& length) const noexcept(false)
 				{
 					throw oip::UnhandledException(curve);
 
@@ -3000,7 +3349,229 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the seventh order polynomial spiral.
+				* \param[in] seventhOrderPolynomial   A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
+				* \param[in] parameter				 The length.
+				* \return							 The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(seventhOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>& seventhOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					// SepticTerm is default parameter
+					auto SepticTerm = seventhOrderPolynomial->SepticTerm;
+					// SexticTerm, QuinticTerm, QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> st = seventhOrderPolynomial->SexticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quit = seventhOrderPolynomial->QuinticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> quat = seventhOrderPolynomial->QuarticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> cut = seventhOrderPolynomial->CubicTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = seventhOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = seventhOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = seventhOrderPolynomial->ConstantTerm;
+					//define variables
+					double SexticTerm, QuinticTerm, QuarticTerm, CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (st) SexticTerm = st;
+					else SexticTerm = 0.;
 
+					if (quit) QuinticTerm = quit;
+					else QuinticTerm = 0.;
+
+					if (quat) QuarticTerm = quat;
+					else QuarticTerm = 0.;
+
+					if (cut) CubicTerm = cut;
+					else CubicTerm = 0.;
+
+					if (qt) QuadraticTerm = qt;
+					else QuadraticTerm = 0.;
+
+					if (lt) LinearTerm = lt;
+					else LinearTerm = 0.;
+
+					if (ct) ConstantTerm = ct;
+					else ConstantTerm = 0.;
+					//calculate angle
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(SepticTerm, SexticTerm, QuinticTerm, QuarticTerm, CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+					
+          return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the third order polynomial spiral.
+				* \param[in] thirdOrderPolynomial   A pointer to data from \c IfcThirdOrderPolynomialSpiral.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(thirdOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// cubic is default parameter
+					auto CubicTerm = thirdOrderPolynomial->CubicTerm;
+					// QuadraticTerm, LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> qt = thirdOrderPolynomial->QuadraticTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = thirdOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = thirdOrderPolynomial->ConstantTerm;
+					//define variables
+					double QuadraticTerm, LinearTerm, ConstantTerm;
+					// check the existence
+					if (qt)
+					{
+						QuadraticTerm = qt;;
+					}
+					else QuadraticTerm = 0.;
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+					//calculate angle
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0.,0.,0.,0.,CubicTerm, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the sine.
+				* \param[in] sine			        A pointer to data from \c IfcSine.
+				* \param[in] parameter				The trimmed length.
+				* \param[in] length 				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
+					const double& parameter, const double& length) const noexcept(false)
+				{
+					// Interpret parameter
+					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = std::max(length, 1.0);
+					sineTerm /= factor;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = sine->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = sine->ConstantTerm;
+
+					double linearTerm, constantTerm;
+					if (lt) linearTerm = lt / factor;
+					else linearTerm = 0.;
+					if (ct) constantTerm = ct / factor;
+					else constantTerm = 0.;
+
+					std::vector<double> polynomial(26);
+					SpiralUtils::PopulateTaylorSeriesSine(polynomial, polynomial.size(), 2. * M_PI);
+					if (sineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= sineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (linearTerm) { polynomial[1] += linearTerm / std::fabs(linearTerm * linearTerm * linearTerm); }
+					if (std::fabs(polynomial[1]) < 0.00000000001) { polynomial[1] = 0.; }
+
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomial, polynomial.size(), parameter/factor);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+
+				/*! \brief Calculates an angle of the cosine.
+				* \param[in] cosine			        A pointer to data from \c IfcCosine.
+				* \param[in] parameter				The trimmed length.
+				* \param[in] length 				The Lenght of the curve from \c IfcCurveMeasureSelect.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
+					const double& parameter, const double& length) const noexcept(false)
+				{
+					// Interpret parameter
+					double cosineTerm = cosine->CosineTerm * this->UnitConvert()->getLengthInMeterFactor();
+					//if length of the curve is less than 1, factor is equal to 1, otherways factor is equal to lenght 
+					double factor = std::max(length, 1.0);
+					cosineTerm /= factor;
+					// ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = cosine->ConstantTerm;
+
+					double constantTerm;
+					if (ct) constantTerm = ct / factor;
+					else constantTerm = 0.;
+
+					std::vector<double> polynomial(23);
+					SpiralUtils::PopulateTaylorSerieCosine(polynomial, polynomial.size(), M_PI);
+					if (cosineTerm) {
+						for (int i = 0; i < polynomial.size(); i++) {
+							polynomial[i] /= cosineTerm;
+						}
+					}
+
+					if (constantTerm) { polynomial[0] += 1. / constantTerm; }
+					if (std::fabs(polynomial[0]) < 0.00000000001) { polynomial[0] = 0.; }
+
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomial(polynomial, polynomial.size(), parameter / factor);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
 
 			protected:
 
