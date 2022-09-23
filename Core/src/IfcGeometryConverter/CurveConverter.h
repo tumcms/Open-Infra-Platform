@@ -1613,6 +1613,11 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
 						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), runningLength);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), runningLength);
+						}
 						segmentPoints.push_back(point);
 						segmentDirections.push_back(direction);
 						// determine next length
@@ -2678,7 +2683,59 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
+				/*! \brief Calculates a trimming point on the second order polymonial spiral
+				* \param[in] secondOrderPolynomial	A pointer to data from \c IfcSecondOrderPolynomialSpiral.
+				* \param[in] parameter				A pointer to data from \c IfcParameterValue.
+				* \return							The location of the trimming point.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(secondOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getPointOnCurve(secondOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// Interpret parameter
+					// QuadraticTerm is default parameter
+					auto QuadraticTerm = secondOrderPolynomial->QuadraticTerm;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = secondOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = secondOrderPolynomial->ConstantTerm;
+					//define variables
+					double LinearTerm, ConstantTerm;
+					// check the existence
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+
+					// Implement Taylor series for x coordinate
+					double x = SpiralUtils::XbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					// Implement Taylor series for y coordinate
+					double y = SpiralUtils::YbyAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0., QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(x, y, 0.);
+				}
+
+#endif
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the seventh order polymonial spiral
@@ -2746,7 +2803,6 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
-
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the third order polymonial spiral
@@ -2755,7 +2811,7 @@ namespace OpenInfraPlatform
 				* \return							The location of the trimming point.
 				* \note
 				*/
-        template <>
+        		template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>& thirdOrderPolynomial,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
 				{
@@ -2806,7 +2862,6 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
-
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 
 				/*! \brief Calculates a trimming point on the sine curve.
@@ -2911,9 +2966,10 @@ namespace OpenInfraPlatform
 
 					double x = factor * SpiralUtils::XbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter / factor);
 					double y = factor * SpiralUtils::YbyAngleDeviationPolynomial(polynomial, polynomial.size(), parameter / factor);
-
+					
 					return carve::geom::VECTOR(x, y, 0.);
 				}
+				
 #endif
 
 				/**********************************************************************************************/
@@ -3247,6 +3303,53 @@ namespace OpenInfraPlatform
 				}
 #endif
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				/*! \brief Calculates an angle of the second order polynomial spiral.
+				* \param[in] secondOrderPolynomial  A pointer to data from \c IfcSecondOrderPolynomialSpiral.
+				* \param[in] parameter				The length.
+				* \return							The Angle in radians.
+				* \note
+				*/
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(secondOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter) const noexcept(false)
+				{
+					return getDirectionOfCurve(secondOrderPolynomial, parameter * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>& secondOrderPolynomial,
+					const double& parameter) const noexcept(false)
+				{
+					// QuadraticTerm is default parameter
+					auto QuadraticTerm = secondOrderPolynomial->QuadraticTerm;
+					// LinearTerm, ConstantTerm are optional parameters
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> lt = secondOrderPolynomial->LinearTerm;
+					EXPRESSOptional<typename IfcEntityTypesT::IfcLengthMeasure> ct = secondOrderPolynomial->ConstantTerm;
+					//define variables
+					double LinearTerm, ConstantTerm;
+					// check the existence
+					if (lt)
+					{
+						LinearTerm = lt;
+					}
+					else LinearTerm = 0.;
+					if (ct)
+					{
+						ConstantTerm = ct;
+					}
+					else ConstantTerm = 0.;
+					//calculate angle
+					double angle = SpiralUtils::AngleByAngleDeviationPolynomialByTerms(0., 0., 0., 0., 0, QuadraticTerm, LinearTerm, ConstantTerm, parameter);
+
+					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
+				}
+#endif
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Calculates an angle of the seventh order polynomial spiral.
 				* \param[in] seventhOrderPolynomial   A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
 				* \param[in] parameter				 The length.
@@ -3362,6 +3465,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
+
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				/*! \brief Calculates an angle of the sine.
 				* \param[in] sine			        A pointer to data from \c IfcSine.
