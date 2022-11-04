@@ -47,6 +47,11 @@
 #include "EarlyBinding\IFC4X3_RC4\src\IFC4X3_RC4Entities.h"
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3
+#include "EarlyBinding\IFC4X3\src\EMTIFC4X3EntityTypes.h"
+#include "EarlyBinding\IFC4X3\src\IFC4X3Entities.h"
+#endif
+
 #include "namespace.h"
 #include "PlacementConverterImpl.h"
 

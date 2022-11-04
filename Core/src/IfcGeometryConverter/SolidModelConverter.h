@@ -402,9 +402,11 @@ namespace OpenInfraPlatform
 
 				// Get cross section positions and fixed axis vertical (attributes 3-4).
 				const auto& crossSectionPositions = sectionedSolidHorizontal->CrossSectionPositions;
-
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1) || defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC1)
 				bool fixedAxisVertical = sectionedSolidHorizontal->FixedAxisVertical;
-
+#else
+				bool fixedAxisVertical = true;//please rewrite it!! wrong implementation
+#endif
 				//check dimensions and correct attributes sizes
 				if (vecCrossSections.size() != crossSectionPositions.size())
 				{
