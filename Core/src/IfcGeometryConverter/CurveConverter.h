@@ -1374,8 +1374,6 @@ namespace OpenInfraPlatform
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve2D.
-				*
-				* \note The function is not implemented.
 				*/
 				void convertIfcOffsetCurve2D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve2D>& offsetCurve2D,
@@ -1405,24 +1403,53 @@ namespace OpenInfraPlatform
 						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 
 					std::vector<carve::geom::vector<3>> offsetCurve2DPoints;
+					carve::geom::vector<3> basisCurveDirection = basisCurvePoints[basisCurvePoints.size() - 1] - basisCurvePoints[0];
 
-					for (int i; i < basisCurvePoints.size() - 1; i++) {
+					for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
 						carve::geom::vector<3> startPoint = basisCurvePoints[i];
 						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+						carve::geom::vector<3> offsetPoint;
 
-						carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
-						carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
+						if (this->GeomSettings()->areEqual(basisCurveDirection.z, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
 
-						carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
-						carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
 
-						carve::geom::vector<3> offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x, 
-																				startPoint.y + distance * orthogonal.y, 
-																				startPoint.z);
+							offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x,
+								startPoint.y + distance * orthogonal.y,
+								startPoint.z);
+						}
+						else if (this->GeomSettings()->areEqual(basisCurveDirection.y, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.z);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.z);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x,
+								startPoint.y,
+								startPoint.z + distance * orthogonal.y);
+						}
+						else if (this->GeomSettings()->areEqual(basisCurveDirection.x, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.y, startPoint.z);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.y, endPoint.z);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x,
+								startPoint.y + distance * orthogonal.x,
+								startPoint.z + distance * orthogonal.y);
+						}
+						else {
+							throw oip::UnhandledException(offsetCurve2D);
+						}
+
 						offsetCurve2DPoints.push_back(offsetPoint);
 					}
 
-					//Last Point (I have decided to calculate it in opposite direction, since I have no clue, how to calculate offset of the last point otherwise)
 					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size()-1];
 					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
 					carve::geom::vector<2> lastStartPoint2D = carve::geom::VECTOR(lastStartPoint.x, lastStartPoint.y);
@@ -1448,8 +1475,6 @@ namespace OpenInfraPlatform
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve3D.
-				*
-				* \note The function is not implemented.
 				*/
 				void convertIfcOffsetCurve3D(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve3D>& offsetCurve3D,
@@ -1477,7 +1502,7 @@ namespace OpenInfraPlatform
 					double distance = offsetCurve3D->Distance * this->UnitConvert()->getLengthInMeterFactor();
 					
 					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurve3D->RefDirection;
-					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetDirectionVector->Orientation);
+					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetCurve3D->RefDirection);
 
 
 					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
@@ -1485,7 +1510,7 @@ namespace OpenInfraPlatform
 
 					std::vector<carve::geom::vector<3>> offsetCurve3DPoints;
 
-					for (int i; i < basisCurvePoints.size() - 1; i++) {
+					for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
 						carve::geom::vector<3> startPoint = basisCurvePoints[i];
 						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
 
@@ -1495,8 +1520,7 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> offsetPoint = startPoint + offset;
 						offsetCurve3DPoints.push_back(offsetPoint);
 					}
-
-					//Last Point (I have decided to calculate it in opposite direction, since I have no clue, how to calculate offset of the last point otherwise)
+					
 					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size() - 1];
 					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
 					carve::geom::vector<3> lastTangent = lastEndPoint - lastStartPoint;
@@ -1542,21 +1566,21 @@ namespace OpenInfraPlatform
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 
-					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
+					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
 					std::vector<std::vector<carve::geom::vector<3>>> basisCurves;
 
 					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurveByDistances->RefDirection;
 					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetDirectionVector->Orientation);
 
 					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
-						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);*/
 
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
-					std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
+					//std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
+					/*std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
 
 					for (auto distanceExpressionOffset : OffsetValues) {
 						carve::geom::vector<3> distanceExpression = convertIfcDistanceExpressionOffsets(distanceExpressionOffset);
-					}
+					}*/
 				}
 #endif
 
