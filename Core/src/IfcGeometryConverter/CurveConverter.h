@@ -1517,7 +1517,7 @@ namespace OpenInfraPlatform
 						carve::geom::vector<3> tangent = endPoint - startPoint;
 
 						carve::geom::vector<3> offset = carve::geom::cross(direction, tangent);
-						carve::geom::vector<3> offsetPoint = startPoint + offset;
+						carve::geom::vector<3> offsetPoint = startPoint + offset * distance;
 						offsetCurve3DPoints.push_back(offsetPoint);
 					}
 					
@@ -1566,21 +1566,67 @@ namespace OpenInfraPlatform
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 
-					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
-					std::vector<std::vector<carve::geom::vector<3>>> basisCurves;
-
-					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurveByDistances->RefDirection;
-					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetDirectionVector->Orientation);
+					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
+					std::vector<carve::geom::vector<3>> basisCurvePoints;
 
 					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
-						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);*/
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 
-					//std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
-					/*std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
+					std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
 
-					for (auto distanceExpressionOffset : OffsetValues) {
-						carve::geom::vector<3> distanceExpression = convertIfcDistanceExpressionOffsets(distanceExpressionOffset);
-					}*/
+					for (auto OffsetValue : OffsetValues) {
+						std::vector<carve::geom::vector<3>> offsetCurvePoints;
+						double distance = 0.;
+						switch (OffsetValue->DistanceAlong.which())
+						{
+						case 0:
+						{
+							// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+							distance = OffsetValue->DistanceAlong.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+							break;
+						}
+						case 1:
+						{
+							// Calculate the length using \c IfcParameterValue.
+							distance = OffsetValue->DistanceAlong.get<1>();
+							break;
+						}
+						default:
+							throw oip::InconsistentGeometryException(OffsetValue, "Could not determine DistanceAlong!");
+						}
+						
+						double offsetLateral = OffsetValue->OffsetLateral * this->UnitConvert()->getLengthInMeterFactor();
+						double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
+						double offsetLongitudinal = OffsetValue->OffsetLongitudinal * this->UnitConvert()->getLengthInMeterFactor();
+
+
+						for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
+							carve::geom::vector<3> startPoint = basisCurvePoints[i];
+							carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+							carve::geom::vector<3> diretionOfSegment = endPoint - startPoint;
+							carve::geom::vector<3> offsetPoint;
+
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x + diretionOfSegment.x * distance + offsetLateral * orthogonal.x,
+								startPoint.y + diretionOfSegment.y * distance + offsetLateral * orthogonal.y,
+								startPoint.z + diretionOfSegment.z * distance + offsetVertical);
+
+							// TO DO implement offsetLongitudinal, hint needed
+
+							offsetCurvePoints.push_back(offsetPoint);
+						}
+						offsetCurves.push_back(offsetCurvePoints);
+					}
+					for (auto curves : offsetCurves) {
+						GeomUtils::appendPointsToCurve(curves, targetVec);
+						segmentStartPoints.push_back(curves[0]);
+					}
 				}
 #endif
 
