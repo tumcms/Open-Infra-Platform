@@ -1477,7 +1477,7 @@ namespace OpenInfraPlatform
 					*/
 				}
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Converts \c IfcSegment and its subtypes to a series of points.
 				* \param[in] segment				The \c IfcSegment to be converted.
 				* \param[out] targetVec				The tessellated line.
@@ -1507,7 +1507,7 @@ namespace OpenInfraPlatform
 				}
 #endif
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Converts \c IfcCurveSegment to a series of points and appends them to the curve.
 				* https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC4-voting/HTML/link/ifccurvesegment.htm
 				* \param[in] curveSegment			The \c IfcCurveSegment to be converted.
@@ -1603,6 +1603,18 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), runningLength);
 						}
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3)
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSineSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSineSpiral>(), runningLength, length);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSineSpiral>(), runningLength, length);
+						}
+						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcCosineSpiral>())
+						{
+							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosineSpiral>(), runningLength, length);
+							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosineSpiral>(), runningLength, length);
+						}
+#else
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSine>(), runningLength, length);
@@ -1613,6 +1625,8 @@ namespace OpenInfraPlatform
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
 							direction = getDirectionOfCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcCosine>(), runningLength, length);
 						}
+#endif
+
 						else if (curveSegment->ParentCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
 						{
 							point = getPointOnCurve(curveSegment->ParentCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), runningLength);
@@ -2453,7 +2467,7 @@ namespace OpenInfraPlatform
 					}
 				}
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(
 					const EXPRESSReference<TCurve>& curve,
@@ -2644,7 +2658,7 @@ namespace OpenInfraPlatform
 				}
 
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 
 				/*! \brief Calculates a trimming point on the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
@@ -2683,7 +2697,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 
 				/*! \brief Calculates a trimming point on the second order polymonial spiral
 				* \param[in] secondOrderPolynomial	A pointer to data from \c IfcSecondOrderPolynomialSpiral.
@@ -2736,7 +2750,7 @@ namespace OpenInfraPlatform
 				}
 
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 
 				/*! \brief Calculates a trimming point on the seventh order polymonial spiral
 				* \param[in] seventhOrderPolynomial	A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
@@ -2803,7 +2817,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 
 				/*! \brief Calculates a trimming point on the third order polymonial spiral
 				* \param[in] thirdOrderPolynomial	A pointer to data from \c IfcThirdOrderPolynomialSpiral.
@@ -2862,7 +2876,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(x, y, 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 
 				/*! \brief Calculates a trimming point on the sine curve.
 				* \param[in] sine			        A pointer to data from \c IfcSine.
@@ -2871,6 +2885,22 @@ namespace OpenInfraPlatform
 				* \return							The location of the trimming point.
 				* \note
 				*/
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3)
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const double& parameter, const double& length) const noexcept(false)
+#else
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
@@ -2885,6 +2915,7 @@ namespace OpenInfraPlatform
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
 					const double& parameter, const double& length) const noexcept(false)
+#endif
 				{
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
@@ -2926,6 +2957,23 @@ namespace OpenInfraPlatform
 				* \return							The location of the trimming point.
 				* \note
 				*/
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3)
+
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getPointOnCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const double& parameter, const double& length) const noexcept(false)
+#else
 				template <>
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
@@ -2940,6 +2988,7 @@ namespace OpenInfraPlatform
 				}
 				carve::geom::vector<3> getPointOnCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
 					const double& parameter, const double& length) const noexcept(false)
+#endif
 				{
 					// Interpret parameter
 					double cosineTerm = cosine->CosineTerm * this->UnitConvert()->getLengthInMeterFactor();
@@ -3045,7 +3094,7 @@ namespace OpenInfraPlatform
 					}
 				}
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				template <typename TCurve>
 				carve::geom::vector<3> getDirectionOfCurve(
 					const EXPRESSReference<TCurve>& curve,
@@ -3263,7 +3312,7 @@ namespace OpenInfraPlatform
 				}
 
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Calculates an angle of the clothoid.
 				* \param[in] clothoid			    A pointer to data from \c IfcClothoid.
 				* \param[in] parameter				The length.
@@ -3302,7 +3351,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Calculates an angle of the second order polynomial spiral.
 				* \param[in] secondOrderPolynomial  A pointer to data from \c IfcSecondOrderPolynomialSpiral.
 				* \param[in] parameter				The length.
@@ -3349,7 +3398,7 @@ namespace OpenInfraPlatform
 					return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Calculates an angle of the seventh order polynomial spiral.
 				* \param[in] seventhOrderPolynomial   A pointer to data from \c IfcSeventhOrderPolynomialSpiral.
 				* \param[in] parameter				 The length.
@@ -3412,7 +3461,7 @@ namespace OpenInfraPlatform
           return carve::geom::VECTOR(std::cos(angle), std::sin(angle), 0.);
 				}
 #endif
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Calculates an angle of the third order polynomial spiral.
 				* \param[in] thirdOrderPolynomial   A pointer to data from \c IfcThirdOrderPolynomialSpiral.
 				* \param[in] parameter				The length.
@@ -3466,7 +3515,7 @@ namespace OpenInfraPlatform
 				}
 #endif
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4) || defined(OIP_MODULE_EARLYBINDING_IFC4X3)
 				/*! \brief Calculates an angle of the sine.
 				* \param[in] sine			        A pointer to data from \c IfcSine.
 				* \param[in] parameter				The trimmed length.
@@ -3474,6 +3523,22 @@ namespace OpenInfraPlatform
 				* \return							The Angle in radians.
 				* \note
 				*/
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3)
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(sine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSineSpiral>& sine,
+					const double& parameter, const double& length) const noexcept(false)
+#else
 				template <>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
 					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
@@ -3488,6 +3553,7 @@ namespace OpenInfraPlatform
 				}
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcSine>& sine,
 					const double& parameter, const double& length) const noexcept(false)
+#endif
 				{
 					// Interpret parameter
 					double sineTerm = sine->SineTerm * this->UnitConvert()->getLengthInMeterFactor();
@@ -3528,6 +3594,23 @@ namespace OpenInfraPlatform
 				* \return							The Angle in radians.
 				* \note
 				*/
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3)
+				template <>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const typename IfcEntityTypesT::IfcParameterValue& parameter, const double& length) const noexcept(false)
+				{
+					return getDirectionOfCurve(cosine, parameter * this->UnitConvert()->getLengthInMeterFactor(), length * this->UnitConvert()->getLengthInMeterFactor());
+				}
+				template<>
+				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosineSpiral>& cosine,
+					const double& parameter, const double& length) const noexcept(false)
+#else
 				template <>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
 					const typename IfcEntityTypesT::IfcNonNegativeLengthMeasure& parameter, const double& length) const noexcept(false)
@@ -3543,6 +3626,7 @@ namespace OpenInfraPlatform
 				template<>
 				carve::geom::vector<3> getDirectionOfCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcCosine>& cosine,
 					const double& parameter, const double& length) const noexcept(false)
+#endif
 				{
 					// Interpret parameter
 					double cosineTerm = cosine->CosineTerm * this->UnitConvert()->getLengthInMeterFactor();

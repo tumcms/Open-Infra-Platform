@@ -1,0 +1,42 @@
+# List of changes between IFC4X3_RC4 and IFC4X3 versions
+
+### Missing data in OIP
+
+| Name                                 | IFC4X3_RC4.exp          | IFC4X3.exp         |
+|--------------------------------------|-------------------------|--------------------|
+| IfcCosine                            | :heavy_check_mark:      | :x:                |
+| IfcGradient		               | :heavy_check_mark:      | :x:                |
+| IfcSine                              | :heavy_check_mark:      | :x:                |
+| IfcCosineSpiral                      |  :x:                    | :heavy_check_mark: |
+| IfcIndexedPolygonalTextureMap        |  :x:                    | :heavy_check_mark: |
+| IfcPointDim                          |  :x:                    | :heavy_check_mark: |
+| IfcSegmentDim                        |  :x:                    | :heavy_check_mark: |
+| IfcSineSpiral                        |  :x:                    | :heavy_check_mark: |
+| IfcTextureCoordinateIndices          |  :x:                    | :heavy_check_mark: |
+| IfcTextureCoordinateIndicesWithVoids |  :x:                    | :heavy_check_mark: |
+
+### Entity definitions
+
+| Name                                         | IFC4X3_RC4.exp                                      | IFC4X3.exp                                                       |
+|----------------------------------------------|-----------------------------------------------------|------------------------------------------------------------------|
+| IfcIndexedPolygonalFace inverses             | ['ToFaceSet']                                       | ['ToFaceSet', 'HasTexCoords']                                    |
+| IfcOpenCrossProfileDef attributes            | ['HorizontalWidths', 'Widths', 'Slopes', 'Tags']    | ['HorizontalWidths', 'Widths', 'Slopes', 'Tags', 'OffsetPoint']  |
+| IfcObjectPlacement inverses                  | ['PlacesObject']                                    | ['PlacesObject', 'ReferencedByPlacements']                       |
+| IfcPolygonalFaceSet.Faces                    | Faces : list[1:?] of IfcIndexedPolygonalFace        | Faces : list[1:?] of unique IfcIndexedPolygonalFace              |
+| IfcSectionedSolidHorizontal attributes       | ['CrossSectionPositions', 'FixedAxisVertical']      | ['CrossSectionPositions']                                        |
+| IfcSweptDiskSolidPolygonal.FilletRadius      | FilletRadius : optional IfcPositiveLengthMeasure    | FilletRadius : optional IfcNonNegativeLengthMeasure              |
+
+### Constraints
+
+| Name                                                | IFC4X3_RC4.exp                                                                                                                                                                                                                                               | IFC4X3.exp                                                                                                                                                                                                                                |
+|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| IfcCartesianPoint derive rules                      | ['Dim']                                                                                                                                                                                                                                                      | []                                                                                                                                                                                                                                        |
+| IfcCompositeCurveSegment derive rules               | ['Dim']                                                                                                                                                                                                                                                      | []                                                                                                                                                                                                                                        |
+| IfcCurveSegment derive rules                        | ['Dim']                                                                                                                                                                                                                                                      | []                                                                                                                                                                                                                                        |
+| IfcGradientCurve derive rules                       | ['RelativeElevation']                                                                                                                                                                                                                                        | []                                                                                                                                                                                                                                        |
+| IfcPoint derive rules                               | []	                                                                                                                                                                                                                                                     | ['Dim'] |
+| IfcPointByDistanceExpression derive rules           | ['Dim']| []|
+| IfcPointOnCurve derive rules                        | ['Dim']| []|
+| IfcPolygonalBoundedHalfSpace.BoundaryType           | sizeof(typeof(PolygonalBoundary)*['ifc4x3_dev.ifcpolyline','ifc4x3_dev.ifccompositecurve']) = 1                                                                                                                                                              | sizeof(typeof(PolygonalBoundary)*['ifc4x3_dev.ifcpolyline','ifc4x3_dev.ifccompositecurve','ifc4x3_dev.ifcindexedpolycurve']) = 1                                                                                                          |    
+| IfcSegment derive rules                             | []| ['Dim']|                                                                                                                                                                                                                                                      | ['AreaProfileTypes', 'CorrespondingSectionPositions', 'DirectrixIs3D', 'NoOffsets', 'SectionsSameType']                                                                                                                                   |
+| IfcSweptDiskSolidPolygonal.DirectrixIsPolyline      | ('ifc4x3_dev.ifcpolyline' in typeof(self\IfcSweptDiskSolid.Directrix)) or (('ifc4x3_dev.ifcindexedpolycurve' in typeof(self\IfcSweptDiskSolid.Directrix)) and not(exists(self\IfcSweptDiskSolid.Directrix.Segments)))                                        | ('ifc4x3_dev.ifcpolyline' in typeof(self\IfcSweptDiskSolid.Directrix)) or (('ifc4x3_dev.ifcindexedpolycurve' in typeof(self\IfcSweptDiskSolid.Directrix)) and not(exists(self\IfcSweptDiskSolid.Directrix\IfcIndexedPolyCurve.Segments))) |

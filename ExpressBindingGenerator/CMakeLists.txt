@@ -40,6 +40,7 @@ endmacro()
 add_format(IFC2X3 			IFC2X3_TC1 		OFF)
 add_format(IFC4 			IFC4_ADD2_TC1	OFF)
 add_format(IFC4X1		 	IFC4x1_RC3		OFF)
+add_format(IFC4X3		 	IFC4X3		OFF)
 add_format(IFC4X3_RC1	 	IFC4X3_RC1		 ON)
 add_format(IFC4X3_RC4	 	IFC4X3_RC4		OFF)
 

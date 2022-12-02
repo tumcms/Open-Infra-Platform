@@ -81,6 +81,10 @@ using OpenInfraPlatform::Core::IfcGeometryConverter::IfcPeekStepReader;
 #include <EarlyBinding/IFC4X3_RC4/src/IFC4X3_RC4.h>
 #endif
 
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3
+#include <EarlyBinding/IFC4X3/src/reader/IFC4X3Reader.h>
+#include <EarlyBinding/IFC4X3/src/IFC4X3.h>
+#endif
 
 template <typename IfcEntityTypesT, class IfcReaderT>
 buw::ReferenceCounted<IfcGeometryModelRenderer> setUpRenderer(
@@ -219,6 +223,14 @@ int main(int argc, char **argv) {
 #else // OIP_MODULE_EARLYBINDING_IFC4X3_RC4
 			throw std::exception("IFC4X3_RC4 not compiled");
 #endif //OIP_MODULE_EARLYBINDING_IFC4X3_RC4
+		}
+		else if (ifcSchema == IfcPeekStepReader::IfcSchema::IFC4X3) {
+#ifdef OIP_MODULE_EARLYBINDING_IFC4X3
+			renderer =
+				setUpRenderer<emt::IFC4X3EntityTypes, OpenInfraPlatform::IFC4X3::IFC4X3Reader>(filepath);
+#else // OIP_MODULE_EARLYBINDING_IFC4X3
+			throw std::exception("IFC4X3 not compiled");
+#endif //OIP_MODULE_EARLYBINDING_IFC4X3
 		}
 		else
 		{
