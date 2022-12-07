@@ -1589,7 +1589,12 @@ namespace OpenInfraPlatform
 						double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
 						double offsetLongitudinal = OffsetValue->OffsetLongitudinal * this->UnitConvert()->getLengthInMeterFactor();
 
+						carve::geom::vector<2> lateral = carve::geom::VECTOR(-directionOfCurve.y, directionOfCurve.x);
 
+						offsetPoint = carve::geom::VECTOR(pointOnCurve.x + + offsetLateral * lateral.x,
+							pointOnCurve.y + offsetLateral * lateral.y,
+							pointOnCurve.z + offsetVertical);
+					
 						//for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
 						//	carve::geom::vector<3> startPoint = basisCurvePoints[i];
 						//	carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
