@@ -1576,7 +1576,7 @@ namespace OpenInfraPlatform
 					std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
 
 					for (auto OffsetValue : OffsetValues) {
-						std::vector<carve::geom::vector<3>> offsetCurvePoints;
+						carve::geom::vector<3> offsetCurvePoint;
 						// defaults
 						carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
 						carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
@@ -1591,7 +1591,7 @@ namespace OpenInfraPlatform
 
 						carve::geom::vector<2> lateral = carve::geom::VECTOR(-directionOfCurve.y, directionOfCurve.x);
 
-						offsetPoint = carve::geom::VECTOR(pointOnCurve.x + + offsetLateral * lateral.x,
+						offsetCurvePoint = carve::geom::VECTOR(pointOnCurve.x + offsetLateral * lateral.x,
 							pointOnCurve.y + offsetLateral * lateral.y,
 							pointOnCurve.z + offsetVertical);
 					
@@ -1662,20 +1662,20 @@ namespace OpenInfraPlatform
 					}
 
 					// determine point
-					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					/*if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
 						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distance);
 						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distance);
-					}
-					/*else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
+					}*/
+					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 					{
 						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distance);
 						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distance);
 					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcCircle>())
+					/*else if (basiscurve.isoftype<typename ifcentitytypest::ifccircle>())
 					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcCircle>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcCircle>(), distance);
+						pointoncurve = getpointoncurve(basiscurve.as<typename ifcentitytypest::ifccircle>(), distance);
+						directionofcurve = getdirectionofcurve(basiscurve.as<typename ifcentitytypest::ifccircle>(), distance);
 					}*/
 					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
 					{
@@ -2757,7 +2757,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentModellingException("Trimming point can be specified only with one or two parameters");
 					}
 				}
-
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1)
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
 				* \tparam TCurve					A type of the curve. 
@@ -2786,6 +2786,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
+#endif
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
@@ -2833,6 +2834,7 @@ namespace OpenInfraPlatform
 				}
 #endif
 
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X1)
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
 				* \tparam TCurve					A type of the curve. 
@@ -2874,7 +2876,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(line, "Point is not on the line");
 					}
 				}
-
+#endif
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
 				* \tparam TCurve					A type of the curve.
