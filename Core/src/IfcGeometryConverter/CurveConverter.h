@@ -1658,34 +1658,35 @@ namespace OpenInfraPlatform
 						break;
 					}
 					default:
-						throw oip::InconsistentGeometryException(OffsetValue, "Could not determine SegmentLength!");
+						throw oip::InconsistentGeometryException(OffsetValue, "Could not determine DistanceAlong!");
 					}
 
+					typename IfcEntityTypesT::IfcCurveMeasureSelect distanceAlong = OffsetValue->DistanceAlong;
 					// determine point
-					/*if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
 					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distance);
-					}*/
-					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distance);
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
 					}
-					/*else if (basiscurve.isoftype<typename ifcentitytypest::ifccircle>())
+					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
 					{
-						pointoncurve = getpointoncurve(basiscurve.as<typename ifcentitytypest::ifccircle>(), distance);
-						directionofcurve = getdirectionofcurve(basiscurve.as<typename ifcentitytypest::ifccircle>(), distance);
-					}*/
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+					}
+					else if (basisCurve.isOfType<typename IfcEntityTypesT::ifcCircle>())
+					{
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+					}
 					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
 					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distance);
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
 					}
 					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
 					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distance);
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
 					}
 					/*else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
 					{
@@ -1699,8 +1700,8 @@ namespace OpenInfraPlatform
 					}*/
 					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
 					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distance);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distance);
+						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
+						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
 					}
 					else {
 						throw oip::UnhandledException(basisCurve);
