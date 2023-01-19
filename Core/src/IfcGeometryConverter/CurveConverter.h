@@ -1405,6 +1405,7 @@ namespace OpenInfraPlatform
 					std::vector<carve::geom::vector<3>> offsetCurve2DPoints;
 					carve::geom::vector<3> basisCurveDirection = basisCurvePoints[basisCurvePoints.size() - 1] - basisCurvePoints[0];
 
+
 					for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
 						carve::geom::vector<3> startPoint = basisCurvePoints[i];
 						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
@@ -1526,7 +1527,7 @@ namespace OpenInfraPlatform
 					carve::geom::vector<3> lastTangent = lastEndPoint - lastStartPoint;
 
 					carve::geom::vector<3> lastOffset = carve::geom::cross(direction, lastTangent);
-					carve::geom::vector<3> lastOffsetPoint = lastStartPoint - lastOffset;
+					carve::geom::vector<3> lastOffsetPoint = lastStartPoint - lastOffset * distance;
 
 					offsetCurve3DPoints.push_back(lastOffsetPoint);
 					GeomUtils::appendPointsToCurve(offsetCurve3DPoints, targetVec);
@@ -1573,7 +1574,7 @@ namespace OpenInfraPlatform
 						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 
 					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
-					std::vector < std::vector<carve::geom::vector<3>>> offsetCurves;
+					std::vector<carve::geom::vector<3>> offsetCurve;
 
 					for (auto OffsetValue : OffsetValues) {
 						carve::geom::vector<3> offsetCurvePoint;
@@ -1583,7 +1584,7 @@ namespace OpenInfraPlatform
 
 
 						calculateDistanceAlongCurve(OffsetValue, basisCurve, pointOnCurve, directionOfCurve);
-						
+
 
 						double offsetLateral = OffsetValue->OffsetLateral * this->UnitConvert()->getLengthInMeterFactor();
 						double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
@@ -1594,36 +1595,20 @@ namespace OpenInfraPlatform
 						offsetCurvePoint = carve::geom::VECTOR(pointOnCurve.x + offsetLateral * lateral.x,
 							pointOnCurve.y + offsetLateral * lateral.y,
 							pointOnCurve.z + offsetVertical);
-					
-						//for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
-						//	carve::geom::vector<3> startPoint = basisCurvePoints[i];
-						//	carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
-						//	carve::geom::vector<3> diretionOfSegment = endPoint - startPoint;
-						//	carve::geom::vector<3> offsetPoint;
 
-						//	carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
-						//	carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
+						if (offsetLongitudinal) {
+							offsetCurvePoint = carve::geom::VECTOR(offsetCurvePoint.x + offsetLongitudinal * directionOfCurve.x,
+								offsetCurvePoint.y + offsetLongitudinal * directionOfCurve.y,
+								offsetCurvePoint.z + offsetLongitudinal * directionOfCurve.z);
+						}
 
-						//	carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
-						//	carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+						offsetCurve.push_back(offsetCurvePoint);
+					}
 
-						//	offsetPoint = carve::geom::VECTOR(startPoint.x + diretionOfSegment.x * distAlong + offsetLateral * orthogonal.x,
-						//		startPoint.y + diretionOfSegment.y * distAlong + offsetLateral * orthogonal.y,
-						//		startPoint.z + diretionOfSegment.z * distAlong + offsetVertical);
-
-						//	// TO DO implement offsetLongitudinal, hint needed
-
-						//	offsetCurvePoints.push_back(offsetPoint);
-						//}
-						//offsetCurves.push_back(offsetCurvePoints);
-					}	
-					
-
-					/*for (auto curves : offsetCurves) {
-						GeomUtils::appendPointsToCurve(curves, targetVec);
-						segmentStartPoints.push_back(curves[0]);
-					}*/
+					GeomUtils::appendPointsToCurve(offsetCurve, targetVec);
+					segmentStartPoints.push_back(offsetCurve[0]);
 				}
+					
 #endif
 				void calculateDistanceAlongCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>& OffsetValue,
 					const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& basisCurve,
@@ -1648,7 +1633,7 @@ namespace OpenInfraPlatform
 					case 0:
 					{
 						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
-						distance = OffsetValue->DistanceAlong.get<0>();// *this->UnitConvert()->getLengthInMeterFactor();
+						distance = OffsetValue->DistanceAlong.get<0>();
 						break;
 					}
 					case 1:
