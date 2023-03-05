@@ -250,6 +250,10 @@ if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
 endif()
 
 #------------------------------------------------------------------------------
+# Setup libigl
+option(LIBIGL_RESTRICTED_TRIANGLE "Enable Triangle library" ON)
+igl_include(restricted triangle)
+#------------------------------------------------------------------------------
 
 FetchContent_Declare(
 	blue_framework
@@ -529,6 +533,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		Qt5::Core
 		Qt5::Gui
 		Qt5::Widgets
+		Qt5::Network
 		Qt5::Svg
 		Qt5::PrintSupport
 		Qt5::Quick
@@ -550,6 +555,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		Rpcrt4.lib
 		eigen
 		${PROJ_LIBRARIES}
+		igl_restricted::triangle
 )
 
 set(QT_WINDEPLOY_FLAGS -xml -concurrent)
