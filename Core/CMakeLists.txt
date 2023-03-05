@@ -70,6 +70,7 @@ target_link_libraries(OpenInfraPlatform.Core PRIVATE
 	BlueFramework.Application
     carve
     eigen
+	igl_restricted::triangle
 )
 
 target_link_libraries(OpenInfraPlatform.Core PUBLIC OpenInfraPlatform.Base)
