@@ -149,6 +149,14 @@ if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
 endif()
 
+# Libigl
+FetchContent_Declare(
+	libigl
+    GIT_REPOSITORY https://github.com/libigl/libigl.git
+    GIT_TAG v2.4.0
+)
+
+# Eigen
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
@@ -159,7 +167,7 @@ FetchContent_Declare(
 set(BUILD_TESTING FALSE CACHE INTERNAL "Build the testing tree." FORCE)
 mark_as_advanced(FORCE BUILD_TESTING)
   
-FetchContent_MakeAvailable(eigen)
+FetchContent_MakeAvailable(eigen libigl)
 
 FetchContent_Declare(
 	tclap
