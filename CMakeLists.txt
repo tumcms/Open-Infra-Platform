@@ -415,6 +415,8 @@ set(OpenInfraPlatform_UserInterface_Forms
 	UserInterface/Forms/MainWindow.ui
 	UserInterface/Forms/LicenseAndCopyrightInformation.ui
 	UserInterface/Forms/PreferencesDialog.ui
+	UserInterface/Forms/HttpDownloadDialog.ui
+	UserInterface/Forms/HttpTreeModelDialog.ui
 
 	# Currently not included.
 	#UserInterface/Forms/CreateAccidentReport.ui
