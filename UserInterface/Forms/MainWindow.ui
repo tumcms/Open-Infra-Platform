@@ -61,18 +61,18 @@
      </attribute>
      <layout class="QGridLayout" name="gridLayout_87">
       <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayoutModels">
-         <property name="sizeConstraint">
-          <enum>QLayout::SetMaximumSize</enum>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_36">
-           <property name="text">
-            <string>Loaded models:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <layout class="QVBoxLayout" name="verticalLayoutModels">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_36">
+          <property name="text">
+           <string>Loaded models:</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -475,7 +475,7 @@
            <rect>
             <x>9</x>
             <y>9</y>
-            <width>264</width>
+            <width>281</width>
             <height>368</height>
            </rect>
           </property>
@@ -730,8 +730,8 @@
            <rect>
             <x>9</x>
             <y>9</y>
-            <width>263</width>
-            <height>331</height>
+            <width>302</width>
+            <height>358</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -1133,7 +1133,7 @@
            <rect>
             <x>10</x>
             <y>10</y>
-            <width>261</width>
+            <width>292</width>
             <height>371</height>
            </rect>
           </property>
@@ -1428,8 +1428,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>282</width>
-            <height>1120</height>
+            <width>318</width>
+            <height>1324</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -3028,7 +3028,7 @@
      <x>0</x>
      <y>0</y>
      <width>980</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -3093,7 +3093,7 @@
      <property name="title">
       <string>Import</string>
      </property>
-     <addaction name="actionImport_OSM_File"/>
+     <addaction name="actionImport"/>
      <addaction name="actionImport_IFC_Alignment_1_0"/>
     </widget>
     <widget class="QMenu" name="menuMerge">
@@ -3239,6 +3239,8 @@
    <addaction name="actionRedo"/>
    <addaction name="separator"/>
    <addaction name="actionCreateClothoid"/>
+   <addaction name="separator"/>
+   <addaction name="actionImportOsm"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -3837,9 +3839,13 @@
     <string>Generate for given arc-centers</string>
    </property>
   </action>
-  <action name="actionImport_OSM_File">
+  <action name="actionImportOsm">
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/import.svg</normaloff>:/blueform/import.svg</iconset>
+   </property>
    <property name="text">
-    <string>Import OSM file</string>
+    <string>Import OSM</string>
    </property>
   </action>
   <action name="actionMerge_LAS_File">
@@ -3895,9 +3901,9 @@
    </property>
   </action>
   <action name="actionStroke_To_Alignment">
-    <property name="text">
-      <string>Convert Stroke to Alignment</string>
-    </property>
+   <property name="text">
+    <string>Convert Stroke to Alignment</string>
+   </property>
   </action>
   <action name="actionIFC_Alignment_1_1_Export">
    <property name="text">
@@ -3965,6 +3971,15 @@
   <action name="actionExportPointCloud">
    <property name="text">
     <string>Point Cloud (*.bin)</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="icon">
+    <iconset resource="../Resources/OpenInfraPlatform.qrc">
+     <normaloff>:/blueform/import.svg</normaloff>:/blueform/import.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import OSM Data</string>
    </property>
   </action>
  </widget>
