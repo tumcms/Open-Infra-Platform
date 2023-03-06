@@ -51,8 +51,8 @@ namespace OpenInfraPlatform
 				IfcGeometry = 1 << 0,
 				PointCloud = 1 << 1,
 				Preferences = 1 << 2,
-				OffGeometry = 1 << 3,
-				All = IfcGeometry | PointCloud | Preferences | OffGeometry
+				OsmDataGeometry = 1 << 4,
+				All = IfcGeometry | PointCloud | Preferences | OffGeometry | OsmDataGeometry
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)
