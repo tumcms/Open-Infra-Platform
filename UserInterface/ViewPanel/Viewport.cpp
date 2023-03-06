@@ -187,6 +187,10 @@ Viewport::Viewport(const buw::eRenderAPI renderAPI, bool warp, bool msaa, QWidge
 	offGeometryEffect_ = buw::makeReferenceCounted<oip::OffGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
 	offGeometryEffect_->init();
 
+    BLUE_LOG(trace) << "Creating OsmGeometry effects";
+    osmGeometryEffect_ = buw::makeReferenceCounted<oip::OsmGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+    osmGeometryEffect_->init();
+
     timer_ = new QTimer();
     timer_->setInterval(16);
     timer_->setSingleShot(false);
@@ -228,6 +232,7 @@ Viewport::~Viewport() {
     skyboxEffect_ = nullptr;
     ifcGeometryEffect_ = nullptr;
 	offGeometryEffect_ = nullptr;
+    osmGeometryEffect_ = nullptr;
 
     viewCube_ = nullptr;
 
@@ -884,6 +889,23 @@ void Viewport::onChange( const ChangeFlag changeFlag )
 			activeEffects_.push_back(offGeometryEffect);
 		}
 	}
+
+    // change in OSM geometry?
+    if (changeFlag & ChangeFlag::OsmDataGeometry) {
+        // multiple models might've been loaded
+        for (auto& model : data.getModels())
+        {
+            auto osmGeometryModel = std::dynamic_pointer_cast<oip::OsmModel>(model);
+            if (osmGeometryModel)
+            {
+                buw::ReferenceCounted<oip::OsmGeometryEffect> osmGeometryEffect
+                    = buw::makeReferenceCounted<oip::OsmGeometryEffect>(renderSystem_.get(), viewport_, depthStencilMSAA_, worldBuffer_);
+                osmGeometryEffect->init();
+                osmGeometryEffect->setOsmModel(osmGeometryModel);
+                activeEffects_.push_back(osmGeometryEffect);
+            }
+        }
+    }
 
 	// change in Point cloud
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
