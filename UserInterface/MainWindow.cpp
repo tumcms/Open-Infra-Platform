@@ -490,8 +490,8 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				{
 					if (el->child(i)->text(0).compare("GeoRef", Qt::CaseInsensitive) == 0
 						&& (el->child(i)->text(1).compare( QString( model->getGeorefMetadata().codeEPSG.c_str() )) == 0
-						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0
-							|| el->child(i)->text(1).compare(QString("unknown")) == 0))
+						 || el->child(i)->text(1).compare( QString(model->getGeorefMetadata().WKT.c_str() )) == 0))
+					//		|| el->child(i)->text(1).compare(QString("unknown")) == 0))
 						return true;
 				}
 				return false;
@@ -523,8 +523,7 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 
 				// 3.  - BBox   : bounding box
 				//       - min, mid, max : QVector3D
-				oip::BBox& modelBBox = model->getExtent();
-				addBBox(itemModel, modelBBox);
+				addBBox(itemModel, model->getExtent());
 
 				// 4.  - GeoRef : georeferencing metadata
 				//       - key - val
@@ -558,15 +557,15 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				}
 
 				//6. Function zoom to object
-				auto itemZoomToObject = new QTreeWidgetItem(itemModel);
-				itemZoomToObject->setText(0, "Zoom To Object");
+				//auto itemZoomToObject = new QTreeWidgetItem(itemModel);
+				//itemZoomToObject->setText(0, "Zoom To Object");
 
-				QPushButton *launchZoomToObjectButton = new QPushButton();
-				launchZoomToObjectButton->setText("Zoom To Object");
-				//QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
-				QObject::connect(launchZoomToObjectButton, &QPushButton::clicked, [this, model, fullBBox, modelBBox] { on_actionZoomToOneObject_triggered(model, fullBBox, modelBBox); } );
-				modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
-				
+				//QPushButton *launchZoomToObjectButton = new QPushButton();
+				//launchZoomToObjectButton->setText("Zoom To Object");
+				////QObject::connect(launchZoomToObjectButton, SIGNAL(clicked()), this, SLOT(on_actionZoomToOneObject_triggered(model)));
+				//QObject::connect(launchZoomToObjectButton, &QPushButton::clicked, [this, model, fullBBox, modelBBox] { on_actionZoomToOneObject_triggered(model, fullBBox, modelBBox); } );
+				//modelsTreeWidget_->setItemWidget(itemZoomToObject, 1, launchZoomToObjectButton);
+				//
 				// expanded per default
 				itemModel->setExpanded(true);
 			}
@@ -927,76 +926,25 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionZoomToOneObject_triggered(const std::shared_ptr<oip::IModel>& model, const oip::BBox & fullBBox, const oip::BBox & modelBBox)
 {
-	oip::BBox zoomBox = model->getExtent();
-	buw::Vector3f zoomBoxmin = zoomBox.min().cast<float>();
-	buw::Vector3f zoomBoxmax = zoomBox.max().cast<float>();
-	buw::Vector3f fullBBoxCenter = fullBBox.center().cast<float>();
+	//oip::BBox zoomBox = model->getExtent();
+	//buw::Vector3f zoomBoxmin = zoomBox.min().cast<float>();
+	//buw::Vector3f zoomBoxmax = zoomBox.max().cast<float>();
+	//buw::Vector3f fullBBoxCenter = fullBBox.center().cast<float>();
 
-	
+	//
 	//buw::Vector3f delta = (fullBBox.center() - modelBBox.center()).cast<float>();
 
-	buw::Vector3f zoomMinExtend = (modelBBox.min() - fullBBox.center()).cast<float>();
-	buw::Vector3f zoomMaxExtend = (modelBBox.max() - fullBBox.center()).cast<float>();
+	////buw::Vector3f zoomMinExtend = (modelBBox.min() - fullBBox.center()).cast<float>();
+	////buw::Vector3f zoomMaxExtend = (modelBBox.max() - fullBBox.center()).cast<float>();
 
-	//buw::Vector3f zoomMinExtend = modelBBox.min().cast<float>() - delta;
-	//buw::Vector3f zoomMaxExtend = modelBBox.max().cast<float>() - delta;
+	////buw::Vector3f zoomMinExtend = modelBBox.min().cast<float>() - delta;
+	////buw::Vector3f zoomMaxExtend = modelBBox.max().cast<float>() - delta;
 
 	//buw::Vector3d offset = -zoomBox.center();
 	//buw::Vector3f zoomMinExtend = (zoomBox.min() - fullBBox.center()).cast<float>();
 	//buw::Vector3f zoomMaxExtend = (zoomBox.max() - fullBBox.center()).cast<float>();
-	
-	buw::Vector3f facetedBrepHardcodedMin;
-	facetedBrepHardcodedMin.x() = -0.304879990220018;
-	facetedBrepHardcodedMin.y() = -0.15350296491882; 
-	facetedBrepHardcodedMin.z() = -0.0939999999999991;
-	buw::Vector3f facetedBrepHardcodedMax;
-	facetedBrepHardcodedMax.x() = 0.304879990220018;
-	facetedBrepHardcodedMax.y() = 0.268843232748677;
-	facetedBrepHardcodedMax.z() = 0.;
-	buw::Vector3f facetedBrepHardcodedMid;
-	facetedBrepHardcodedMid.x() = 0.304879990220018 - (0.304879990220018 - (-0.304879990220018)) * 0.5;
-	facetedBrepHardcodedMid.y() = 0.268843232748677 - (0.268843232748677 - (-0.15350296491882)) * 0.5 ;
-	facetedBrepHardcodedMid.z() = 0. - (0. - (-0.0939999999999991)) *0.5;
+	//
 
-	buw::Vector3f BrepModelHardcodedMin;
-	BrepModelHardcodedMin.x() = 0.5;
-	BrepModelHardcodedMin.y() = -0.5;
-	BrepModelHardcodedMin.z() = -0.0;
-	buw::Vector3f BrepModelHardcodedMax;
-	BrepModelHardcodedMax.x() = 1.5;
-	BrepModelHardcodedMax.y() = 0.5;
-	BrepModelHardcodedMax.z() = 2.0;
-
-	buw::Vector3f AABBHardcodedMin;
-	AABBHardcodedMin.x() = -0.304879990220018;
-	AABBHardcodedMin.y() = -0.5;
-	AABBHardcodedMin.z() = -0.0939999999999991;
-	buw::Vector3f AABBHardcodedMax;
-	AABBHardcodedMax.x() = 1.5;
-	AABBHardcodedMax.y() = 0.5;
-	AABBHardcodedMax.z() = 2.0;
-	buw::Vector3f AABBHardcodedMid;
-	AABBHardcodedMid.x() = 0.597559988;
-	AABBHardcodedMid.y() = 0.00000000;
-	AABBHardcodedMid.z() = 0.953000009;
-
-	buw::Vector3f MinExtendHardcoded = AABBHardcodedMin - AABBHardcodedMid;
-	buw::Vector3f MaxExtendHardcoded = AABBHardcodedMax - AABBHardcodedMid;
-	view_->on_zoomToOneObject(MinExtendHardcoded, MaxExtendHardcoded);
-
-
-	buw::Vector3f MINEXtendfacetedBrepHardcoded = facetedBrepHardcodedMin - AABBHardcodedMid - facetedBrepHardcodedMid;
-	buw::Vector3f MAXEXtendfacetedBrepHardcoded = facetedBrepHardcodedMax - AABBHardcodedMid - facetedBrepHardcodedMid;
-	//view_->on_zoomToOneObject(MINEXtendfacetedBrepHardcoded, MAXEXtendfacetedBrepHardcoded);
-	buw::Vector3f TrialMin;
-	TrialMin.x() = -1.3;
-	TrialMin.y() = -0.7;
-	TrialMin.z() = -0.4;
-	buw::Vector3f TrialMax;
-	TrialMax.x() = -0.7;
-	TrialMax.y() = -0.3;
-	TrialMax.z() = -0.3;
-	//view_->on_zoomToOneObject(TrialMin, TrialMax);
 	//view_->on_zoomToOneObject(zoomMinExtend, zoomMaxExtend);
 
 }
