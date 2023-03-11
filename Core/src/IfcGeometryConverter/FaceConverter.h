@@ -263,6 +263,11 @@ namespace OpenInfraPlatform {
 				//--------------------------------------------------------------------------------------------
 
 					/*! \brief  Converts \c IfcBSplineSurface to a triangualted surface of \c PolyhedronData to be displayed.
+					
+					The triangulated surface is stored in \c itemData->open_or_closed_polyhedrons.
+					The mesh grid lines of the surface are stored in \c itemData->polylines.
+					They visualize the uv-evaluation grid of the surface.
+
 					\param[in]	surface		\c IfcBSplineSurface entity to be interpreted.
 					\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
 					\param[out]	itemData	A pointer to be filled with the relevant data of the triangulated  surface (\c PolyhedronData).
@@ -307,10 +312,8 @@ namespace OpenInfraPlatform {
 						const size_t numCurvePointsV = curvePoints[0].size();
 
 
-						// CONVERTION FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
+						// SURFACE FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
 
-						// declaration of result variable for polylines
-						std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 						// declaration of result variable for polyhedrons (surface)
 						std::shared_ptr<carve::input::PolyhedronData> polyhedronData = std::make_shared<carve::input::PolyhedronData>();
 
@@ -336,16 +339,11 @@ namespace OpenInfraPlatform {
 								// storage for the 4 point ids of the surface rectangle
 								size_t indices[4];
 
-								// construct a poly line in polylineData:
+								// construction of triangulated polyhedron square:
 								// D<---C    v
 								//      ^    ^
 								//      |    |
 								// A--->B    0-->u
-								//
-								// there is no closing line from D to 
-
-								// start a new poly line
-								polylineData->beginPolyline();
 
 								// loop over the 4 conter points
 								for (size_t k = 0; k < 4; ++k)
@@ -365,17 +363,12 @@ namespace OpenInfraPlatform {
 									else
 									{
 										// point doesn't exist;
-										// store face-point k in polylineData; addVertex() returns its id, which is stored in indices[k]
-										indices[k] = polylineData->addVertex(facePoints[k]);
-										// store face-point k in polyhedronData; vertex id is identical to vertices of polyline 
-										polyhedronData->addVertex(facePoints[k]);
+										// store face-point k in polyhedronData; addVertex() returns its id, which is stored in indices[k] 
+										indices[k] = polyhedronData->addVertex(facePoints[k]);
 
 										// add the string 'key' of the current face point to the internal list, save its id from indices[k]
 										vertexMap[key.str()] = indices[k];
 									}
-
-									// add obtaind index to polyline
-									polylineData->addPolylineIndex(indices[k]);
 								}
 
 								// add triangle-faces to polyhedron
@@ -384,15 +377,88 @@ namespace OpenInfraPlatform {
 							}
 						}
 
-						// add polylines and polyhedrons to itemData (= return parameter)
-						itemData->polylines.push_back(polylineData);
+
+						// MESH_GRID_LINES FROM vector<vector<carve::geom::vector<3>>> TO shared_ptr<carve::input::PolylineSetData>
+						
+						// declaration of result variable for meshGridLines (source code like polylines)
+						std::shared_ptr<carve::input::PolylineSetData> meshGridLineData = std::make_shared<carve::input::PolylineSetData>();
+
+						// number of skiped surface lines / points: with value 4, each 5th mesh line will be highlighted as polyline
+						// current temporarly default value of B-spline surface points: numKnotsArray * 10 + 1
+						// 'segments' is self-defined term, used in the loop of meshGridLines in v-direction
+						// example with numKnotArray = 1:
+						//   point id:     0 1 2 3 4 5 6 7 8 9 10
+						//   meshGridLine: |         |         |
+						//   segments:     0|    1    |     2    [end]
+						size_t nSkipedLines = 4;
+
+						// meshGridLines in u-direction
+						for (size_t v = 0; v < numCurvePointsV; v += nSkipedLines + 1)
+						{
+							// start a new polyline
+							meshGridLineData->beginPolyline();
+
+							for (size_t u = 0; u < numCurvePointsU; u++)
+							{
+								// all vertices are new in meshGridLineData, thus use addVertex()
+								size_t index = meshGridLineData->addVertex(curvePoints[u][v]);
+								meshGridLineData->addPolylineIndex(index);
+							}
+						}
+
+						// meshGridLines in v-direction:
+						//   note: u jumpes from intersection to intersection
+						for (size_t u = 0; u < numCurvePointsU; u += nSkipedLines + 1)
+						{
+							//start a new polyline
+							meshGridLineData->beginPolyline();
+
+							// add first point of meshGridLine, point already is in meshGridLineData
+							meshGridLineData->addPolylineIndex(u);
+
+							// foreach segment of skipedLines including one meshGridLine at the end
+							//   start with 1 because first point already is added, respectively the segments starts at the first skiped point
+							//   note: v jumpes from intersection to intersection
+							for (size_t v = 1; v < numCurvePointsV; v += nSkipedLines + 1)
+							{
+								// add new points between u-meshGridLines
+								for (size_t k = 1; k <= nSkipedLines; k++)
+								{
+									// prevent out_of_range (in case of even subdivision is not possible)
+									if (v + k >= numCurvePointsV)
+									{
+										break;
+									}
+
+									// add new points
+									size_t index = meshGridLineData->addVertex(curvePoints[u][v + k]);
+									meshGridLineData->addPolylineIndex(index);
+								}
+
+								// prevent out_of_range (in case of even subdivision is not possible)
+								if (v + nSkipedLines >= numCurvePointsV)
+								{
+									break;
+								}
+
+								// add vertex of intersection with u-meshGridLine, reuse existing index
+								meshGridLineData->addPolylineIndex((v + nSkipedLines) / (nSkipedLines + 1) * numCurvePointsU + u);
+							}
+						}
+
+
+						// ASSEMBLE RESULT
+						
+						// add meshGridLines to itemData (= return parameter)
+						itemData->meshGridLines.push_back(meshGridLineData);
+
+						// add polyhedrons to itemData (= return parameter)
 						itemData->open_or_closed_polyhedrons.push_back(polyhedronData);
+
 						return;
 					} // end if IfcBSplineSurfaceWithKnots
 
-					// return std::shared_ptr<carve::input::PolylineSetData> polylineData = std::make_shared<carve::input::PolylineSetData>();
 					throw oip::UnhandledException(surface);
-
 				}
 
 				/*! \brief  Converts \c IfcCurveBoundedPlane to ...
@@ -726,384 +792,286 @@ namespace OpenInfraPlatform {
 					throw oip::UnhandledException(surface);
 				}
 
-				//------------------------------------------------------------------------------------------------------------
-				// FaceConverter functions:
-				// convertIfcFaceList, convertIfcFace, convert3DPointsTo2D, triangulateFace, convertIfcCartesianPointVectorVector
-				//------------------------------------------------------------------------------------------------------------
-
-						/*! \brief  Converts \c IfcFace to a polygon and adds it to the carve PolyhedronData vector.
-						\param	faces \c IfcFace entity to be interpreted.
-						\param	pos
-						\param	itemData
-						\return polygon carve polygon
-						\note The \c IfcFaceList can be an open or closed shell.
-						*/
+				/*! \brief  Converts a list of \c IfcFace -s to a polyhedron and adds it to the carve PolyhedronData vector.
+				\param[in]	faces		List \c IfcFace entity to be interpreted.
+				\param[in]	pos			The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[out]	itemData	Polyhedron carve polyhedron.
+				\note The \c IfcFaceList can be an open or closed shell.
+				*/
 
 				void convertIfcFaceList(const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFace>>& faces,
 					const carve::math::Matrix& pos,
 					std::shared_ptr<ItemData> itemData)  const noexcept(false) 
 				{
-					// Carve polygon of the converted face list
-					std::shared_ptr<carve::input::PolyhedronData> polygon(new carve::input::PolyhedronData());
+					// Carve polyhedron of the converted face list
+					std::shared_ptr<carve::input::PolyhedronData> polyhedron(new carve::input::PolyhedronData());
 
-					// Contains polygon indices of vertices (x,y,z converted to string)
-					std::map<std::string, uint32_t> polygonIndices;
+					// Contains coordinates and indices of polyhedron vertices (x,y,z converted to string)
+					std::map<std::string, uint32_t> polyhedronIndices;
 
 					// Loop through all faces
-					for (auto it = faces.cbegin(); it != faces.cend(); ++it) 
-					{ //TODO Stefan
-						EXPRESSReference<typename IfcEntityTypesT::IfcFace> face = (*it);
-
-						if (face.expired()) {
-							throw oip::ReferenceExpiredException(face);
-						}
-
-						if (!convertIfcFace(face, pos, polygon, polygonIndices)) 
-						{
-							throw oip::InconsistentGeometryException(face, "IFC Face conversion failed with these faces");
-						}
+					for (const auto& face : faces) 
+					{
+						// get mesh data into polyhedron, polyhedronIndices and meshGridLines
+						convertIfcFace(face, pos, polyhedron, polyhedronIndices, itemData->meshGridLines);
 					}
 
 					// IfcFaceList can be a closed or open shell, so let the calling function decide where to put it
-					itemData->open_or_closed_polyhedrons.push_back(polygon);
+					itemData->open_or_closed_polyhedrons.push_back(polyhedron);
 				}
 
-				/*! \brief  Converts \c IfcFace to a vector of face vertices.
-				\param	face \c IfcFace entity to be interpreted.
-				\param	pos
-				\param	polygon
-				\param	polygonIndices
-				\return conversionFailed true/false
-				\note	At the end, the calculated and merged face vertices are handed over to the \c triangulateFace function.
-				*/
+				/*! \brief  Converts \c IfcFace or sub-entity to a vector of face vertices, respectively the mesh of a polyhedron.
+				\param[in]		face				\c IfcFace entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
 
-				bool convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+
+				<b>About \c polyhedron and \c polyhedronIndices</b> \n
+				The parameters \c polyhedron and \c polyhedronIndices are associated to each other.
+				At first, they have to be declared as empty variables; for example one declaration would be in the function convertIfcFaceList().
+				They will contain the geometry information of the converted faces, which is filled and used by the function \c convertIfcFace and its subfunctions.
+				There is no need to interact with this content manually. In case of the call via convertIfcFaceList(), the variable \c polyhedron will be added automatically to the target \c itemData; 
+				otherwise by not using convertIfcFaceList() that's the only thing which has to be done in the calling function. The variable \c polyhedronIndices will be discarded when the converting is finished. \n
+				The parameter \c polyhedron is an instance of carve \c PolyhedronData; instances of that class are used often throughout the project.
+				Beside the information about the topology of the triangles, it stores a vector with all vertices (described by x, y and z coordinates in separate variables). \n
+				The parameter \c polyhedronIndices is an instance of \c std::map. Each entity in \c polyhedronIndices represents one vertex of \c polyhedorn.
+				The key (first value) is a string which contains the x, y and z coordinates, separated by one white space.
+				The second value is an integer which contains the id (or index) of this vertex inside the variable \c polyhedron.
+				Basically, this information is a duplicate of the vertices in the variable \c polyhedron, but formatted in another kind of representation. 
+				It's used to get advantage of the \c find -function of the \c std::map -class. If a face should be added to \c polyhedron, 
+				the subfunctions of \c convertIfcFace search for the face vertices by their coordinates (converted as string) inside of \c polyhedronIndices.
+				If a vertex with this already exists, its index will be used by the added face. With this process, the topological merge of the polyhedron triangles will be ensured.
+				*/
+				void convertIfcFace(const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
 					const carve::math::Matrix& pos,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false) 
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
+				)  const noexcept(false)
 				{
 					if (face.expired()) {
 						throw oip::ReferenceExpiredException(face);
 					}
-					// Indicates if conversion has failed
-					bool conversionFailed = false;
 
-					// Id of face in step file
-					const uint32_t faceID = face->getId();
-
-					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
-					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D;
-					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
-
-					// Save polygon indices of merged vertices
-					std::map<uint32_t, uint32_t> mergedIndices;
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> modBounds;
-					modBounds.reserve(2);
-					bool faceLoopReversed = false;
-
-					// Loop through all boundary definitions
-					int boundID = -1;
-
-					// If polygon has more than 3 vertices, then we have to project polygon into 2D, so that carve can triangulate the mesh
-					ProjectionPlane plane = UNDEFINED;
-
-					// As carve expects outer boundary of face to be at first index, outer boundary has index 0 and inner boundary has index 1
-					for (const auto& bound : face->Bounds)
+					if (face.isOfType<typename IfcEntityTypesT::IfcFaceSurface>())
 					{
-						if (bound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
-						{
-							modBounds.insert(modBounds.begin(), bound);
-						}
-						else 
-						{
-							modBounds.push_back(bound);
-						}
+						convertIfcFaceSurface(face.as<typename IfcEntityTypesT::IfcFaceSurface>(), pos, polyhedron, polyhedronIndices, meshGridLines);
 					}
-					modBounds.shrink_to_fit();
-
-					for (const auto& bound : modBounds) 
+					else
 					{
-						boundID++;
+						// get attribute 1:
+						// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+						// one bound loop contains a list of loop points (carve::gem::vector<3>)
+						std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(face->Bounds, pos);
 
-						//	IfcLoop <- IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
-						const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
-						bool polyOrientation = bound->Orientation;
-
-						if (!loop) {
-							throw oip::InconsistentModellingException(face, " No valid loop");
-						}
-						
-						// Collect all vertices of the current loop
-						std::vector<carve::geom::vector<3>> loopVertices3D;
-						curveConverter->convertIfcLoop(loop, loopVertices3D);
-
-						for (auto& vertex : loopVertices3D) 
+						// if simple case: one triangle without inner bound (= hole)
+						//  -> simple direct triangle construction is possible (probably fast)
+						if ((faceBoundLoops.size() == 1) && (faceBoundLoops[0].size() == 3))
 						{
-							vertex = pos * vertex;
+							// std::vector<carve::geom::vector<3>> loopVertices3D = faceBoundLoops[0];
+							addTriangleToPolyhedronData(faceBoundLoops[0], polyhedron, polyhedronIndices);
 						}
-
-						if (loopVertices3D.size() < 3) 
-						{
-							throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
-						}
-						
-
-						// Check for orientation and reverse vertices order if FALSE
-						if (!polyOrientation) 
-						{
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-						}
-
-						//	3 Vertices Triangle
-						if (loopVertices3D.size() == 3) 
-						{
-							std::vector<uint32_t> triangleIndices;
-							triangleIndices.reserve(3);
-
-							int pointID = -1;
-							for (const auto& vertex3D : loopVertices3D) 
-							{
-								pointID++;
-
-								// apply global transformation to vertex
-								const carve::geom::vector<3> v = vertex3D;
-
-								// set string id and search for existing vertex in polygon
-								std::stringstream vertexString;
-								vertexString << v.x << " " << v.y << " " << v.z;
-								auto itFound = polygonIndices.find(vertexString.str());
-
-								uint32_t index = 0;
-								if (itFound != polygonIndices.end()) 
-								{
-									index = itFound->second;
-								}
-								else 
-								{
-									index = polygon->addVertex(v);
-									polygonIndices[vertexString.str()] = index;
-								}
-
-								triangleIndices.push_back(index);
-								mergedIndices[pointID] = index;
-							}
-							polygon->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
-						}
-
-						//	> 3 Vertices Triangle					
-						std::vector<carve::geom2d::P2> loopVertices2D;
-
-						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed)) 
-						{
-							throw oip::InconsistentGeometryException(face, "loop could not be projected");
-						}
-
-						if (loopVertices2D.size() < 3) 
-						{
-							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
-						}
-
-						// push back vertices to all faceVertices
-						faceVertices2D.push_back(loopVertices2D);
-						faceVertices3D.push_back(loopVertices3D);
-					}
-
-					// If no faceVertices were collected, no carve operations are required
-					if (faceVertices2D.empty()) 
-					{
-						throw oip::InconsistentGeometryException(face, "no faceVertices were collected"); 
-					}
-
-					// Result after incorporating holes in polygons if defined
-					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
-
-					// merged vertices after incorporating of holes
-					std::vector<carve::geom2d::P2> mergedVertices2D;
-					std::vector<carve::geom::vector<3>> mergedVertices3D;
-
-					try 
-					{
-						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
-
-						for (const auto& incorpIndex : incorporatedIndices) 
-						{
-							size_t loopIndex = incorpIndex.first;
-							size_t vertexIndex = incorpIndex.second;
-
-							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
-							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
-
-							// add vertices to merged results
-							mergedVertices2D.push_back(point2D);
-							mergedVertices3D.push_back(point3D);
-						}
-
-					}
-					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
-					{
-						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
-					}
-
-					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polygon, polygonIndices);
-					return !conversionFailed;
-				}
-
-				/*! \brief  Converts 3D points to 2D.
-				\param	boundID
-				\param	plane The projection plane
-				\param	loopvertices2D
-				\param	loopVertices3D
-				\param faceLoopReversed
-				\return
-				\note
-				*/
-
-				bool convert3DPointsTo2D(const int boundID,
-					ProjectionPlane& plane,
-					std::vector<carve::geom2d::P2>& loopVertices2D,
-					std::vector<carve::geom::vector<3>>& loopVertices3D,
-					bool& faceLoopReversed)  const noexcept(false)
-				{
-					// Compute normal of polygon
-					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
-
-					if (boundID == 0) 
-					{
-						const double nx = std::abs(normal.x);
-						const double ny = std::abs(normal.y);
-						const double nz = std::abs(normal.z);
-
-						const double nMax = std::max(std::max(nx, ny), nz);
-
-						if (nMax == nx) 
-						{
-							plane = ProjectionPlane::YZ_PLANE;
-						}
-						else if (nMax == ny) 
-						{
-							plane = ProjectionPlane::XZ_PLANE;
-						}
-						else if (nMax == nz) 
-						{
-							plane = ProjectionPlane::XY_PLANE;
-						}
-						else 
-						{
-							throw oip::InconsistentGeometryException( "It is not possible to define plane in other dimension");
-						}
-					}
-
-					// Now collect all vertices in 2D
-					for (const auto& vertex : loopVertices3D) 
-					{
-						if (plane == ProjectionPlane::YZ_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.y, vertex.z));
-						}
-
-						else if (plane == ProjectionPlane::XZ_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.z));
-						}
-
-						else if (plane == ProjectionPlane::XY_PLANE) 
-						{
-							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.y));
-						}
-						else 
-						{
-							throw oip::InconsistentGeometryException("plane is undefined");
-						}
-					}
-
-					// Check winding order of 2D polygon
-					carve::geom3d::Vector normal2D = GeomUtils::computePolygon2DNormal(loopVertices2D);
-
-					if (boundID == 0) 
-					{
-						if (normal2D.z < 0) 
-						{
-							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-							faceLoopReversed = true;
-						}
-					}
-					else 
-					{
-						if (normal2D.z > 0) 
-						{
-							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
-							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
-							// faceLoopReversed = true;
-						}
-					}
-					return true;
-				}
-
-				/*! \brief Triangulates merged 2D and 3D vertices to faces.
-				\param	faceVertices2D to be triangulated using carve
-				\param	faceVertices3D to be added to the triangulation
-				\param	faceLoopReversed to adapt order of adding vertices of a new face
-				\return	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
-				\param	polygonIndices
-				*/
-
-				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
-					const std::vector<carve::geom::vector<3>>& faceVertices3D,
-					const bool faceLoopReversed,
-					std::shared_ptr<carve::input::PolyhedronData> polygon,
-					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false) 
-					{
-
-					// indices after carve triangulation of merged vertices
-					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
-					std::map<uint32_t, uint32_t> mergedIndices;
-
-					// triangulate 2D polygon and improve triangulation by carve
-					carve::triangulate::triangulate(faceVertices2D, triangulatedIndices);
-					carve::triangulate::improve(faceVertices2D, triangulatedIndices);
-
-					// add new vertices to polygon or get index of existing vertex
-					for (uint32_t i = 0; i < faceVertices3D.size(); ++i) 
-					{
-						const carve::geom::vector<3>& v = faceVertices3D[i];
-
-						// set string id and search for existing vertex in polygon
-						std::stringstream vertexString;
-						vertexString << v.x << " " << v.y << " " << v.z;
-
-						auto itFound = polygonIndices.find(vertexString.str());
-						uint32_t index = 0;
-
-						if (itFound != polygonIndices.end()) 
-						{
-							index = itFound->second;
-						}
-						else 
-						{
-							index = polygon->addVertex(v);
-							polygonIndices[vertexString.str()] = index;
-						}
-						mergedIndices[i] = index;
-					}
-
-					// go through triangulated result and add new faces to polygon
-					for (const auto& triangle : triangulatedIndices) 
-					{
-						const uint32_t i0 = triangle.a;
-						const uint32_t i1 = triangle.b;
-						const uint32_t i2 = triangle.c;
-
-						const uint32_t v0 = mergedIndices[i0];
-						const uint32_t v1 = mergedIndices[i1];
-						const uint32_t v2 = mergedIndices[i2];
-
-						if (faceLoopReversed)
-							polygon->addFace(v0, v2, v1);
 						else
-							polygon->addFace(v0, v1, v2);
+						{
+							// general case: arbitrary number of vertices, possible inner bound (= hole)
+							//  -> elaborate triangulation with respect to arbitrary number of vertices and holes is necessary;
+
+							addArbitraryFaceToPolyhedronData(face, faceBoundLoops, polyhedron, polyhedronIndices);
+						}
+					}
+				}
+
+				/*! \brief  Converts \c IfcFaceSurface or sub-entity to the mesh of a polyhedron.
+				\param[in]		faceSurface			\c IfcFaceSurface entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
+				*/
+				void convertIfcFaceSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& faceSurface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
+				)  const noexcept(false)
+				{
+					if (faceSurface.expired()) {
+						throw oip::ReferenceExpiredException(faceSurface);
 					}
 
+					if (faceSurface.isOfType<typename IfcEntityTypesT::IfcAdvancedFace>())
+					{
+						convertIfcAdvancedFace(faceSurface.as<typename IfcEntityTypesT::IfcAdvancedFace>(), pos, polyhedron, polyhedronIndices, meshGridLines);
+					}
+					else
+					{
+						computeIfcFaceSurface(faceSurface, pos, polyhedron, polyhedronIndices, meshGridLines);
+					}
+				}
+
+				/*! \brief  Converts \c IfcAdvancedFace to the mesh of a polyhedron.
+				\param[in]		advancedFace		\c IfcAdvancedFace entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
+				*/
+				void convertIfcAdvancedFace(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcAdvancedFace>& advancedFace,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
+				)  const noexcept(false)
+				{
+					if (advancedFace.expired()) {
+						throw oip::ReferenceExpiredException(advancedFace);
+					}
+
+					// get reference to IfcFaceBound's (attribute 1)
+					const std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds = advancedFace->Bounds;
+					// if one face bound is not of the allowed type: throw; else: continue
+					if (!std::all_of(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& ifcFaceBound) {return
+						ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcEdgeLoop>() || ifcFaceBound->Bound.isOfType<typename IfcEntityTypesT::IfcVertexLoop>(); }))
+					{
+						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a loop type as face boundary which is not allowed.");
+					}
+
+					// get reference to IfcSurface (attribute 2)
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& faceSurface = advancedFace->FaceSurface;
+					// in case of IfcAdvancedFace, the FaceSurface-entity is restricted to 3 types (respectively 7 subtypes; according to ifc 4x1)
+					if (!(faceSurface.isOfType<typename IfcEntityTypesT::IfcElementarySurface>()
+						|| faceSurface.isOfType<typename IfcEntityTypesT::IfcSweptSurface>()
+						|| faceSurface.isOfType<typename IfcEntityTypesT::IfcBSplineSurface>()))
+					{
+						throw oip::InconsistentModellingException(advancedFace, "IfcAdvancedFace has a surface type as face surface which is not allowed.");
+					}
+
+					computeIfcFaceSurface(advancedFace, pos, polyhedron, polyhedronIndices, meshGridLines);
+				}
+
+				/*! \brief Checks whether all points of the \c faceBoundLoops exist coincident in the surface geometry of \c itemDataSurface.
+				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the loop points should exist.
+				\param		faceBoundLoops		Loop points which should be checked to be part in the surface geometry.
+				\return		True, if all loop points are part in the surface geometry; otherwise, false.
+				\note		This function calls its sub-function \c checkPointIsPartOfSurface.
+				*/
+				bool checkBoundaryIsPartOfSurface(
+					const std::shared_ptr<ItemData>& itemDataSurface,
+					const std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops
+				) const noexcept(true)
+				{
+					// for each point (via std::all_of), check if it is part of the surface;
+					// returns true, if all are part, otherwise false
+					return std::all_of(faceBoundLoops.begin(), faceBoundLoops.end(), [&, this](const auto& faceBoundLoop) {
+						return std::all_of(faceBoundLoop.begin(), faceBoundLoop.end(), [&, this](const auto& pointOfLoop) {
+							return checkPointIsPartOfSurface(itemDataSurface, pointOfLoop); });
+					});
+				}
+
+				/*! \brief Checks whether one point exists coincident in the surface geometry of \c itemDataSurface.
+				\param		itemDataSurface		\c ItemData object with the surface geometry, in which the point should exist.
+				\param		pointOfLoop			Point which should be checked to be part in the surface geometry.
+				\return		True, if the point is part in the surface geometry; otherwise, false.
+				*/
+				bool checkPointIsPartOfSurface(
+					const std::shared_ptr<ItemData>& itemDataSurface,
+					const carve::geom::vector<3>& pointOfLoop
+				) const noexcept(true)
+				{
+					const std::vector< std::vector<std::shared_ptr<carve::input::PolyhedronData>>* > surfacePolyhedronsCollection{
+						&(itemDataSurface->closed_polyhedrons),
+						&(itemDataSurface->open_polyhedrons),
+						&(itemDataSurface->open_or_closed_polyhedrons) };
+
+					// search through polyhedrons
+					for (const auto* surfacePolyhedrons : surfacePolyhedronsCollection) {
+						for (const std::shared_ptr<carve::input::PolyhedronData>& surfacePolyhedron : *surfacePolyhedrons)
+						{
+							// search through points of polyhedron
+							for (const auto& pointSurface : surfacePolyhedron->points)
+							{
+								if (this->GeomSettings()->areEqual(pointOfLoop, pointSurface))
+								{
+									// if point found: early exit
+									return true;
+								}
+							}
+						}
+					}
+
+					// if loop point is not found (= not part of surface)
+					return false;
+				}
+				
+				/*! \brief  Converts a list of \c IfcFaceBound -s to a list of boundary loops.
+				 * The first loop in the return list is converted from the \c IfcFaceOuterBound entity.
+				 * Only one boundary should be of this type.
+				 *
+				 * \param[in]	ifcFaceBounds	List of \c IfcFaceBound entities to be converted.
+				 * \param[in]	pos				The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \return		List of boundary loops.
+				 */
+				std::vector<std::vector<carve::geom::vector<3>>> convertIfcFaceBoundList(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>> ifcFaceBounds,
+					const carve::math::Matrix& pos) const noexcept(false)
+				{
+					swapOuterBoundaryToFront(ifcFaceBounds);
+
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops (ifcFaceBounds.size());
+
+					// for each bound loop: get vertices into faceBoundLoops[i]
+					std::transform(ifcFaceBounds.begin(), ifcFaceBounds.end(), faceBoundLoops.begin(),
+						[this, &pos](EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound> ifcFaceBound) { return convertIfcFaceBound(ifcFaceBound, pos); });
+
+					return faceBoundLoops;
+				}
+
+				/*! \brief  Converts a \c IfcFaceBound (or \c IfcFaceOuterBound) entity to a boundary loop of geometry points.
+				 * \param[in]	bound	\c IfcFaceBound entity to be converted.
+				 * \param[in]	pos		The relative location of the origin of the representation's coordinate system within the geometric context.
+				 * \return		List of geometry points which describe the boundary loop.
+				 */
+				std::vector<carve::geom::vector<3>> convertIfcFaceBound(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>& bound,
+					const carve::math::Matrix& pos) const noexcept(false)
+				{
+					if (bound.expired()) {
+						throw oip::ReferenceExpiredException(bound);
+					}
+
+					//	IfcLoop   has subtypes   IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop
+					const EXPRESSReference<typename IfcEntityTypesT::IfcLoop>& loop = bound->Bound;
+
+					// Collect all vertices of the current loop
+					std::vector<carve::geom::vector<3>> loopVertices3D = curveConverter->convertIfcLoop(loop);
+
+					if (loopVertices3D.size() < 3)
+					{
+						throw oip::InconsistentGeometryException(loop, " Number of vertices < 3");
+					}
+
+					for (auto& vertex : loopVertices3D)
+					{
+						vertex = pos * vertex;
+					}
+
+					// Check for orientation and reverse vertices order if FALSE
+					if (!(bound->Orientation))
+					{
+						std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+					}
+
+					return loopVertices3D;
 				}
 
 				/*! \brief Typename definition (alias) of \c EXPRESSContainer for a easier use of \c OpenInfraPlatform::EarlyBinding::EXPRESSContainer.
@@ -1591,6 +1559,373 @@ namespace OpenInfraPlatform {
 				std::shared_ptr<PlacementConverterT<IfcEntityTypesT>> placementConverter;
 				std::shared_ptr<CurveConverterT<IfcEntityTypesT>> curveConverter;
 
+				/*! \brief Computes the surface and boundary loop of an \c IfcFaceSurface (or sub-type), and puts them into one polyhedron.
+				\param[in]		ifcFaceSurface		\c IfcFaceSurface entity to be converted.
+				\param[in]		pos					The relative location of the origin of the representation's coordinate system within the geometric context.
+				\param[in,out]	polyhedron			\c Carve polyhedron of the converted faces.
+				\param[in,out]	polyhedronIndices	Contains coordinates and indices of polyhedron vertices.
+				\param[in,out]	meshGridLines		Contains square mesh lines of uv-evaluation grid, i.e. at B-spline surface.
+
+				\see
+				The parameters \p polyhedron and \p polyhedronIndices are described in more detail in the description of convertIfcFace().
+				*/
+				void computeIfcFaceSurface(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFaceSurface>& ifcFaceSurface,
+					const carve::math::Matrix& pos,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices,
+					std::vector<std::shared_ptr<carve::input::PolylineSetData>>& meshGridLines
+				) const noexcept(false)
+				{
+					if (ifcFaceSurface.expired()) {
+						throw oip::ReferenceExpiredException(ifcFaceSurface);
+					}
+
+					// get attribute 1:
+					// list of bound loops (IfcFaceBound) with outer boundary loop (IfcFaceOuterBound) at index 0;
+					// one bound loop contains a list of loop points (carve::gem::vector<3>)
+					std::vector<std::vector<carve::geom::vector<3>>> faceBoundLoops = convertIfcFaceBoundList(ifcFaceSurface->Bounds, pos);
+
+					// get attribute 3: indicates whether the sense of the surface normal agrees with the sense of the topological normal (face bound)
+					// ToDo: take sameSense into account by the addFace-construction
+					const bool sameSense = ifcFaceSurface->SameSense;
+
+					// get attribute 2: FaceSurface (as IfcSurface)
+					// The faceSurface (geometry from IfcSurface-entity) is trimmed by the faceBoundLoops (topology, represented in geometrical description).
+					// Loop geometry should be consistent with the face geometry (buildingSMART), thus the loop vertices should be part of the faceSurface.
+					const EXPRESSReference<typename IfcEntityTypesT::IfcSurface>& ifcSurface = ifcFaceSurface->FaceSurface;
+					if (ifcSurface.isOfType<typename IfcEntityTypesT::IfcPlane>())
+					{
+						// loop points lie in a plane (the IfcPlane), thus the loop points can be triangulated
+						addArbitraryFaceToPolyhedronData(ifcFaceSurface, faceBoundLoops, polyhedron, polyhedronIndices);
+					}
+					else
+					{
+						// get surface geometry into inputDataFaceSurface
+						std::shared_ptr<ItemData> inputDataFaceSurface = std::make_shared<ItemData>();
+						convertIfcSurface(ifcSurface, pos, inputDataFaceSurface);
+
+						// ASSUMPTION: the Surface boundary is already coincident with the loop boundary
+						// ToDo: in general case, the Surface has to be trimmed by the loop boundary (or at least checked to be coincident)
+						if (!checkBoundaryIsPartOfSurface(inputDataFaceSurface, faceBoundLoops))
+						{
+							BLUE_LOG(warning) << "Surface of IfcFaceSurface (or IfcAdvancedSurface) does not meet the boundary, or the default precision is too tight. Geometry could be wrong!";
+						}
+
+						// append surface-faces to target polyhedron
+						inputDataFaceSurface->mergePolyhedronsIntoOnePolyhedron(polyhedron, polyhedronIndices);
+
+						// append meshGridLine from temporal inputDataFaceSurface to meshGridLines (copies shared pointers)
+						std::copy(inputDataFaceSurface->meshGridLines.begin(), inputDataFaceSurface->meshGridLines.end(), std::back_inserter(meshGridLines));
+					}
+				}
+
+				/*! \brief  Adds one triangle to the polyhedron.
+				\param	loopVertices3D
+				\param	polyhedron
+				\param	polyhedronIndices
+				\note	ToDo: pending refactoring
+				*/
+				void addTriangleToPolyhedronData(
+					const std::vector<carve::geom::vector<3>>& loopVertices3D,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(true)
+				{
+					std::vector<uint32_t> triangleIndices;
+					triangleIndices.reserve(3);
+
+					for (const auto& vertex3D : loopVertices3D)
+					{
+						// set string id and search for existing vertex in polyhedron
+						std::stringstream vertexString;
+						vertexString << vertex3D.x << " " << vertex3D.y << " " << vertex3D.z;
+						auto itFound = polyhedronIndices.find(vertexString.str());
+
+						uint32_t index = 0;
+						if (itFound != polyhedronIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polyhedron->addVertex(vertex3D);
+							polyhedronIndices[vertexString.str()] = index;
+						}
+
+						triangleIndices.push_back(index);
+					}
+					polyhedron->addFace(triangleIndices.at(0), triangleIndices.at(1), triangleIndices.at(2));
+				}
+
+				/*! \brief  Triangulates an arbitrary face and adds it to the polyhedron.
+				\param	face
+				\param	faceBoundLoops
+				\param	polyhedron
+				\param	polyhedronIndices
+				\note	ToDo: pending refactoring
+				*/
+				void addArbitraryFaceToPolyhedronData(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcFace>& face,
+					std::vector<std::vector<carve::geom::vector<3>>>& faceBoundLoops,
+					std::shared_ptr<carve::input::PolyhedronData>& polyhedron,
+					std::map<std::string, uint32_t>& polyhedronIndices) const noexcept(false)
+				{
+					// To triangulate the mesh, carve needs 2D polygons, we collect the data in 2D and 3D for every bound
+					std::vector<std::vector<carve::geom2d::P2>> faceVertices2D; // ( P2 is a carve::geom::vector<2> )
+					std::vector<std::vector<carve::geom::vector<3>>> faceVertices3D;
+
+					bool faceLoopReversed = false;
+
+					// If polyhedron has more than 3 vertices, then we have to project polyhedron into 2D, so that carve can triangulate the mesh
+					ProjectionPlane plane = UNDEFINED;
+
+					// Loop through all boundary definitions, preparation of vertices by convert3DPointsTo2D
+					int boundID = -1;
+					for (auto& loopVertices3D : faceBoundLoops)
+					{
+						boundID++;
+
+						std::vector<carve::geom2d::P2> loopVertices2D;
+
+						if (!convert3DPointsTo2D(boundID, plane, loopVertices2D, loopVertices3D, faceLoopReversed))
+						{
+							throw oip::InconsistentGeometryException(face, "loop could not be projected");
+						}
+
+						if (loopVertices2D.size() < 3)
+						{
+							throw oip::InconsistentGeometryException(face, "loopVertices2D.size() < 3");
+						}
+
+						// push back vertices to all faceVertices
+						faceVertices2D.push_back(loopVertices2D);
+						faceVertices3D.push_back(loopVertices3D);
+					}
+
+					// If no faceVertices were collected, no carve operations are required
+					if (faceVertices2D.empty())
+					{
+						throw oip::InconsistentGeometryException(face, "no faceVertices were collected");
+					}
+
+					// Result after incorporating holes in polygons if defined
+					std::vector<std::pair<size_t, size_t>> incorporatedIndices;
+
+					// merged vertices after incorporating of holes
+					std::vector<carve::geom2d::P2> mergedVertices2D;
+					std::vector<carve::geom::vector<3>> mergedVertices3D;
+
+					try
+					{
+						incorporatedIndices = carve::triangulate::incorporateHolesIntoPolygon(faceVertices2D);
+
+						for (const auto& incorpIndex : incorporatedIndices)
+						{
+							size_t loopIndex = incorpIndex.first;
+							size_t vertexIndex = incorpIndex.second;
+
+							carve::geom2d::P2& point2D = faceVertices2D[loopIndex][vertexIndex];
+							carve::geom::vector<3>& point3D = faceVertices3D[loopIndex][vertexIndex];
+
+							// add vertices to merged results
+							mergedVertices2D.push_back(point2D);
+							mergedVertices3D.push_back(point3D);
+						}
+
+					}
+					catch (const carve::exception& e) // catch carve error if holes cannot be incorporated
+					{
+						throw oip::InconsistentGeometryException(face, "carve::triangulate::incorporateHolesIntoPolygon failed");
+					}
+
+					triangulateFace(mergedVertices2D, mergedVertices3D, faceLoopReversed, polyhedron, polyhedronIndices);
+				}
+
+				/*! \brief  Converts 3D points to 2D.
+				\param	boundID
+				\param	plane				The projection plane
+				\param	loopvertices2D
+				\param	loopVertices3D
+				\param	faceLoopReversed
+				\return	boolean indicates an error
+				\note	ToDo: pending refactoring
+				*/
+				bool convert3DPointsTo2D(const int boundID,
+					ProjectionPlane& plane,
+					std::vector<carve::geom2d::P2>& loopVertices2D,
+					std::vector<carve::geom::vector<3>>& loopVertices3D,
+					bool& faceLoopReversed)  const noexcept(false)
+				{
+					// Compute normal of polygon
+					carve::geom::vector<3> normal = GeomUtils::computePolygonNormal(loopVertices3D);
+
+					if (boundID == 0)
+					{
+						const double nx = std::abs(normal.x);
+						const double ny = std::abs(normal.y);
+						const double nz = std::abs(normal.z);
+
+						const double nMax = std::max(std::max(nx, ny), nz);
+
+						if (nMax == nx)
+						{
+							plane = ProjectionPlane::YZ_PLANE;
+						}
+						else if (nMax == ny)
+						{
+							plane = ProjectionPlane::XZ_PLANE;
+						}
+						else if (nMax == nz)
+						{
+							plane = ProjectionPlane::XY_PLANE;
+						}
+						else
+						{
+							throw oip::InconsistentGeometryException("It is not possible to define plane in other dimension");
+						}
+					}
+
+					// Now collect all vertices in 2D
+					for (const auto& vertex : loopVertices3D)
+					{
+						if (plane == ProjectionPlane::YZ_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.y, vertex.z));
+						}
+
+						else if (plane == ProjectionPlane::XZ_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.z));
+						}
+
+						else if (plane == ProjectionPlane::XY_PLANE)
+						{
+							loopVertices2D.push_back(carve::geom::VECTOR(vertex.x, vertex.y));
+						}
+						else
+						{
+							throw oip::InconsistentGeometryException("plane is undefined");
+						}
+					}
+
+					// Check winding order of 2D polygon
+					carve::geom3d::Vector normal2D = GeomUtils::computePolygon2DNormal(loopVertices2D);
+
+					if (boundID == 0)
+					{
+						if (normal2D.z < 0)
+						{
+							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
+							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+							faceLoopReversed = true;
+						}
+					}
+					else
+					{
+						if (normal2D.z > 0)
+						{
+							std::reverse(loopVertices2D.begin(), loopVertices2D.end());
+							std::reverse(loopVertices3D.begin(), loopVertices3D.end());
+							// faceLoopReversed = true;
+						}
+					}
+					return true;
+				}
+
+				/*! \brief Triangulates merged 2D and 3D vertices to faces.
+				\param	faceVertices2D to be triangulated using carve
+				\param	faceVertices3D to be added to the triangulation
+				\param	faceLoopReversed to adapt order of adding vertices of a new face
+				\param	polygon to compare triangulated vertices with existing ones in polygon, and only add them if they're new
+				\param	polygonIndices
+				\note ToDo: pending refactoring
+				*/
+				void triangulateFace(const std::vector<carve::geom::vector<2>>& faceVertices2D,
+					const std::vector<carve::geom::vector<3>>& faceVertices3D,
+					const bool faceLoopReversed,
+					std::shared_ptr<carve::input::PolyhedronData> polygon,
+					std::map<std::string, uint32_t>& polygonIndices)  const noexcept(false)
+				{
+
+					// indices after carve triangulation of merged vertices
+					std::vector<carve::triangulate::tri_idx> triangulatedIndices;
+					std::map<uint32_t, uint32_t> mergedIndices;
+
+					// triangulate 2D polygon and improve triangulation by carve
+					carve::triangulate::triangulate(faceVertices2D, triangulatedIndices);
+					carve::triangulate::improve(faceVertices2D, triangulatedIndices);
+
+					// add new vertices to polygon or get index of existing vertex
+					for (uint32_t i = 0; i < faceVertices3D.size(); ++i)
+					{
+						const carve::geom::vector<3>& v = faceVertices3D[i];
+
+						// set string id and search for existing vertex in polygon
+						std::stringstream vertexString;
+						vertexString << v.x << " " << v.y << " " << v.z;
+
+						auto itFound = polygonIndices.find(vertexString.str());
+						uint32_t index = 0;
+
+						if (itFound != polygonIndices.end())
+						{
+							index = itFound->second;
+						}
+						else
+						{
+							index = polygon->addVertex(v);
+							polygonIndices[vertexString.str()] = index;
+						}
+						mergedIndices[i] = index;
+					}
+
+					// go through triangulated result and add new faces to polygon
+					for (const auto& triangle : triangulatedIndices)
+					{
+						const uint32_t i0 = triangle.a;
+						const uint32_t i1 = triangle.b;
+						const uint32_t i2 = triangle.c;
+
+						const uint32_t v0 = mergedIndices[i0];
+						const uint32_t v1 = mergedIndices[i1];
+						const uint32_t v2 = mergedIndices[i2];
+
+						if (faceLoopReversed)
+							polygon->addFace(v0, v2, v1);
+						else
+							polygon->addFace(v0, v1, v2);
+					}
+				}
+
+				/*! \brief  Swaps the \c IfcFaceOuterBound entity to the first position in the list of \c IfcFaceBound entities.
+				 * Only one boundary loop can be an \c IfcFaceOuterBound entity. But in general, it's optional.
+				 * \param[in,out]	ifcFaceBounds	List of \c IfcFaceBound entities in which the \c IfcFaceOuterBound entity has to be swaped to the front.
+				 */
+				void swapOuterBoundaryToFront(
+					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcFaceBound>>& ifcFaceBounds
+				) const noexcept(false)
+				{
+					// throw, if there are multiple IfcFaceOuterBound
+					if (1 < std::count_if(ifcFaceBounds.begin(), ifcFaceBounds.end(), [](const auto& faceBound) { return faceBound.isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>(); })) {
+						throw oip::InconsistentModellingException("Face boundary has more than one outer boundary. Entity #" + std::to_string(ifcFaceBounds[0].getId()) + " " + ifcFaceBounds[0].classname() + " is involved.");
+					}
+
+					// As carve expects outer boundary of face to be at first index, outer boundary has to be moved to index 0 and inner boundary has index >= 1
+					for (auto it = ifcFaceBounds.begin(); it != ifcFaceBounds.end(); it++)
+					{
+						if (it->isOfType<typename IfcEntityTypesT::IfcFaceOuterBound>())
+						{
+							// swap element 'it' with first element;
+							std::iter_swap(ifcFaceBounds.begin(), it);
+
+							// according to ifc-documentation, only one boundary (= loop) can be outer boundary:
+							// "One loop is optionally distinguished as the outer loop of the face."
+							// (https://standards.buildingsmart.org/IFC/DEV/IFC4_3/RC3/HTML/link/ifcface.htm)
+							// thus, break the for-loop after THE outer boundary was found
+							return;
+						}
+					}
+				}
 			};
 		}
 	}
