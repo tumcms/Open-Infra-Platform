@@ -90,11 +90,12 @@ if(NOT dep_liblas_POPULATED)
 	set_target_properties(las_c PROPERTIES FOLDER "ThirdParty/libLAS")
 endif()]]
 
-set(libLAS_INCLUDE_DIR "C:/OSGeo4W/include")
-set(libLAS_LIBRARY "C:/OSGeo4W/lib/liblas.lib")
-find_path(libLAS_DIR NAMES liblas-config.cmake HINTS "C:\\OSGeo4W\\cmake")
-set (CMAKE_PREFIX_PATH ${libLAS_DIR})
-find_package(libLAS REQUIRED)
+# Incorporates libLAS into solution (Right now libLAS causes generation processes of OIP to crash)
+# set(libLAS_INCLUDE_DIR "C:/OSGeo4W/include")
+# set(libLAS_LIBRARY "C:/OSGeo4W/lib/liblas.lib")
+# find_path(libLAS_DIR NAMES liblas-config.cmake HINTS "C:\\OSGeo4W\\cmake")
+# set (CMAKE_PREFIX_PATH ${libLAS_DIR})
+# find_package(libLAS REQUIRED)
 
 FetchContent_Declare(
 	cc
