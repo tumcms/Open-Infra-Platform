@@ -129,7 +129,7 @@ public:
 	* \return The vector wich includes the numbers of RGB color
 	*/
 
-	static buw::Vector3f OffReader::readColorsFromFace(std::stringstream& lineStream);
+	static buw::Vector3f readColorsFromFace(std::stringstream& lineStream);
 
 };
 OIP_NAMESPACE_OPENINFRAPLATFORM_CORE_OFFCONVERTER_END

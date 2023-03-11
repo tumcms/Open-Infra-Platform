@@ -26,9 +26,9 @@ Meaning of columns:
 
 | Entity                                | Covered              | Converter                  | Unit test             | Issue |
 |---------------------------------------|----------------------|----------------------------|-----------------------|-------|
-| `IfcAdvancedBrep`                     | :x:                  | `SolidModelConverter`      | -                     | -     |
+| `IfcAdvancedBrep`                     | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcAdvancedBrepWithVoids`            | :x:                  | `SolidModelConverter`      | -                     | -     |
-| `IfcAdvancedFace`                     | :x:                  | `SolidModelConverter`      | -                     | -     |
+| `IfcAdvancedFace`                     | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcAlignmentCurve`                   | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcAnnotationFillArea`               | :x:                  | -                          | -                     | -     |
 | `IfcAxis1Placement`                   | :heavy_check_mark:   | `PlacementConverter`       | :heavy_check_mark:    | -     |
@@ -53,11 +53,12 @@ Meaning of columns:
 | `IfcCircle`                           | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcCircularArcSegment2D`             | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcClosedShell`                      | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
-| `IfcClothoid`                         | :x:                  | `CurveConverter`           | -                     | [#304](https://github.com/tumcms/Open-Infra-Platform/issues/304) |
+| `IfcClothoid`                         | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#304](https://github.com/tumcms/Open-Infra-Platform/issues/304) |
 | `IfcCompositeCurve`                   | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
 | `IfcCompositeCurveOnSurface`          | :x:                  | -                          | -                     | -     |
 | `IfcCompositeCurveSegment`            | :heavy_check_mark:   | `CurveConverter`           | :x:                   | -     |
 | `IfcConnectedFaceSet`                 | :x:                  | 'RepresentationConverter'  | -                     | -     |
+| `IfcCosine`                           | :heavy_check_mark:   | `CurveConverter`           | :x:                   |[#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|  
 | `IfcCsgSolid`                         | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcCurveBoundedPlane`                | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcCurveBoundedSurface`              | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150) |
@@ -72,8 +73,8 @@ Meaning of columns:
 | `IfcExtrudedAreaSolidTapered`         | :x:                  | -                          | -                     | -     |
 | `IfcFace`                             | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
 | `IfcFaceBasedSurfaceModel`            | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
-| `IfcFaceBound`                        | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
-| `IfcFaceSurface`                      | :x:                  | -                          | -                     | -     |
+| `IfcFaceBound`                        | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
+| `IfcFaceSurface`                      | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
 | `IfcFacetedBrep`                      | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | -     |
 | `IfcFacetedBrepWithVoids`             | :x:                  | `SolidModelConverter`      | -                     | [#143](https://github.com/tumcms/Open-Infra-Platform/issues/143) |
 | `IfcFaceOuterBound`                   | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
@@ -116,6 +117,7 @@ Meaning of columns:
 | `IfcPolyLoop`                         | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcPolygonalBoundedHalfSpace`        | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcPolygonalFaceSet`                 | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
+| `IfcPolynomialCurve`                  | :x:                  | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
 | `IfcRationalBSplineCurveWithKnots`    | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
 | `IfcRationalBSplineSurfaceWithKnots`  | :heavy_check_mark:   | `SplineConverter`          | :heavy_check_mark:    | -     |
 | `IfcRectangularPyramid`               | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
@@ -126,13 +128,16 @@ Meaning of columns:
 | `IfcRightCircularCone`                | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
 | `IfcRightCircularCylinder`            | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
 | `IfcSeamCurve`                        | :x:                  | -                          | -                     | -     |
+| `IfcSecondOrderPolynomialSpiral`      | :x:                  | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|                
 | `IfcSectionedSurface`                 | :x:                  | -                          | -                     | -     |
 | `IfcSectionedSolid`                   | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | [#287](https://github.com/tumcms/Open-Infra-Platform/issues/287) |
 | `IfcSectionedSolidHorizontal`         | :heavy_check_mark:   | `SolidModelConverter`      | :heavy_check_mark:    | [#356](https://github.com/tumcms/Open-Infra-Platform/issues/356)|
 | `IfcSectionedSpine`                   | :x:                  | `RepresentationConverter`  | -                     | -     |
 | `IfcSegmentedReferenceCurve`          | :x:                  | `CurveConverter`           | -                     | -     |
 | `IfcSeriesParameterCurve`             | :x:                  | `CurveConverter`           | -                     | -     |
+| `IfcSeventhOrderPolynomialSpiral`     | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
 | `IfcShellBasedSurfaceModel`           | :heavy_check_mark:   | `FaceConverter`            | :x:                   | -     |
+| `IfcSine`                             | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|
 | `IfcSphere`                           | :heavy_check_mark:   | `SolidModelConverter`      | :x:                   | -     |
 | `IfcSphericalSurface`                 | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150)|
 | `IfcStyledItem`                       | :heavy_check_mark:   | `RepresentationConverter`  | :x:                   | -     |
@@ -145,6 +150,7 @@ Meaning of columns:
 | `IfcSweptDiskSolidPolygonal`          | :x:                  | `SolidModelConverter`      | -                     | -     |
 | `IfcTextLiteral`                      | :x:                  | `RepresentationConverter`  | -                     | -     |
 | `IfcTextLiteralWithExtent`            | :x:                  | -                          | -                     | -     |
+| `IfcThirdOrderPolynomialSpiral`       | :heavy_check_mark:   | `CurveConverter`           | :x:                   | [#524](https://github.com/tumcms/Open-Infra-Platform/issues/524)|                
 | `IfcToroidalSurface`                  | :heavy_check_mark:   | `FaceConverter`            | :x:                   | [#150](https://github.com/tumcms/Open-Infra-Platform/issues/150)|
 | `IfcTransitionCurveSegment2D`         | :heavy_check_mark:   | `CurveConverter`           | :heavy_check_mark:    | -     |
 | `IfcTriangulatedIrregularNetwork`     | :heavy_check_mark:   | `FaceConverter`            | :heavy_check_mark:    | -     |
