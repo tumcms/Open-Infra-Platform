@@ -554,13 +554,18 @@ void OpenInfraPlatform::UserInterface::MainWindow::updateModelsUI()
 				}
 
 				//7. Function delete an object
-				auto itemDeleteObject = new QTreeWidgetItem(itemModel);
-				itemDeleteObject->setText(0, "Delete object");
 
-				QPushButton *launchDeleteObjectButton = new QPushButton();
-				launchDeleteObjectButton->setText("Delete object");
-				QObject::connect(launchDeleteObjectButton, &QPushButton::clicked, [this, model, filename] {on_actionDeleteObject_triggered(model, filename); });
-				modelsTreeWidget_->setItemWidget(itemDeleteObject, 1, launchDeleteObjectButton);
+				//// Create a button for deleting an object
+				//auto deleteObjectButton = new QPushButton();
+				//deleteObjectButton->setText("Delete object");
+
+				//// Connect the button to the slot for deleting an object
+				//QObject::connect(deleteObjectButton, &QPushButton::clicked, [this, model, filename] {on_actionDeleteObject_triggered(model, filename); });
+
+				//// Create a QTreeWidgetItem for the delete object button
+				//auto itemDeleteObject = new QTreeWidgetItem(itemModel);
+				//itemDeleteObject->setText(0, "Delete object");
+				//modelsTreeWidget_->setItemWidget(itemDeleteObject, 1, deleteObjectButton);
 				
 				// expanded per default
 				itemModel->setExpanded(true);
@@ -920,16 +925,16 @@ void OpenInfraPlatform::UserInterface::MainWindow::actionGetCameraState() {
 	*/
 }
 
-void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_triggered(const std::shared_ptr<oip::IModel>& model, const QString& filename){
-	
-	QMessageBox::information(this, tr("Delete object"),
-		tr("The Button works!"), QMessageBox::Ok);
-	auto data = OpenInfraPlatform::Core::DataManagement::Data::Data();
-	data.removeModel(model);
-
-	for (auto el : modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1))
-		modelsTreeWidget_->invisibleRootItem()->removeChild(el);
-}
+//void OpenInfraPlatform::UserInterface::MainWindow::on_actionDeleteObject_triggered(const std::shared_ptr<oip::IModel>& model, const QString& filename){
+//	
+//	//QMessageBox::information(this, tr("Delete object"),
+//	//	tr("The Button works!"), QMessageBox::Ok);
+//	//auto data = OpenInfraPlatform::Core::DataManagement::Data::Data();
+//	//data.removeModel(model);
+//
+//	//for (auto el : modelsTreeWidget_->findItems(filename, Qt::MatchFlag::MatchExactly, 1))
+//	//	modelsTreeWidget_->invisibleRootItem()->removeChild(el);
+//}
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 
