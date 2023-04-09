@@ -1395,7 +1395,7 @@ namespace OpenInfraPlatform
 					//			DimIs2D : BasisCurve.Dim = 2;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve2D->BasisCurve;
+					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve2D->BasisCurve;
 					std::vector<carve::geom::vector<3>> basisCurvePoints;
 					double distance = offsetCurve2D->Distance * this->UnitConvert()->getLengthInMeterFactor();
 
@@ -1464,7 +1464,9 @@ namespace OpenInfraPlatform
 
 					offsetCurve2DPoints.push_back(lastOffsetPoint);
 					GeomUtils::appendPointsToCurve(offsetCurve2DPoints, targetVec);
-					segmentStartPoints.push_back(offsetCurve2DPoints[0]);
+					segmentStartPoints.push_back(offsetCurve2DPoints[0]);*/
+
+					throw oip::UnhandledException(offsetCurve2D);
 				}
 
 				// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
@@ -1498,7 +1500,7 @@ namespace OpenInfraPlatform
 					//			DimIs2D : BasisCurve.Dim = 3;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve3D->BasisCurve;
+					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve3D->BasisCurve;
 					std::vector<carve::geom::vector<3>> basisCurvePoints;
 					double distance = offsetCurve3D->Distance * this->UnitConvert()->getLengthInMeterFactor();
 					
@@ -1531,7 +1533,8 @@ namespace OpenInfraPlatform
 
 					offsetCurve3DPoints.push_back(lastOffsetPoint);
 					GeomUtils::appendPointsToCurve(offsetCurve3DPoints, targetVec);
-					segmentStartPoints.push_back(offsetCurve3DPoints[0]);
+					segmentStartPoints.push_back(offsetCurve3DPoints[0]);*/
+					throw oip::UnhandledException(offsetCurve3D);
 				}
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
@@ -1567,46 +1570,47 @@ namespace OpenInfraPlatform
 					//	END_ENTITY;
 					// **************************************************************************************************************************
 
-					EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
-					std::vector<carve::geom::vector<3>> basisCurvePoints;
+					//EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
+					//std::vector<carve::geom::vector<3>> basisCurvePoints;
 
-					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
-						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					//convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+					//	trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
 
-					std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
-					std::vector<carve::geom::vector<3>> offsetCurve;
+					//std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
+					//std::vector<carve::geom::vector<3>> offsetCurve;
 
-					for (auto OffsetValue : OffsetValues) {
-						carve::geom::vector<3> offsetCurvePoint;
-						// defaults
-						carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
-						carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
-
-
-						calculateDistanceAlongCurve(OffsetValue, basisCurve, pointOnCurve, directionOfCurve);
+					//for (auto OffsetValue : OffsetValues) {
+					//	carve::geom::vector<3> offsetCurvePoint;
+					//	// defaults
+					//	carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
+					//	carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
 
 
-						double offsetLateral = OffsetValue->OffsetLateral * this->UnitConvert()->getLengthInMeterFactor();
-						double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
-						double offsetLongitudinal = OffsetValue->OffsetLongitudinal * this->UnitConvert()->getLengthInMeterFactor();
+					//	calculateDistanceAlongCurve(OffsetValue, basisCurve, pointOnCurve, directionOfCurve);
 
-						carve::geom::vector<2> lateral = carve::geom::VECTOR(-directionOfCurve.y, directionOfCurve.x);
 
-						offsetCurvePoint = carve::geom::VECTOR(pointOnCurve.x + offsetLateral * lateral.x,
-							pointOnCurve.y + offsetLateral * lateral.y,
-							pointOnCurve.z + offsetVertical);
+					//	double offsetLateral = OffsetValue->OffsetLateral * this->UnitConvert()->getLengthInMeterFactor();
+					//	double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
+					//	double offsetLongitudinal = OffsetValue->OffsetLongitudinal * this->UnitConvert()->getLengthInMeterFactor();
 
-						if (offsetLongitudinal) {
-							offsetCurvePoint = carve::geom::VECTOR(offsetCurvePoint.x + offsetLongitudinal * directionOfCurve.x,
-								offsetCurvePoint.y + offsetLongitudinal * directionOfCurve.y,
-								offsetCurvePoint.z + offsetLongitudinal * directionOfCurve.z);
-						}
+					//	carve::geom::vector<2> lateral = carve::geom::VECTOR(-directionOfCurve.y, directionOfCurve.x);
 
-						offsetCurve.push_back(offsetCurvePoint);
-					}
+					//	offsetCurvePoint = carve::geom::VECTOR(pointOnCurve.x + offsetLateral * lateral.x,
+					//		pointOnCurve.y + offsetLateral * lateral.y,
+					//		pointOnCurve.z + offsetVertical);
 
-					GeomUtils::appendPointsToCurve(offsetCurve, targetVec);
-					segmentStartPoints.push_back(offsetCurve[0]);
+					//	if (offsetLongitudinal) {
+					//		offsetCurvePoint = carve::geom::VECTOR(offsetCurvePoint.x + offsetLongitudinal * directionOfCurve.x,
+					//			offsetCurvePoint.y + offsetLongitudinal * directionOfCurve.y,
+					//			offsetCurvePoint.z + offsetLongitudinal * directionOfCurve.z);
+					//	}
+
+					//	offsetCurve.push_back(offsetCurvePoint);
+					//}
+
+					//GeomUtils::appendPointsToCurve(offsetCurve, targetVec);
+					//segmentStartPoints.push_back(offsetCurve[0]);
+					throw oip::UnhandledException(offsetCurveByDistances);
 				}
 					
 #endif
@@ -1627,71 +1631,71 @@ namespace OpenInfraPlatform
 					//	END_ENTITY;
 
 					// Get length of the segment curve
-					double distance = 0.;
-					switch (OffsetValue->DistanceAlong.which())
-					{
-					case 0:
-					{
-						// Calculate the length using \c IfcNonNegativeLengthMeasure. 
-						distance = OffsetValue->DistanceAlong.get<0>();
-						break;
-					}
-					case 1:
-					{
-						// Calculate the length using \c IfcParameterValue.
-						distance = OffsetValue->DistanceAlong.get<1>();
-						break;
-					}
-					default:
-						throw oip::InconsistentGeometryException(OffsetValue, "Could not determine DistanceAlong!");
-					}
+					//double distance = 0.;
+					//switch (OffsetValue->DistanceAlong.which())
+					//{
+					//case 0:
+					//{
+					//	// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+					//	distance = OffsetValue->DistanceAlong.get<0>();
+					//	break;
+					//}
+					//case 1:
+					//{
+					//	// Calculate the length using \c IfcParameterValue.
+					//	distance = OffsetValue->DistanceAlong.get<1>();
+					//	break;
+					//}
+					//default:
+					//	throw oip::InconsistentGeometryException(OffsetValue, "Could not determine DistanceAlong!");
+					//}
 
-					typename IfcEntityTypesT::IfcCurveMeasureSelect distanceAlong = OffsetValue->DistanceAlong;
-					// determine point
-					if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
-					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
-					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::ifcCircle>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
-					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
-					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
-					}
-					/*else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
-					}
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcCosine>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
-					}*/
-					else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
-					{
-						pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
-						directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
-					}
-					else {
-						throw oip::UnhandledException(basisCurve);
-					}
-
+					//typename IfcEntityTypesT::IfcCurveMeasureSelect distanceAlong = OffsetValue->DistanceAlong;
+					//// determine point
+					//if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::ifcCircle>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					///*else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcCosine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
+					//}*/
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					//else {
+					//	throw oip::UnhandledException(basisCurve);
+					//}
+					throw oip::UnhandledException(basisCurve);
 				}
 
 
@@ -2743,7 +2747,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentModellingException("Trimming point can be specified only with one or two parameters");
 					}
 				}
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1)
+
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve.
 				* \tparam TCurve					A type of the curve. 
@@ -2772,7 +2776,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(curve, "TrimmingSelect is wrong!");
 					}
 				}
-#endif
+
 
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
@@ -2820,7 +2824,7 @@ namespace OpenInfraPlatform
 				}
 #endif
 
-#if defined(OIP_MODULE_EARLYBINDING_IFC4X1)
+
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
 				* \tparam TCurve					A type of the curve. 
@@ -2862,7 +2866,7 @@ namespace OpenInfraPlatform
 						throw oip::InconsistentGeometryException(line, "Point is not on the line");
 					}
 				}
-#endif
+
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcParameterValue.
 				* \tparam TCurve					A type of the curve.
