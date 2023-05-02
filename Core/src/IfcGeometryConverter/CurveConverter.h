@@ -1317,9 +1317,6 @@ namespace OpenInfraPlatform
 				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
 				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
 				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve.
-				*
-				* \note The function is not implemented.
-				* \internal TODO.
 				*/
 				void convertIfcOffsetCurve(
 					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve>& offsetCurve,
@@ -1342,39 +1339,366 @@ namespace OpenInfraPlatform
 					//			BasisCurve: IfcCurve;
 					//	END_ENTITY;
 					// **************************************************************************************************************************
-					throw oip::UnhandledException(offsetCurve);
-					/*
+					
 					// IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve2D> offsetCurve2D =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve2D>(offsetCurve);
-					if (offsetCurve2D) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurve2D not implemented" << std::endl;
-#endif
-						return;
-					}
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurve2D>())
+					{
+						return convertIfcOffsetCurve2D(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurve2D>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurve2D
 
 					// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurve3D> offsetCurve3D =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurve3D>(offsetCurve);
-					if (offsetCurve3D) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurve3D not implemented" << std::endl;
-#endif
-						return;
-					}
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurve3D>())
+					{
+						return convertIfcOffsetCurve3D(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurve3D>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurve3D
 
 					// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
-					std::shared_ptr<typename IfcEntityTypesT::IfcOffsetCurveByDistances> offsetCurveDist =
-						std::dynamic_pointer_cast<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(offsetCurve);
-					if (offsetCurveDist) {
-#ifdef _DEBUG
-						std::cout << "Warning\t| IfcOffsetCurveByDistances not implemented" << std::endl;
-#endif
-						return;
-					}
-					*/
+					if (offsetCurve.template isOfType<typename IfcEntityTypesT::IfcOffsetCurveByDistances>())
+					{
+						return convertIfcOffsetCurveByDistances(offsetCurve.template as<typename IfcEntityTypesT::IfcOffsetCurveByDistances>(),
+							targetVec, segmentStartPoints, trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+					} // end if IfcOffsetCurveByDistances
+
+					// the rest we do not support
+					throw oip::UnhandledException(offsetCurve);
 				}
+
+				// IfcOffsetCurve2D SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurve2D to a tesselated curve.
+				* \param[in] offsetCurve2D			A pointer to data from \c IfcOffsetCurve2D.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve2D.
+				*/
+				void convertIfcOffsetCurve2D(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve2D>& offsetCurve2D,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve2D.htm
+					//	ENTITY IfcOffsetCurve2D
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			Distance: IfcLengthMeasure;
+					//			SelfIntersect: IfcLogical;
+					//		WHERE
+					//			DimIs2D : BasisCurve.Dim = 2;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve2D->BasisCurve;
+					std::vector<carve::geom::vector<3>> basisCurvePoints;
+					double distance = offsetCurve2D->Distance * this->UnitConvert()->getLengthInMeterFactor();
+
+					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					std::vector<carve::geom::vector<3>> offsetCurve2DPoints;
+					carve::geom::vector<3> basisCurveDirection = basisCurvePoints[basisCurvePoints.size() - 1] - basisCurvePoints[0];
+
+
+					for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
+						carve::geom::vector<3> startPoint = basisCurvePoints[i];
+						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+						carve::geom::vector<3> offsetPoint;
+
+						if (this->GeomSettings()->areEqual(basisCurveDirection.z, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.y);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.y);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x,
+								startPoint.y + distance * orthogonal.y,
+								startPoint.z);
+						}
+						else if (this->GeomSettings()->areEqual(basisCurveDirection.y, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.x, startPoint.z);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.x, endPoint.z);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x + distance * orthogonal.x,
+								startPoint.y,
+								startPoint.z + distance * orthogonal.y);
+						}
+						else if (this->GeomSettings()->areEqual(basisCurveDirection.x, 0.0)) {
+							carve::geom::vector<2> startPoint2D = carve::geom::VECTOR(startPoint.y, startPoint.z);
+							carve::geom::vector<2> endPoint2D = carve::geom::VECTOR(endPoint.y, endPoint.z);
+
+							carve::geom::vector<2> tangent = endPoint2D - startPoint2D;
+							carve::geom::vector<2> orthogonal = carve::geom::VECTOR(-tangent.y, tangent.x);
+
+							offsetPoint = carve::geom::VECTOR(startPoint.x,
+								startPoint.y + distance * orthogonal.x,
+								startPoint.z + distance * orthogonal.y);
+						}
+						else {
+							throw oip::UnhandledException(offsetCurve2D);
+						}
+
+						offsetCurve2DPoints.push_back(offsetPoint);
+					}
+
+					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size()-1];
+					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
+					carve::geom::vector<2> lastStartPoint2D = carve::geom::VECTOR(lastStartPoint.x, lastStartPoint.y);
+					carve::geom::vector<2> lastEndPoint2D = carve::geom::VECTOR(lastEndPoint.x, lastEndPoint.y);
+					carve::geom::vector<2> lastTangent = lastEndPoint2D - lastStartPoint2D;
+					carve::geom::vector<2> lastOrthogonal = carve::geom::VECTOR(-lastTangent.y, lastTangent.x);
+
+					carve::geom::vector<3> lastOffsetPoint = carve::geom::VECTOR(lastStartPoint.x - distance * lastOrthogonal.x,
+						lastStartPoint.y - distance * lastOrthogonal.y,
+						lastStartPoint.z);
+
+					offsetCurve2DPoints.push_back(lastOffsetPoint);
+					GeomUtils::appendPointsToCurve(offsetCurve2DPoints, targetVec);
+					segmentStartPoints.push_back(offsetCurve2DPoints[0]);*/
+
+					throw oip::UnhandledException(offsetCurve2D);
+				}
+
+				// IfcOffsetCurve3D SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurve3D to a tesselated curve.
+				* \param[in] offsetCurve3D			A pointer to data from \c IfcOffsetCurve3D.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurve3D.
+				*/
+				void convertIfcOffsetCurve3D(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurve3D>& offsetCurve3D,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurve3D.htm
+					//	ENTITY IfcOffsetCurve3D
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			Distance: IfcLengthMeasure;
+					//			SelfIntersect: IfcLogical;
+					//			RefDirection: IfcDirection;
+					//		WHERE
+					//			DimIs2D : BasisCurve.Dim = 3;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+					/*EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurve3D->BasisCurve;
+					std::vector<carve::geom::vector<3>> basisCurvePoints;
+					double distance = offsetCurve3D->Distance * this->UnitConvert()->getLengthInMeterFactor();
+					
+					EXPRESSReference<typename IfcEntityTypesT::IfcDirection> offsetDirectionVector = offsetCurve3D->RefDirection;
+					carve::geom::vector<3> direction = placementConverter->convertIfcDirection(offsetCurve3D->RefDirection);
+
+
+					convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+						trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					std::vector<carve::geom::vector<3>> offsetCurve3DPoints;
+
+					for (int i = 0; i < basisCurvePoints.size() - 1; i++) {
+						carve::geom::vector<3> startPoint = basisCurvePoints[i];
+						carve::geom::vector<3> endPoint = basisCurvePoints[i + 1];
+
+						carve::geom::vector<3> tangent = endPoint - startPoint;
+
+						carve::geom::vector<3> offset = carve::geom::cross(direction, tangent);
+						carve::geom::vector<3> offsetPoint = startPoint + offset * distance;
+						offsetCurve3DPoints.push_back(offsetPoint);
+					}
+					
+					carve::geom::vector<3> lastStartPoint = basisCurvePoints[basisCurvePoints.size() - 1];
+					carve::geom::vector<3> lastEndPoint = basisCurvePoints[basisCurvePoints.size() - 2];
+					carve::geom::vector<3> lastTangent = lastEndPoint - lastStartPoint;
+
+					carve::geom::vector<3> lastOffset = carve::geom::cross(direction, lastTangent);
+					carve::geom::vector<3> lastOffsetPoint = lastStartPoint - lastOffset * distance;
+
+					offsetCurve3DPoints.push_back(lastOffsetPoint);
+					GeomUtils::appendPointsToCurve(offsetCurve3DPoints, targetVec);
+					segmentStartPoints.push_back(offsetCurve3DPoints[0]);*/
+					throw oip::UnhandledException(offsetCurve3D);
+				}
+
+#if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
+				// IfcOffsetCurveByDistances SUBTYPE OF IfcOffsetCurve
+				/**********************************************************************************************/
+				/*! \brief Converts an \c IfcOffsetCurveByDistances to a tesselated curve.
+				* \param[in] offsetCurveByDistances	A pointer to data from \c IfcOffsetCurveByDistances.
+				* \param[out] targetVec				The tessellated line.
+				* \param[out] segmentStartPoints	The starting points of separate segments.
+				* \param[in] trim1Vec				The trimming of the curve as saved in IFC model - trim at start of curve.
+				* \param[in] trim2Vec				The trimming of the curve as saved in IFC model - trim at end of curve.
+				* \param[in] senseAgreement			Does the resulting geometry have the same sense agreement as the \c IfcOffsetCurveByDistances.
+				*
+				* \note The function is not implemented.
+				* \internal TODO.
+				*/
+				void convertIfcOffsetCurveByDistances(
+					const EXPRESSReference<typename IfcEntityTypesT::IfcOffsetCurveByDistances>& offsetCurveByDistances,
+					std::vector<carve::geom::vector<3>>& targetVec,
+					std::vector<carve::geom::vector<3>>& segmentStartPoints,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim1Vec,
+					const std::vector<std::shared_ptr<typename IfcEntityTypesT::IfcTrimmingSelect>>& trim2Vec,
+					const bool senseAgreement,
+					const typename IfcEntityTypesT::IfcTrimmingPreference& trimmingPreference
+				) const noexcept(false)
+				{
+					// **************************************************************************************************************************
+					//	https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3/lexical/IfcOffsetCurveByDistances.htm
+					//	ENTITY IfcOffsetCurveByDistances
+					//		SUBTYPE OF(IfcOffsetCurve);
+					//			OffsetValues: LIST[1:? ] OF IfcPointByDistanceExpression;
+					//			Tag: OPTIONAL IfcLabel;
+					//	END_ENTITY;
+					// **************************************************************************************************************************
+
+					//EXPRESSReference<typename IfcEntityTypesT::IfcCurve> basisCurve = offsetCurveByDistances->BasisCurve;
+					//std::vector<carve::geom::vector<3>> basisCurvePoints;
+
+					//convertIfcCurve(basisCurve, basisCurvePoints, segmentStartPoints,
+					//	trim1Vec, trim2Vec, senseAgreement, trimmingPreference);
+
+					//std::vector<EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>> OffsetValues = offsetCurveByDistances->OffsetValues;
+					//std::vector<carve::geom::vector<3>> offsetCurve;
+
+					//for (auto OffsetValue : OffsetValues) {
+					//	carve::geom::vector<3> offsetCurvePoint;
+					//	// defaults
+					//	carve::geom::vector<3> pointOnCurve = carve::geom::VECTOR(0.0, 0.0, 0.0);
+					//	carve::geom::vector<3> directionOfCurve = carve::geom::VECTOR(1.0, 0.0, 0.0);
+
+
+					//	calculateDistanceAlongCurve(OffsetValue, basisCurve, pointOnCurve, directionOfCurve);
+
+
+					//	double offsetLateral = OffsetValue->OffsetLateral * this->UnitConvert()->getLengthInMeterFactor();
+					//	double offsetVertical = OffsetValue->OffsetVertical * this->UnitConvert()->getLengthInMeterFactor();
+					//	double offsetLongitudinal = OffsetValue->OffsetLongitudinal * this->UnitConvert()->getLengthInMeterFactor();
+
+					//	carve::geom::vector<2> lateral = carve::geom::VECTOR(-directionOfCurve.y, directionOfCurve.x);
+
+					//	offsetCurvePoint = carve::geom::VECTOR(pointOnCurve.x + offsetLateral * lateral.x,
+					//		pointOnCurve.y + offsetLateral * lateral.y,
+					//		pointOnCurve.z + offsetVertical);
+
+					//	if (offsetLongitudinal) {
+					//		offsetCurvePoint = carve::geom::VECTOR(offsetCurvePoint.x + offsetLongitudinal * directionOfCurve.x,
+					//			offsetCurvePoint.y + offsetLongitudinal * directionOfCurve.y,
+					//			offsetCurvePoint.z + offsetLongitudinal * directionOfCurve.z);
+					//	}
+
+					//	offsetCurve.push_back(offsetCurvePoint);
+					//}
+
+					//GeomUtils::appendPointsToCurve(offsetCurve, targetVec);
+					//segmentStartPoints.push_back(offsetCurve[0]);
+					throw oip::UnhandledException(offsetCurveByDistances);
+				}
+					
+#endif
+				void calculateDistanceAlongCurve(const EXPRESSReference<typename IfcEntityTypesT::IfcPointByDistanceExpression>& OffsetValue,
+					const EXPRESSReference<typename IfcEntityTypesT::IfcCurve>& basisCurve,
+					carve::geom::vector<3>& pointOnCurve,
+					carve::geom::vector<3>& directionOfCurve
+				) const noexcept(false) {
+
+					//	ENTITY IfcCurveSegment
+					//	  SUBTYPE OF(IfcSegment);
+					//       Placement: IfcPlacement;
+					//       SegmentStart: IfcCurveMeasureSelect;
+					//       SegmentLength: IfcCurveMeasureSelect;
+					//       ParentCurve: IfcCurve;
+					//	  DERIVE
+					//		Dim : IfcDimensionCount: = ParentCurve.Dim;
+					//	END_ENTITY;
+
+					// Get length of the segment curve
+					//double distance = 0.;
+					//switch (OffsetValue->DistanceAlong.which())
+					//{
+					//case 0:
+					//{
+					//	// Calculate the length using \c IfcNonNegativeLengthMeasure. 
+					//	distance = OffsetValue->DistanceAlong.get<0>();
+					//	break;
+					//}
+					//case 1:
+					//{
+					//	// Calculate the length using \c IfcParameterValue.
+					//	distance = OffsetValue->DistanceAlong.get<1>();
+					//	break;
+					//}
+					//default:
+					//	throw oip::InconsistentGeometryException(OffsetValue, "Could not determine DistanceAlong!");
+					//}
+
+					//typename IfcEntityTypesT::IfcCurveMeasureSelect distanceAlong = OffsetValue->DistanceAlong;
+					//// determine point
+					//if (basisCurve.isOfType<typename IfcEntityTypesT::IfcClothoid>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcClothoid>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcLine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcLine>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::ifcCircle>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::ifcCircle>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSeventhOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcThirdOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					///*else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSine>(), distance, length);
+					//}
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcCosine>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcCosine>(), distance, length);
+					//}*/
+					//else if (basisCurve.isOfType<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>())
+					//{
+					//	pointOnCurve = getPointOnCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
+					//	directionOfCurve = getDirectionOfCurve(basisCurve.as<typename IfcEntityTypesT::IfcSecondOrderPolynomialSpiral>(), distanceAlong);
+					//}
+					//else {
+					//	throw oip::UnhandledException(basisCurve);
+					//}
+					throw oip::UnhandledException(basisCurve);
+				}
+
+
 
 				// IfcPcurve SUPTYPE of IfcCurve
 				/**********************************************************************************************/
@@ -2453,6 +2777,7 @@ namespace OpenInfraPlatform
 					}
 				}
 
+
 #if defined(OIP_MODULE_EARLYBINDING_IFC4X3_RC4)
 				template <typename TCurve>
 				carve::geom::vector<3> getPointOnCurve(
@@ -2498,6 +2823,7 @@ namespace OpenInfraPlatform
 					}
 				}
 #endif
+
 
 				/**********************************************************************************************/
 				/*! \brief Calculates a trimming point on the curve using \c IfcCartesianPoint.
