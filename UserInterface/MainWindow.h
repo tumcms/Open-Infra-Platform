@@ -24,6 +24,7 @@
 #include "../UserInterface/Dialogues/LicenseAndCopyrightInformationDialog.h"
 #include "DataManagement/General/Data.h"
 #include "../UserInterface/Dialogues/PreferencesDialog.h"
+#include "../UserInterface/Dialogues/HttpDownloadDialog.h"
 #include "../Core/src/DataManagement/General/ProgressCallback.h"
 
 //#include "../UserInterface/XYZImportDialog.h"
@@ -144,9 +145,9 @@ namespace OpenInfraPlatform
 			void on_actionShow_Log_Folder_triggered();
 
 
-
+			//! Triggers the OSM import workflow
+			void on_actionImport_triggered();
 			//void on_actionCreate_Accident_Report_triggered();
-			//void on_actionImport_OSM_File_triggered();
 			//void on_actionLandXML_triggered();
 			//void on_actionLoad_Bridge();
 			
@@ -303,6 +304,8 @@ namespace OpenInfraPlatform
 			void reloadShader();
 			void cancelJob();
 			void aboutQt();
+			//! Slot which handles teh result of the on_actionImport_triggered
+			void doneImporting(int result);
 
 		private:
 			void jobStarting();
@@ -366,6 +369,7 @@ namespace OpenInfraPlatform
 			PreferencesDialog*							preferencesDialog_ = nullptr;
 			QProgressDialog*							progressDialog_ = nullptr;
 			LicenseAndCopyrightInformationDialog*		licenseAndCopyrightInformationDialog_ = nullptr;
+			HttpDownloadDialog*							httpDownloadDialog_ = nullptr;
 
 			QProgressBar*								progressBar_;
 
@@ -375,6 +379,8 @@ namespace OpenInfraPlatform
 
 			View*										view_;
 			Ui::MainWindow*  							ui_;
+
+
 
 			bool										loaded_;
 

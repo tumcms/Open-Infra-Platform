@@ -149,6 +149,14 @@ if(Boost_FOUND)
 	set(Boost_DIR ${Boost_INCLUDE_DIR})
 endif()
 
+# Libigl
+FetchContent_Declare(
+	libigl
+    GIT_REPOSITORY https://github.com/libigl/libigl.git
+    GIT_TAG v2.4.0
+)
+
+# Eigen
 FetchContent_Declare(
 	eigen
 	GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
@@ -159,7 +167,7 @@ FetchContent_Declare(
 set(BUILD_TESTING FALSE CACHE INTERNAL "Build the testing tree." FORCE)
 mark_as_advanced(FORCE BUILD_TESTING)
   
-FetchContent_MakeAvailable(eigen)
+FetchContent_MakeAvailable(eigen libigl)
 
 FetchContent_Declare(
 	tclap
@@ -241,6 +249,10 @@ if(Qt5_FOUND AND WIN32 AND TARGET Qt5::qmake AND NOT TARGET Qt5::windeployqt)
     endif()
 endif()
 
+#------------------------------------------------------------------------------
+# Setup libigl
+option(LIBIGL_RESTRICTED_TRIANGLE "Enable Triangle library" ON)
+igl_include(restricted triangle)
 #------------------------------------------------------------------------------
 
 FetchContent_Declare(
@@ -403,6 +415,8 @@ set(OpenInfraPlatform_UserInterface_Forms
 	UserInterface/Forms/MainWindow.ui
 	UserInterface/Forms/LicenseAndCopyrightInformation.ui
 	UserInterface/Forms/PreferencesDialog.ui
+	UserInterface/Forms/HttpDownloadDialog.ui
+	UserInterface/Forms/HttpTreeModelDialog.ui
 
 	# Currently not included.
 	#UserInterface/Forms/CreateAccidentReport.ui
@@ -521,6 +535,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		Qt5::Core
 		Qt5::Gui
 		Qt5::Widgets
+		Qt5::Network
 		Qt5::Svg
 		Qt5::PrintSupport
 		Qt5::Quick
@@ -542,6 +557,7 @@ target_link_libraries( OpenInfraPlatform.UI
 		Rpcrt4.lib
 		eigen
 		${PROJ_LIBRARIES}
+		igl_restricted::triangle
 )
 
 set(QT_WINDEPLOY_FLAGS -xml -concurrent)

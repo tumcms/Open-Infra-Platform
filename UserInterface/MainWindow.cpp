@@ -41,6 +41,7 @@
 #include <boost/filesystem.hpp>
 
 //#include <fftw3.h>
+//#include <proj.h>
 
 #include <iostream>
 #include <codecvt>
@@ -221,6 +222,9 @@ OpenInfraPlatform::UserInterface::MainWindow::MainWindow(QWidget* parent /*= nul
 	//QObject::connect(actionPrecisionTest, &QAction::triggered, this, &MainWindow::on_actionPrecisionTest);
 
 #endif
+
+	// connect actionImportOsm shortcut (toolbar)
+	QObject::connect(ui_->actionImportOsm, &QAction::triggered, this, &MainWindow::on_actionImport_triggered);
 
 	// remove the UI elements not needed anymore (20201025)
 	ui_->tabWidgetView->removeTab(ui_->tabWidgetView->indexOf(ui_->tabAlignment));
@@ -847,6 +851,61 @@ void OpenInfraPlatform::UserInterface::MainWindow::on_actionUndo_triggered() {
 
 void OpenInfraPlatform::UserInterface::MainWindow::on_actionRedo_triggered() {
 	handle_actionRedo_triggered();
+}
+
+void OpenInfraPlatform::UserInterface::MainWindow::on_actionImport_triggered() {
+	// get the data instance
+	auto& data = OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData();
+
+	// check if models loaded
+	if (data.hasModels()) {
+		if (data.getLatesChangeFlag() == ChangeFlag::IfcGeometry) {										// IFC model
+			// get the IFC model extents
+			oip::BBox ifcbb = data.getExtents();
+			buw::Vector3d min = ifcbb.min();
+			buw::Vector3d max = ifcbb.max();
+
+			// check if georef metadata provided
+			bool hasMetaData = false;
+			oip::GeorefMetadata ifcMetaData = data.getLastModel()->getGeorefMetadata();
+			if (!ifcMetaData.codeEPSG.empty() || !ifcMetaData.WKT.empty()) {
+				hasMetaData = true;
+				const char *projCRS = ifcMetaData.codeEPSG.c_str();
+				// global-to-local conversion (if scaled or not)
+				const std::string scaleFactor = ifcMetaData.data.find("Map Unit Factor to meters")->second;
+
+			}
+		}
+		else if (data.getLatesChangeFlag() == ChangeFlag::OsmDataGeometry) {							// OSM model
+			// #TODO: inform user that model would be deleted upon proceesing (clicking yes)
+			// --> if user accepts; delete model and start a new instance
+		}
+	}
+	else {	// no model loaded
+		if (httpDownloadDialog_ == nullptr) {
+			httpDownloadDialog_ = new HttpDownloadDialog(this);
+		}
+		// connect to doneImporting when dilaog finished
+		//QObject::connect(httpDownloadDialog_, &QDialog::finished, this, &MainWindow::doneImporting);
+		QObject::connect(httpDownloadDialog_, &HttpDownloadDialog::transmitStatus, this, &MainWindow::doneImporting);
+
+		// wait till dialog is closed
+		httpDownloadDialog_->exec();
+	}
+}
+
+
+void OpenInfraPlatform::UserInterface::MainWindow::doneImporting(int result)
+{
+	// delete dialog instance after closed
+	httpDownloadDialog_->deleteLater();
+	httpDownloadDialog_ = nullptr;
+	
+	// success (i.e. osm data properly loaded)
+	if (result)
+		OpenInfraPlatform::Core::DataManagement::DocumentManager::getInstance().getData().import(
+			"C:/Users/Moiez/Desktop/MasterThesis/OIP/Open-Infra-Platform/UserInterface/osm.xml");
+	
 }
 
 

@@ -22,6 +22,7 @@
 #include "..\EarlyBinding\src\EXPRESS\EXPRESSModel.h"
 #include "..\Core\src\IfcGeometryConverter\ConverterBuw.h"
 #include "..\Core\src\IfcGeometryConverter\IfcGeometryModel.h"
+#include "..\Core\src\OsmDataConverter\OsmDataReader.h"
 
 #include <BlueFramework/Application/DataManagement/DocumentManager.h>
 #include <BlueFramework/ImageProcessing/color.h>
@@ -52,7 +53,8 @@ namespace OpenInfraPlatform
 				PointCloud = 1 << 1,
 				Preferences = 1 << 2,
 				OffGeometry = 1 << 3,
-				All = IfcGeometry | PointCloud | Preferences | OffGeometry
+				OsmDataGeometry = 1 << 4,
+				All = IfcGeometry | PointCloud | Preferences | OffGeometry | OsmDataGeometry
 			};
 
 			inline ChangeFlag operator|(ChangeFlag a, ChangeFlag b)

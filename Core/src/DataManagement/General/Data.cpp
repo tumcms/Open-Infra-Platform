@@ -54,6 +54,8 @@
 #include "IfcGeometryConverter\IfcImporterImpl.h"
 #include "OffConverter\OffModel.h"
 #include "OffConverter\OffReader.h"
+#include "OsmDataConverter\OsmDataModel.h"
+#include "OsmDataConverter\OsmDataReader.h"
 #include "Exception\IfcPeekReaderException.h"
 
 #include <QtXml>
@@ -206,6 +208,21 @@ void OpenInfraPlatform::Core::DataManagement::Data::importJob(const std::string&
 		latestChangeFlag_ = ChangeFlag::OffGeometry;
 		return;
 	}
+
+	else if (filetype == ".xml") {
+		// update status
+		OpenInfraPlatform::AsyncJob::getInstance().updateStatus(std::string("OSM data meshing in progress!"));
+		// import osmReader
+		OpenInfraPlatform::Core::OsmDataConverter::OsmReader osmReader;
+		// read the '.xml' file
+		auto osmModel = osmReader.readFile(filename);
+		// add the model to list of models (if any)
+		addModel(osmModel);
+		// change flag to OsmDataGeo. type
+		latestChangeFlag_ = ChangeFlag::OsmDataGeometry;
+		return;
+	}
+
 
 #ifdef OIP_WITH_POINT_CLOUD_PROCESSING
 	QString extension = QString(filetype.substr(1, filetype.size() - 1).data());
