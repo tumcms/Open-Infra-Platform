@@ -95,6 +95,12 @@ public:
 			if (!ifcModel->isEmpty())
 				models.push_back(ifcModel);
 
+			//store a pointer to the express model in the in the ifc model (used for the tree viewer)
+			for (auto& model : models)
+			{
+				model->setExpressModel(expressModel);
+			}
+
 			return models;
 		}
 		catch (const oip::InconsistentModellingException& ex)
